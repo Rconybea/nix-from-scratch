@@ -83,7 +83,7 @@ init:
 # on failure:
 # - state/fetch.result holds error message
 #
-$(tarball_path) init state/fetch.result:
+$(tarball_path) state/fetch.result: init
 	$(TOP_DIR)/mk/fetch-tarball.sh --archive-dir=$(ARCHIVE_DIR) --url=$(url) --tarball-path=$(tarball_path)
 
 # - noop when $(tarball_path) already established
