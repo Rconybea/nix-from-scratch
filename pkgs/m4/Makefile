@@ -137,7 +137,8 @@ state/compile.result: state/config.result
 compile: state/compile.result $(builddir)
 
 install:
-	@echo placeholder: install
+	(cd $(builddir) && make V=1 install) 2>&1 | tee log/install.log
+	cp state/compile.result state/install.result  # (on victory)
 
 verifyclean:
 	rm -f state/verify.result
