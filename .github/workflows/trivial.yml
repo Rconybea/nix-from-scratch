@@ -1,4 +1,4 @@
-name: nix-from-scratch builder
+name: main
 
 on:
   push:
