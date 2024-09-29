@@ -113,7 +113,7 @@ distribution and rely on the standard easy install.
 
 If answers to Q1..Q4 are all unsatisfactory, read on...
 
-### nix-from-scratch
+## nix-from-scratch
 
 In this project, we're going to workaround the restrictions above "the hard way".
 In the spirit of the linuxfromscratch project (https://www.linuxfromscratch.org ) we will proceed
@@ -149,3 +149,31 @@ including `nix` binaries and libraries themselves
 4. configuration directory `$HOME/nixroot/var` (instead of `/var`)
 
 5. system configuration directory `$HOME/nixroot/etc` (instead of `/etc`).
+
+### Build Instructions
+
+1. Download release
+
+```
+curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/v0.0.1.tar.gz
+tar xf v0.0.1.tar.gz
+```
+
+### Filesystem organization
+
+```
+nix-from-scratch
++- Makefile              umbrella makefile; delegates to pkgs/foo/Makefile for each package
++- README.md
++- LICENSE
++- archive               directory for source tarballs
+|  +- foo-1.2.3.tar.gz
+|  ...
++- mk                    helper makefiles/scripts to abstract common patterns
+\- pkgs                  parent for package-specific directories
+   +- foo
+       +- Makefile       makefile for a single package foo
+       +- foo-1.2.3      unpacked source directory for package foo
+       \- state          track build phase results
+          ...
+```
