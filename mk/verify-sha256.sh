@@ -27,15 +27,18 @@ set +x
 
 err=$?
 
+
 if [[ $err -eq 0 ]]; then
     set -x
     echo -n "ok " > state/verify.tmp
     cat state/expected.sha256 >> state/verify.tmp
+    verified=1
     set +x
 else
     set -x
     echo -n "err " > state/verify.tmp
     cat state/verify.err >> state/verify.tmp
+    verified=0
     set +x
 fi
 
