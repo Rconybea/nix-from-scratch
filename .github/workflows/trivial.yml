@@ -1,0 +1,21 @@
+name: nix-from-scratch builder
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout self (nix-from-scratch)
+      uses: actions/checkout@v3
+
+    - name: hello world
+      run: echo "hello, world!"
