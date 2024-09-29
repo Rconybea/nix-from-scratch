@@ -32,6 +32,6 @@ jobs:
 
     - name: build
       run: |
-        echo "::group::m4
+        echo "::group::m4"
         make -C pkgs/m4
-        echo "::endgroup
+        echo "::endgroup"
