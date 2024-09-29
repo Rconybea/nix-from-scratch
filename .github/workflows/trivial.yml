@@ -2,9 +2,18 @@ name: nix-from-scratch builder
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+    - main
+    - workflow
+    - dev
+    - 'feature/**'
+
   pull_request:
-    branches: [ "main" ]
+    branches:
+    - main
+    - workflow
+    - dev
+    - 'feature/**'
 
 env:
   BUILD_TYPE: Release
