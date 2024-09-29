@@ -26,6 +26,11 @@ url:=https://ftp.gnu.org/gnu/m4/$(tarball)
 sha256:=3be4a26d825ffdfda52a56fc43246456989a3630093cced3fbddf4771ee58a70
 #
 patch_script:=m4-patch.sh
+#
+builddir:=build
+#
+cflags:=-I$(PREFIX)/include
+ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 
 #
 #        /----distclean
@@ -116,8 +121,12 @@ state/patch.result: state/unpack.result ${patch_script}
 
 patch: state/patch.result
 
-config: patch
-	@echo placeholder: config
+state/config.result: state/patch.result
+	mkdir -p $(builddir)
+	(cd $(builddir) && ../${srcdir}/configure --prefix=$(PREFIX) CFLAGS="$(cflags)" LDFLAGS="$(ldflags)")
+	cp state/patch.result state/config.result
+
+config: state/config.result
 
 compile: config
 	@echo placeholder: compile
