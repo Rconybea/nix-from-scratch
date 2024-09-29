@@ -1,4 +1,6 @@
-![main](https://github.com/Rconybea/nix-from-scratch/actions/workflows/trivial.yml/badge.svg)
+![build status](https://github.com/Rconybea/nix-from-scratch/actions/workflows/trivial.yml/badge.svg)
+![version](https://github.com/Rconybea/nix-from-scratch/releases)
+![license](LICENSE)
 
 # nix-from-scratch
 
