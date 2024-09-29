@@ -31,6 +31,10 @@ jobs:
         echo HOME=$HOME
         echo ubuntu-dep-placeholder
 
+    - name: toplevel config
+      run: |
+        ./mk/bootstrap.sh --prefix='${{github.workspace}}/local'
+
     - name: m4
       run: |
         echo "::group::unpack"

@@ -19,7 +19,8 @@ ARCHIVE_DIR:=$(TOP_DIR)/archive
 # 4. $PREFIX/share/cmake in $CMAKE_MODULE_PATH
 #    (for a build using cmake to get cmake modules for dependent components)
 #
-PREFIX:=$(HOME)/ext
+# provides PREFIX;  set from ./bootstrap.sh
+include prefix.mk
 export PREFIX
 
 # ----------------------------------------------------------------
