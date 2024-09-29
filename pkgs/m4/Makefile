@@ -146,7 +146,7 @@ unpackclean:
 	rm -rf state/unpack.result
 
 clean:
-	@echo "placeholder: clean"
+	rm -rf build
 
 # unwind to state before fetch.
 distclean: 
