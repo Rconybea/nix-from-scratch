@@ -161,7 +161,6 @@ clean:
 
 # unwind to state before fetch.
 distclean: 
-	rm -f $(tarball_path)
-	rm -f state/*
-	rm -f log/*
+	$(TOP_DIR)/mk/distclean.sh --tarball-path=$(tarball_path) --build-dir=$(builddir)
+
 
