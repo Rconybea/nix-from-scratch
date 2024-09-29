@@ -130,9 +130,7 @@ state/config.result $(builddir): state/patch.result
 config: state/config.result
 
 state/compile.result: state/config.result
-	rm -f state/compile.result  # invalidate any prior
-	(cd $(builddir) && make V=1) 2>&1 | tee log/compile.log
-	cp state/patch.result state/compile.result  # (on victory)
+	$(TOP_DIR)/mk/compile-autotools.sh --build-dir=$(builddir)
 
 compile: state/compile.result $(builddir)
 
