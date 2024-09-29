@@ -121,7 +121,7 @@ state/patch.result: state/unpack.result ${patch_script}
 
 patch: state/patch.result
 
-state/config.result: state/patch.result
+state/config.result $(builddir): state/patch.result
 	rm -f state/config.result  # invalidate any prior
 	mkdir -p $(builddir)
 	(cd $(builddir) && ../${srcdir}/configure --prefix=$(PREFIX) CFLAGS="$(cflags)" LDFLAGS="$(ldflags)")
@@ -131,10 +131,10 @@ config: state/config.result
 
 state/compile.result: state/config.result
 	rm -f state/compile.result  # invalidate any prior
-	(cd $(builddir) && make) 2>&1 | tee log/compile.log
+	(cd $(builddir) && make V=1) 2>&1 | tee log/compile.log
 	cp state/patch.result state/compile.result  # (on victory)
 
-compile: state/compile.result
+compile: state/compile.result $(builddir)
 
 install:
 	@echo placeholder: install
@@ -150,8 +150,12 @@ verifyclean:
 unpackclean:
 	rm -f state/unpack.result
 
-clean:
+configclean:
 	rm -rf $(builddir)
+	rm -f state/config.result
+
+clean:
+	test -f $(builddir) && (cd $(builddir) && make clean)
 	rm -f state/compile.result
 
 # unwind to state before fetch.
