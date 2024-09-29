@@ -57,3 +57,7 @@ jobs:
         echo "::group::install"
         make -C pkgs/m4 install
         echo "::endgroup"
+
+        echo "::group::install-tree"
+        tree ${{github.workspace}}/local
+        echo "::endgroup"
