@@ -43,7 +43,7 @@ Together, these restrictions prevent many typical installation pathways for nix.
 
 To decide if `nix-from-scratch` might help you, answer these questions:
 
-### Can you write to `/` ?
+### Q1: Can you write to `/` ?
 
 Nix needs a well-known place to store build artifacts;
 usually this is under the directory `/nix/store`.  If you can arrange to have write
@@ -58,7 +58,7 @@ $ sh <(curl -L https://nixos.org/nix/install) --no-daemon
 If you can create and/or write to `/nix`, then you should expect to be able
 to (and prefer to) use a binary nix install as above.
 
-### Does your OS kernel support user namespaces?
+### Q2: Does your OS kernel support user namespaces?
 
 Even if *you* can't wite to `/nix`,  you may be able to create a user namespace
 in which `/nix` appears to exist,  but 'really' maps to some other directory.
@@ -89,7 +89,7 @@ $ nix run --store ~/my-nix nixpkgs.nix nixpkgs.bashInteractive
 work by starting a user namespace; if you're using user namespace to get access to nix,
 then running code like the above requires nestable namespaces.
 
-### Can you invoke operating systems' package manager to install recent package versions?
+### Q3: Can you invoke operating systems' package manager to install recent package versions?
 
 For example, if operating system is a debian derivative, can you do something like:
 ```
@@ -100,12 +100,14 @@ If so, may prefer to install nix dependencies from pacakge manager instead of bu
 yourself.  Will have to at least build `nix` from source, unless (unlikely afaik) package repository
 has a prebuilt package for `nix` available.
 
-### Do you want to release libraries/artifacts built with nix, without using namespaces?
+### Q4: Do you want to release libraries/artifacts built with nix, without using namespaces?
 
 If you use a user namespace to provide `/nix/store`,  the resulting artifacts will only run
 on a host where `/nix/store` exists,  or where you use a user-namespace to
 provide that appearance. If either of these is viable,  then you can use a binary nix
 distribution and rely on the standard easy install.
+
+If answers to Q1..Q4 are all unsatisfactory, read on...
 
 ### nix-from-scratch
 
