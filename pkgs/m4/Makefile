@@ -104,8 +104,10 @@ state/verify.result: state/expected.sha256
 
 verify: state/verify.result
 
-unpack: verify
-	@echo placeholder: unpack
+state/unpack.result: state/verify.result 
+	$(TOP_DIR)/mk/unpack-tarball.sh --tarball-path=$(tarball_path) --src-dir=${srcdir}
+
+unpack: state/unpack.result
 
 patch: unpack
 	@echo placeholder: patch
@@ -128,7 +130,7 @@ verifyclean:
 # - cksum state
 #
 unpackclean:
-	@echo "placeholder: unpackclean"
+	rm -rf state/unpack.result
 
 clean:
 	@echo "placeholder: clean"
