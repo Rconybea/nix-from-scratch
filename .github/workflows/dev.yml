@@ -1,13 +1,16 @@
-name: main
+name: dev
 
 on:
   push:
     branches:
-    - main
+    - dev
+    - 'feature/**'
 
   pull_request:
     branches:
     - main
+    - dev
+    - 'feature/**'
 
 env:
   BUILD_TYPE: Release
@@ -26,6 +29,4 @@ jobs:
 
     - name: build
       run: |
-        echo "::group::m4"
-        make -C pkgs/m4
-        echo "::endgroup"
+        echo build-placeholder
