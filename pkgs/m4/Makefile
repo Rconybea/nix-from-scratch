@@ -65,16 +65,11 @@ sha256:=3be4a26d825ffdfda52a56fc43246456989a3630093cced3fbddf4771ee58a70
 #     (finish)
 #
 
-PHASE:=init fetch verify unpack patch config compile install
+PHASE:=fetch verify unpack patch config compile install
 COMMANDS:=all sha256 clean unpackclean distclean
 .PHONY: $(PHASE) $(COMMANDS)
 
 all: compile
-
-init:
-	mkdir -p $(TOP_DIR)/archive
-	mkdir -p state
-	mkdir -p log
 
 # fetch tarball
 #
@@ -83,7 +78,8 @@ init:
 # on failure:
 # - state/fetch.result holds error message
 #
-$(tarball_path) state/fetch.result: init
+$(tarball_path) state/fetch.result: 
+	$(TOP_DIR)/mk/init.sh --archive-dir=$(ARCHIVE_DIR)
 	$(TOP_DIR)/mk/fetch-tarball.sh --archive-dir=$(ARCHIVE_DIR) --url=$(url) --tarball-path=$(tarball_path)
 
 # - noop when $(tarball_path) already established
@@ -95,6 +91,7 @@ fetch: $(tarball_path) state/fetch.result
 # - [state/expected_sha256] consistent with {$(sha256), $(tarball_path)};
 #   only updated when contents changed
 #   (so [state/expected.sha256] works well as make dependency)
+# - exit code 0 iff {expected, actual} match
 #
 # (reminder: state/fetch.result here needed so that 'make all' in initial state does fetch,
 #  since require-sha256 checks that tarball path is present + additionally produces actual sha256)
