@@ -54,20 +54,24 @@ if [[ -z ${tarball_path} ]]; then
 fi
 
 set -x
-
 rm -f state/fetch.result
 rm -f ${tarball_path}
 
 #(cd ${ARCHIVE_DIR} && wget --output-document=${tarball_path} ${url})
 (cd ${ARCHIVE_DIR} && wget ${url}) 2>&1 | tee log/wget.log
+set +x
 err=$?
 
 if [[ ${err} -eq 0 && -f ${tarball_path} && -s ${tarball_path} ]]; then
+    set -x
     echo -n 'ok ' > state/fetch.result
     echo ${tarball_path} >> state/fetch.result
+    set +x
     exit 0
 else
+    set -x
     echo "err: expected wget to create non-empty [${tarball_path}]" > state/fetch.result
+    set +x
     exit 1
 fi
 
