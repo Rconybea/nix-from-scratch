@@ -49,7 +49,7 @@ set -x
 rm -f state/unpack.result
 rm -f ${src_dir}
 
-tar xvf ${tarball_path} 2>&1 | tee log/tar.log
+tar xf ${tarball_path} 2>&1 | tee log/tar.log
 set +x
 err=$?
 
