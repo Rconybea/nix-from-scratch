@@ -24,7 +24,7 @@ jobs:
 
     steps:
     - name: checkout self (nix-from-scratch)
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: install ubuntu dependencies
       run: |
@@ -32,4 +32,6 @@ jobs:
 
     - name: build
       run: |
-        echo build-placeholder
+        echo "::group::m4"
+        make -C pkgs/m4
+        echo "::endgroup"
