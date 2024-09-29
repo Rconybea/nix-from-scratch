@@ -34,6 +34,7 @@ jobs:
     - name: toplevel config
       run: |
         ./mk/bootstrap.sh --prefix='${{github.workspace}}/local'
+        cat mk/prefix.mk
 
     - name: m4
       run: |
