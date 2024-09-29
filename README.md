@@ -1,6 +1,6 @@
-![build status](https://github.com/Rconybea/nix-from-scratch/actions/workflows/trivial.yml/badge.svg)
-![version](https://github.com/Rconybea/nix-from-scratch/releases)
-![license](LICENSE)
+![Build Status on github actions](https://github.com/Rconybea/nix-from-scratch/actions/workflows/trivial.yml/badge.svg)
+![Version](https://github.com/Rconybea/nix-from-scratch/releases)
+[![License](https://img.shields.io/github/license/ToruNiina/toml11.svg?style=flat)](LICENSE)
 
 # nix-from-scratch
 
