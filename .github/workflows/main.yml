@@ -32,4 +32,6 @@ jobs:
 
     - name: build
       run: |
-        echo build-placeholder
+        echo "::group::m4
+        make -C pkgs/m4
+        echo "::endgroup
