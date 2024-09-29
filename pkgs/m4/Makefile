@@ -95,10 +95,13 @@ fetch: init $(tarball_path) state/fetch.result
 #   only updated when contents changed
 #   (so [state/expected.sha256] works well as make dependency)
 #
-sha256 state/expected.sha256:
+# (reminder: state/fetch.result here needed so that 'make all' in initial state does fetch,
+#  since require-sha256 checks that tarball path is present + additionally produces actual sha256)
+#
+sha256 state/expected.sha256: state/fetch.result
 	$(TOP_DIR)/mk/require-sha256.sh --sha256=$(sha256) --tarball-path=$(tarball_path)
 
-state/verify.result: state/expected.sha256 state/fetch.result
+state/verify.result: state/expected.sha256 
 	$(TOP_DIR)/mk/verify-sha256.sh
 
 verify: state/verify.result
