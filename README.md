@@ -1,3 +1,5 @@
+![main](https://github.com/Rconybea/nix-from-scratch/actions/workflows/trivial.yml/badge.svg)
+
 # nix-from-scratch
 
 Build nix packager and dependencies:
