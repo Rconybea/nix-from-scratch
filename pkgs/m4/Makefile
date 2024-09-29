@@ -83,13 +83,13 @@ init:
 # on failure:
 # - state/fetch.result holds error message
 #
-$(tarball_path) state/fetch.result:
+$(tarball_path) init state/fetch.result:
 	$(TOP_DIR)/mk/fetch-tarball.sh --archive-dir=$(ARCHIVE_DIR) --url=$(url) --tarball-path=$(tarball_path)
 
 # - noop when $(tarball_path) already established
 #   (use `make distclean` to do-over)
 #
-fetch: init $(tarball_path) state/fetch.result
+fetch: $(tarball_path) state/fetch.result
 
 # promise:
 # - [state/expected_sha256] consistent with {$(sha256), $(tarball_path)};
