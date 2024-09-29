@@ -26,5 +26,10 @@ jobs:
     - name: checkout self (nix-from-scratch)
       uses: actions/checkout@v3
 
-    - name: hello world
-      run: echo "hello, world!"
+    - name: install ubuntu dependencies
+      run: |
+        echo ubuntu-dep-placeholder
+
+    - name: build
+      run: |
+        echo build-placeholder
