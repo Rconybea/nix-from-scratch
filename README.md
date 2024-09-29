@@ -19,28 +19,22 @@ or impose costs that are too high.
 For example, when writing software in a corporate linux environment,
 not unusual for all the following to apply:
 
-1.
-Operating system support and software development responsibilities are divided
+1. Operating system support and software development responsibilities are divided
 between different departments;  with natural result that developers work
 with reduced system privileges:
 
-2.
-Readonly system directories `/usr`, `/etc`, `/bin` etc.
+2. Readonly system directories `/usr`, `/etc`, `/bin` etc.
 
-3.
-Operating system chosen with stability as a primary goal.
+3. Operating system chosen with stability as a primary goal.
 Often an older linux release, with correspondingly out-of-date toolchain.
 
-4.
-Package selection limited for the same reason.
+4. Package selection limited for the same reason.
 Unprivileged users may not have permission to install packages.
 
-5.
-Secure network. Connecting a personal computer to corporate
+5. Secure network. Connecting a personal computer to corporate
 network is (with good reason) prevented and forbidden.
 
-6.
-Same restrictions likely apply to production software created by
+6. Same restrictions likely apply to production software created by
 the engineering organization -- organization may have already decided
 where in filesystem to put artifacts produced by the engineering organization,
 with institutional barriers to changing that.
@@ -119,11 +113,9 @@ In this project, we're going to workaround the restrictions above "the hard way"
 In the spirit of the linuxfromscratch project (https://www.linuxfromscratch.org ) we will proceed
 as follows:
 
-1.
-Fetch and build each nix dependency from an authoritative source tarball.
+1. Fetch and build each nix dependency from an authoritative source tarball.
 
-2.
-Install to a common but non-LSB location (`$HOME/ext`).
+2. Install to a common but non-LSB location (`$HOME/ext`).
 (Since premise is that we can't write to `/usr/bin` etc).
 
 In particular, we assume that we're installing to a directory that `ldconfig` doesn't know about.
@@ -131,30 +123,23 @@ this means that in general, if (a) we have two libraries {L, M} installed `/path
 (i.e. `$HOME/ext/lib`), and (b) L depends on M:
 then L needs a `DT_RUNPATH` entry `/path/to/foo` so that loader can find M when it encounters L
 
-3.
-Since there will be several dozen dependencies, we will prepare a modest meta-build system to
+3. Since there will be several dozen dependencies, we will prepare a modest meta-build system to
 build them.  Though much less capable than nix, this will still give us a permanent record of how to
 bootstrap core depenencies.
 
-4.
-Once all its dependencies are installed,  we'll proceed to build `nix` itself.
+4. Once all its dependencies are installed,  we'll proceed to build `nix` itself.
 
 ### nix install locations
 
 We will use the following paths:
 
-1.
-`PREFIX=$HOME/ext/{bin,lib,etc,share}` (instead of `/usr`).  This is where we install nix dependencies,
+1. `PREFIX=$HOME/ext/{bin,lib,etc,share}` (instead of `/usr`).  This is where we install nix dependencies,
 including `nix` binaries and libraries themselves
 
-2.
-`NIX_PREFIX=$HOME/nixroot` (instead of `/`).
+2. `NIX_PREFIX=$HOME/nixroot` (instead of `/`).
 
-3.
-store directory `$HOME/nixroot/nix/store` (instead of `/nix/store`)
+3. store directory `$HOME/nixroot/nix/store` (instead of `/nix/store`)
 
-4.
-configuration directory `$HOME/nixroot/var` (instead of `/var`)
+4. configuration directory `$HOME/nixroot/var` (instead of `/var`)
 
-5.
-system configuration directory `$HOME/nixroot/etc` (instead of `/etc`).
+5. system configuration directory `$HOME/nixroot/etc` (instead of `/etc`).
