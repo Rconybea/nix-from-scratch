@@ -61,3 +61,7 @@ jobs:
         echo "::group::install-tree"
         tree ${{github.workspace}}/local
         echo "::endgroup"
+
+        echo "::group::check runpaths for executables"
+        ./mk/check-runpaths.sh --prefix='${{github.workspace}}/local'
+        echo "::endgroup"
