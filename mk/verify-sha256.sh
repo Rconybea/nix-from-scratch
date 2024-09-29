@@ -63,3 +63,7 @@ else
     rm state/verify.tmp
     set +x
 fi
+
+if [[ ${verified} -eq 0 ]]; then
+    exit 1
+fi
