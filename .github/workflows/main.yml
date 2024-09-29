@@ -22,10 +22,40 @@ jobs:
 
     - name: install ubuntu dependencies
       run: |
+        echo HOME=$HOME
         echo ubuntu-dep-placeholder
 
-    - name: build
+    - name: toplevel config
       run: |
-        echo "::group::m4"
-        make -C pkgs/m4
+        ./mk/bootstrap.sh --prefix='${{github.workspace}}/local'
+        cat mk/prefix.mk
+
+    - name: m4
+      run: |
+        echo "::group::unpack"
+        make -C pkgs/m4 unpack
+        echo "::endgroup"
+
+        echo "::group::patch"
+        make -C pkgs/m4 patch
+        echo "::endgroup"
+
+        echo "::group::config"
+        make -C pkgs/m4 config
+        echo "::endgroup"
+
+        echo "::group::compile"
+        make -C pkgs/m4 compile
+        echo "::endgroup"
+
+        echo "::group::install"
+        make -C pkgs/m4 install
+        echo "::endgroup"
+
+        echo "::group::install-tree"
+        tree ${{github.workspace}}/local
+        echo "::endgroup"
+
+        echo "::group::check runpaths for executables"
+        ./mk/check-runpaths.sh --prefix='${{github.workspace}}/local'
         echo "::endgroup"
