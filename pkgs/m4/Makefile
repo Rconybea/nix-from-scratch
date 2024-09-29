@@ -24,6 +24,8 @@ tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 url:=https://ftp.gnu.org/gnu/m4/$(tarball)
 # verify this sha
 sha256:=3be4a26d825ffdfda52a56fc43246456989a3630093cced3fbddf4771ee58a70
+#
+patch_script:=m4-patch.sh
 
 #
 #        /----distclean
@@ -109,8 +111,10 @@ state/unpack.result: state/verify.result
 
 unpack: state/unpack.result
 
-patch: unpack
-	@echo placeholder: patch
+state/patch.result: state/unpack.result ${patch_script}
+	$(TOP_DIR)/mk/patch-src-dir.sh --src-dir=$(srcdir) --patch-script=${patch_script}
+
+patch: state/patch.result
 
 config: patch
 	@echo placeholder: config
