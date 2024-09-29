@@ -20,7 +20,7 @@ ARCHIVE_DIR:=$(TOP_DIR)/archive
 #    (for a build using cmake to get cmake modules for dependent components)
 #
 # provides PREFIX;  set from ./bootstrap.sh
-include prefix.mk
+include $(TOP_DIR)/mk/prefix.mk
 export PREFIX
 
 # ----------------------------------------------------------------
