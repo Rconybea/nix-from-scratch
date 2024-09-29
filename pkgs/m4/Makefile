@@ -156,11 +156,9 @@ configclean:
 	rm -f state/config.result
 
 clean:
-	test -f $(builddir) && (cd $(builddir) && make clean)
-	rm -f state/compile.result
+	$(TOP_DIR)/mk/clean.sh --build-dir=$(builddir)
 
 # unwind to state before fetch.
 distclean: 
 	$(TOP_DIR)/mk/distclean.sh --tarball-path=$(tarball_path) --build-dir=$(builddir)
-
 
