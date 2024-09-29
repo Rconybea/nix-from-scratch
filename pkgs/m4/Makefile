@@ -72,6 +72,7 @@ COMMANDS:=all sha256 clean unpackclean distclean
 all: compile
 
 init:
+	mkdir -p $(TOP_DIR)/archive
 	mkdir -p state
 	mkdir -p log
 
