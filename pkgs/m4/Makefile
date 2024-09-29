@@ -152,8 +152,7 @@ unpackclean:
 	rm -f state/unpack.result
 
 configclean:
-	rm -rf $(builddir)
-	rm -f state/config.result
+	$(TOP_DIR)/mk/configclean.sh --build-dir=$(builddir)
 
 clean:
 	$(TOP_DIR)/mk/clean.sh --build-dir=$(builddir)
