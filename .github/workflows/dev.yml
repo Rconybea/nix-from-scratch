@@ -41,3 +41,7 @@ jobs:
     - name: autoconf
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=autoconf
+
+    - name: autoconf-archive
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=autoconf-archive
