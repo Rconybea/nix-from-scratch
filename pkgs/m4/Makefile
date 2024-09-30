@@ -33,46 +33,6 @@ builddir:=build
 cflags:=-I$(PREFIX)/include
 ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 
-#
-#        /----distclean
-#        v
-#     (start)
-#        |
-#        |fetch
-#        |
-#        |/---verifyclean
-#        vv
-#       (s1)      [ok: empty state/fetch.result, $(tarball_path), log/wget.log]
-#        |
-#        |verify
-#        |
-#        |/---unpackclean
-#        vv
-#       (s2)      [ok: empty state/verify.result; state/*.sha256]
-#        |
-#        |unpack
-#        v
-#       (s3)
-#        |
-#        |patch
-#        v
-#       (s4)
-#        |
-#        |config
-#        |
-#        |/---clean
-#        vv
-#       (s5) 
-#        |
-#        |compile
-#        v
-#       (s6)
-#        |
-#        |install
-#        v
-#     (finish)
-#
-
 PHASE:=fetch verify unpack patch config compile install
 COMMANDS:=all sha256 clean unpackclean distclean
 .PHONY: $(PHASE) $(COMMANDS)

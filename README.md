@@ -178,3 +178,53 @@ nix-from-scratch
        \- state          track build phase results
           ...
 ```
+
+### Makefile organization
+
+Each subproject (m4, automake, boost, etc) gets its own Makefile.
+Makefile in root directory delgates to project Makefiles.
+Toplevel Makefile also knows inter-project dependencies
+
+Makefiles divide build into phases,  with state transitions shown here:
+
+```
+
+        /----distclean
+        v
+     (start)
+        |
+        |fetch
+        |
+        |/---verifyclean
+        vv
+       (s1)      [ok: empty state/fetch.result, $(tarball_path), log/wget.log]
+        |
+        |verify
+        |
+        |/---unpackclean
+        vv
+       (s2)      [ok: empty state/verify.result; state/*.sha256]
+        |
+        |unpack
+        v
+       (s3)
+        |
+        |patch
+        v
+       (s4)
+        |
+        |config
+        |
+        |/---clean
+        vv
+       (s5)
+        |
+        |compile
+        v
+       (s6)
+        |
+        |install
+        v
+     (finish)
+
+```
