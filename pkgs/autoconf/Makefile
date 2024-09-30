@@ -21,7 +21,8 @@ tarball:=$(name).tar.gz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
-url:=https://ftp.gnu.org/gnu/autoconf/$(tarball)
+#url:=https://ftp.gnu.org/gnu/autoconf/$(tarball)
+url:=https://mirror.csclub.uwaterloo.ca/gnu/autoconf/$(tarball)
 # verify this sha
 sha256:=afb181a76e1ee72832f6581c0eddf8df032b83e2e0239ef79ebedc4467d92d6e
 #
