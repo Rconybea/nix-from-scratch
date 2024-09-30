@@ -23,10 +23,8 @@ usage() {
 set -x
 rm -f state/verify.tmp state/verify.err
 sha256sum --check state/expected.sha256 2> state/verify.err
-set +x
-
 err=$?
-
+set +x
 
 if [[ $err -eq 0 ]]; then
     set -x
@@ -44,7 +42,7 @@ fi
 
 rm -f state/verify.err
 
-if [[ -f state/verify.result ]]; then
+if [[ -f state/verify.result ]] && grep '^ok' state/verify.result; then
     set -x
     diff -q state/verify.tmp state/verify.result
     set +x
