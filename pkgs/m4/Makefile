@@ -122,10 +122,9 @@ state/patch.result: state/unpack.result ${patch_script}
 patch: state/patch.result
 
 state/config.result $(builddir): state/patch.result
-	rm -f state/config.result  # invalidate any prior
-	mkdir -p $(builddir)
-	(cd $(builddir) && ../${srcdir}/configure --prefix=$(PREFIX) CFLAGS="$(cflags)" LDFLAGS="$(ldflags)")
-	cp state/patch.result state/config.result
+	$(TOP_DIR)/mk/configure-autotools.sh \
+       --prefix=$(PREFIX) --src-dir=$(srcdir) \
+       --build-dir=$(builddir) --cflags="$(cflags)" --ldflags="$(ldflags)"
 
 config: state/config.result
 
