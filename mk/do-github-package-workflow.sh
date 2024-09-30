@@ -47,7 +47,7 @@ make -C pkgs/${package} install
 echo "::endgroup"
 
 echo "::group::install-tree (simplified)"
-tree -L2 --filelimit=10 ${prefix}
+tree -L 2 --filelimit=10 ${prefix}
 echo "::endgroup"
 
 echo "::group::check runpaths for executables"
