@@ -61,3 +61,24 @@ jobs:
         echo "::group::check runpaths for executables"
         ./mk/check-runpaths.sh --prefix='${{github.workspace}}/local'
         echo "::endgroup"
+
+  umbrella:
+    runs-on: ubuntu-latest
+
+    steps
+    - name: checkout self (nix-from-scratch)
+      uses: actions/checkout@v4
+
+    - name: install ubuntu dependencies
+    run: |
+      echo HOME=$HOME
+      echo ubuntu-dep-placeholder
+
+    - name: toplevel config
+      run: |
+        ./mk/bootstrap.sh --prefix='${{github.workspace}}/local'
+        cat mk/prefix.mk
+
+    - name: all
+      run: |
+        make
