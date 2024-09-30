@@ -156,8 +156,8 @@ including `nix` binaries and libraries themselves
 1. Download release
 
 ```
-curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/v0.0.1.tar.gz
-tar xf v0.0.1.tar.gz
+curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/nix-from-scratch-0.3.0.tar.gz
+tar xf nix-from-scratch-0.3.0.tar.gz
 ```
 
 ### Filesystem organization
