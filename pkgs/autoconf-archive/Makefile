@@ -13,18 +13,18 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 include $(TOP_DIR)/mk/config.mk
 
 # unique package name
-name:=autoconf-2.72
+name:=autoconf-archive-2023.02.20
 # local directory for unpacked source
 srcdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
-tarball:=$(name).tar.gz
+tarball:=$(name).tar.xz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
-#url:=https://ftp.gnu.org/gnu/autoconf/$(tarball)
-url:=https://mirror.csclub.uwaterloo.ca/gnu/autoconf/$(tarball)
+url:=https://ftpmirror.gnu.org/autoconf-archive/$(tarball)
+#url:=https://mirror.csclub.uwaterloo.ca/gnu/autoconf/$(tarball)
 # verify this sha
-sha256:=afb181a76e1ee72832f6581c0eddf8df032b83e2e0239ef79ebedc4467d92d6e
+sha256:=71d4048479ae28f1f5794619c3d72df9c01df49b1c628ef85fde37596dc31a33
 #
 patch_script:=
 #
@@ -123,6 +123,8 @@ state/patch.result: state/unpack.result ${patch_script}
 
 patch: state/patch.result
 
+# note: for autotools-archive: could pass null values for --cflags and --ldflags
+#
 state/config.result $(builddir): state/patch.result
 	$(TOP_DIR)/mk/configure-autotools.sh \
        --prefix=$(PREFIX) --src-dir=$(srcdir) \

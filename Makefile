@@ -28,3 +28,10 @@ PHASE:=fetch src patch config compile install clean srcclean distclean
 .PHONY: $(PHASE)
 $(PHASE):
 	for dir in $(ALL_PACKAGES); do $(MAKE) -C $$dir $@; done
+
+# ----------------------------------------------------------------
+# inter-package dependencies
+# ----------------------------------------------------------------
+
+pkgs/autoconf: pkgs/m4
+pkgs/autoconf-archive: pkgs/autoconf
