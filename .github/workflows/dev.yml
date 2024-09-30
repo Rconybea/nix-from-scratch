@@ -34,10 +34,6 @@ jobs:
         ./mk/bootstrap.sh --prefix='${{github.workspace}}/local'
         cat mk/prefix.mk
 
-    - name: automake
-      run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=automake
-
     - name: m4
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=m4
