@@ -61,5 +61,6 @@ else
 fi
 
 if [[ ${verified} -eq 0 ]]; then
+    mv state/verify.result state/verify.err
     exit 1
 fi
