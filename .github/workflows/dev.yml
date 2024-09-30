@@ -65,7 +65,7 @@ jobs:
   umbrella:
     runs-on: ubuntu-latest
 
-    steps
+    steps:
     - name: checkout self (nix-from-scratch)
       uses: actions/checkout@v4
 
