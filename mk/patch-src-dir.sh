@@ -47,9 +47,9 @@ set -x
 cat state/expected.sha256 > state/tmp.patch.sha256
 set +x
 
-if [[ -n $patch_script ]]; then
+if [[ -n "${patch_script}" ]]; then
     set -x
-    sha256sum $patch_script >> state/tmp.patch.sha256
+    sha256sum ${patch_script} >> state/tmp.patch.sha256
     set +x
 fi
 
@@ -75,8 +75,11 @@ if [[ $err -eq 0 ]]; then
     fi
 else  # something changed -> will modify [state/patch.result]
     set -x
-    (cd ${src_dir} && ../${patch_script})
-    err=$?
+    err=0
+    if [[ -n ${patch_script} ]]; then
+        (cd ${src_dir} && ../${patch_script})
+        err=$?
+    fi
     if [[ ${err} -eq 0 ]]; then
         mv state/tmp.patch.sha256 state/done.patch.sha256
         echo "ok " > state/patch.result

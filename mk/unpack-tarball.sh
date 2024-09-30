@@ -47,11 +47,11 @@ fi
 
 set -x
 rm -f state/unpack.result
-rm -f ${src_dir}
+rm -rf ${src_dir}
 
 tar xf ${tarball_path} 2>&1 | tee log/tar.log
-set +x
 err=$?
+set +x
 
 if [[ ${err} -eq 0 ]]; then
      if [[ -d ${src_dir} ]]; then

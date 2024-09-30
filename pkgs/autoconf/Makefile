@@ -13,7 +13,7 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 include $(TOP_DIR)/mk/config.mk
 
 # unique package name
-name:=m4-1.4.19
+name:=autoconf-2.72
 # local directory for unpacked source
 srcdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
@@ -21,12 +21,12 @@ tarball:=$(name).tar.gz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
-#url:=https://ftp.gnu.org/gnu/m4/$(tarball)
-url:=https://mirror.csclub.uwaterloo.ca/gnu/m4/$(tarball)
+#url:=https://ftp.gnu.org/gnu/autoconf/$(tarball)
+url:=https://mirror.csclub.uwaterloo.ca/gnu/autoconf/$(tarball)
 # verify this sha
-sha256:=3be4a26d825ffdfda52a56fc43246456989a3630093cced3fbddf4771ee58a70
+sha256:=afb181a76e1ee72832f6581c0eddf8df032b83e2e0239ef79ebedc4467d92d6e
 #
-patch_script:=m4-patch.sh
+patch_script:=
 #
 builddir:=build
 #
@@ -108,6 +108,7 @@ sha256 state/expected.sha256: state/fetch.result
 	$(TOP_DIR)/mk/require-sha256.sh --sha256=$(sha256) --tarball-path=$(tarball_path)
 
 state/verify.result: state/expected.sha256 
+	$(MAKE) sha256  # in case Makefile was edited, but disk the same
 	$(TOP_DIR)/mk/verify-sha256.sh
 
 verify: state/verify.result

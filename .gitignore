@@ -3,3 +3,4 @@ pkgs/*/state
 pkgs/*/log
 pkgs/*/build
 pkgs/m4/m4-1.4.19
+pkgs/autoconf/autoconf-2.72
