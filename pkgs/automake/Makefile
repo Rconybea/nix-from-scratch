@@ -54,10 +54,11 @@ include $(TOP_DIR)/mk/fetch.mk
 #
 include $(TOP_DIR)/mk/verify.mk
 
-state/unpack.result: state/verify.result 
-	$(TOP_DIR)/mk/unpack-tarball.sh --tarball-path=$(tarball_path) --src-dir=${srcdir}
-
-unpack: state/unpack.result
+# provides targets:
+# - state/unpack.result
+# - unpack
+#
+include $(TOP_DIR)/mk/unpack.mk
 
 state/patch.result: state/unpack.result ${patch_script}
 	$(TOP_DIR)/mk/patch-src-dir.sh --src-dir=$(srcdir) --patch-script=${patch_script}
