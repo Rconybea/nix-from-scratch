@@ -39,3 +39,7 @@ jobs:
     - name: autoconf
       run: |
         ./mk/do-github-package-workflow.sh --prefix=$PREFIX --package=autoconf
+
+    - name: autoconf-archive
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix=$PREFIX --package=autoconf-archive
