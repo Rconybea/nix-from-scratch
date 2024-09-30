@@ -62,7 +62,8 @@ jobs:
         ./mk/check-runpaths.sh --prefix='${{github.workspace}}/local'
         echo "::endgroup"
 
-  umbrella:
+  build:
+    naem: umbrella
     runs-on: ubuntu-latest
 
     steps:
