@@ -36,7 +36,7 @@ jobs:
 
     - name: m4
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=m4
+        ./mk/do-github-package-workflow.sh --prefix=$PREFIX --package=m4
 
     - name: autoconf
       run: |
