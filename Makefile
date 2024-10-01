@@ -35,3 +35,6 @@ $(PHASE):
 
 pkgs/autoconf: pkgs/m4
 pkgs/autoconf-archive: pkgs/autoconf
+
+pkgs/automake: pkgs/m4
+
