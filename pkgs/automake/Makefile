@@ -60,27 +60,35 @@ include $(TOP_DIR)/mk/verify.mk
 #
 include $(TOP_DIR)/mk/unpack.mk
 
-state/patch.result: state/unpack.result ${patch_script}
-	$(TOP_DIR)/mk/patch-src-dir.sh --src-dir=$(srcdir) --patch-script=${patch_script}
+# provides targets:
+# - state/patch.result
+# - patch
+#
+include $(TOP_DIR)/mk/patch.mk
 
-patch: state/patch.result
+# provides targets:
+# - state/config.result
+# - config
+#
+include $(TOP_DIR)/mk/configure.mk
 
-state/config.result $(builddir): state/patch.result
-	$(TOP_DIR)/mk/configure-autotools.sh \
-       --prefix=$(PREFIX) --src-dir=$(srcdir) \
-       --build-dir=$(builddir) --cflags="$(cflags)" --ldflags="$(ldflags)"
+# provides targets:
+# - state/compile.mk
+# - compile
+#
+include $(TOP_DIR)/mk/compile.mk
 
-config: state/config.result
+# provides targets:
+# - state/install.mk
+# - install
+#
+include $(TOP_DIR)/mk/install.mk
 
-state/compile.result: state/config.result
-	$(TOP_DIR)/mk/compile-autotools.sh --build-dir=$(builddir)
+# unwind to state before fetch.
+distclean: verifyclean
+	$(TOP_DIR)/mk/distclean.sh --tarball-path=$(tarball_path) --build-dir=$(builddir)
 
-compile: state/compile.result $(builddir)
-
-install:
-	$(TOP_DIR)/mk/install-autotools.sh --build-dir=$(builddir)
-
-verifyclean:
+verifyclean: unpackclean
 	rm -f state/expected.sha256 state/verify.result
 
 # unwind to state before src.
@@ -88,16 +96,12 @@ verifyclean:
 # - tarball in $(tarball_path)
 # - cksum state
 #
-unpackclean:
+unpackclean: configclean
 	rm -f state/unpack.result
 
-configclean:
+configclean: clean
 	$(TOP_DIR)/mk/configclean.sh --build-dir=$(builddir)
 
 clean:
 	$(TOP_DIR)/mk/clean.sh --build-dir=$(builddir)
-
-# unwind to state before fetch.
-distclean: 
-	$(TOP_DIR)/mk/distclean.sh --tarball-path=$(tarball_path) --build-dir=$(builddir)
 
