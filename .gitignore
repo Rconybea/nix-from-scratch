@@ -5,3 +5,4 @@ pkgs/*/build
 pkgs/m4/m4-1.4.19
 pkgs/autoconf/autoconf-2.72
 pkgs/autoconf-archive/autoconf-archive-2023.02.20
+pkgs/automake/automake-1.17

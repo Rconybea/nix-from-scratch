@@ -13,7 +13,7 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 include $(TOP_DIR)/mk/config.mk
 
 # unique package name
-name:=autoconf-2.72
+name:=automake-1.17
 # local directory for unpacked source
 srcdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
@@ -21,10 +21,10 @@ tarball:=$(name).tar.gz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
-#url:=https://ftp.gnu.org/gnu/autoconf/$(tarball)
-url:=https://mirror.csclub.uwaterloo.ca/gnu/autoconf/$(tarball)
+#url:=https://ftp.gnu.org/gnu/automake/$(tarball)
+url:=https://mirror.csclub.uwaterloo.ca/gnu/automake/$(tarball)
 # verify this sha
-sha256:=afb181a76e1ee72832f6581c0eddf8df032b83e2e0239ef79ebedc4467d92d6e
+sha256:=397767d4db3018dd4440825b60c64258b636eaf6bf99ac8b0897f06c89310acd
 #
 patch_script:=
 #
@@ -89,7 +89,7 @@ distclean: verifyclean
 	$(TOP_DIR)/mk/distclean.sh --tarball-path=$(tarball_path) --build-dir=$(builddir)
 
 verifyclean: unpackclean
-	rm -f state/verify.result
+	rm -f state/expected.sha256 state/verify.result
 
 # unwind to state before src.
 # preserves:

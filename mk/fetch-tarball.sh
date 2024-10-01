@@ -56,8 +56,7 @@ fi
 rm -f state/fetch.result
 rm -f ${tarball_path}
 
-#(cd ${ARCHIVE_DIR} && wget --output-document=${tarball_path} ${url})
-(cd ${ARCHIVE_DIR} && wget ${url}) 2>&1 | tee log/wget.log
+(cd ${ARCHIVE_DIR} && wget --output-document=${tarball_path} ${url}) 2>&1 | tee log/wget.log
 err=$?
 
 if [[ ${err} -eq 0 && -f ${tarball_path} && -s ${tarball_path} ]]; then
