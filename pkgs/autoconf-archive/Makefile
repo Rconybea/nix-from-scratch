@@ -84,24 +84,11 @@ include $(TOP_DIR)/mk/compile.mk
 #
 include $(TOP_DIR)/mk/install.mk
 
-verifyclean: unpackclean
-	rm -f state/verify.result
-
-# unwind to state before src.
-# preserves:
-# - tarball in $(tarball_path)
-# - cksum state
+# provides targets:
+# - distclean
+# - verifyclean
+# - unpackclean
+# - configclean
+# - clean
 #
-unpackclean: configclean
-	rm -f state/unpack.result
-
-configclean: clean
-	$(TOP_DIR)/mk/configclean.sh --build-dir=$(builddir)
-
-clean: distclean
-	$(TOP_DIR)/mk/clean.sh --build-dir=$(builddir)
-
-# unwind to state before fetch.
-distclean: 
-	$(TOP_DIR)/mk/distclean.sh --tarball-path=$(tarball_path) --build-dir=$(builddir)
-
+include $(TOP_DIR)/mk/clean.mk
