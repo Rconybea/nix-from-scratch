@@ -4,7 +4,7 @@
 self_name=$(basename ${0})
 
 usage() {
-    echo "$self_name: --prefix=PREFIX --src-dir=SRCDIR --build-dir=BUILDDIR --cflags=CFLAGS --ldflags=LDFLAGS"
+    echo "$self_name: --prefix=PREFIX --src-dir=SRCDIR --build-dir=BUILDDIR --cflags=CFLAGS --ldflags=LDFLAGS --configure-extra-args=ARGS"
 }
 
 prefix=
@@ -12,6 +12,7 @@ src_dir=
 build_dir=
 cflags=
 ldflags=
+configure_extra_args=
 
 while [[ $# > 0 ]]; do
     case "$1" in
@@ -29,6 +30,9 @@ while [[ $# > 0 ]]; do
             ;;
         --ldflags=*)
             ldflags=${1#*=}
+            ;;
+        --configure-extra-args=*)
+            configure_extra_args=${1#*=}
             ;;
         *)
             usage
@@ -49,7 +53,7 @@ fi
 
 rm -f state/config.result
 mkdir -p ${build_dir}
-(cd ${build_dir} && ../${src_dir}/configure --prefix=${prefix} CFLAGS="${cflags}" LDFLAGS="${ldflags}")
+(cd ${build_dir} && ../${src_dir}/configure --prefix=${prefix} CFLAGS="${cflags}" LDFLAGS="${ldflags}" ${configure_extra_args})
 cp state/patch.result state/config.result
 
 # end configure-autotools.sh
