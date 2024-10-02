@@ -9,3 +9,4 @@ pkgs/automake/automake-*
 pkgs/pkgconf/pkgconf-*
 pkgs/zlib/zlib-*
 pkgs/flex/flex-*
+pkgs/bison/bison-*
