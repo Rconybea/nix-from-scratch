@@ -6,5 +6,6 @@ pkgs/m4/m4-*
 pkgs/autoconf/autoconf-*
 pkgs/autoconf-archive/autoconf-archive-*
 pkgs/automake/automake-*
-pkgs/pkgconf
+pkgs/pkgconf/pkgconf-*
 pkgs/zlib/zlib-*
+pkgs/flex/flex-*
