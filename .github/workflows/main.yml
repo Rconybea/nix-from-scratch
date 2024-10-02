@@ -59,3 +59,7 @@ jobs:
     - name: flex
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=flex
+
+    - name: bison
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=bison
