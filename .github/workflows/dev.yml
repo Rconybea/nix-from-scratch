@@ -53,3 +53,7 @@ jobs:
     - name: pkgconf
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgconf
+
+    - name: zlib
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=zlib
