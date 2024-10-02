@@ -53,7 +53,23 @@ fi
 
 rm -f state/config.result
 mkdir -p ${build_dir}
-(cd ${build_dir} && ../${src_dir}/configure --prefix=${prefix} CFLAGS="${cflags}" LDFLAGS="${ldflags}" ${configure_extra_args})
-cp state/patch.result state/config.result
+
+# 1. if ${cflags} is empty, omit CFLAGS=${cflags} entirely.
+#    (for example zlib configure doesn't accept the flag).
+# 2. Surround in quotes because CFLAGS may need to contain spaces
+cflags_arg=
+if [[ -n ${cflags} ]]; then
+    cflags_arg="CFLAGS=\"${cflags}\""
+fi
+
+ldflags_arg=
+if [[ -n ${ldflags} ]]; then
+    ldflags_arg="LDFLAGS=\"${ldflags}\""
+fi
+
+set -e
+
+(cd ${build_dir} && ../${src_dir}/configure --prefix=${prefix} ${cflags_arg} ${ldflags_arg} ${configure_extra_args})
+cp -f state/patch.result state/config.result
 
 # end configure-autotools.sh
