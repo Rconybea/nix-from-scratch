@@ -38,6 +38,8 @@ pkgs/autoconf-archive: pkgs/autoconf
 
 pkgs/automake: pkgs/m4
 
+pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl
+
 #pkgs/pkgconf
 #pkgs/zlib
 #pkgs/flex

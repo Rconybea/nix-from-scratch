@@ -67,3 +67,7 @@ jobs:
     - name: openssl
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=openssl
+
+    - name: curl-stage1
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage1
