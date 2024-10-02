@@ -55,3 +55,7 @@ jobs:
     - name: zlib
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=zlib
+
+    - name: flex
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=flex
