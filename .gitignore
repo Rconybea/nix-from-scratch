@@ -11,3 +11,4 @@ pkgs/zlib/zlib-*
 pkgs/flex/flex-*
 pkgs/bison/bison-*
 pkgs/openssl/openssl-*
+pkgs/curl-stage1/curl-*
