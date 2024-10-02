@@ -56,20 +56,44 @@ mkdir -p ${build_dir}
 
 # 1. if ${cflags} is empty, omit CFLAGS=${cflags} entirely.
 #    (for example zlib configure doesn't accept the flag).
-# 2. Surround in quotes because CFLAGS may need to contain spaces
+# 2. Surrounding with quotes doesn't work, at least not for the 'flex' package.
+
 cflags_arg=
 if [[ -n ${cflags} ]]; then
-    cflags_arg="CFLAGS=\"${cflags}\""
+    cflags_arg="CFLAGS=${cflags}"
 fi
 
 ldflags_arg=
-if [[ -n ${ldflags} ]]; then
-    ldflags_arg="LDFLAGS=\"${ldflags}\""
+if [[ -n "$ldflags" ]]; then
+    ldflags_arg="LDFLAGS=${ldflags}"
 fi
+
+echo cflags_arg=${cflags_arg}
+echo ldflags_arg=${ldflags_arg}
 
 set -e
 
-(cd ${build_dir} && ../${src_dir}/configure --prefix=${prefix} ${cflags_arg} ${ldflags_arg} ${configure_extra_args})
+pushd ${build_dir}
+
+# Boilerplate here because "" and <nothing> are not the same thing,
+# and we need to handle ${cflags_arg} / ${ldflags_arg} that contain spaces
+#
+if [[ -n ${cflags_arg} ]]; then
+     if [[ -n ${ldflags_arg} ]]; then
+         ../${src_dir}/configure --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}"
+     else
+         ../${src_dir}/configure --prefix=${prefix} ${configure_extra_args} "${cflags_arg}"
+     fi
+else
+     if [[ -n ${ldflags_arg} ]]; then
+         ../${src_dir}/configure --prefix=${prefix} ${configure_extra_args} "${ldflags_arg}"
+     else
+         ../${src_dir}/configure --prefix=${prefix} ${configure_extra_args}
+     fi
+fi
+
+popd
+
 cp -f state/patch.result state/config.result
 
 # end configure-autotools.sh
