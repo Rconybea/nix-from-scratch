@@ -12,8 +12,9 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 #
 include $(TOP_DIR)/mk/config.mk
 
+version:=1.7.1
 # unique package name
-name:=automake-1.17
+name:=jq-$(version)
 # local directory for unpacked source
 srcdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
@@ -22,16 +23,17 @@ tarball:=$(name).tar.gz
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
 #url:=https://ftp.gnu.org/gnu/automake/$(tarball)
-url:=https://mirror.csclub.uwaterloo.ca/gnu/automake/$(tarball)
+url:=https://github.com/jqlang/jq/releases/download/$(name)/$(tarball)
 # verify this sha
-sha256:=397767d4db3018dd4440825b60c64258b636eaf6bf99ac8b0897f06c89310acd
-#
-patch_script:=
-#
-builddir:=build
-#
+sha256:=478c9ca129fd2e3443fe27314b455e211e0d8c60bc8ff7df703873deeee580c2
 cflags:=-I$(PREFIX)/include
 ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
+#
+patch_script:=
+builddir:=build
+pre_configure_hook:=
+configure_extra_args:=--docdir=$(PREFIX)/share/doc/$(name) --with-onigurama=no --enable-static --enable-shared
+post_install_hook:=
 
 all: compile
 
