@@ -38,3 +38,5 @@ pkgs/autoconf-archive: pkgs/autoconf
 
 pkgs/automake: pkgs/m4
 
+#pkgs/pkgconf
+

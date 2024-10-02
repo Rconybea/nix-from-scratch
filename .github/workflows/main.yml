@@ -43,3 +43,11 @@ jobs:
     - name: autoconf-archive
       run: |
         ./mk/do-github-package-workflow.sh --prefix=$PREFIX --package=autoconf-archive
+
+    - name: automake
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=automake
+
+    - name: pkgconf
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgconf

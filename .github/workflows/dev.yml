@@ -49,3 +49,7 @@ jobs:
     - name: automake
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=automake
+
+    - name: pkgconf
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgconf
