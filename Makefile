@@ -24,7 +24,7 @@ init:
 $(ALL_PACKAGES): init
 	$(MAKE) -C $@ $(MAKECMDGOALS)
 
-PHASE:=fetch src patch config compile install clean srcclean distclean
+PHASE:=fetch unpack patch config compile install clean srcclean distclean
 .PHONY: $(PHASE)
 $(PHASE):
 	for dir in $(ALL_PACKAGES); do $(MAKE) -C $$dir $@; done
@@ -39,4 +39,4 @@ pkgs/autoconf-archive: pkgs/autoconf
 pkgs/automake: pkgs/m4
 
 #pkgs/pkgconf
-
+#pkgs/zlib
