@@ -65,3 +65,7 @@ jobs:
     - name: bison
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=bison
+
+    - name: openssl
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=openssl

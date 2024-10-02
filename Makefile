@@ -42,3 +42,4 @@ pkgs/automake: pkgs/m4
 #pkgs/zlib
 #pkgs/flex
 #pkgs/bison
+#pkgs/openssl
