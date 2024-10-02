@@ -4,12 +4,13 @@
 self_name=$(basename ${0})
 
 usage() {
-    echo "$self_name: --prefix=PREFIX --src-dir=SRCDIR --build-dir=BUILDDIR --cflags=CFLAGS --ldflags=LDFLAGS --configure-extra-args=ARGS"
+    echo "$self_name: --prefix=PREFIX --src-dir=SRCDIR --build-dir=BUILDDIR --configure-script=CONFIGURE--cflags=CFLAGS --ldflags=LDFLAGS --configure-extra-args=ARGS"
 }
 
 prefix=
 src_dir=
 build_dir=
+configure_script=./configure
 cflags=
 ldflags=
 configure_extra_args=
@@ -24,6 +25,12 @@ while [[ $# > 0 ]]; do
             ;;
         --build-dir=*)
             build_dir=${1#*=}
+            ;;
+        --configure-script=*)
+            tmp=${1#*=}
+            if [[ -n ${tmp} ]]; then
+                configure_script=${tmp}
+            fi
             ;;
         --cflags=*)
             cflags=${1#*=}
@@ -80,15 +87,15 @@ pushd ${build_dir}
 #
 if [[ -n ${cflags_arg} ]]; then
      if [[ -n ${ldflags_arg} ]]; then
-         ../${src_dir}/configure --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}"
+         ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}"
      else
-         ../${src_dir}/configure --prefix=${prefix} ${configure_extra_args} "${cflags_arg}"
+         ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}"
      fi
 else
      if [[ -n ${ldflags_arg} ]]; then
-         ../${src_dir}/configure --prefix=${prefix} ${configure_extra_args} "${ldflags_arg}"
+         ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${ldflags_arg}"
      else
-         ../${src_dir}/configure --prefix=${prefix} ${configure_extra_args}
+         ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args}
      fi
 fi
 
