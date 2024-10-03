@@ -45,5 +45,6 @@ pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl
 #pkgs/flex
 #pkgs/bison
 #pkgs/openssl
+#pkgs/libuv
 
 pkgs/cmake: pkgs/curl-stage1
