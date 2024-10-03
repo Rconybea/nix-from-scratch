@@ -75,3 +75,7 @@ jobs:
     - name: jq
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=jq
+
+    - name: cmake
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=cmake
