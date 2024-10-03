@@ -15,3 +15,4 @@ pkgs/curl-stage1/curl-*
 pkgs/jq/jq-*
 pkgs/cmake/cmake-*
 pkgs/libuv/libuv-*
+pkgs/expat/expat-*
