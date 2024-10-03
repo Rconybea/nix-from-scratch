@@ -95,3 +95,7 @@ jobs:
     - name: editline
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=editline
+
+    - name: patchelf
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=patchelf
