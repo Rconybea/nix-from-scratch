@@ -16,3 +16,4 @@ pkgs/jq/jq-*
 pkgs/cmake/cmake-*
 pkgs/libuv/libuv-*
 pkgs/expat/expat-*
+pkgs/libcpuid/libcpuid-*

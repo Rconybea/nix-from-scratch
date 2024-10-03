@@ -87,3 +87,7 @@ jobs:
     - name: expat
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=expat
+
+    - name: libcpuid
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libcpuid
