@@ -7,8 +7,9 @@
 #
 
 state/config.result $(builddir): state/patch.result
-	$(pre_configure_hook)
+	mkdir -p $(builddir)
 	$(TOP_DIR)/mk/configure-autotools.sh \
+       --pre-configure-hook="$(pre_configure_hook)" \
 	   --configure-script=$(configure_script) \
        --prefix=$(PREFIX) --src-dir=$(srcdir) --build-dir=$(builddir) \
        --cflags="$(cflags)" --ldflags="$(ldflags)" \

@@ -10,7 +10,8 @@ usage() {
 prefix=
 src_dir=
 build_dir=
-configure_script=./configure
+pre_configure_hook=true
+configure_script=configure
 cflags=
 ldflags=
 configure_extra_args=
@@ -25,6 +26,12 @@ while [[ $# > 0 ]]; do
             ;;
         --build-dir=*)
             build_dir=${1#*=}
+            ;;
+        --pre-configure-hook=*)
+            tmp=${1#*=}
+            if [[ -n ${tmp} ]]; then
+                pre_configure_hook=${tmp}
+            fi
             ;;
         --configure-script=*)
             tmp=${1#*=}
@@ -59,7 +66,6 @@ if [[ ! -d ${prefix} ]]; then
 fi
 
 rm -f state/config.result
-mkdir -p ${build_dir}
 
 # 1. if ${cflags} is empty, omit CFLAGS=${cflags} entirely.
 #    (for example zlib configure doesn't accept the flag).
@@ -81,6 +87,8 @@ echo ldflags_arg=${ldflags_arg}
 set -e
 
 pushd ${build_dir}
+
+${pre_configure_hook}
 
 # Boilerplate here because "" and <nothing> are not the same thing,
 # and we need to handle ${cflags_arg} / ${ldflags_arg} that contain spaces
