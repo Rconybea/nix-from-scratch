@@ -79,3 +79,7 @@ jobs:
     - name: cmake
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=cmake
+
+    - name: libuv
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libuv
