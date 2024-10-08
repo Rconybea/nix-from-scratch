@@ -99,3 +99,7 @@ jobs:
     - name: patchelf
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=patchelf
+
+    - name: sqlite
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=sqlite
