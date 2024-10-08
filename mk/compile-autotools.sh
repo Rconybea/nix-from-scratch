@@ -43,4 +43,4 @@ rm -f state/compile.result
 
 cp state/patch.result state/compile.result
 
-# end compile-autoconf.sh
+# end compile-autotools.sh
