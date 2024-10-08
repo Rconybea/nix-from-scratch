@@ -13,6 +13,7 @@ build_dir=
 pre_configure_hook=true
 configure_script=configure
 cflags=
+cppflags=
 ldflags=
 configure_extra_args=
 
@@ -41,6 +42,9 @@ while [[ $# > 0 ]]; do
             ;;
         --cflags=*)
             cflags=${1#*=}
+            ;;
+        --cppflags=*)
+            cppflags=${1#*=}
             ;;
         --ldflags=*)
             ldflags=${1#*=}
@@ -76,12 +80,18 @@ if [[ -n ${cflags} ]]; then
     cflags_arg="CFLAGS=${cflags}"
 fi
 
+cppflags_arg=
+if [[ -n ${cflags} ]]; then
+    cppflags_arg="CPPFLAGS=${cppflags}"
+fi
+
 ldflags_arg=
 if [[ -n "$ldflags" ]]; then
     ldflags_arg="LDFLAGS=${ldflags}"
 fi
 
 echo cflags_arg=${cflags_arg}
+echo cppflags_arg=${cppflags_arg}
 echo ldflags_arg=${ldflags_arg}
 
 set -e
@@ -94,17 +104,33 @@ ${pre_configure_hook}
 # and we need to handle ${cflags_arg} / ${ldflags_arg} that contain spaces
 #
 if [[ -n ${cflags_arg} ]]; then
-     if [[ -n ${ldflags_arg} ]]; then
-         ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}"
-     else
-         ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}"
-     fi
+    if [[ -n ${cppflags_arg} ]]; then
+        if [[ -n ${ldflags_arg} ]]; then
+            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}" "${ldflags_arg}"
+        else
+            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}"
+        fi
+    else
+        if [[ -n ${ldflags_arg} ]]; then
+            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}"
+        else
+            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" 
+        fi
+    fi
 else
-     if [[ -n ${ldflags_arg} ]]; then
-         ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${ldflags_arg}"
-     else
-         ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args}
-     fi
+    if [[ -n ${cppflags_arg} ]]; then
+        if [[ -n ${ldflags_arg} ]]; then
+            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}" "${ldflags_arg}"
+        else
+            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}"
+        fi
+    else
+        if [[ -n ${ldflags_arg} ]]; then
+            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${ldflags_arg}"
+        else
+            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args}
+        fi
+    fi
 fi
 
 popd

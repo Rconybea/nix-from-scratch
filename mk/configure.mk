@@ -12,7 +12,7 @@ state/config.result $(builddir): state/patch.result
        --pre-configure-hook="$(pre_configure_hook)" \
 	   --configure-script=$(configure_script) \
        --prefix=$(PREFIX) --src-dir=$(srcdir) --build-dir=$(builddir) \
-       --cflags="$(cflags)" --ldflags="$(ldflags)" \
+       --cflags="$(cflags)" --cppflags="$(cppflags)" --ldflags="$(ldflags)" \
        --configure-extra-args="$(configure_extra_args)"
 
 
