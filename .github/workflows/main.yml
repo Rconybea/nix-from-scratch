@@ -123,3 +123,7 @@ jobs:
     - name: libgit2
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libgit2
+
+    - name: libarchive
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libarchive
