@@ -21,3 +21,4 @@ pkgs/editline/editline-*
 pkgs/patchelf/patchelf-*
 pkgs/sqlite/sqlite-*
 pkgs/python/Python-*
+pkgs/libsodium/libsodium-*
