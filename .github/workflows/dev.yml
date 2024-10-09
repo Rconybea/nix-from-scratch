@@ -109,3 +109,7 @@ jobs:
     - name: python
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=python
+
+    - name: libsodium
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libsodium
