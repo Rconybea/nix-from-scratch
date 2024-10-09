@@ -23,3 +23,4 @@ pkgs/sqlite/sqlite-*
 pkgs/python/Python-*
 pkgs/libsodium/libsodium-*
 pkgs/libtool/libtool-*
+pkgs/libssh2/libssh2-*
