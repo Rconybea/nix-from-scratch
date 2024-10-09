@@ -121,3 +121,7 @@ jobs:
     - name: libssh2
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libssh2
+
+    - name: libgit2
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libgit2
