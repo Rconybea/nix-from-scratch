@@ -50,3 +50,4 @@ pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl
 pkgs/cmake: pkgs/curl-stage1
 pkgs/python: pkgs/expat pkgs/sqlite
 
+pkgs/libgit2: pkgs/cmake pkgs/python pkgs/openssl pkgs/libssh2 pkgs/zlib
