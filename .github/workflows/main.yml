@@ -111,3 +111,7 @@ jobs:
     - name: libsodium
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libsodium
+
+    - name: libtool
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libtool
