@@ -4,13 +4,14 @@
 self_name=$(basename ${0})
 
 usage() {
-    echo "$self_name: --prefix=PREFIX --src-dir=SRCDIR --build-dir=BUILDDIR --configure-script=CONFIGURE--cflags=CFLAGS --ldflags=LDFLAGS --configure-extra-args=ARGS"
+    echo "$self_name: --prefix=PREFIX --src-dir=SRCDIR --build-dir=BUILDDIR --configure-exec=CONFIGEXEC --configure-script=CONFIGURE--cflags=CFLAGS --ldflags=LDFLAGS --configure-extra-args=ARGS"
 }
 
 prefix=
 src_dir=
 build_dir=
 pre_configure_hook=true
+configure_exec=
 configure_script=configure
 cflags=
 cppflags=
@@ -34,10 +35,18 @@ while [[ $# > 0 ]]; do
                 pre_configure_hook=${tmp}
             fi
             ;;
+        --configure-exec=*)
+            tmp=${1#*=}
+            if [[ -n ${tmp} ]]; then
+                configure_exec=${tmp}
+                configure_script=
+            fi
+            ;;
         --configure-script=*)
             tmp=${1#*=}
             if [[ -n ${tmp} ]]; then
                 configure_script=${tmp}
+                configure_exec=
             fi
             ;;
         --cflags=*)
@@ -103,32 +112,41 @@ ${pre_configure_hook}
 # Boilerplate here because "" and <nothing> are not the same thing,
 # and we need to handle ${cflags_arg} / ${ldflags_arg} that contain spaces
 #
-if [[ -n ${cflags_arg} ]]; then
-    if [[ -n ${cppflags_arg} ]]; then
-        if [[ -n ${ldflags_arg} ]]; then
-            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}" "${ldflags_arg}"
-        else
-            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}"
-        fi
-    else
-        if [[ -n ${ldflags_arg} ]]; then
-            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}"
-        else
-            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" 
-        fi
-    fi
+if [[ -n ${configure_exec} ]]; then
+    # e.g. configure_exec=cmake
+    # In this case ${cflags_arg}, ${cppflags_arg}, ${ldflags_arg} won't work,
+    # pass as regular cmake arguments
+    #
+    2>&1 echo ${configure_exec} ${configure_extra_args}
+    ${configure_exec} ${configure_extra_args}
 else
-    if [[ -n ${cppflags_arg} ]]; then
-        if [[ -n ${ldflags_arg} ]]; then
-            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}" "${ldflags_arg}"
+    if [[ -n ${cflags_arg} ]]; then
+        if [[ -n ${cppflags_arg} ]]; then
+            if [[ -n ${ldflags_arg} ]]; then
+                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}" "${ldflags_arg}"
+            else
+                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}"
+            fi
         else
-            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}"
+            if [[ -n ${ldflags_arg} ]]; then
+                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}"
+            else
+                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" 
+            fi
         fi
     else
-        if [[ -n ${ldflags_arg} ]]; then
-            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${ldflags_arg}"
+        if [[ -n ${cppflags_arg} ]]; then
+            if [[ -n ${ldflags_arg} ]]; then
+                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}" "${ldflags_arg}"
+            else
+                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}"
+            fi
         else
-            ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args}
+            if [[ -n ${ldflags_arg} ]]; then
+                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${ldflags_arg}"
+            else
+                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args}
+            fi
         fi
     fi
 fi
