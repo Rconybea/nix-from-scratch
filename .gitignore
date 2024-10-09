@@ -25,3 +25,4 @@ pkgs/libsodium/libsodium-*
 pkgs/libtool/libtool-*
 pkgs/libssh2/libssh2-*
 pkgs/libgit2/libgit2-*
+pkgs/libarchive/libarchive-*
