@@ -48,3 +48,5 @@ pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl
 #pkgs/libuv
 
 pkgs/cmake: pkgs/curl-stage1
+pkgs/python: pkgs/expat pkgs/sqlite
+

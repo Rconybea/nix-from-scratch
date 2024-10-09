@@ -20,3 +20,4 @@ pkgs/libcpuid/libcpuid-*
 pkgs/editline/editline-*
 pkgs/patchelf/patchelf-*
 pkgs/sqlite/sqlite-*
+pkgs/python/Python-*

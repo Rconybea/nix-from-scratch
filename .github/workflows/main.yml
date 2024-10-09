@@ -103,3 +103,7 @@ jobs:
     - name: sqlite
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=sqlite
+
+    - name: python
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=python
