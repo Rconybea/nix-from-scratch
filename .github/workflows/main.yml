@@ -135,3 +135,7 @@ jobs:
     - name: brotli
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=brotli
+
+    - name: libseccomp
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libseccomp
