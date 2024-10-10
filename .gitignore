@@ -28,3 +28,4 @@ pkgs/libgit2/libgit2-*
 pkgs/libarchive/libarchive-*
 pkgs/lowdown/lowdown-*
 pkgs/brotli/brotli-*
+pkgs/libseccomp/libseccomp-*
