@@ -133,3 +133,7 @@ jobs:
     - name: lowdown
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=lowdown
+
+    - name: brotli
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=brotli
