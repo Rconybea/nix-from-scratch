@@ -127,3 +127,7 @@ jobs:
     - name: libarchive
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libarchive
+
+    - name: lowdown
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=lowdown
