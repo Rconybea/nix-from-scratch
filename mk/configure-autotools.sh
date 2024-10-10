@@ -117,7 +117,7 @@ if [[ -n ${configure_exec} ]]; then
     # In this case ${cflags_arg}, ${cppflags_arg}, ${ldflags_arg} won't work,
     # pass as regular cmake arguments
     #
-    2>&1 echo ${configure_exec} ${configure_extra_args}
+    2>&1 echo ${configure_exec} ${configure_extra_args}..
     ${configure_exec} ${configure_extra_args}
 else
     if [[ -n ${cflags_arg} ]]; then
