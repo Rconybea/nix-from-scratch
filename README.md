@@ -1,6 +1,6 @@
 ![Build Status on github actions](https://github.com/Rconybea/nix-from-scratch/actions/workflows/main.yml/badge.svg)
 ![Build Status on github actions](https://github.com/Rconybea/nix-from-scratch/actions/workflows/dev.yml/badge.svg)
-[![Version](https://img.shields.io/badge/prerelease-v0.27.0-blue)](https://github.com/Rconybea/nix-from-scratch/releases)
+[![Version](https://img.shields.io/badge/prerelease-v0.28.0-blue)](https://github.com/Rconybea/nix-from-scratch/releases)
 [![License](https://img.shields.io/github/license/ToruNiina/toml11.svg?style=flat)](LICENSE)
 
 # nix-from-scratch
@@ -156,8 +156,8 @@ including `nix` binaries and libraries themselves
 1. Download release
 
 ```
-curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/nix-from-scratch-0.27.0.tar.gz
-tar xf nix-from-scratch-0.27.0.tar.gz
+curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/nix-from-scratch-0.28.0.tar.gz
+tar xf nix-from-scratch-0.28.0.tar.gz
 ```
 
 ### Filesystem organization
