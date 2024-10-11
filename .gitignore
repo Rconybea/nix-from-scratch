@@ -12,6 +12,7 @@ pkgs/flex/flex-*
 pkgs/bison/bison-*
 pkgs/openssl/openssl-*
 pkgs/curl-stage1/curl-*
+pkgs/curl-stage2/curl-*
 pkgs/jq/jq-*
 pkgs/cmake/cmake-*
 pkgs/libuv/libuv-*

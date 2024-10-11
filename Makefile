@@ -47,6 +47,9 @@ pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl
 #pkgs/openssl
 #pkgs/libuv
 
+pkgs/curl-stage1: pkgs/openssl
+pkgs/curl-stage2: pkgs/brotli pkgs/cmake pkgs/curl-stage1
+
 pkgs/cmake: pkgs/curl-stage1
 pkgs/python: pkgs/expat pkgs/sqlite
 
