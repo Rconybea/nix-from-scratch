@@ -149,3 +149,7 @@ jobs:
     - name: boehm-gc
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=boehm-gc
+
+    - name: curl-stage2
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage2
