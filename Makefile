@@ -57,3 +57,4 @@ pkgs/python: pkgs/expat pkgs/sqlite
 pkgs/libgit2: pkgs/cmake pkgs/python pkgs/openssl pkgs/libssh2 pkgs/zlib
 pkgs/nlohmann_json: pkgs/cmake
 
+pkgs/gtest: pkgs/cmake pkgs/python

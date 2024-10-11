@@ -34,3 +34,4 @@ pkgs/boost/boost-*
 pkgs/boehm-gc/gc-*
 pkgs/nlohmann_json/json-*
 pkgs/gperf/gperf-*
+pkgs/gtest/googletest-*
