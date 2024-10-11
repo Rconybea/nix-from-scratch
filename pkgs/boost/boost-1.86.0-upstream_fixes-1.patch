@@ -1,0 +1,59 @@
+Submitted By:            Douglas R. Reno <renodr at linuxfromscratch dot org>
+Date:                    2024-08-15
+Initial Package Version: 1.86.0
+Origin:                  Upstream (commit 99a5352b5cf790c559a7b976c1ba99520431d9d1
+                                   and 0474de0f6cc9c6e7230aeb7164af2f7e4ccf74bf in
+                                   boostorg/python)
+Upstream Status:         Applied
+Description:             Fixes build issues with NumPy 2.0's API. The issues have
+                         to do with 'elsize' no longer being present in
+                         PyArray_Descr. Upstream has fixed it in the python
+                         libraries in boost, but that module was not pulled for
+                         the 1.86.0 release.
+
+diff -Naurp boost-1.86.0.orig/libs/python/src/numpy/dtype.cpp boost-1.86.0/libs/python/src/numpy/dtype.cpp
+--- boost-1.86.0.orig/libs/python/src/numpy/dtype.cpp	2024-08-15 14:23:07.633622135 -0500
++++ boost-1.86.0/libs/python/src/numpy/dtype.cpp	2024-08-15 14:30:27.710327955 -0500
+@@ -98,35 +98,15 @@ python::detail::new_reference dtype::con
+   return python::detail::new_reference(reinterpret_cast<PyObject*>(obj));
+ }
+ 
+-int dtype::get_itemsize() const { return reinterpret_cast<PyArray_Descr*>(ptr())->elsize;}
+-
+-bool equivalent(dtype const & a, dtype const & b) {
+-    // On Windows x64, the behaviour described on 
+-    // http://docs.scipy.org/doc/numpy/reference/c-api.array.html for
+-    // PyArray_EquivTypes unfortunately does not extend as expected:
+-    // "For example, on 32-bit platforms, NPY_LONG and NPY_INT are equivalent".
+-    // This should also hold for 64-bit platforms (and does on Linux), but not
+-    // on Windows. Implement an alternative:
+-#ifdef _MSC_VER
+-    if (sizeof(long) == sizeof(int) &&
+-        // Manually take care of the type equivalence.
+-        ((a == dtype::get_builtin<long>() || a == dtype::get_builtin<int>()) &&
+-         (b == dtype::get_builtin<long>() || b == dtype::get_builtin<int>()) ||
+-         (a == dtype::get_builtin<unsigned int>() || a == dtype::get_builtin<unsigned long>()) &&
+-         (b == dtype::get_builtin<unsigned int>() || b == dtype::get_builtin<unsigned long>()))) {
+-        return true;
+-    } else {
+-        return PyArray_EquivTypes(
+-            reinterpret_cast<PyArray_Descr*>(a.ptr()),
+-            reinterpret_cast<PyArray_Descr*>(b.ptr())
+-        );
+-    }
++int dtype::get_itemsize() const {
++#if NPY_ABI_VERSION < 0x02000000
++   return reinterpret_cast<PyArray_Descr*>(ptr())->elsize;
+ #else
+-    return PyArray_EquivTypes(
+-        reinterpret_cast<PyArray_Descr*>(a.ptr()),
+-        reinterpret_cast<PyArray_Descr*>(b.ptr())
+-    );
++   return PyDataType_ELSIZE(reinterpret_cast<PyArray_Descr*>(ptr()));
+ #endif
++}
++bool equivalent(dtype const & a, dtype const & b) {
++    return a == b;
+ }
+ 
+ namespace
