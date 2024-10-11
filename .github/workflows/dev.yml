@@ -161,3 +161,7 @@ jobs:
     - name: gperf
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
+
+    - name: gtest
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gtest

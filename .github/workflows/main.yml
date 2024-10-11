@@ -42,7 +42,7 @@ jobs:
 
     - name: autoconf-archive
       run: |
-        ./mk/do-github-package-workflow.sh --prefix=$PREFIX --package=autoconf-archive
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=autoconf-archive
 
     - name: automake
       run: |
@@ -155,4 +155,8 @@ jobs:
     - name: gperf
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
+        
+    - name: gtest
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gtest
         
