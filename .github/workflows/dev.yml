@@ -145,3 +145,7 @@ jobs:
     - name: boost
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=boost
+
+    - name: boehm-gc
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=boehm-gc
