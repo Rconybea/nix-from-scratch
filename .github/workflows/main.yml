@@ -152,7 +152,7 @@ jobs:
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage2
 
-    - name: nlohmann_json
+    - name: gperf
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nlohmann_json
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
         

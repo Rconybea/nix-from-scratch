@@ -157,3 +157,7 @@ jobs:
     - name: nlohmann_json
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nlohmann_json
+
+    - name: gperf
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
