@@ -30,3 +30,4 @@ pkgs/lowdown/lowdown-*
 pkgs/brotli/brotli-*
 pkgs/libseccomp/libseccomp-*
 pkgs/boost/boost-*
+pkgs/boehm-gc/gc-*
