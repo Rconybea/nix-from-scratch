@@ -139,3 +139,7 @@ jobs:
     - name: libseccomp
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libseccomp
+
+    - name: boost
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=boost
