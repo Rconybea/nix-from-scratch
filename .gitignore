@@ -36,3 +36,4 @@ pkgs/nlohmann_json/json-*
 pkgs/gperf/gperf-*
 pkgs/gtest/googletest-*
 pkgs/rapidcheck/rapidcheck-master
+pkgs/toml11/toml11-*
