@@ -160,3 +160,6 @@ jobs:
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gtest
         
+    - name: rapidcheck
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=rapidcheck
