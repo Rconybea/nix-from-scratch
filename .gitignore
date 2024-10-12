@@ -38,3 +38,4 @@ pkgs/gtest/googletest-*
 pkgs/rapidcheck/rapidcheck-master
 pkgs/toml11/toml11-*
 pkgs/nix/nix-*
+
