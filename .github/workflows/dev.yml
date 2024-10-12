@@ -169,3 +169,7 @@ jobs:
     - name: rapidcheck
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=rapidcheck
+
+    - name: toml11
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=toml11
