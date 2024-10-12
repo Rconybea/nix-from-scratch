@@ -90,7 +90,7 @@ if [[ -n ${cflags} ]]; then
 fi
 
 cppflags_arg=
-if [[ -n ${cflags} ]]; then
+if [[ -n ${cppflags} ]]; then
     cppflags_arg="CPPFLAGS=${cppflags}"
 fi
 
