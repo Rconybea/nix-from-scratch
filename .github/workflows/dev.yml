@@ -173,3 +173,7 @@ jobs:
     - name: toml11
       run: |
         ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=toml11
+
+    - name: nix
+      run: |
+        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nix
