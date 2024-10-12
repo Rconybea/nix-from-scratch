@@ -20,6 +20,8 @@ verifyclean: unpackclean
 #
 unpackclean: configclean
 	rm -f state/unpack.result
+	rm -f state/patch.result
+	rm -f state/done.patch.sha256
 
 configclean: clean
 	$(TOP_DIR)/mk/configclean.sh --build-dir=$(builddir)
