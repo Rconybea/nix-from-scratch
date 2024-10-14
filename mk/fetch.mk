@@ -12,8 +12,8 @@
 # - state/fetch.result holds error message
 #
 $(tarball_path) state/fetch.result: 
-	$(TOP_DIR)/mk/init.sh --archive-dir=$(ARCHIVE_DIR)
-	$(TOP_DIR)/mk/fetch-tarball.sh --archive-dir=$(ARCHIVE_DIR) --url=$(url) --tarball-path=$(tarball_path)
+	$(TOP_DIR)/scripts/init.sh --archive-dir=$(ARCHIVE_DIR)
+	$(TOP_DIR)/scripts/fetch-tarball.sh --archive-dir=$(ARCHIVE_DIR) --url=$(url) --tarball-path=$(tarball_path)
 
 # - noop when $(tarball_path) already established
 #   (use `make distclean` to do-over)

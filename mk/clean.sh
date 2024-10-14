@@ -37,6 +37,7 @@ fi
 if [[ -d ${build_dir} ]]; then
     (cd ${build_dir} && (make clean || true))
 fi
+
 rm -f state/compile.result
 
 # end clean.sh
