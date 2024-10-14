@@ -16,7 +16,7 @@ version:=3.11.3
 # unique package name
 name:=json-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=v$(version).tar.gz
 # full path to local tarball
@@ -30,6 +30,7 @@ sha256:=0d8ef5af7f9794e3263480193c491549b2ba6cc74bb018906202ada498a79406
 #ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 # (runs in builddir) -- instead of "just calling path/to/src/configure"
 configure_exec:=cmake

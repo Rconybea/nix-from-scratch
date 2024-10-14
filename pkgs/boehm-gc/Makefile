@@ -16,7 +16,7 @@ version:=8.2.6
 # unique package name
 name:=gc-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -31,6 +31,7 @@ cflags:=-I$(PREFIX)/include
 ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 # (runs in builddir) -- instead of "just calling path/to/src/configure"
 configure_script:=

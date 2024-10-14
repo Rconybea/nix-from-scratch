@@ -16,7 +16,7 @@ include $(TOP_DIR)/mk/config.mk
 name:=autoconf-archive-2023.02.20
 #name:=v2023.02.20
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.xz
 # full path to local tarball
@@ -28,6 +28,7 @@ sha256:=71d4048479ae28f1f5794619c3d72df9c01df49b1c628ef85fde37596dc31a33
 #
 patch_script:=
 #
+srcdir:=src
 builddir:=build
 #
 cflags:=-I$(PREFIX)/include

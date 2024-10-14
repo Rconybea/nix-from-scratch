@@ -16,7 +16,7 @@ version:=1.8.1
 # unique package name
 name:=libgit2
 # local directory for unpacked source
-srcdir:=$(name)-$(version)
+unpackdir:=$(name)-$(version)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -32,6 +32,7 @@ sha256:=8c1eaf0cf07cba0e9021920bfba9502140220786ed5d8a8ec6c7ad9174522f8e
 #ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 pre_configure_hook:=
 configure_exec:=cmake

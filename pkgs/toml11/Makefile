@@ -14,11 +14,12 @@ include $(TOP_DIR)/mk/config.mk
 
 version:=4.2.0
 # unique package name
-name:=toml11
+stem:=toml11
+name:=$(stem)-$(version)
 # local directory for unpacked source
-srcdir:=$(name)-$(version)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
-tarball:=$(name).tar.gz
+tarball:=$(stem).tar.gz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
@@ -32,6 +33,7 @@ sha256:=9287971cd4a1a3992ef37e7b95a3972d1ae56410e7f8e3f300727ab1d6c79c2c
 #ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 pre_configure_hook:=
 configure_exec:=cmake

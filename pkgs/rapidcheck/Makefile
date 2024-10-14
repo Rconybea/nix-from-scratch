@@ -16,7 +16,7 @@ version:=
 # unique package name
 name:=rapidcheck
 # local directory for unpacked source
-srcdir:=$(name)-master
+unpackdir:=$(name)-master
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -32,6 +32,7 @@ sha256:=5ec436f3d81e49f8512df317a102353defd2426c821b376b38caa8ac504c49b9
 #ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 pre_configure_hook:=
 configure_exec:=cmake

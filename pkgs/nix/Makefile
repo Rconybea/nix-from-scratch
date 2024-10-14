@@ -28,7 +28,7 @@ version:=2.24.9
 # unique package name
 name:=nix-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -44,6 +44,7 @@ ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 # note: patch script invoked in $(srcdir)
 patch_script:=./patch.sh
 # need in-source build for nix
+srcdir:=src
 builddir:=build
 # disabling --enable-lto bc preparing this on wsl:
 # 1. gcc 11.4 missing a specific bug fix

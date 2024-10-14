@@ -16,7 +16,7 @@ version:=1.1.0
 # unique package name
 name:=brotli-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -30,6 +30,7 @@ sha256:=e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff
 #ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 # (runs in builddir) -- instead of "just calling path/to/src/configure"
 configure_exec:=cmake

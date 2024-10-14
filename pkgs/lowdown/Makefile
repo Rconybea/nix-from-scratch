@@ -16,7 +16,7 @@ version:=1.1.0
 # unique package name
 name:=lowdown-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -31,6 +31,7 @@ sha256:=f31e3950c4732b1e409174fa092eca40c55be77a448ee2818df987979d7b0879
 #ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 # (runs in builddir) -- instead of "just calling path/to/src/configure"
 configure_exec:=../configure-wrapper.sh

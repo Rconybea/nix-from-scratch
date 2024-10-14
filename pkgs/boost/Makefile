@@ -16,7 +16,7 @@ version:=1.86.0
 # unique package name
 name:=boost-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -31,6 +31,7 @@ sha256:=a4d99d032ab74c9c5e76eddcecc4489134282245fffa7e079c5804b92b45f51d
 #ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=boost-patch.sh
+srcdir:=src
 builddir:=build
 pre_configure_hook:=
 configure_exec:=../configure-wrapper.sh

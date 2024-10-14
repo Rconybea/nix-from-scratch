@@ -16,7 +16,7 @@ version:=2.4.7
 # unique package name
 name:=libtool-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.xz
 # full path to local tarball
@@ -31,6 +31,7 @@ cflags:=-I$(PREFIX)/include
 ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 pre_configure_hook:=
 configure_extra_args:=

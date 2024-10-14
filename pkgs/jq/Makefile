@@ -16,7 +16,7 @@ version:=1.7.1
 # unique package name
 name:=jq-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -30,6 +30,7 @@ cflags:=-I$(PREFIX)/include
 ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 pre_configure_hook:=
 configure_extra_args:=--docdir=$(PREFIX)/share/doc/$(name) --with-onigurama=no --enable-static --enable-shared

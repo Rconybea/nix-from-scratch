@@ -5,7 +5,7 @@
 #
 
 state/unpack.result: state/verify.result 
-	$(TOP_DIR)/mk/unpack-tarball.sh --tarball-path=$(tarball_path) --src-dir=${srcdir}
+	$(TOP_DIR)/mk/unpack-tarball.sh --tarball-path=$(tarball_path) --tarball-unpack-dir=$(unpackdir) --src-dir=${srcdir}
 
 .PHONY: unpack
 unpack: state/unpack.result

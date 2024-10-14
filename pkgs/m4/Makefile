@@ -12,10 +12,11 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 #
 include $(TOP_DIR)/mk/config.mk
 
+version:=1.4.19
 # unique package name
-name:=m4-1.4.19
+name:=m4-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -28,6 +29,7 @@ sha256:=3be4a26d825ffdfda52a56fc43246456989a3630093cced3fbddf4771ee58a70
 #
 patch_script:=m4-patch.sh
 #
+srcdir:=src
 builddir:=build
 #
 cflags:=-I$(PREFIX)/include

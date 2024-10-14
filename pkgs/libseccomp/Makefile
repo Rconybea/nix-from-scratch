@@ -16,7 +16,7 @@ version:=2.5.5
 # unique package name
 name:=libseccomp-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -32,6 +32,7 @@ cflags:=-I$(PREFIX)/include
 ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 pre_configure_hook:=
 configure_exec:=

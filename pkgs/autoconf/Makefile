@@ -15,7 +15,7 @@ include $(TOP_DIR)/mk/config.mk
 # unique package name
 name:=autoconf-2.72
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -28,6 +28,7 @@ sha256:=afb181a76e1ee72832f6581c0eddf8df032b83e2e0239ef79ebedc4467d92d6e
 #
 patch_script:=
 #
+srcdir:=src
 builddir:=build
 #
 cflags:=-I$(PREFIX)/include

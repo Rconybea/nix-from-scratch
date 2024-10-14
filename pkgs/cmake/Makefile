@@ -16,7 +16,7 @@ version:=3.30
 # unique package name
 name:=cmake-$(version).2
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -33,6 +33,7 @@ cflags:=
 ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=./cmake-patch.sh
+srcdir:=src
 builddir:=build
 pre_configure_hook:=
 configure_script:=bootstrap

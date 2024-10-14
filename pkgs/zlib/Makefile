@@ -12,10 +12,11 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 #
 include $(TOP_DIR)/mk/config.mk
 
+version:=1.3.1
 # unique package name
-name:=zlib-1.3.1
+name:=zlib-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -30,6 +31,7 @@ cflags:=
 ldflags:=
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 configure_extra_args:=
 post_install_hook:=

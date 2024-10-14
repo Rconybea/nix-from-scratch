@@ -15,7 +15,7 @@ include $(TOP_DIR)/mk/config.mk
 # unique package name
 name:=automake-1.17
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -28,6 +28,7 @@ sha256:=397767d4db3018dd4440825b60c64258b636eaf6bf99ac8b0897f06c89310acd
 #
 patch_script:=
 #
+srcdir:=src
 builddir:=build
 #
 cflags:=-I$(PREFIX)/include

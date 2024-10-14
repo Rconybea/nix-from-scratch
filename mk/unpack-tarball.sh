@@ -14,12 +14,16 @@ usage() {
 }
 
 tarball_path=
+tarball_unpack_dir=
 src_dir=
 
 while [[ $# > 0 ]]; do
     case "$1" in
         --src-dir=*)
             src_dir=${1#*=}
+            ;;
+        --tarball-unpack-dir=*)
+            tarball_unpack_dir="${1#*=}"
             ;;
         --tarball-path=*)
             tarball_path="${1#*=}"
@@ -41,31 +45,42 @@ if [[ ! -f ${tarball_path} ]]; then
     2>&1 echo "$self_name: expected file: [${tarball_path}]"
 fi
 
+if [[ -z ${tarball_unpack_dir} ]]; then
+    tarball_unpack_dir=${src_dir}
+fi
+
 if [[ -z ${src_dir} ]]; then
     2>&1 echo "$self_name: expected SRC_DIR (use --src-dir=SRC_DIR)"
 fi
 
-set -x
 rm -f state/unpack.result
 rm -rf ${src_dir}
 
+set -x
 tar xf ${tarball_path} 2>&1 | tee log/tar.log
 err=$?
 set +x
 
 if [[ ${err} -eq 0 ]]; then
+    if [[ -d ${tarball_unpack_dir} ]]; then
+        if [[ ${tarball_unpack_dir} != ${src_dir} ]]; then
+            rm -rf ${src_dir}
+            mv ${tarball_unpack_dir} ${src_dir}
+        fi
+    else
+        echo -n "err: expected unpack TARBALL_PATH [${tarball_path}] to get UNPACKDIR [${tarball_unpack_dir}]"
+        exit 1
+    fi
+
      if [[ -d ${src_dir} ]]; then
-         set -x
          echo -n 'ok ' > state/unpack.result
          echo ${src_dir} >> state/unpack.result
          exit 0
      else
-         set -x
          echo "err: expected unpack TARBALL_PATH [${tarball_path}] to get SRC_DIR [${src_dir}]" > state/unpack.reseult
          exit 1
      fi
 else
-    set -x
     echo "err: failed to unpack [${tarball_path}]" > state/unpack.result
     exit 1
 fi

@@ -16,7 +16,7 @@ version:=2.6.4
 # unique package name
 name:=flex-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -37,6 +37,7 @@ cflags:=-I$(PREFIX)/include
 ldflags:=-Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 configure_extra_args:=--docdir=$(PREFIX)/share/doc/$(name) --enable-static --enable-shared
 post_install_hook:=./post-install-hook.sh --prefix=$(PREFIX)

@@ -16,7 +16,7 @@ version:=3.3.1
 # unique package name
 name:=openssl-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -33,6 +33,8 @@ ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 patch_script:=
 #
 pre_configure_hook:=
+#
+srcdir:=src
 builddir:=build
 # (for openssl, instead of the usual 'configure')
 configure_script:=config  

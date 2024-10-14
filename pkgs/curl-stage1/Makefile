@@ -16,7 +16,7 @@ version:=8.9.1
 # unique package name
 name:=curl-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -31,6 +31,7 @@ cflags:=-I$(PREFIX)/include
 ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=./curl-patch.sh
+srcdir:=src
 builddir:=build
 pre_configure_hook:=./pre-configure-hook.sh --srcdir=$(srcdir)
 configure_extra_args:=--with-openssl --enable-shared --enable-static=no 

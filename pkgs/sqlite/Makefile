@@ -16,7 +16,7 @@ version:=3460100
 # unique package name
 name:=sqlite-autoconf-$(version)
 # local directory for unpacked source
-srcdir:=$(name)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
 tarball:=$(name).tar.gz
 # full path to local tarball
@@ -34,6 +34,7 @@ cppflags:=-I$(PREFIX)/include -DSQLITE_ENABLE_COLUMN_METADATA=1 -DSQLITE_ENABLE_
 ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
+srcdir:=src
 builddir:=build
 pre_configure_hook:=
 configure_script:=
