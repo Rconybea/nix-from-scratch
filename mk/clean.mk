@@ -19,6 +19,7 @@ verifyclean: unpackclean
 # - cksum state
 #
 unpackclean: configclean
+	rm -f state/package-version
 	rm -f state/unpack.result
 	rm -f state/patch.result
 	rm -f state/done.patch.sha256
