@@ -29,145 +29,145 @@ jobs:
 
     - name: toplevel config
       run: |
-        ./mk/bootstrap.sh --prefix='${{github.workspace}}/local'
+        ./scripts/bootstrap.sh --prefix='${{github.workspace}}/local'
         cat mk/prefix.mk
 
     - name: m4
       run: |
-        ./mk/do-github-package-workflow.sh --prefix=$PREFIX --package=m4
+        ./scripts/do-github-package-workflow.sh --prefix=$PREFIX --package=m4
 
     - name: autoconf
       run: |
-        ./mk/do-github-package-workflow.sh --prefix=$PREFIX --package=autoconf
+        ./scripts/do-github-package-workflow.sh --prefix=$PREFIX --package=autoconf
 
     - name: autoconf-archive
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=autoconf-archive
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=autoconf-archive
 
     - name: automake
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=automake
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=automake
 
     - name: pkgconf
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgconf
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgconf
 
     - name: zlib
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=zlib
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=zlib
 
     - name: flex
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=flex
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=flex
 
     - name: bison
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=bison
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=bison
 
     - name: openssl
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=openssl
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=openssl
 
     - name: curl-stage1
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage1
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage1
 
     - name: jq
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=jq
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=jq
 
     - name: cmake
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=cmake
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=cmake
 
     - name: libuv
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libuv
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libuv
 
     - name: expat
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=expat
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=expat
 
     - name: libcpuid
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libcpuid
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libcpuid
 
     - name: editline
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=editline
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=editline
 
     - name: patchelf
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=patchelf
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=patchelf
 
     - name: sqlite
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=sqlite
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=sqlite
 
     - name: python
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=python
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=python
 
     - name: libsodium
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libsodium
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libsodium
 
     - name: libtool
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libtool
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libtool
 
     - name: libssh2
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libssh2
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libssh2
 
     - name: libgit2
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libgit2
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libgit2
 
     - name: libarchive
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libarchive
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libarchive
 
     - name: lowdown
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=lowdown
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=lowdown
 
     - name: brotli
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=brotli
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=brotli
 
     - name: libseccomp
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libseccomp
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libseccomp
 
     - name: boost
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=boost
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=boost
 
     - name: boehm-gc
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=boehm-gc
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=boehm-gc
 
     - name: curl-stage2
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage2
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage2
 
     - name: gperf
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
         
     - name: gtest
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gtest
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gtest
         
     - name: rapidcheck
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=rapidcheck
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=rapidcheck
         
     - name: toml11
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=toml11
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=toml11
         
     - name: nix
       run: |
-        ./mk/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nix
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nix
