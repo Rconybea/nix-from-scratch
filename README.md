@@ -101,7 +101,7 @@ For example, if operating system is a debian derivative, can you do something li
 $ apt-get install gcc-12
 ```
 
-If so, may prefer to install nix dependencies from pacakge manager instead of building them
+If so, may prefer to install nix dependencies from package manager instead of building them
 yourself.  Will have to at least build `nix` from source, unless (unlikely afaik) package repository
 has a prebuilt package for `nix` available.
 
@@ -122,13 +122,13 @@ as follows:
 
 1. Fetch and build each nix dependency from an authoritative source tarball.
 
-2. Install to a common but non-LSB location (`$HOME/ext`).
-(Since premise is that we can't write to `/usr/bin` etc).
+2. Install to a common but non-LSB location (`$HOME/ext`). If we can't create/read/write `/nix`,
+probably can't touch `/usr` or `/usr/local` either.
 
 In particular, we assume that we're installing to a directory that `ldconfig` doesn't know about.
 this means that in general, if (a) we have two libraries {L, M} installed `/path/to/foo`
 (i.e. `$HOME/ext/lib`), and (b) L depends on M:
-then L needs a `DT_RUNPATH` entry `/path/to/foo` so that loader can find M when it encounters L
+then we want L to have a `RUNPATH` entry `/path/to/foo` so that loader can find M when it encounters L.
 
 3. Since there will be several dozen dependencies, we will prepare a modest meta-build system to
 build them.  Though much less capable than nix, this will still give us a permanent record of how to
@@ -151,19 +151,175 @@ including `nix` binaries and libraries themselves
 
 5. system configuration directory `$HOME/nixroot/etc` (instead of `/etc`).
 
-### Build Instructions
+### Meta-build Instructions
 
 1. Download release
 
+  ```
+  curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/nix-from-scratch-0.36.0.tar.gz
+  tar xf nix-from-scratch-0.36.0.tar.gz
+  srcdir=nix-from-scratch-0.36.0
+  ```
+
+2. Choose dependency install location
+
+Edit `nix-from-scratch-${version}/mk/prefix.mk`, choose value for `PREFIX`.
+This will be a permanent install location for supporting dependencies needed before we can build nix itself.
+We will also need these at this location to run nix once it's built. 
+
+If you prefer, you can choose a location under `NIX_PREFIX` for PREFIX
+  
+If you can write to `/usr/local`, that might be a natural value for `PREFIX`.
+You could also use `/usr` (if you have write permission there), but in that case would likely be 
+fighting with the host operating system's package manager.
+
+Optionally, edit `nix-from-scratch-${version}/mk/config.mk` to choose `ARCHIVE_DIR`
+This location will store downloaded source tarballs for nix and its dependencies.
+These will consume about 150MB.
+
+3. Choose nix install location
+
+Edit `nix-from-scratch-${version}/pkgs/nix/Makefile`, choose value for `NIX_PREFIX`.
+Also adjust `NIX_STORE_DIR`, `NIX_LOCALSTATE_DIR`, `NIX_SYSCONF_DIR` if desired.
+  
+Summary:
+  
+  | `PREFIX`             | `$HOME/ext`             | non-system root directory for nix dependencies |
+  | `NIX_PREFIX`         | `$HOME/nixroot`         | non-system root directory for nix itself       |
+  | `NIX_STORE_DIR`      | `$NIX_PREFIX/nix/store` | location for nix-built artifacts               |
+  | `NIX_SYSCONF_DIR`    | `$NIX_PREFIX/etc`       | default user configuration files               |
+  | `NIX_LOCALSTATE_DIR` | `$NIX_PREFIX/var`       | nix-generated logfiles                         |
+
+4. Build and install supporting packages 
+
+There are several dozen packages to build.  We will install each package under the same =PREFIX=.
+Packages depend on each other, so order is important;  later packages rely on successful build+install
+of earlier packages.
+
+The toplevel `$srcdir/Makefile` has a target for each nix dependency,
+and also knows inter-package dependencies. This allows it to enforce a consistent ordering.
+
 ```
-curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/nix-from-scratch-0.36.0.tar.gz
-tar xf nix-from-scratch-0.36.0.tar.gz
+cd $srcdir
+make nix-deps    # recursively build+install all nix dependencies
 ```
+
+5. Build and install nix itself
+
+```
+make pkgs/nix
+```
+
+### Package Versions
+
+To see package versions (available with success unpack for each component):
+
+```
+cd $srcdir
+cat pkgs/*/state/package-version
+```
+
+### Metabuild Organization
+
+1. The build tracks build-lifecycle progress for each package *foo* in `$srcdir/pkgs/foo/state`.
+This allows it to pickup 'where it left off' if a problem occurs, without having to know installed 
+artifacts for a package.
+
+We divide the build for each package into phases. All phases must complete before a package is considered
+available as a dependency.
+
+Phases:
+
+| package | action                                | outputs                                           |
+|---------|---------------------------------------|---------------------------------------------------|
+| fetch   | fetch tarball, store in `ARCHIVE_DIR` | `fetch.result`                                    |
+| verify  | verify sha256 vs package Makefile     | `verify.result` `actual.sha256` `expected.sha256` |
+| unpack  | untar to pkgs/foo/src                 | `unpack.result` `package-version`                 |
+| patch   | patch source tree if necessary        | `patch.result` `done.patch.sha256`                |
+| config  | configure package's build system      | `config.result`                                   |
+| compile | build package                         | `compile.result`                                  |
+| install | install to `PREFIX`                   | `install.result`                                  |
+
+2. For each package there are special 'manual do-over' targets to reset build for that package 
+to a known state:
+
+| target       | destination state                                 |
+|--------------|---------------------------------------------------|
+| distclean    | initial state (before fetch)                      |
+| verifyclean  | just before verify phase (before checking sha256) |
+| unpackclean  | just before unpack phase (before untar)           |
+| configclean  | just before config phase                          |
+| clean        | just before compile phase                         |
+| installclean | just before install phase                         |
+
+3. Building individual packages -- ignoring dependencies
+
+Each package *foo* has its own `Makefile` in `$srcdir/pkgs/foo/Makefile`.
+That `Makefile` expects any upstream dependencies to have already been built+installed under `PREFIX`.
+
+To build an individual package, say `m4`:
+
+```
+cd $srcdir/pkgs/m4
+make
+```
+
+4. Dependency order
+
+List of all packages, sorted so that depended-on packages appear before packages that rely on them.
+
+| m4               |
+| autoconf         |
+| autoconf-archive |
+| automake         |
+| libtool          |
+| libcpuid         |
+| zlib             |
+| pkgconf          |
+| sqlite           |
+| openssl          |
+| curl-stage1      |
+| expat            |
+| libarchive       |
+| libuv            |
+| cmake            |
+| patchelf         |
+| brotli           |
+| curl-stage2      |
+| nlohmann_json    |
+| jq               |
+| python           |
+| boost            |
+| editline         |
+| libsodium        |
+| gperf            |
+| libseccomp       |
+| boehm-gc         |
+| gtest            |
+| rapidcheck       |
+| libssh2          |
+| libgit2          |
+| toml11           |
+| flex             |
+| bison            |
+| lowdown          |
+| nix              |
+
+5. Building packages -- dependencies first
+
+Can also use top-level `Makefile` to build a supporting package and its dependencies:
+
+```
+cd $srcdir
+make pkgs/jq
+```
+
+Builds and installs `m4` -> `autoconf` -> `jq`
 
 ### Filesystem organization
 
 ```
-nix-from-scratch
+nix-from-scratch-0.36.0
 +- Makefile              umbrella makefile; delegates to pkgs/foo/Makefile for each package
 +- README.md
 +- LICENSE
@@ -173,58 +329,95 @@ nix-from-scratch
 +- mk                    helper makefiles/scripts to abstract common patterns
 \- pkgs                  parent for package-specific directories
    +- foo
-       +- Makefile       makefile for a single package foo
-       +- foo-1.2.3      unpacked source directory for package foo
-       \- state          track build phase results
-          ...
+   |   +- Makefile       makefile for a single package foo
+   |   +- foo-1.2.3      unpacked source directory for package foo
+   |   \- state          track build phase results
+   +- bar
+   |   +- Makefile
+   |   +- bar-4.5.6
+   |   \- state
+   .
+   .
+   
 ```
 
-### Makefile organization
+`pkgs` contains a list of dependencies needed to build nix from source.
+The list is sufficient to build on a stock ubuntu platform (e.g. 22.04/jammy);
+assumes the base platform provides working (and sufficiently new) c and c++ compilers.
 
-Each subproject (m4, automake, boost, etc) gets its own Makefile.
-Makefile in root directory delgates to project Makefiles.
-Toplevel Makefile also knows inter-project dependencies
+### Dependencies
 
-Makefiles divide build into phases,  with state transitions shown here:
+Dependencies as of 12oct2024, sufficient to build nix version 2.24.9:
 
-```
+| autoconf         |
+| autoconf-archive |
+| automake         |
+| bison            |
+| boehm-gc         |
+| boost            |
+| brotli           |
+| cmake            |
+| curl             |
+| editline         |
+| expat            |
+| flex             |
+| gperf            |
+| gtest            |
+| jq               |
+| libarchive       |
+| libcpuid         |
+| libgit2          |
+| libseccomp       |
+| libsodium        |
+| libssh2          |
+| libtool          |
+| libuv            |
+| lowdown          |
+| m4               |
+| nlohmann_json    |
+| openssl          |
+| patchelf         |
+| pkgconf          |
+| python           |
+| rapidcheck       |
+| sqlite           |
+| toml11           |
+| zlib             |
 
-        /----distclean
-        v
-     (start)
-        |
-        |fetch
-        |
-        |/---verifyclean
-        vv
-       (s1)      [ok: empty state/fetch.result, $(tarball_path), log/wget.log]
-        |
-        |verify
-        |
-        |/---unpackclean
-        vv
-       (s2)      [ok: empty state/verify.result; state/*.sha256]
-        |
-        |unpack
-        v
-       (s3)
-        |
-        |patch
-        v
-       (s4)
-        |
-        |config
-        |
-        |/---clean
-        vv
-       (s5)
-        |
-        |compile
-        v
-       (s6)
-        |
-        |install
-        v
-     (finish)
+### Troubleshooting
 
-```
+Anticipated problems:
+
+1. Version problem in some `/usr` dependency.
+
+Best pathway is likely to add the offending dependency to nix-from-scratch.  Suggest combining information
+from
+
+(a) some existing nix-from-scratch package (for Makefile),
+(b) linuxfromscratch instructions (for build instructions), 
+(c) nixpkgs default.nix (for build instructions) for that package
+
+2. Host compiler toolchain too old
+
+This project assumes host already has adequate c and c++ compilers.
+If this is not the case, one path is to build and install those too.
+
+I've found linuxfrom scratch (https://www.linuxfromscratch.org) most useful
+for detailed executable build instructions.
+
+As of Oct 2024, LFS build instructions for gcc 14.2 are here:
+https://www.linuxfromscratch.org/lfs/view/12.2/chapter08/gcc.html
+
+Note that you probably have to modify these to work with a `PREFIX` directory that isn't visited by `ldconfig`.
+May be able to use the `cflags` and `ldflags` variables from `$srcdir/pkgs/*/Makefile` as a starting point
+
+3. Host libc is too old
+
+Symptom: build complains about missing symbols wich LIBC in their name
+
+More painful than compiler toolchain too old. It's possible to build+install libc to a non-standard location;
+linuxfromscratch is again a useful guide. If you have to go down this path, know that a linux executable can only
+use a single libc. Should you prepare a custom libc, you'll likely need to provide custom versions of most 
+everything else in `/usr` to go with it.
+
+
