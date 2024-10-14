@@ -10,9 +10,18 @@ Build nix packager and dependencies:
 2. with dependencies
 3. without requiring write access to LSB directories
 
+## TL;DR
+
+```
+version=nix-from-scratch-0.37.0
+curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/${version}.tar.gz
+tar xf ${version}.tar.gz
+(cd ${version} && make)   # builds + installs
+```
+
 ## Why nix-from-scratch?
 
-The purpose of this project is to provide a last-resort build
+The purpose of this project is to provide a last-resort build-from-source
 for the nix package manager.  Intended to make it easier to use
 nix when standard installation paths are not feasible.
 
@@ -161,36 +170,38 @@ including `nix` binaries and libraries themselves
   srcdir=nix-from-scratch-0.37.0
   ```
 
-2. Choose dependency install location
+2. Choose nix install location
+
+Edit `nix-from-scratch-${version}/pkgs/nix/Makefile`, choose value for `NIX_PREFIX`.
+Also adjust `NIX_STORE_DIR`, `NIX_LOCALSTATE_DIR`, `NIX_SYSCONF_DIR` if desired.
+
+3. Choose dependency install location
 
 Edit `nix-from-scratch-${version}/mk/prefix.mk`, choose value for `PREFIX`.
 This will be a permanent install location for supporting dependencies needed before we can build nix itself.
 We will also need these at this location to run nix once it's built. 
 
-If you prefer, you can choose a location under `NIX_PREFIX` for PREFIX
-  
 If you can write to `/usr/local`, that might be a natural value for `PREFIX`.
-You could also use `/usr` (if you have write permission there), but in that case would likely be 
-fighting with the host operating system's package manager.
+You could also use `/usr` (if you have write permission there), but in that case may conflict with
+host operating system's package manager.
+
+Can alternative choose a location for `PREFIX` inside the `NIX_PREFIX` directory.
 
 Optionally, edit `nix-from-scratch-${version}/mk/config.mk` to choose `ARCHIVE_DIR`
 This location will store downloaded source tarballs for nix and its dependencies.
 These will consume about 150MB.
 
-3. Choose nix install location
-
-Edit `nix-from-scratch-${version}/pkgs/nix/Makefile`, choose value for `NIX_PREFIX`.
-Also adjust `NIX_STORE_DIR`, `NIX_LOCALSTATE_DIR`, `NIX_SYSCONF_DIR` if desired.
   
 Summary:
   
-  | variable             | default                 | purpose                                        |
-  |----------------------|-------------------------|------------------------------------------------|
-  | `PREFIX`             | `$HOME/ext`             | non-system root directory for nix dependencies |
-  | `NIX_PREFIX`         | `$HOME/nixroot`         | non-system root directory for nix itself       |
-  | `NIX_STORE_DIR`      | `$NIX_PREFIX/nix/store` | location for nix-built artifacts               |
-  | `NIX_SYSCONF_DIR`    | `$NIX_PREFIX/etc`       | default user configuration files               |
-  | `NIX_LOCALSTATE_DIR` | `$NIX_PREFIX/var`       | nix-generated logfiles                         |
+  | location            | variable             | default                 | purpose                                        |
+  |---------------------|----------------------|-------------------------|------------------------------------------------|
+  | `pkgs/nix/Makefile` | `NIX_PREFIX`         | `$HOME/nixroot`         | non-system root directory for nix itself       |
+  | `pkgs/nix/Makefile` | `NIX_STORE_DIR`      | `$NIX_PREFIX/nix/store` | location for nix-built artifacts               |
+  | `pkgs/nix/Makefile` | `NIX_SYSCONF_DIR`    | `$NIX_PREFIX/etc`       | default user configuration files               |
+  | `pkgs/nix/Makefile` | `NIX_LOCALSTATE_DIR` | `$NIX_PREFIX/var`       | nix-generated logfiles                         |
+  | `mk/prefix.mk`      | `PREFIX`             | `$HOME/ext`             | non-system root directory for nix dependencies |
+  | `mk/config.mk`      | `ARCHIVE_DIR`        | `$srcdir/archive`       | downloaded tarballs                            |
 
 4. Build and install supporting packages 
 
@@ -214,7 +225,7 @@ make pkgs/nix
 
 ### Package Versions
 
-To see package versions (available with success unpack for each component):
+To see package versions (available after successful unpack for each component):
 
 ```
 cd $srcdir
@@ -368,19 +379,20 @@ nix-from-scratch-0.37.0
 +- LICENSE
 +- archive               directory for source tarballs
 |  +- foo-1.2.3.tar.gz
+|  +- bar-4.5.6.tar.gz
 |  ...
 +- mk                    helper makefiles/scripts to abstract common patterns
 \- pkgs                  parent for package-specific directories
    +- foo
    |   +- Makefile       makefile for a single package foo
-   |   +- foo-1.2.3      unpacked source directory for package foo
-   |   \- state          track build phase results
+   |   +- src            unpacked source directory for package foo
+   |   \- state          track build results by phase
    +- bar
    |   +- Makefile
-   |   +- bar-4.5.6
+   |   +- src 
    |   \- state
    .
-   .
+
    
 ```
 
