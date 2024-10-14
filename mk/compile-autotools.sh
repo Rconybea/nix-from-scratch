@@ -1,1 +1,0 @@
-../scripts/compile-autotools.sh

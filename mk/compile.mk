@@ -5,7 +5,7 @@
 #
 
 state/compile.result: state/config.result
-	$(TOP_DIR)/mk/compile-autotools.sh --build-dir=$(builddir)
+	$(TOP_DIR)/scripts/compile-autotools.sh --build-dir=$(builddir)
 
 .PHONY: compile
 compile: state/compile.result $(builddir)
