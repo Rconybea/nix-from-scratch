@@ -37,7 +37,7 @@ builddir:=build
 pre_configure_hook:=
 configure_exec:=cmake
 configure_script:=
-configure_extra_args:=-DCMAKE_INSTALL_PREFIX=$(PREFIX) -DCMAKE_INSTALL_RPATH=$(PREFIX)/lib -DBUILD_SHARED_LIBS=ON -DCMAKE_CXX_FLAGS=-I$(PREFIX)/include -B . -S ../$(srcdir)
+configure_extra_args:=-DCMAKE_INSTALL_PREFIX=$(PREFIX) -DCMAKE_INSTALL_RPATH=$(PREFIX)/lib -DRC_INSTALL_ALL_EXTRAS=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_CXX_FLAGS=-I$(PREFIX)/include -B . -S ../$(srcdir)
 post_install_hook:=
 
 all: compile
