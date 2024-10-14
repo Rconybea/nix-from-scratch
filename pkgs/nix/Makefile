@@ -127,13 +127,12 @@ compile: state/compile.result $(srcdir)
 
 # nix install step invokes compiler again,  so we need LDFLAGS
 #
-state/install.result:
+.PHONY: install
+install: state/compile.result
 	mkdir -p $(NIX_STORE_DIR) $(NIX_SYSCONF_DIR) $(NIX_LOCALSTATE_DIR)/nix
 	(cd $(srcdir) && make install sysconfdir=$(NIX_SYSCONF_DIR) V=1 LDFLAGS="$(ldflags)")
 	echo ok > $@
 
-.PHONY: install
-install: state/install.result
 
 # provides targets:
 # - distclean
