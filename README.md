@@ -219,6 +219,45 @@ cd $srcdir
 cat pkgs/*/state/package-version
 ```
 
+Output as of nix-from-scratch-0.36.0:
+```
+autoconf-archive-2023.02.20
+autoconf-2.72
+automake-1.17
+bison-3.8.2
+gc-8.2.6
+boost-1.86.0
+brotli-1.1.0
+cmake-3.30.2
+curl-8.9.1
+editline-1.17.1
+expat-2.6.2
+flex-2.6.4
+gperf-3.0.4
+googletest-1.14.0
+jq-1.7.1
+libarchive-3.7.4
+libcpuid-0.7.0
+libgit2
+libseccomp-2.5.5
+libsodium-1.0.20
+libssh2-1.11.0
+libtool-2.4.7
+libuv-v1.48.0
+lowdown-1.1.0
+m4-1.4.19
+nix-2.24.9
+json-3.11.3
+openssl-3.3.1
+patchelf-0.18.0
+pkgconf-2.3.0
+Python-3.12.6
+rapidcheck
+sqlite-autoconf-3460100
+toml11-4.2.0
+zlib-1.3.1
+```
+
 ### Metabuild Organization
 
 1. The build tracks build-lifecycle progress for each package *foo* in `$srcdir/pkgs/foo/state`.
@@ -343,48 +382,9 @@ nix-from-scratch-0.36.0
    
 ```
 
-`pkgs` contains a list of dependencies needed to build nix from source.
-The list is sufficient to build on a stock ubuntu platform (e.g. 22.04/jammy);
-assumes the base platform provides working (and sufficiently new) c and c++ compilers.
-
-### Dependencies
-
-Dependencies as of 12oct2024, sufficient to build nix version 2.24.9:
-
-| autoconf         |
-| autoconf-archive |
-| automake         |
-| bison            |
-| boehm-gc         |
-| boost            |
-| brotli           |
-| cmake            |
-| curl             |
-| editline         |
-| expat            |
-| flex             |
-| gperf            |
-| gtest            |
-| jq               |
-| libarchive       |
-| libcpuid         |
-| libgit2          |
-| libseccomp       |
-| libsodium        |
-| libssh2          |
-| libtool          |
-| libuv            |
-| lowdown          |
-| m4               |
-| nlohmann_json    |
-| openssl          |
-| patchelf         |
-| pkgconf          |
-| python           |
-| rapidcheck       |
-| sqlite           |
-| toml11           |
-| zlib             |
+`pkgs` contains one subdirectory for nix itself, plus one subdirectory for each package that nix depends on.
+The set of pacakges is sufficient to build nix on a stock ubuntu platform (e.g. 22.04/jammy).
+This assumes the base platform provides working (and sufficiently new) c and c++ compilers.
 
 ### Troubleshooting
 
@@ -392,8 +392,8 @@ Anticipated problems:
 
 1. Version problem in some `/usr` dependency.
 
-Best pathway is likely to add the offending dependency to nix-from-scratch.  Suggest combining information
-from
+Best fix is probably to add the offending dependency to nix-from-scratch.  
+Suggest combining information from:
 
 (a) some existing nix-from-scratch package (for Makefile),
 (b) linuxfromscratch instructions (for build instructions), 
