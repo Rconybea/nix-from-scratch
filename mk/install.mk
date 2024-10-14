@@ -5,7 +5,7 @@
 #
 
 state/install.result: state/compile.result
-	$(TOP_DIR)/mk/install-autotools.sh --build-dir=$(builddir)
+	$(TOP_DIR)/scripts/install-autotools.sh --build-dir=$(builddir)
 	$(post_install_hook)
 	cp state/compile.result state/install.result
 
