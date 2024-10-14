@@ -14,11 +14,11 @@
 #  since require-sha256 checks that tarball path is present + additionally produces actual sha256)
 #
 sha256 state/expected.sha256: state/fetch.result
-	$(TOP_DIR)/mk/require-sha256.sh --sha256=$(sha256) --tarball-path=$(tarball_path)
+	$(TOP_DIR)/scripts/require-sha256.sh --sha256=$(sha256) --tarball-path=$(tarball_path)
 
 state/verify.result: state/expected.sha256 
 	make sha256  # for when makefile sha256 edited
-	$(TOP_DIR)/mk/verify-sha256.sh
+	$(TOP_DIR)/scripts/verify-sha256.sh
 
 # - noop when state/verify.result already established
 #   (use `make verifyclean` to do-over)

@@ -1,1 +1,0 @@
-../scripts/verify-sha256.sh

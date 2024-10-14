@@ -1,1 +1,0 @@
-../scripts/require-sha256.sh
