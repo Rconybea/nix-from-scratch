@@ -29,3 +29,6 @@ configclean: clean
 
 clean:
 	$(TOP_DIR)/mk/clean.sh --build-dir=$(builddir)
+
+installclean:
+	rm -f state/install.result
