@@ -32,7 +32,7 @@ ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 patch_script:=
 srcdir:=src
 builddir:=build
-pre_configure_hook:=../pre-configure-hook.sh --srcdir=$(srcdir) 
+pre_configure_hook:=$(THIS_DIR)/pre-configure-hook.sh --srcdir=$(srcdir) 
 configure_extra_args:=
 post_install_hook:=
 
