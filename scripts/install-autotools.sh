@@ -41,6 +41,4 @@ rm -f state/install.result
 
 (cd ${build_dir} && make V=1 install) 2>&1 | tee log/install.log
 
-cp state/compile.result state/install.result
-
-# end install-autoconf.sh
+# end install-autotools.sh
