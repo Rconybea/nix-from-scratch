@@ -268,6 +268,8 @@ make
 
 List of all packages, sorted so that depended-on packages appear before packages that rely on them.
 
+| package          |
+|------------------|
 | m4               |
 | autoconf         |
 | autoconf-archive |
