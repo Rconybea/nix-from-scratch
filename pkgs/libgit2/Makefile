@@ -14,11 +14,12 @@ include $(TOP_DIR)/mk/config.mk
 
 version:=1.8.1
 # unique package name
-name:=libgit2
+stem:=libgit2
+name:=$(stem)-$(version)
 # local directory for unpacked source
-unpackdir:=$(name)-$(version)
+unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
-tarball:=$(name).tar.gz
+tarball:=$(stem).tar.gz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
