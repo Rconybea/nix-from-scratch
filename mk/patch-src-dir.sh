@@ -74,7 +74,6 @@ if [[ $err -eq 0 ]]; then
         cat state/done.patch.sha256 >> state/patch.result
     fi
 else  # something changed -> will modify [state/patch.result]
-    set -x
     err=0
     if [[ -n ${patch_script} ]]; then
         (cd ${src_dir} && ../${patch_script})
@@ -93,7 +92,6 @@ else  # something changed -> will modify [state/patch.result]
         rm -f state/unpack.result
         exit 1
     fi
-    set +x;
 fi
 
 # end patch-src-dir.sh
