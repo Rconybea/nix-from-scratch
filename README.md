@@ -184,6 +184,8 @@ Also adjust `NIX_STORE_DIR`, `NIX_LOCALSTATE_DIR`, `NIX_SYSCONF_DIR` if desired.
   
 Summary:
   
+  | variable             | default                 | purpose                                        |
+  |----------------------|-------------------------|------------------------------------------------|
   | `PREFIX`             | `$HOME/ext`             | non-system root directory for nix dependencies |
   | `NIX_PREFIX`         | `$HOME/nixroot`         | non-system root directory for nix itself       |
   | `NIX_STORE_DIR`      | `$NIX_PREFIX/nix/store` | location for nix-built artifacts               |
