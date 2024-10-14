@@ -8,7 +8,7 @@
 
 # unwind to state before fetch.
 distclean: verifyclean
-	$(TOP_DIR)/mk/distclean.sh --tarball-path=$(tarball_path) --build-dir=$(builddir)
+	$(TOP_DIR)/scripts/distclean.sh --tarball-path=$(tarball_path) --build-dir=$(builddir)
 
 verifyclean: unpackclean
 	rm -f state/verify.result
@@ -25,10 +25,10 @@ unpackclean: configclean
 	rm -f state/done.patch.sha256
 
 configclean: clean
-	$(TOP_DIR)/mk/configclean.sh --build-dir=$(builddir)
+	$(TOP_DIR)/scripts/configclean.sh --build-dir=$(builddir)
 
 clean:
-	$(TOP_DIR)/mk/clean.sh --build-dir=$(builddir)
+	$(TOP_DIR)/scripts/clean.sh --build-dir=$(builddir)
 
 installclean:
 	rm -f state/install.result
