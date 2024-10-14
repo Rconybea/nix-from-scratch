@@ -6,7 +6,7 @@
 
 state/unpack.result: state/verify.result 
 	echo $(name) > state/package-version
-	$(TOP_DIR)/mk/unpack-tarball.sh --tarball-path=$(tarball_path) --tarball-unpack-dir=$(unpackdir) --src-dir=${srcdir}
+	$(TOP_DIR)/scripts/unpack-tarball.sh --tarball-path=$(tarball_path) --tarball-unpack-dir=$(unpackdir) --src-dir=${srcdir}
 
 .PHONY: unpack
 unpack: state/unpack.result
