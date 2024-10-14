@@ -33,7 +33,7 @@ ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 patch_script:=./curl-patch.sh
 srcdir:=src
 builddir:=build
-pre_configure_hook:=./pre-configure-hook.sh --srcdir=$(srcdir)
+pre_configure_hook:=$(THIS_DIR)/pre-configure-hook.sh --srcdir=$(srcdir)
 configure_extra_args:=--with-openssl --enable-shared --enable-static=no 
 post_install_hook:=
 
