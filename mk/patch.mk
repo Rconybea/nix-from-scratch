@@ -5,7 +5,7 @@
 #
 
 state/patch.result: state/unpack.result $(patch_script)
-	$(TOP_DIR)/mk/patch-src-dir.sh --src-dir=$(srcdir) --patch-script=$(patch_script)
+	$(TOP_DIR)/scripts/patch-src-dir.sh --src-dir=$(srcdir) --patch-script=$(patch_script)
 
 .PHONY: patch
 patch: state/patch.result

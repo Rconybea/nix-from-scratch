@@ -1,1 +1,0 @@
-../scripts/patch-src-dir.sh
