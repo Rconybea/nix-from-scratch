@@ -102,7 +102,7 @@ include $(TOP_DIR)/mk/patch.mk
 # note: passing --build-dir=$(srcdir) here
 state/config.result $(builddir): state/patch.result
 	@#mkdir -p $(builddir)
-	$(TOP_DIR)/mk/configure-autotools.sh \
+	$(TOP_DIR)/scripts/configure-autotools.sh \
        --pre-configure-hook="$(pre_configure_hook)" \
        --configure-exec=$(configure_exec) \
 	   --configure-script=$(configure_script) \
