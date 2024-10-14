@@ -5,6 +5,6 @@
 #
 
 .PHONY: install
-install:
+install: state/compile.result
 	$(TOP_DIR)/mk/install-autotools.sh --build-dir=$(builddir)
 	$(post_install_hook)
