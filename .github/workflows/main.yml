@@ -175,3 +175,7 @@ jobs:
     - name: unzip
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=unzip
+
+    - name: mdbook-linkcheck
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=mdbook-linkcheck
