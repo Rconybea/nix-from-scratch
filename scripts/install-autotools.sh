@@ -10,14 +10,35 @@ usage() {
 
 tarball_path=
 build_dir=
+install_exec=make
+install_args=install
 
 while [[ $# > 0 ]]; do
     case "$1" in
+        --install-exec=*)
+            tmp=${1#*=}
+            if [[ -z ${tmp} ]]; then
+                # keep default
+                :
+            else
+                install_exec=$tmp
+            fi
+            ;;
+        --install-args=*)
+            tmp=${1#*=}
+            if [[ -z ${tmp} ]]; then
+                # keep default
+                :
+            else
+                install_args=${tmp}
+            fi
+            ;;
         --build-dir=*)
             build_dir="${1#*=}"
             ;;
         *)
-            usage
+            2>&1 echo "error: ${self_name}: unexpected argument ${1}"
+            2>&1 usage
             exit 1
             ;;
     esac
@@ -35,10 +56,24 @@ if [[ ! -d ${build_dir} ]]; then
     exit 1
 fi
 
-set -e
-
 rm -f state/install.result
 
-(cd ${build_dir} && make V=1 install) 2>&1 | tee log/install.log
+# not correct: suppresses errors
+#(cd ${build_dir} && make V=1 install) 2>&1 | tee log/install.log
+
+pushd ${build_dir}
+
+${install_exec} ${install_args}
+
+err=$?
+
+popd
+
+if [[ ${err} -ne 0 ]]; then
+    echo err > state/install.result
+    exit 1
+fi
+
+cp state/compile.result state/install.result
 
 # end install-autotools.sh

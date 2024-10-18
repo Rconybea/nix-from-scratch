@@ -10,11 +10,15 @@
 self_name=$(basename ${0})
 
 usage() {
-    echo "$self_name: --tarball-path=TARBALL --src-dir=SRC_DIR"
+    echo "$self_name: --tarball-unpack-dir=UNPACK_DIR --tarball-path=TARBALL --src-dir=SRC_DIR"
+    echo "            --unpack-exec=UNPACK_EXEC --unpack-args=UNPACKARGS"
 }
 
+unpack_exec=tar
+unpack_args=xf
 tarball_path=
 tarball_unpack_dir=
+# note: labelled as dir, but *can* be a file
 src_dir=
 
 while [[ $# > 0 ]]; do
@@ -27,6 +31,21 @@ while [[ $# > 0 ]]; do
             ;;
         --tarball-path=*)
             tarball_path="${1#*=}"
+            ;;
+        --unpack-exec=*)
+            tmp=${1#*=}
+            if [[ -n "${tmp}" ]]; then
+                unpack_exec=$tmp
+            fi
+            ;;
+        --unpack-args=*)
+            tmp=${1#*=}
+            if [[ -n "${tmp}" ]]; then
+                if [[ "${tmp}" = 'none' ]]; then
+                    tmp=
+                fi
+                unpack_args=$tmp
+            fi
             ;;
         *)
             usage
@@ -53,16 +72,20 @@ if [[ -z ${src_dir} ]]; then
     2>&1 echo "$self_name: expected SRC_DIR (use --src-dir=SRC_DIR)"
 fi
 
+if [[ -z ${unpack_exec} ]]; then
+    2>&1 echo "$self_name: expected UNPACK_EXEC (use --unpack-exec=UNPACK_EXEC)"
+fi
+
 rm -f state/unpack.result
 rm -rf ${src_dir}
 
 set -x
-tar xf ${tarball_path} 2>&1 | tee log/tar.log
+${unpack_exec} ${unpack_args} ${tarball_path} 2>&1 | tee log/tar.log
 err=$?
-set +x
+set -x
 
 if [[ ${err} -eq 0 ]]; then
-    if [[ -d ${tarball_unpack_dir} ]]; then
+    if [[ -e ${tarball_unpack_dir} ]]; then
         if [[ ${tarball_unpack_dir} != ${src_dir} ]]; then
             rm -rf ${src_dir}
             mv ${tarball_unpack_dir} ${src_dir}
@@ -72,7 +95,7 @@ if [[ ${err} -eq 0 ]]; then
         exit 1
     fi
 
-     if [[ -d ${src_dir} ]]; then
+     if [[ -e ${src_dir} ]]; then
          echo -n 'ok ' > state/unpack.result
          echo ${src_dir} >> state/unpack.result
          exit 0

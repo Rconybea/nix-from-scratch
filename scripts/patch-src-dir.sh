@@ -9,7 +9,7 @@
 self_name=$(basename ${0})
 
 usage() {
-    echo "$self_name: --tarball-path=TARBALL --src-dir=SRC_DIR"
+    echo "$self_name: --patch-script=SCRIPT --src-dir=SRC_DIR"
 }
 
 src_dir=
@@ -39,8 +39,8 @@ if [[ -z ${src_dir} ]]; then
     2>&1 echo "$self_name: expected SRC_DIR (use --src-dir=SRC_DIR)"
 fi
 
-if [[ ! -d ${src_dir} ]]; then
-    2>&1 echo "$self_name: SRC_DIR: expected directory: [${src_dir}]"
+if [[ ! -e ${src_dir} ]]; then
+    2>&1 echo "$self_name: SRC_DIR: expected file or directory: [${src_dir}]"
 fi
 
 set -x
@@ -76,9 +76,15 @@ if [[ $err -eq 0 ]]; then
 else  # something changed -> will modify [state/patch.result]
     err=0
     if [[ -n ${patch_script} ]]; then
-        (cd ${src_dir} && ../${patch_script})
-        err=$?
+        if [[ -d ${src_dir} ]]; then
+            (cd ${src_dir} && ../${patch_script})
+            err=$?
+        else
+            ./${patch_script}
+            err=$?
+        fi
     fi
+
     if [[ ${err} -eq 0 ]]; then
         mv state/tmp.patch.sha256 state/done.patch.sha256
         echo "ok " > state/patch.result
