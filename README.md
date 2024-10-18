@@ -179,7 +179,7 @@ Also adjust `NIX_STORE_DIR`, `NIX_LOCALSTATE_DIR`, `NIX_SYSCONF_DIR` if desired.
 
 Edit `nix-from-scratch-${version}/mk/prefix.mk`, choose value for `PREFIX`.
 This will be a permanent install location for supporting dependencies needed before we can build nix itself.
-We will also need these at this location to run nix once it's built. 
+We will also need these at this location to run nix once it's built.
 
 If you can write to `/usr/local`, that might be a natural value for `PREFIX`.
 You could also use `/usr` (if you have write permission there), but in that case may conflict with
@@ -191,9 +191,9 @@ Optionally, edit `nix-from-scratch-${version}/mk/config.mk` to choose `ARCHIVE_D
 This location will store downloaded source tarballs for nix and its dependencies.
 These will consume about 150MB.
 
-  
+
 Summary:
-  
+
   | location            | variable             | default                 | purpose                                        |
   |---------------------|----------------------|-------------------------|------------------------------------------------|
   | `pkgs/nix/Makefile` | `NIX_PREFIX`         | `$HOME/nixroot`         | non-system root directory for nix itself       |
@@ -203,7 +203,7 @@ Summary:
   | `mk/prefix.mk`      | `PREFIX`             | `$HOME/ext`             | non-system root directory for nix dependencies |
   | `mk/config.mk`      | `ARCHIVE_DIR`        | `$srcdir/archive`       | downloaded tarballs                            |
 
-4. Build and install supporting packages 
+4. Build and install supporting packages
 
 There are several dozen packages to build.  We will install each package under the same =PREFIX=.
 Packages depend on each other, so order is important;  later packages rely on successful build+install
@@ -274,7 +274,7 @@ zlib-1.3.1
 ### Metabuild Organization
 
 1. The build tracks build-lifecycle progress for each package *foo* in `$srcdir/pkgs/foo/state`.
-This allows it to pickup 'where it left off' if a problem occurs, without having to know installed 
+This allows it to pickup 'where it left off' if a problem occurs, without having to know installed
 artifacts for a package.
 
 We divide the build for each package into phases. All phases must complete before a package is considered
@@ -292,7 +292,7 @@ Phases:
 | compile | build package                         | `compile.result`                                  |
 | install | install to `PREFIX`                   | `install.result`                                  |
 
-2. For each package there are special 'manual do-over' targets to reset build for that package 
+2. For each package there are special 'manual do-over' targets to reset build for that package
 to a known state:
 
 | target       | destination state                                 |
@@ -389,11 +389,11 @@ nix-from-scratch-0.37.1
    |   \- state          track build results by phase
    +- bar
    |   +- Makefile
-   |   +- src 
+   |   +- src
    |   \- state
    .
 
-   
+
 ```
 
 `pkgs` contains one subdirectory for nix itself, plus one subdirectory for each package that nix depends on.
@@ -406,11 +406,11 @@ Anticipated problems:
 
 1. Version problem in some `/usr` dependency.
 
-Best fix is probably to add the offending dependency to nix-from-scratch.  
+Best fix is probably to add the offending dependency to nix-from-scratch.
 Suggest combining information from:
 
 (a) some existing nix-from-scratch package (for Makefile),
-(b) linuxfromscratch instructions (for build instructions), 
+(b) linuxfromscratch instructions (for build instructions),
 (c) nixpkgs default.nix (for build instructions) for that package
 
 2. Host compiler toolchain too old
@@ -433,7 +433,5 @@ Symptom: build complains about missing symbols wich LIBC in their name
 
 More painful than compiler toolchain too old. It's possible to build+install libc to a non-standard location;
 linuxfromscratch is again a useful guide. If you have to go down this path, know that a linux executable can only
-use a single libc. Should you prepare a custom libc, you'll likely need to provide custom versions of most 
+use a single libc. Should you prepare a custom libc, you'll likely need to provide custom versions of most
 everything else in `/usr` to go with it.
-
-
