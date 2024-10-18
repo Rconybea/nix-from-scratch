@@ -1,6 +1,6 @@
 ![Build Status on github actions](https://github.com/Rconybea/nix-from-scratch/actions/workflows/main.yml/badge.svg)
 ![Build Status on github actions](https://github.com/Rconybea/nix-from-scratch/actions/workflows/dev.yml/badge.svg)
-[![Version](https://img.shields.io/badge/release-v0.39.0-blue)](https://github.com/Rconybea/nix-from-scratch/releases)
+[![Version](https://img.shields.io/badge/release-v0.40.0-blue)](https://github.com/Rconybea/nix-from-scratch/releases)
 [![License](https://img.shields.io/github/license/ToruNiina/toml11.svg?style=flat)](LICENSE)
 
 # nix-from-scratch
@@ -13,7 +13,7 @@ Build nix packager and dependencies:
 ## TL;DR
 
 ```
-version=nix-from-scratch-0.39.0
+version=nix-from-scratch-0.40.0
 curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/${version}.tar.gz
 tar xf ${version}.tar.gz
 (cd ${version} && make)   # builds + installs
@@ -165,9 +165,9 @@ including `nix` binaries and libraries themselves
 1. Download release
 
   ```
-  curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/nix-from-scratch-0.39.0.tar.gz
-  tar xf nix-from-scratch-0.39.0.tar.gz
-  srcdir=nix-from-scratch-0.39.0
+  curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/nix-from-scratch-0.40.0.tar.gz
+  tar xf nix-from-scratch-0.40.0.tar.gz
+  srcdir=nix-from-scratch-0.40.0
   ```
 
 2. Choose nix install location
@@ -232,7 +232,7 @@ cd $srcdir
 cat pkgs/*/state/package-version
 ```
 
-Output as of nix-from-scratch-0.39.0:
+Output as of nix-from-scratch-0.40.0:
 ```
 autoconf-archive-2023.02.20
 autoconf-2.72
@@ -373,7 +373,7 @@ Builds and installs `m4` -> `autoconf` -> `jq`
 ### Filesystem organization
 
 ```
-nix-from-scratch-0.39.0
+nix-from-scratch-0.40.0
 +- Makefile              umbrella makefile; delegates to pkgs/foo/Makefile for each package
 +- README.md
 +- LICENSE
