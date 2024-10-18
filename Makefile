@@ -39,6 +39,9 @@ nix-deps: pkgs/nlohmann_json pkgs/libtool pkgs/automake pkgs/autoconf-archive pk
 .PHONY: pkgs/nix
 pkgs/nix: nix-deps
 
+.PHONY: pkgs/mdbook
+pkgs/mdbook: 
+
 .PHONY: pkgs/unzip
 pkgs/unzip: pkgs/autoconf
 
