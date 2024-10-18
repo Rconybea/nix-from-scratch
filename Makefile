@@ -42,6 +42,9 @@ pkgs/nix: nix-deps
 .PHONY: pkgs/mdbook
 pkgs/mdbook: 
 
+.PHONY: pkgs/mdbook-linkcheck
+pkgs/mdbook-linkcheck
+
 .PHONY: pkgs/unzip
 pkgs/unzip: pkgs/autoconf
 
