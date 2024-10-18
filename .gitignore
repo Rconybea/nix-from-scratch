@@ -2,5 +2,5 @@ archive
 pkgs/*/state
 pkgs/*/log
 pkgs/*/src
+pkgs/*/binary
 pkgs/*/build
-
