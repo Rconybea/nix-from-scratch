@@ -19,6 +19,27 @@ tar xf ${version}.tar.gz
 (cd ${version} && make)   # builds + installs
 ```
 
+After successful install:
+```
+$ $HOME/nixroot/bin/nix repl
+Nix 2.24.9
+Type :? for help.
+nix-repl> ^D
+```
+
+To properly use nix need a little configuration
+```
+$ export PATH=$HOME/nixroot/bin:$PATH
+$ source $HOME/nixroot/etc/profile.d/nix.sh
+$ echo $NIX_PROFILES
+/home/roland/nixroot/var/nix/profiles/default /home/roland/.nix-profile
+$ echo $XDG_DATA_DIRS
+/usr/local/share:/usr/share:
+$ echo $NIX_SSL_CERT_FILE
+/etc/ssl/certs/ca-certificates.crt
+$ nix-channel --add https://nixos.org/channels/nixos-24.05 nixpkgs  # for may 2024 nixpkgs
+```
+
 ## Why nix-from-scratch?
 
 The purpose of this project is to provide a last-resort build-from-source
@@ -145,7 +166,9 @@ bootstrap core depenencies.
 
 4. Once all its dependencies are installed,  we'll proceed to build `nix` itself.
 
-### nix install locations
+# Detailed Install Instructions (TL;Read Anyway)
+
+## nix install locations
 
 We will use the following paths:
 
@@ -160,7 +183,7 @@ including `nix` binaries and libraries themselves
 
 5. system configuration directory `$HOME/nixroot/etc` (instead of `/etc`).
 
-### Meta-build Instructions
+## (Meta)build Instructions
 
 1. Download release
 
@@ -223,7 +246,7 @@ make nix-deps    # recursively build+install all nix dependencies
 make pkgs/nix
 ```
 
-### Package Versions
+## Package Versions
 
 To see package versions (available after successful unpack for each component):
 
@@ -271,7 +294,7 @@ toml11-4.2.0
 zlib-1.3.1
 ```
 
-### Metabuild Organization
+## (Meta)build Organization
 
 1. The build tracks build-lifecycle progress for each package *foo* in `$srcdir/pkgs/foo/state`.
 This allows it to pickup 'where it left off' if a problem occurs, without having to know installed
@@ -370,7 +393,7 @@ make pkgs/jq
 
 Builds and installs `m4` -> `autoconf` -> `jq`
 
-### Filesystem organization
+## Filesystem organization
 
 ```
 nix-from-scratch-0.40.0
@@ -400,7 +423,7 @@ nix-from-scratch-0.40.0
 The set of pacakges is sufficient to build nix on a stock ubuntu platform (e.g. 22.04/jammy).
 This assumes the base platform provides working (and sufficiently new) c and c++ compilers.
 
-### Troubleshooting
+## Troubleshooting
 
 Anticipated problems:
 

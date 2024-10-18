@@ -13,7 +13,7 @@ NIX_STORE_DIR:=$(NIX_PREFIX)/nix/store
 NIX_LOCALSTATE_DIR:=$(NIX_PREFIX)/var
 # NOTE: /etc/nix in standard nix install 
 NIX_SYSCONF_DIR:=$(NIX_PREFIX)/etc
-
+# NOTE: /usr
 
 # provides:
 #   TOP_DIR
@@ -67,7 +67,7 @@ builddir:=build
 # pre_configure_hook + configure script: runs in build dir
 pre_configure_hook:=../pre-configure-hook.sh --srcdir=$(srcdir) 
 configure_script:=configure
-configure_extra_args:=--with-store-dir=$(NIX_STORE_DIR) --prefix=$(NIX_PREFIX) --sysconfdir=$(NIX_SYSCONF_DIR) --localstatedir=$(NIX_LOCALSTATE_DIR) --enable-gc --disable-doc-gen CXX=g++-12 LIBSECCOMP_FLAGS=-I$(PREFIX)/include
+configure_extra_args:=--with-store-dir=$(NIX_STORE_DIR) --prefix=$(NIX_PREFIX) --sysconfdir=$(NIX_SYSCONF_DIR) --localstatedir=$(NIX_LOCALSTATE_DIR) --enable-gc CXX=g++-12 LIBSECCOMP_FLAGS=-I$(PREFIX)/include
 post_install_hook:=
 
 all: compile
@@ -129,7 +129,7 @@ compile: state/compile.result $(srcdir)
 #
 state/install.result: state/compile.result
 	mkdir -p $(NIX_STORE_DIR) $(NIX_SYSCONF_DIR) $(NIX_LOCALSTATE_DIR)/nix
-	(cd $(srcdir) && make install sysconfdir=$(NIX_SYSCONF_DIR) V=1 LDFLAGS="$(ldflags)")
+	(cd $(srcdir) && make install docdir=$(NIX_DOC_DIR) sysconfdir=$(NIX_SYSCONF_DIR) V=1 LDFLAGS="$(ldflags)")
 	cp state/compile.result state/install.result
 
 .PHONY: install
