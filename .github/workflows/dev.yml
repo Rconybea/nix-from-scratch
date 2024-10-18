@@ -185,3 +185,7 @@ jobs:
     - name: mdbook-linkcheck
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=mdbook-linkcheck
+
+    - name: mdbook
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=mdbook
