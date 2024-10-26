@@ -154,7 +154,8 @@ pkgs/autoconf: pkgs/m4
 pkg/m4:
 
 
+# ----------------------------------------------------------------
 
 
-
-
+.PHONY: pkgs/texinfo pkgs/autoconf
+pkgs/texinfo: 
