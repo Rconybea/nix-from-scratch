@@ -151,10 +151,11 @@ pkgs/autoconf-archive: pkgs/autoconf
 pkgs/autoconf: pkgs/m4
 
 .PHONY: pkgs/m4
-pkg/m4:
+pkgs/m4:
 
 
 
-
+.PHONY: pkgs/bash
+pkgs/bash: pkgs/autoconf
 
 
