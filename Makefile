@@ -156,6 +156,8 @@ pkg/m4:
 
 # ----------------------------------------------------------------
 
+.PHONY: pkgs/binutils
+pkgs/binutils: pkgs/texinfo 
 
 .PHONY: pkgs/texinfo pkgs/autoconf
 pkgs/texinfo: 
