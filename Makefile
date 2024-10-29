@@ -43,7 +43,7 @@ pkgs/nix: nix-deps
 pkgs/mdbook: 
 
 .PHONY: pkgs/mdbook-linkcheck
-pkgs/mdbook-linkcheck
+pkgs/mdbook-linkcheck:
 
 .PHONY: pkgs/unzip
 pkgs/unzip: pkgs/autoconf
@@ -156,8 +156,24 @@ pkg/m4:
 
 # ----------------------------------------------------------------
 
-.PHONY: pkgs/binutils
-pkgs/binutils: pkgs/texinfo 
+.PHONY: pkgs/gcc
+pkgs/gcc: pkgs/mpc pkgs/gmp pkgs/mpfr
+
+# really glibc stage1
+.PHONY: pkgs/glibc
+pkgs/glibc: pkgs/bison
+
+.PHONY: pkgs/mpc
+pkgs/mpc:
+
+.PHONY: pkgs/gmp
+pkgs/gmp:
+
+.PHONY: pkgs/mpfr
+pkgs/mpfr:
+
+.PHONY: pkgs/stage1-binutils
+pkgs/stage1-binutils: pkgs/texinfo 
 
 .PHONY: pkgs/texinfo pkgs/autoconf
 pkgs/texinfo: 

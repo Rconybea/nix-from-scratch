@@ -12,9 +12,20 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 #
 include $(TOP_DIR)/mk/config.mk
 
+# we're bootstrapping.
+#  PREFIX_FIXPOINT is our ultimate destination.
+#  PREFIX is just for stage1
+#
+PREFIX_FIXPOINT:=$(PREFIX)
+PREFIX:=$(PREFIX)/stage1
+
+# must match stage1-binutils
+TARGET=x86_64-nxfs-linux-gnu
+
+stem:=gcc
 version:=14.2.0
 # unique package name
-name:=gcc-$(version)
+name:=$(stem)-$(version)
 # local directory for unpacked source
 unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
@@ -27,8 +38,8 @@ url:=https://ftp.gnu.org/gnu/gcc/$(name)/$(tarball)
 sha256:=a7b39bc69cbf9e25826c5a60ab26477001f7c08d85cec04bc0e29cabed6f3cc9
 # Settings CFLAGS seems to break the flex configure script;
 # complains that it can't invoke gcc.
-cflags:=-I$(PREFIX)/include
-ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
+#cflags:=-I$(PREFIX_FIXPOINT)/include 
+#ldflags:=-L$(PREFIX_FIXPOINT)/lib -Wl,-rpath,$(PREFIX)/lib -Wl,--dynamic-linker=$(PREFIX)/lib/ld-linux-x86-64.so.2
 #
 srcdir:=src
 builddir:=build
@@ -38,11 +49,17 @@ patch_script:=gcc-patch.sh
 #
 # stage1 build.  don't need everything, keeping just what we need to bootstrap glibc
 #
-# not setting --target yet
-# --target: if doesn't match config.gues (I think)
+# --with-glibc-version=2.40
+# --with-build-sysroot: (edumacated guess) not setting --target --> activates tests that compiler can run
+
+#	(presumably such tests wouldn't be feasible to attempt if cross-compiler)
+#   Try setting --with-build-sysroot=/usr
+#
+# *not setting --target yet*
+# --target: if doesn't match config.guess (I think)
 #           so that binutils build prepares for a cross linker
 #
-configure_extra_args:=--prefix=$(PREFIX)/stage1 --with-glibc-version=2.40 --with-sysroot=$(PREFIX) --with-newlib --without-headers --enable-default-pie --enable-default-ssp --disable-nls --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
+configure_extra_args:=--target=$(TARGET) --with-sysroot=$(PREFIX_FIXPOINT) --with-newlib --enable-default-pie --enable-default-ssp --disable-nls --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
 
 post_install_hook:=
 
