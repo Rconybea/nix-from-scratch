@@ -1,22 +1,22 @@
 ![Build Status on github actions](https://github.com/Rconybea/nix-from-scratch/actions/workflows/main.yml/badge.svg)
 ![Build Status on github actions](https://github.com/Rconybea/nix-from-scratch/actions/workflows/dev.yml/badge.svg)
-[![Version](https://img.shields.io/badge/release-v0.41.0-blue)](https://github.com/Rconybea/nix-from-scratch/releases)
+[![Version](https://img.shields.io/badge/release-v0.42.0-blue)](https://github.com/Rconybea/nix-from-scratch/releases)
 [![License](https://img.shields.io/github/license/ToruNiina/toml11.svg?style=flat)](LICENSE)
 
 # nix-from-scratch
 
-Build nix packager and dependencies:
+Build nix package manager and dependencies:
 1. from source code
 2. with dependencies
-3. without requiring write access to LSB directories
+3. without requiring write access to LSB directories (such as /usr)
 
 ## TL;DR
 
 ```
-version=nix-from-scratch-0.41.0
+version=nix-from-scratch-0.42.0
 curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/${version}.tar.gz
 tar xf ${version}.tar.gz
-(cd ${version} && make)   # builds + installs
+(cd ${version} && make)   # builds + installs to $HOME/ext, $HOME/nixroot
 ```
 
 After successful install:
@@ -27,17 +27,29 @@ Type :? for help.
 nix-repl> ^D
 ```
 
+Preparing to bootstrap nixpkgs (work in progress)
+```
+$ cd $HOME/nixroot # any path will work
+$ git clone https://github.com/NixOS/nixpkgs
+$ git checkout 24.05
+$ export PATH=$HOME/nixroot/bin:$HOME/ext/bin:$PATH
+
+# nix-instantiate, nix-build use this
+$ export NIX_PATH=$HOME/nixroot/nixpkgs
+```
+
 To properly use nix need a little configuration
 ```
-$ export PATH=$HOME/nixroot/bin:$PATH
+$ export PATH=$HOME/nixroot/bin:$HOME/ext/bin:$PATH
 $ source $HOME/nixroot/etc/profile.d/nix.sh
-$ echo $NIX_PROFILES
-/home/roland/nixroot/var/nix/profiles/default /home/roland/.nix-profile
-$ echo $XDG_DATA_DIRS
-/usr/local/share:/usr/share:
-$ echo $NIX_SSL_CERT_FILE
-/etc/ssl/certs/ca-certificates.crt
+
+# for nix-instantiate, nix-build
+export NIX_PATH=/home/roland/nixroot/nixpkgs
+
+# for nix-env:
 $ nix-channel --add https://nixos.org/channels/nixos-24.05 nixpkgs  # for may 2024 nixpkgs
+$ nix-channel --update nixpkgs                # fetches nixpkgs content
+
 ```
 
 ## Why nix-from-scratch?
@@ -188,9 +200,9 @@ including `nix` binaries and libraries themselves
 1. Download release
 
   ```
-  curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/nix-from-scratch-0.41.0.tar.gz
-  tar xf nix-from-scratch-0.41.0.tar.gz
-  srcdir=nix-from-scratch-0.41.0
+  curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/nix-from-scratch-0.42.0.tar.gz
+  tar xf nix-from-scratch-0.42.0.tar.gz
+  srcdir=nix-from-scratch-0.42.0
   ```
 
 2. Choose nix install location
@@ -255,7 +267,7 @@ cd $srcdir
 cat pkgs/*/state/package-version
 ```
 
-Output as of nix-from-scratch-0.41.0:
+Output as of nix-from-scratch-0.42.0:
 ```
 autoconf-archive-2023.02.20
 autoconf-2.72
@@ -396,7 +408,7 @@ Builds and installs `m4` -> `autoconf` -> `jq`
 ## Filesystem organization
 
 ```
-nix-from-scratch-0.41.0
+nix-from-scratch-0.42.0
 +- Makefile              umbrella makefile; delegates to pkgs/foo/Makefile for each package
 +- README.md
 +- LICENSE
@@ -405,23 +417,48 @@ nix-from-scratch-0.41.0
 |  +- bar-4.5.6.tar.gz
 |  ...
 +- mk                    helper makefiles/scripts to abstract common patterns
-\- pkgs                  parent for package-specific directories
-   +- foo
-   |   +- Makefile       makefile for a single package foo
-   |   +- src            unpacked source directory for package foo
-   |   \- state          track build results by phase
-   +- bar
-   |   +- Makefile
-   |   +- src
-   |   \- state
-   .
-
++- pkgs                  parent for package-specific directories
+|  +- foo
+|  |   +- Makefile       makefile for a single package foo
+|  |   +- src            unpacked source directory for package foo
+|  |   \- state          track build results by phase
+|  +- bar
+|  |   +- Makefile
+|  |   +- src
+|  |   \- state
+|  .
+|  .
+\- nixfromscratchpkgs    'nixfromscratch packages collection'
+   +- default.nix        toplevel nixfromscratch nix expression
+   +- toolchain          umbrella directory
+   |  +- qux
+   |  |  \- default.nix  nix build for qux
+   |  +- frob
+   |  |  \- default.nix  nix build for frob
+   |  .
+   |  .
+   +- example
+   |  \- hello
+   |     \- defualt.nix
+   \- stdenv
+      \- default.nix
 
 ```
+
+Can ignore everything under `nixfromscratchpkgs/` until we have a working nix build.
 
 `pkgs` contains one subdirectory for nix itself, plus one subdirectory for each package that nix depends on.
 The set of pacakges is sufficient to build nix on a stock ubuntu platform (e.g. 22.04/jammy).
 This assumes the base platform provides working (and sufficiently new) c and c++ compilers.
+
+Once we have nix built,  want to construct a nix stdenv.  Would be ideal to use nix minimal-bootstrap,
+but have run into trouble along the way, so trying a different approach:  build a native stdenv,
+i.e. nix builds for gcc, coreutils, binutils etc.
+
+Plan (not achieved yet) is to rehearse similar bootstrap process to the one we use with linuxfromscratch.
+We'll start by using a 'native stdenv' to build a toolchain that's accessible from nix store,
+but built using non-nix {gcc, binutils, coreutils, ..}.  Seems like easier lift than tackling
+the full bootstrap
 
 ## Troubleshooting
 
