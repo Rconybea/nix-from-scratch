@@ -191,3 +191,7 @@ jobs:
     - name: nix
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nix
+
+    - name: xz
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=xz
