@@ -37,7 +37,7 @@ srcdir:=src
 builddir:=src
 pre_configure_hook:=
 configure_exec:=sh
-configure_extra_args:=Configure -des -D prefix=$(PREFIX) -D vendorprefix=$(PREFIX) -D useshrplib -D privlib=$(PREFIX)/lib/perl5/$(version_major_minor)/core_perl -D archlib=$(PREFIX)/lib/perl5/$(version_major_minor)/core_perl -D sitelib=$(PREFIX)/lib/perl5/$(version_major_minor)/site_perl -D sitearch=$(PREFIX)/lib/perl5/$(versiohn5.40/site_perl -D vendorlib=$(PREFIX)/lib/perl5/$(version_major_minor)/vendor_perl -D vendorarch=$(PREFIX)/lib/perl5/$(version_major_minor)/vendor_perl
+configure_extra_args:=Configure -des -Dprefix=$(PREFIX) -Dccflags=$(cflags) -Dvendorprefix=$(PREFIX) -Duseshrplib -Dprivlib=$(PREFIX)/lib/perl5/$(version_major_minor)/core_perl -Darchlib=$(PREFIX)/lib/perl5/$(version_major_minor)/core_perl -Dsitelib=$(PREFIX)/lib/perl5/$(version_major_minor)/site_perl -Dsitearch=$(PREFIX)/lib/perl5/$(versiohn5.40/site_perl -Dvendorlib=$(PREFIX)/lib/perl5/$(version_major_minor)/vendor_perl -Dvendorarch=$(PREFIX)/lib/perl5/$(version_major_minor)/vendor_perl
 
 all: compile
 
