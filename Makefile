@@ -124,7 +124,10 @@ pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl
 pkgs/libssh2: pkgs/openssl
 
 .PHONY: pkgs/openssl
-pkgs/openssl: pkgs/zlib
+pkgs/openssl: pkgs/perl pkgs/zlib
+
+.PHONY: pkgs/perl
+pkgs/perl: 
 
 .PHONY: pkgs/sqlite
 pkgs/sqlite: pkgs/pkgconf pkgs/libtool
@@ -152,9 +155,5 @@ pkgs/autoconf: pkgs/m4
 
 .PHONY: pkgs/m4
 pkg/m4:
-
-
-
-
 
 
