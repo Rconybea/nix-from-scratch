@@ -43,7 +43,7 @@ pkgs/nix: nix-deps
 pkgs/mdbook: 
 
 .PHONY: pkgs/mdbook-linkcheck
-pkgs/mdbook-linkcheck
+pkgs/mdbook-linkcheck:
 
 .PHONY: pkgs/unzip
 pkgs/unzip: pkgs/autoconf
@@ -113,6 +113,9 @@ pkgs/libuv: pkgs/automake pkgs/libtool
 
 .PHONY: pkgs/libarchive
 pkgs/libarchive: pkgs/autoconf
+
+.PHONY: pkgs/xz
+pkgs/xz: pkgs/pkgconf pkgs/autoconf
 
 .PHONY: pkgs/expat
 pkgs/expat: pkgs/autoconf
