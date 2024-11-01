@@ -33,11 +33,9 @@ patch_script:=
 srcdir:=src
 builddir:=build
 configure_extra_args:=--docdir=$(PREFIX)/share/doc/$(name) --enable-static --enable-shared
-post_install_hook:=./post-install-hook.sh --prefix=$(PREFIX)
+post_install_hook:=
 
-COMMANDS:=all sha256 clean unpackclean distclean
-.PHONY: $(COMMANDS)
-
+.PHONY: all
 all: compile
 
 # provides targets:
