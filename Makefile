@@ -34,7 +34,7 @@ $(PHASE):
 # ----------------------------------------------------------------
 
 .PHONY: nix-deps
-nix-deps: pkgs/nlohmann_json pkgs/libtool pkgs/automake pkgs/autoconf-archive pkgs/jq pkgs/editline pkgs/libsodium pkgs/brotli pkgs/libcpuid pkgs/libseccomp pkgs/boehm-gc pkgs/gtest pkgs/rapidcheck pkgs/libgit2 pkgs/toml11 pkgs/lowdown pkgs/bison pkgs/mdbook-linkcheck pkgs/mdbook
+nix-deps: pkgs/nlohmann_json pkgs/libtool pkgs/automake pkgs/autoconf-archive pkgs/jq pkgs/editline pkgs/libsodium pkgs/brotli pkgs/libcpuid pkgs/libseccomp pkgs/boehm-gc pkgs/gtest pkgs/rapidcheck pkgs/libgit2 pkgs/toml11 pkgs/lowdown pkgs/bison pkgs/mdbook-linkcheck pkgs/mdbook pkgs/bzip2
 
 .PHONY: pkgs/nix
 pkgs/nix: nix-deps
@@ -112,7 +112,10 @@ pkgs/cmake: pkgs/curl-stage1 pkgs/expat pkgs/libarchive pkgs/libuv
 pkgs/libuv: pkgs/automake pkgs/libtool
 
 .PHONY: pkgs/libarchive
-pkgs/libarchive: pkgs/autoconf
+pkgs/libarchive: pkgs/bzip2 pkgs/autoconf
+
+.PHONY: pkgs/bzip2
+pkgs/bzip2: 
 
 .PHONY: pkgs/xz
 pkgs/xz: pkgs/pkgconf pkgs/autoconf
