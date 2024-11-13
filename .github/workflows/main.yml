@@ -183,3 +183,7 @@ jobs:
     - name: mdbook
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=mdbook
+
+    - name: bzip2
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=bzip2
