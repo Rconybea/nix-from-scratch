@@ -155,6 +155,9 @@ pkg/m4:
 
 
 # ----------------------------------------------------------------
+.PHONY: pkgs/bzip2
+pkgs/bzip2:
+
 
 .PHONY: pkgs/gcc
 pkgs/gcc: pkgs/mpc pkgs/gmp pkgs/mpfr
