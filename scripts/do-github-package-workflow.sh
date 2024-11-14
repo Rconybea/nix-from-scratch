@@ -26,6 +26,8 @@ while [[ $# > 0 ]]; do
     shift
 done
 
+set -e
+
 echo "::group::unpack"
 make -C pkgs/${package} unpack
 echo "::endgroup"
