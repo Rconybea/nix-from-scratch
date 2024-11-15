@@ -53,5 +53,5 @@ tree -L 3 --filelimit=15 ${prefix}
 echo "::endgroup"
 
 echo "::group::check runpaths for executables"
-./mk/check-runpaths.sh --prefix="${prefix}"
+./scripts/check-runpaths.sh --prefix=${prefix}
 echo "::endgroup"
