@@ -63,6 +63,9 @@ pkgs/toml11: pkgs/cmake
 .PHONY: pkgs/ncurses
 pkgs/ncurses: pkgs/pkgconf
 
+.PHONY: pkgs/readline
+pkgs/readline: pkgs/ncurses
+
 .PHONY: pkgs/libgit2
 pkgs/libgit2: pkgs/cmake pkgs/python pkgs/libssh2 pkgs/zlib
 
