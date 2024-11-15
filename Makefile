@@ -66,8 +66,11 @@ pkgs/ncurses: pkgs/pkgconf
 .PHONY: pkgs/readline
 pkgs/readline: pkgs/ncurses
 
+.PHONY: pkgs/pcre
+pkgs/pcre: pkgs/readline pkgs/bzip2 pkgs/zlib
+
 .PHONY: pkgs/libgit2
-pkgs/libgit2: pkgs/cmake pkgs/python pkgs/libssh2 pkgs/zlib
+pkgs/libgit2: pkgs/cmake pkgs/python pkgs/libssh2 pkgs/pcre
 
 .PHONY: pkgs/rapidcheck
 pkgs/rapidcheck: pkgs/gtest pkgs/boost

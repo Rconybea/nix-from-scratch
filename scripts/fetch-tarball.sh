@@ -10,12 +10,13 @@
 self_name=$(basename ${0})
 
 usage() {
-    echo "$self_name: --archive-dir=ARCHIVE_DIR --url=URL --tarball-path=TARBALL"
+    echo "$self_name: --archive-dir=ARCHIVE_DIR --url=URL --tarball-path=TARBALL --fetch-extra-args=FETCHARGS"
 }
 
 ARCHIVE_DIR=
 url=
 tarball_path=
+fetch_extra_args=
 
 while [[ $# > 0 ]]; do
     case "$1" in
@@ -27,6 +28,9 @@ while [[ $# > 0 ]]; do
             ;;
         --tarball-path=*)
             tarball_path="${1#*=}"
+            ;;
+        --fetch-extra-args=*)
+            fetch_extra_args="${1#*=}"
             ;;
         *)
             usage
@@ -56,7 +60,7 @@ fi
 rm -f state/fetch.result
 rm -f ${tarball_path}
 
-(cd ${ARCHIVE_DIR} && wget --output-document=${tarball_path} ${url}) 2>&1 | tee log/wget.log
+(cd ${ARCHIVE_DIR} && wget --output-document=${tarball_path} ${fetch_extra_args} ${url}) 2>&1 | tee log/wget.log
 err=$?
 
 if [[ ${err} -eq 0 && -f ${tarball_path} && -s ${tarball_path} ]]; then
