@@ -12,7 +12,7 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 #
 include $(TOP_DIR)/mk/config.mk
 
-version:=2.6.2
+version:=2.6.4
 # unique package name
 name:=expat-$(version)
 # local directory for unpacked source
@@ -24,7 +24,7 @@ tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
 url:=https://prdownloads.sourceforge.net/expat/$(tarball)
 # verify this sha
-sha256:=ee14b4c5d8908b1bec37ad937607eab183d4d9806a08adee472c3c3121d27364
+sha256:=a695629dae047055b37d50a0ff4776d1d45d0a4c842cf4ccee158441f55ff7ee
 # Settings CFLAGS seems to break the flex configure script;
 # complains that it can't invoke gcc.
 cflags:=-I$(PREFIX)/include
@@ -43,57 +43,4 @@ post_install_hook:=./post-install-hook.sh --name=$(name) --prefix=$(PREFIX) --sr
 
 all: compile
 
-# provides targets:
-# - $(tarball_path)
-# - state/fetch.result
-# - fetch
-#
-include $(TOP_DIR)/mk/fetch.mk
-
-# provides targets:
-# - sh256
-# - state/expected.sha256
-# - state/verify.result
-# - verify
-#
-include $(TOP_DIR)/mk/verify.mk
-
-
-# provides targets:
-# - state/unpack.result
-# - unpack
-#
-include $(TOP_DIR)/mk/unpack.mk
-
-# provides targets:
-# - state/patch.result
-# - patch
-#
-include $(TOP_DIR)/mk/patch.mk
-
-# provides targets:
-# - state/config.result
-# - config
-#
-include $(TOP_DIR)/mk/configure.mk
-
-# provides targets:
-# - state/compile.mk
-# - compile
-#
-include $(TOP_DIR)/mk/compile.mk
-
-# provides targets:
-# - state/install.mk
-# - install
-#
-include $(TOP_DIR)/mk/install.mk
-
-# provides targets:
-# - distclean
-# - verifyclean
-# - unpackclean
-# - configclean
-# - clean
-#
-include $(TOP_DIR)/mk/clean.mk
+include $(TOP_DIR)/mk/buildphases.mk
