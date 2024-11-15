@@ -168,6 +168,10 @@ jobs:
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage2
 
+    - name: nlohmann_json
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nlohmann_json
+
     - name: gtest
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gtest
@@ -180,10 +184,6 @@ jobs:
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=toml11
 
-    - name: nix
-      run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nix
-
     - name: unzip
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=unzip
@@ -195,10 +195,6 @@ jobs:
     - name: mdbook
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=mdbook
-
-    - name: bzip2
-      run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=bzip2
 
     - name: nix
       run: |
