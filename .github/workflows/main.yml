@@ -84,6 +84,10 @@ jobs:
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=jq
 
+    - name: libarchive
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libarchive
+
     - name: cmake
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=cmake
@@ -131,10 +135,6 @@ jobs:
     - name: libgit2
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libgit2
-
-    - name: libarchive
-      run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libarchive
 
     - name: lowdown
       run: |
