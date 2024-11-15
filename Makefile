@@ -124,7 +124,10 @@ pkgs/xz: pkgs/pkgconf pkgs/autoconf
 pkgs/expat: pkgs/autoconf
 
 .PHONY: pkgs/curl-stage1
-pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl
+pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl pkgs/ztsd
+
+.PHONY: pkgs/zstd
+pkgs/zstd: pkgs/zstd pkgs/zlib
 
 .PHONY: pkgs/libssh2
 pkgs/libssh2: pkgs/openssl
@@ -162,4 +165,33 @@ pkgs/autoconf: pkgs/m4
 .PHONY: pkgs/m4
 pkg/m4:
 
+# ----------------------------------------------------------------
+# additional deps for crosstool-ng 
+
+.PHONY: pkgs/bzip2
+pkgs/bzip2:
+
+# ----------------------------------------------------------------
+
+.PHONY: pkgs/gcc
+pkgs/gcc: pkgs/mpc pkgs/gmp pkgs/mpfr
+
+# really glibc stage1
+.PHONY: pkgs/glibc
+pkgs/glibc: pkgs/bison
+
+.PHONY: pkgs/mpc
+pkgs/mpc:
+
+.PHONY: pkgs/gmp
+pkgs/gmp:
+
+.PHONY: pkgs/mpfr
+pkgs/mpfr:
+
+.PHONY: pkgs/stage1-binutils
+pkgs/stage1-binutils: pkgs/texinfo 
+
+.PHONY: pkgs/texinfo
+pkgs/texinfo: pkgs/autoconf
 

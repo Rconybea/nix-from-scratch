@@ -13,8 +13,9 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 include $(TOP_DIR)/mk/config.mk
 
 version:=1.0.8
+stem:=bzip2
 # unique package name
-name:=bzip2-$(version)
+name:=$(stem)-$(version)
 # local directory for unpacked source
 unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
@@ -22,7 +23,7 @@ tarball:=$(name).tar.gz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
-url:=https://www.sourceware.org/pub/bzip2/$(name).tar.gz
+url:=https://www.sourceware.org/pub/$(stem)/$(tarball)
 # verify this sha
 sha256:=ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269
 #
@@ -32,7 +33,6 @@ ldflags:=
 #ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=patch-bzip2.sh
-
 pre_configure_hook:=
 #
 srcdir:=src
@@ -47,7 +47,7 @@ build_exec:=make
 build_args:=-f Makefile-libbz2_so
 post_install_hook:=
 #
-install_exec:=
+install_exec:=make
 install_args:=PREFIX=$(PREFIX) install
 #
 post_install_hook:=./post-install-bzip2.sh --prefix=$(PREFIX) --build-dir=$(builddir)

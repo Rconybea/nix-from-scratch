@@ -31,15 +31,17 @@ if [[ ! -d ${prefix} ]]; then
     2>&1 echo "$self_name: PREFIX: expected directory: [${prefix}]"
 fi
 
-cd ${prefix}/bin
+if [[ -d ${prefix}/bin ]]; then
+    cd ${prefix}/bin
 
-for file in *; do
-    elf_exe=$(file $file | grep 'ELF.*executable')
+    for file in *; do
+        elf_exe=$(file $file | grep 'ELF.*executable')
 
-    if [[ -n $elf_exe ]]; then
-        runpath=$(readelf -d $file | grep RUNPATH | sed -e 's|^.* Library runpath: ||')
-        printf "%20s: %s\n" $file "$runpath"
-    fi
-done
+        if [[ -n $elf_exe ]]; then
+            runpath=$(readelf -d $file | grep RUNPATH | sed -e 's|^.* Library runpath: ||')
+            printf "%20s: %s\n" $file "$runpath"
+        fi
+    done
+fi
 
 # end check-runpaths.sh

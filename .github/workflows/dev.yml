@@ -74,6 +74,10 @@ jobs:
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=openssl
 
+    - name: zstd
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=zstd
+
     - name: curl-stage1
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage1
@@ -81,6 +85,14 @@ jobs:
     - name: jq
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=jq
+
+    - name: bzip2
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=bzip2
+
+    - name: libarchive
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libarchive
 
     - name: cmake
       run: |
@@ -130,14 +142,6 @@ jobs:
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libgit2
 
-    - name: bzip2
-      run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=bzip2
-
-    - name: libarchive
-      run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libarchive
-
     - name: lowdown
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=lowdown
@@ -145,6 +149,10 @@ jobs:
     - name: brotli
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=brotli
+
+    - name: gperf
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
 
     - name: libseccomp
       run: |
@@ -165,10 +173,6 @@ jobs:
     - name: nlohmann_json
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nlohmann_json
-
-    - name: gperf
-      run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
 
     - name: gtest
       run: |
@@ -202,4 +206,4 @@ jobs:
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=xz
 
-        
+

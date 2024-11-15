@@ -12,9 +12,9 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 #
 include $(TOP_DIR)/mk/config.mk
 
-version:=2.6.4
+version:=6.3.0
 # unique package name
-name:=expat-$(version)
+name:=gmp-$(version)
 # local directory for unpacked source
 unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
@@ -22,25 +22,29 @@ tarball:=$(name).tar.xz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
-url:=https://prdownloads.sourceforge.net/expat/$(tarball)
+url:=https://ftp.gnu.org/gnu/gmp/$(tarball)
 # verify this sha
-sha256:=a695629dae047055b37d50a0ff4776d1d45d0a4c842cf4ccee158441f55ff7ee
+sha256:=a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898
 # Settings CFLAGS seems to break the flex configure script;
 # complains that it can't invoke gcc.
 cflags:=-I$(PREFIX)/include
-# 1. the configure script in flex seems to get confused by LDFLAGS="..." with rhs containing a space
-#    (other configure scripts are ok with this)
-# 2. fortunately flex doesn't need other libraries from $(PREFIX)/lib
-# 3. if this changes, may want to try invoking compile step with LD_RUN_PATH=$(PREFIX)/lib
-#    as alternative
-ldflags:=-Wl,-rpath,$(PREFIX)/lib
+ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
 patch_script:=
 srcdir:=src
 builddir:=build
-configure_extra_args:=--docdir=$(PREFIX)/share/doc/$(name)
-post_install_hook:=./post-install-hook.sh --name=$(name) --prefix=$(PREFIX) --srcdir=$(srcdir)
+
+# noop configure/compile/install phases.
+# instead build this in gcc source tree,
+# see pkgs/gcc/Makefile
+
+configure_exec:=true
+configure_extra_args:=
+build_exec:=true
+install_exec:=true
+post_install_hook:=
 
 all: compile
 
 include $(TOP_DIR)/mk/buildphases.mk
+

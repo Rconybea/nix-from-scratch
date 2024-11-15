@@ -34,7 +34,7 @@ patch_script:=./curl-patch.sh
 srcdir:=src
 builddir:=build
 pre_configure_hook:=$(THIS_DIR)/pre-configure-hook.sh --srcdir=$(srcdir)
-configure_extra_args:=--with-openssl --enable-shared --enable-static=no 
+configure_extra_args:=--with-openssl --without-brotli --enable-shared --enable-static=no 
 post_install_hook:=
 
 all: compile
