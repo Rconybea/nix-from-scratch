@@ -118,7 +118,7 @@ pkgs/libarchive: pkgs/autoconf
 pkgs/expat: pkgs/autoconf
 
 .PHONY: pkgs/curl-stage1
-pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl
+pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl pkgs/ztsd
 
 .PHONY: pkgs/zstd
 pkgs/zstd: pkgs/zstd pkgs/zlib
