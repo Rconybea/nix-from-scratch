@@ -60,6 +60,9 @@ pkgs/flex: pkgs/autoconf
 .PHONY: pkgs/toml11
 pkgs/toml11: pkgs/cmake 
 
+.PHONY: pkgs/ncurses
+pkgs/ncurses: pkgs/pkgconf
+
 .PHONY: pkgs/libgit2
 pkgs/libgit2: pkgs/cmake pkgs/python pkgs/libssh2 pkgs/zlib
 
