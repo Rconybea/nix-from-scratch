@@ -144,6 +144,10 @@ jobs:
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=brotli
 
+    - name: gperf
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
+
     - name: libseccomp
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libseccomp
@@ -159,10 +163,6 @@ jobs:
     - name: curl-stage2
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage2
-
-    - name: gperf
-      run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
 
     - name: gtest
       run: |

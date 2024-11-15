@@ -146,6 +146,10 @@ jobs:
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=brotli
 
+    - name: gperf
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
+
     - name: libseccomp
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libseccomp
@@ -165,10 +169,6 @@ jobs:
     - name: nlohmann_json
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nlohmann_json
-
-    - name: gperf
-      run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
 
     - name: gtest
       run: |
