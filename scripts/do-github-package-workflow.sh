@@ -26,6 +26,18 @@ while [[ $# > 0 ]]; do
     shift
 done
 
+if [[ -z "${prefix}" ]];
+then
+    2>&1 echo "error: ${self_name}: expected non-empty PREFIX (use --prefix=PREFIX)"
+    exit 1
+fi
+
+if [[ -z "${package}" ]];
+then
+    2>&1 echo "error: ${self_name}: expected non-empty PACKAGE (use --package=PACKAGE)"
+    exit 1
+fi
+
 set -e
 
 echo "::group::unpack"
@@ -49,7 +61,8 @@ make -C pkgs/${package} install
 echo "::endgroup"
 
 echo "::group::install-tree (simplified)"
-tree -L 3 --filelimit=15 ${prefix}
+# tree will return non-zero exit code if filelimit triggered
+tree -L 3 --filelimit=15 ${prefix} || true
 echo "::endgroup"
 
 echo "::group::check runpaths for executables"
