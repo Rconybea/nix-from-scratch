@@ -115,7 +115,7 @@ pkgs/brotli: pkgs/cmake pkgs/curl-stage1 pkgs/patchelf
 pkgs/patchelf: pkgs/autoconf
 
 .PHONY: pkgs/cmake
-pkgs/cmake: pkgs/curl-stage1 pkgs/expat pkgs/libarchive pkgs/libuv
+pkgs/cmake: pkgs/curl-stage1 pkgs/libarchive pkgs/libuv
 
 .PHONY: pkgs/libuv
 pkgs/libuv: pkgs/automake pkgs/libtool
