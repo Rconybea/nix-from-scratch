@@ -1,4 +1,4 @@
-# Always gets directory containing this Makefile, regardless of cwd
+ # Always gets directory containing this Makefile, regardless of cwd
 THIS_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 # Always root directory for nix-from-scratch (even if not a git repo)
 TOP_DIR:=$(realpath $(THIS_DIR)/../..)
@@ -38,12 +38,12 @@ srcdir:=src
 builddir:=build
 pre_configure_hook:=
 configure_exec:=
-configure_extra_args:=--mandir=$(PREFIX)/share/man --with-shared --without-debug --with-cxx-shared --enable-pc-files --with-pkgs-config-libdir=$(PREFIX)/lib/pkgconfig --disable-widec
+configure_extra_args:=--mandir=$(PREFIX)/share/man --with-shared --without-normal --without-debug --with-cxx-shared --enable-pc-files --with-pkgs-config-libdir=$(PREFIX)/lib/pkgconfig 
 build_exec:=
 build_args:=
-install_exec:=
-install_args:=
-post_install_hook:=./ncurses-postinstall.sh --prefix=$(PREFIX)
+install_exec:=../ncurses-install.sh
+install_args:=--prefix=$(PREFIX)
+post_install_hook:=
 
 all: compile
 
