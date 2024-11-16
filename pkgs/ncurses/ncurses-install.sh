@@ -34,7 +34,7 @@ echo "$self_name: prefix=${prefix}"
 
 # LFS uses DESTDIR=${prefix} here, because it's setting up chroot environment
 make TIC_PATH=./progs/tic install
-sed -e 's/^#if.*XOPEN.*$/#if 1/' -i ${prefix}/include/curses.h
+sed -e 's/^#if.*XOPEN.*$/#if 1/' -i ${prefix}/include/ncursesw/curses.h
 
 (cd ${prefix}/lib && ln -sv libncursesw.so libncurses.so)
 (cd ${prefix}/lib && ln -sfv libncurses.so libcurses.so)
