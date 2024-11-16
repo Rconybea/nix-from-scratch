@@ -69,7 +69,7 @@ builddir:=build
 # pre_configure_hook + configure script: runs in build dir
 pre_configure_hook:=../pre-configure-hook.sh --srcdir=$(srcdir) 
 configure_script:=configure
-configure_extra_args:=--with-store-dir=$(NIX_STORE_DIR) --prefix=$(NIX_PREFIX) --sysconfdir=$(NIX_SYSCONF_DIR) --localstatedir=$(NIX_LOCALSTATE_DIR) --enable-gc CXX=g++-12 LIBSECCOMP_FLAGS=-I$(PREFIX)/include
+configure_extra_args:=--with-store-dir=$(NIX_STORE_DIR) --prefix=$(NIX_PREFIX) --sysconfdir=$(NIX_SYSCONF_DIR) --localstatedir=$(NIX_LOCALSTATE_DIR) --enable-gc --with-boost=$(PREFIX) --with-boost-libdir=$(PREFIX)/lib CXX=g++-12 LIBSECCOMP_CFLAGS=-I$(PREFIX)/include
 post_install_hook:=
 
 all: compile
