@@ -34,7 +34,7 @@ patch_script:=
 srcdir:=src
 builddir:=build
 pre_configure_hook:=
-configure_extra_args:=--without-expat
+configure_extra_args:=
 post_install_hook:=
 
 all: compile

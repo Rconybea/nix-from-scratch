@@ -121,7 +121,7 @@ pkgs/cmake: pkgs/curl-stage1 pkgs/expat pkgs/libarchive pkgs/libuv
 pkgs/libuv: pkgs/automake pkgs/libtool
 
 .PHONY: pkgs/libarchive
-pkgs/libarchive: pkgs/autoconf
+pkgs/libarchive: pkgs/bzip2 pkgs/expat pkgs/autoconf
 
 .PHONY: pkgs/expat
 pkgs/expat: pkgs/autoconf
