@@ -56,6 +56,10 @@ jobs:
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=zlib
 
+    - name: ncurses
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=ncurses
+
     - name: flex
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=flex
