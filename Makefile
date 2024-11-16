@@ -130,7 +130,7 @@ pkgs/expat: pkgs/autoconf
 pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl pkgs/ztsd
 
 .PHONY: pkgs/zstd
-pkgs/zstd: pkgs/zstd pkgs/zlib
+pkgs/zstd: pkgs/zlib
 
 .PHONY: pkgs/libssh2
 pkgs/libssh2: pkgs/openssl
