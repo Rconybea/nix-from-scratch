@@ -9,6 +9,8 @@ export NIX_PREFIX
 
 # NOTE: /nix/store in standard nix install
 NIX_STORE_DIR:=$(NIX_PREFIX)/nix/store
+# NOTE: /usr/share/doc/nix in standard nix install
+NIX_DOC_DIR:=$(NIX_PREFIX)/doc
 # NOTE: /nix/var in standard nix install 
 NIX_LOCALSTATE_DIR:=$(NIX_PREFIX)/var
 # NOTE: /etc/nix in standard nix install 
