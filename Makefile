@@ -168,6 +168,9 @@ pkgs/autoconf: pkgs/m4
 .PHONY: pkgs/m4
 pkg/m4:
 
+.PHONY: pkgs/texinfo
+pkgs/texinfo: pkgs/autoconf
+
 # ----------------------------------------------------------------
 # additional deps for crosstool-ng 
 
@@ -194,7 +197,4 @@ pkgs/mpfr:
 
 .PHONY: pkgs/stage1-binutils
 pkgs/stage1-binutils: pkgs/texinfo 
-
-.PHONY: pkgs/texinfo
-pkgs/texinfo: pkgs/autoconf
 
