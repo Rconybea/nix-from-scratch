@@ -26,9 +26,7 @@ tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 url:=https://www.sourceware.org/pub/$(stem)/$(tarball)
 # verify this sha
 sha256:=ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269
-# Settings cflags seems to cause a problem with libuv
-# (compile errors involving attempts to use a non-existent 'heap_node' member in a uv timer)
-# Without them cmake looks like it builds with its own libuv
+#
 #cflags:=-I$(PREFIX)/include
 #ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
@@ -36,14 +34,16 @@ patch_script:=
 srcdir:=src
 # in-tree build, 
 builddir:=src
+#
+patch_script:=./bzip2-patch.sh
 pre_configure_hook:=
 configure_exec:=true
 configure_extra_args:=
-build_exec:=
+build_exec:=../bzip2-build.sh
 build_args:=
 install_exec:=make
 install_args:=PREFIX=$(PREFIX) install
-post_install_hook:=
+post_install_hook:=./bzip2-postinstall.sh --prefix=$(PREFIX) --build-dir=$(builddir)
 
 all: compile
 
