@@ -32,19 +32,19 @@ cflags:=
 ldflags:=
 #ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
-patch_script:=patch-bzip2.sh
-pre_configure_hook:=
 #
 srcdir:=src
+patch_script:=patch-bzip2.sh
+pre_configure_hook:=
 # custom 'configure' step
-configure_exec:=
+configure_exec:=true
 # invoked from $(builddir)
-configure_script:=../configure-bzip2.sh
-configure_extra_args:=--srcdir=$(srcdir)
+configure_script:=.
+configure_extra_args:=
 # in-source-tree build only
 builddir:=src
-build_exec:=make
-build_args:=-f Makefile-libbz2_so
+build_exec:=../bzip2-build.sh
+build_args:=
 post_install_hook:=
 #
 install_exec:=make

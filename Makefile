@@ -43,7 +43,7 @@ pkgs/nix: nix-deps
 pkgs/mdbook: 
 
 .PHONY: pkgs/mdbook-linkcheck
-pkgs/mdbook-linkcheck:
+pkgs/mdbook-linkcheck: pkgs/unzip
 
 .PHONY: pkgs/unzip
 pkgs/unzip: pkgs/autoconf
@@ -60,8 +60,17 @@ pkgs/flex: pkgs/autoconf
 .PHONY: pkgs/toml11
 pkgs/toml11: pkgs/cmake 
 
+.PHONY: pkgs/ncurses
+pkgs/ncurses: pkgs/pkgconf
+
+.PHONY: pkgs/readline
+pkgs/readline: pkgs/ncurses
+
+.PHONY: pkgs/pcre
+pkgs/pcre: pkgs/readline pkgs/bzip2 pkgs/zlib
+
 .PHONY: pkgs/libgit2
-pkgs/libgit2: pkgs/cmake pkgs/python pkgs/libssh2 pkgs/zlib
+pkgs/libgit2: pkgs/cmake pkgs/python pkgs/libssh2 pkgs/pcre
 
 .PHONY: pkgs/rapidcheck
 pkgs/rapidcheck: pkgs/gtest pkgs/boost
@@ -106,13 +115,13 @@ pkgs/brotli: pkgs/cmake pkgs/curl-stage1 pkgs/patchelf
 pkgs/patchelf: pkgs/autoconf
 
 .PHONY: pkgs/cmake
-pkgs/cmake: pkgs/curl-stage1 pkgs/expat pkgs/libarchive pkgs/libuv
+pkgs/cmake: pkgs/curl-stage1 pkgs/libarchive pkgs/libuv
 
 .PHONY: pkgs/libuv
 pkgs/libuv: pkgs/automake pkgs/libtool
 
 .PHONY: pkgs/libarchive
-pkgs/libarchive: pkgs/bzip2 pkgs/autoconf
+pkgs/libarchive: pkgs/bzip2 pkgs/expat pkgs/autoconf
 
 .PHONY: pkgs/bzip2
 pkgs/bzip2: 
@@ -124,10 +133,10 @@ pkgs/xz: pkgs/pkgconf pkgs/autoconf
 pkgs/expat: pkgs/autoconf
 
 .PHONY: pkgs/curl-stage1
-pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl pkgs/ztsd
+pkgs/curl-stage1: pkgs/pkgconf pkgs/openssl pkgs/zstd
 
 .PHONY: pkgs/zstd
-pkgs/zstd: pkgs/zstd pkgs/zlib
+pkgs/zstd: pkgs/zlib
 
 .PHONY: pkgs/libssh2
 pkgs/libssh2: pkgs/openssl
@@ -165,11 +174,8 @@ pkgs/autoconf: pkgs/m4
 .PHONY: pkgs/m4
 pkg/m4:
 
-# ----------------------------------------------------------------
-# additional deps for crosstool-ng 
-
-.PHONY: pkgs/bzip2
-pkgs/bzip2:
+.PHONY: pkgs/texinfo
+pkgs/texinfo: pkgs/autoconf
 
 # ----------------------------------------------------------------
 
@@ -191,7 +197,4 @@ pkgs/mpfr:
 
 .PHONY: pkgs/stage1-binutils
 pkgs/stage1-binutils: pkgs/texinfo 
-
-.PHONY: pkgs/texinfo
-pkgs/texinfo: pkgs/autoconf
 

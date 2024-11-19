@@ -35,64 +35,9 @@ builddir:=build
 cflags:=-I$(PREFIX)/include
 ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 
-PHASE:=fetch verify unpack patch config compile install
-COMMANDS:=all sha256 clean unpackclean distclean
-.PHONY: $(PHASE) $(COMMANDS)
-
+.PHONY: all
 all: compile
 
-# provides targets:
-# - $(tarball_path)
-# - state/fetch.result
-# - fetch
-#
-include $(TOP_DIR)/mk/fetch.mk
+include $(TOP_DIR)/mk/buildphases.mk
 
-# provides targets:
-# - sh256
-# - state/expected.sha256
-# - state/verify.result
-# - verify
-#
-include $(TOP_DIR)/mk/verify.mk
-
-
-# provides targets:
-# - state/unpack.result
-# - unpack
-#
-include $(TOP_DIR)/mk/unpack.mk
-
-# provides targets:
-# - state/patch.result
-# - patch
-#
-include $(TOP_DIR)/mk/patch.mk
-
-# provides targets:
-# - state/config.result
-# - config
-#
-include $(TOP_DIR)/mk/configure.mk
-
-# provides targets:
-# - state/compile.mk
-# - compile
-#
-include $(TOP_DIR)/mk/compile.mk
-
-# provides targets:
-# - state/install.mk
-# - install
-#
-include $(TOP_DIR)/mk/install.mk
-
-# provides targets:
-# - distclean
-# - verifyclean
-# - unpackclean
-# - configclean
-# - clean
-#
-include $(TOP_DIR)/mk/clean.mk
 

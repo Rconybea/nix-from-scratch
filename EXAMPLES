@@ -1,0 +1,7 @@
+no-build (binary install)                mdbook, mdbook-linkcheck
+configure_exec override                  boost
+extra configure args                     python
+in-source build                          unzip, nix, zstd
+custom cppflags                          sqlite
+non-trivial patch                        m4, cmake
+non-trivial post-install script          pkgconf, bzip2

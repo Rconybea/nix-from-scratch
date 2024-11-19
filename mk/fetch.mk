@@ -13,7 +13,7 @@
 #
 $(tarball_path) state/fetch.result: 
 	$(TOP_DIR)/scripts/init.sh --archive-dir=$(ARCHIVE_DIR)
-	$(TOP_DIR)/scripts/fetch-tarball.sh --archive-dir=$(ARCHIVE_DIR) --url=$(url) --tarball-path=$(tarball_path)
+	$(TOP_DIR)/scripts/fetch-tarball.sh --archive-dir=$(ARCHIVE_DIR) --url=$(url) --tarball-path=$(tarball_path) "--fetch-extra-args=${fetch_extra_args}"
 
 # - noop when $(tarball_path) already established
 #   (use `make distclean` to do-over)

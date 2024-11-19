@@ -12,35 +12,33 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 #
 include $(TOP_DIR)/mk/config.mk
 
-version:=1.8.1
+version:=8.44
+stem:=pcre
 # unique package name
-stem:=libgit2
-name:=$(stem)-$(version)
+name:=pcre-$(version)
 # local directory for unpacked source
 unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
-tarball:=$(stem).tar.gz
+tarball:=$(name).tar.bz2
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
-#url:=https://ftp.gnu.org/gnu/automake/$(tarball)
-url:=https://github.com/libgit2/libgit2/archive/refs/tags/v$(version).tar.gz
+url:=https://sourceforge.net/projects/pcre/files/$(stem)/$(version)/$(tarball)/download
 # verify this sha
-sha256:=8c1eaf0cf07cba0e9021920bfba9502140220786ed5d8a8ec6c7ad9174522f8e
+sha256:=19108658b23b3ec5058edc9f66ac545ea19f9537234be1ec62b714c84399366d
 #
-# {cflags,ldflags} won't work when configure_script=cmake
-#cflags:=-I$(PREFIX)/include
-#ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
+cflags:=-I$(PREFIX)/include
+ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
+#fetch_extra_args:=--no-check-certificate
 patch_script:=
 srcdir:=src
 builddir:=build
 pre_configure_hook:=
-configure_exec:=cmake
-configure_script:=
-configure_extra_args:=-DCMAKE_INSTALL_PREFIX=$(PREFIX) -DCMAKE_INSTALL_RPATH=$(PREFIX)/lib -DBUILD_SHARED_LIBS=ON -DUSE_SSH=ON -DCMAKE_C_FLAGS=-I$(PREFIX)/include -B . -S ../$(srcdir)
+configure_extra_args:=--docdir=$(PREFIX)/share/doc/$(name) --enable-unicode-properties --enable-pcre16 --enable-pcre32 --enable-pcregrep-libz --enable-pcregrep-libbz2 --enable-pcretest-libreadline 
 post_install_hook:=
 
 all: compile
 
 include $(TOP_DIR)/mk/buildphases.mk
+
