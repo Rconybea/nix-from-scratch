@@ -34,11 +34,11 @@ jobs:
 
     - name: m4
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix=$PREFIX --package=m4
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=m4
 
     - name: autoconf
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix=$PREFIX --package=autoconf
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=autoconf
 
     - name: autoconf-archive
       run: |
