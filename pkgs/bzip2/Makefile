@@ -39,7 +39,7 @@ pre_configure_hook:=
 # custom 'configure' step
 configure_exec:=true
 # invoked from $(builddir)
-configure_script:=.
+configure_script:=
 configure_extra_args:=
 # in-source-tree build only
 builddir:=src
