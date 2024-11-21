@@ -45,7 +45,6 @@ configure_extra_args:=
 builddir:=src
 build_exec:=../bzip2-build.sh
 build_args:=
-post_install_hook:=
 #
 install_exec:=make
 install_args:=PREFIX=$(PREFIX) install

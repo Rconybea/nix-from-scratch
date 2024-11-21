@@ -39,6 +39,9 @@ set -e
 pushd ${build_dir}
 
 cp -av libbz2.so* ${prefix}/lib
-(cd ${prefix}/lib && ln -sv libbz2.so.1.0 libbz2.so)
+ln -sf libbz2.so.1.0.8 ${prefix}/lib/libbz2.so
+cp -v bzip2-shared ${prefix}/bzip2
+ln -sfv bzip2 ${prefix}/bin/bzcat
+ln -sfv bzip2 ${prefix}/bin/bunzip2
 
 popd
