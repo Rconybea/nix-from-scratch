@@ -62,6 +62,10 @@ jobs:
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=ncurses
 
+    - name: patchelf
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=patchelf
+
     - name: readline
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=readline
@@ -121,10 +125,6 @@ jobs:
     - name: editline
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=editline
-
-    - name: patchelf
-      run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=patchelf
 
     - name: sqlite
       run: |
