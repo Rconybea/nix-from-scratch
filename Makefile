@@ -64,7 +64,7 @@ pkgs/toml11: pkgs/cmake
 pkgs/ncurses: pkgs/pkgconf
 
 .PHONY: pkgs/readline
-pkgs/readline: pkgs/ncurses
+pkgs/readline: pkgs/ncurses pkgs/patchelf
 
 .PHONY: pkgs/pcre
 pkgs/pcre: pkgs/readline pkgs/bzip2 pkgs/zlib

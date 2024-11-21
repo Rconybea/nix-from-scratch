@@ -41,6 +41,8 @@ install_args:=SHLIB_LIBS=-lncursesw install
 #  install -v -m644 doc/*.html $(PREFIX)/share/doc/$(name)
 #  install -v -m644 doc/*.dvi $(PREFIX)/share/doc/$(name)
 #
+post_install_hook:=./readline-post-install.sh --prefix=$(PREFIX) --build-dir=$(builddir)
+
 .PHONY: all
 all: compile
 
