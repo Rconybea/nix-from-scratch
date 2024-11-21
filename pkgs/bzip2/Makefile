@@ -49,7 +49,7 @@ build_args:=
 install_exec:=make
 install_args:=PREFIX=$(PREFIX) install
 #
-post_install_hook:=./post-install-bzip2.sh --prefix=$(PREFIX) --build-dir=$(builddir)
+post_install_hook:=./bzip2-postinstall.sh --prefix=$(PREFIX) --build-dir=$(builddir)
 
 all: compile
 

@@ -38,6 +38,7 @@ set -e
 
 pushd ${build_dir}
 
+rm -f ${prefix}/lib/libbz2.a
 cp -av libbz2.so* ${prefix}/lib
 ln -sf libbz2.so.1.0.8 ${prefix}/lib/libbz2.so
 cp -v bzip2-shared ${prefix}/bzip2
