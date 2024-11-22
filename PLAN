@@ -5,12 +5,83 @@
 
    - ensure PATH has ~/nixroot/bin
 
-     $ nix store add --hash-algo sha256 [--dry-run] ~/ext2
+     $ ~/nixroot/bin/nix store add --dry-run --hash-algo sha256 ~/nxfs-toolchain
+     /home/roland/nixroot/nix/store/pcj0icrgqi1j0c6jlm1bacsfrqb15cqr-nxfs-toolchain
 
-   or
+3. verify can run gcc from the store
 
-     $ nix-store --add-fixed --recursive sha256 ~/ext2
+     $ ~/nixroot/nix/store/pcj0icrgqi1j0c6jlm1bacsfrqb15cqr-nxfs-toolchain/bin/x86_64-pc-linux-gnu-gcc --version
+     x86_64-pc-linux-gnu-gcc (crosstool-NG 1.26.0) 13.2.0
+     Copyright (C) 2023 Free Software Foundation, Inc.
+     This is free software; see the source for copying conditions.  There is NO
+     warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-3. if successful
+4. find the hash nix is using
 
-2. should be able to use this to compile coreutils
+     $ ~/nixroot/bin/nix-hash --type sha256 --base32 ~/nixroot/nix/store/pcj0icrgqi1j0c6jlm1bacsfrqb15cqr-nxfs-toolchain/
+     0nk5cnsbw59pdm1rjpgj5wk0a9dbwiw81jvkyaid9g45hnz19wvi
+
+   need base32 representation, because that's the shorter form that
+   we can use in a derivation
+
+5. verify system
+
+     $ ~/nixroot/bin/nix repl
+     nix-repl> builtins.currentSystem
+     "x86_64-linux"
+
+6. make a derivation that refers to known store hash
+
+     $ cat nix-from-scratch/nix-experiments/ex3/default.nix
+     derivation { name = "nxfs-toolchain"; system = "x86_64-linux"; builder = ./builder.sh; buildInputs = []; outputHashAlgo = "sha256"; outputHash = "0nk5cnsbw59pdm1rjpgj5wk0a9dbwiw81jvkyaid9g45hnz19wvi"; outputHashMode = "recursive"; }
+
+   Note that we can change anything else about the derivation
+   as long as we keep the name ("fod-example-simple") and hash ("abcdefg..=") the same.
+
+6. 'build' it
+
+     $ ~/nixroot/bin/nix-build --dry-run nix-from-scratch/nix-experiments/ex3/default.nix
+     $ echo $?
+     0
+
+     $ ~/nixroot/bin/nix-build nix-from-scrtch/nix-experiments/ex3/default.nix
+     /home/roland/nixroot/nix/store/pcj0icrgqi1j0c6jlm1bacsfrqb15cqr-nxfs-toolchain
+
+7. see derivation in nix store
+
+     $ ls ~/nixroot/nix/store/*.drv | grep toolchain
+     /home/roland/nixroot/nix/store/qgrwfw6jn044wj30knns2g88w4m4qdrs-nxfs-toolchain.drv
+
+     $ ~/nixroot/bin/nix derivation show ~/nixroot/nix/store/qgrwfw6jn044wj30knns2g88w4m4qdrs-nxfs-toolchain.drv
+     warning: The interpretation of store paths arguments ending in `.drv` recently changed.
+     If this command is now failing try again with '/home/roland/nixroot/nix/store/qgrwfw6jn044wj30knns2g88w4m4qdrs-nxfs-toolchain.drv^*'
+     {
+       "/home/roland/nixroot/nix/store/qgrwfw6jn044wj30knns2g88w4m4qdrs-nxfs-toolchain.drv": {
+         "args": [],
+         "builder": "/home/roland/nixroot/nix/store/3q7wav2gr15dxfnwdw840rwgbpspzqc0-builder.sh",
+         "env": {
+           "buildInputs": "",
+           "builder": "/home/roland/nixroot/nix/store/3q7wav2gr15dxfnwdw840rwgbpspzqc0-builder.sh",
+           "name": "nxfs-toolchain",
+           "out": "/home/roland/nixroot/nix/store/pcj0icrgqi1j0c6jlm1bacsfrqb15cqr-nxfs-toolchain",
+           "outputHash": "0nk5cnsbw59pdm1rjpgj5wk0a9dbwiw81jvkyaid9g45hnz19wvi",
+           "outputHashAlgo": "sha256",
+           "outputHashMode": "recursive",
+           "system": "x86_64-linux"
+         },
+         "inputDrvs": {},
+         "inputSrcs": [
+           "/home/roland/nixroot/nix/store/3q7wav2gr15dxfnwdw840rwgbpspzqc0-builder.sh"
+         ],
+         "name": "nxfs-toolchain",
+         "outputs": {
+           "out": {
+             "hash": "71f314be8585bcd4a2f273cb8078e4ab2505262ff25d99436d3715beb465655a",
+             "hashAlgo": "sha256",
+             "method": "nar",
+             "path": "/home/roland/nixroot/nix/store/pcj0icrgqi1j0c6jlm1bacsfrqb15cqr-nxfs-toolchain"
+           }
+         },
+         "system": "x86_64-linux"
+       }
+     }

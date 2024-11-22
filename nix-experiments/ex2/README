@@ -1,0 +1,16 @@
+Reprising hello from nix pills/07-working-derivation
+
+$ cd nix-from-scratch/nix-experiments/ex2
+$ nix repl   # won't work yet with nix-from-scratch nix
+
+nix-repl> :l <nixpkgs>
+nix-repl> hello = derivation { name = "hello"; builder = "${bash}/bin/bash"; args = [./hello-builder.sh]; gcc=gcc; coreutils=coreutils; src=./hello.c; system=builtins.currentSystem; }
+nix-repl> :b hello
+this derivtaion produced ths following outputs
+
+  out -> /nix/store/3wh...-hello
+
+
+Every asset in the set passed to 'derivation' also gets stored in shell environment passed to the builder 'hello-builder.sh'
+derivations turn into their output paths
+

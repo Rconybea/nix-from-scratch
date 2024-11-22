@@ -1,0 +1,1 @@
+derivation { name = "nxfs-toolchain"; system = "x86_64-linux"; builder = ./builder.sh; buildInputs = []; outputHashAlgo = "sha256"; outputHash = "0nk5cnsbw59pdm1rjpgj5wk0a9dbwiw81jvkyaid9g45hnz19wvi"; outputHashMode = "recursive"; }
