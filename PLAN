@@ -1,0 +1,16 @@
+1. crosstools-ng gives us gcc-13.2 in ~/ext2/bin
+   e.g. ~/ext2/bin/x86_64-pc-linux-gnu-gcc
+
+2. try adding to nix store
+
+   - ensure PATH has ~/nixroot/bin
+
+     $ nix store add --hash-algo sha256 [--dry-run] ~/ext2
+
+   or
+
+     $ nix-store --add-fixed --recursive sha256 ~/ext2
+
+3. if successful
+
+2. should be able to use this to compile coreutils
