@@ -1,0 +1,4 @@
+From chapter 7.  working derivation
+
+1. almost-trivial builder script
+2. no mkDerivation (not using stdenv yet)
