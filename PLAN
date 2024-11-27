@@ -40,7 +40,7 @@
 
 6. 'build' it
 
-     $ ~/nixroot/bin/nix-build --dry-run nix-from-scratch/nix-experiments/ex3/default.nix
+     $ ~/nixroot/bin/nix-build nix-from-scratch/nix-experiments/ex3/default.nix
      $ echo $?
      0
 
@@ -85,3 +85,7 @@
          "system": "x86_64-linux"
        }
      }
+
+8. try using nxfs-toolchain in another derivation
+
+   This is not working at all
