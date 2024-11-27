@@ -31,17 +31,17 @@
 #   Assuming cross toolchain installed to ~/nxfs-toolchain:
 #
 #   1. establish hash
-#       $ nix-hash --type sha256 --base32 ~/nxfs-toolchain
-#       0ikk2kh429gfjm8cb17hjqj19zsjjr8fn29gjls9mrjpk92z8wsx
+#       $ nix-hash --type sha256 --base32 ~/nxfs-toolchain/x86_64-pc-linux-gnu/sysroot
+#       07c26hwv5wg2xcmjfd02vihpmk5ymgnv6b5dvcz4mc0k976rvdi4  # (roly-desktop-23)
 #
 #     (expect hash results to differ depending on exact contents of /lib etc)
 #
 #   2. adopt toolchain into nix store
-#       $ nix store add --hash-algo sha256 ~/nxfs-toolchain
+#       $ nix store add --hash-algo sha256 ~/nxfs-toolchain/x86_64-pc-linux-gnu/sysroot
+#       /home/roland/nixroot/nix/store/3hxbb31dh1xkipqy7jnp9k4kkf9lh1mc-sysroot # (roly-desktop-23)
 #
 #     Substitute hash from step 1 in outputHash = "<hash>" below
 #       $ ls -d ~/nixroot/nix/store/*nxfs-toolchain
-#       /home/roland/nixroot/nix/store/hpbqm9jq3r620ql61myn26w549xp7gm1-nxfs-toolchain
 #
 #   3. 'build' it
 #
@@ -56,12 +56,12 @@
 #       $ nix derivation show $(ls -d ~/nixroot/nix/store/*nxfs-toolchain.drv)
 #
 derivation {
-  name = "nxfs-toolchain";
+  name = "nxfs-sysroot";
   system = "x86_64-linux";
   builder = ./builder.sh;
   buildInputs = [];
   outputHashAlgo = "sha256";
-  outputHash = "1zbfdk3gp69wchiivp4wy8gfx5ia4w0rz8h9lf1navz28357b4rq"; # roly-desktop-23
+  outputHash = "07c26hwv5wg2xcmjfd02vihpmk5ymgnv6b5dvcz4mc0k976rvdi4"; # roly-desktop-23
   #outputHash = "0ikk2kh429gfjm8cb17hjqj19zsjjr8fn29gjls9mrjpk92z8wsx";
   #outputHash = "0nk5cnsbw59pdm1rjpgj5wk0a9dbwiw81jvkyaid9g45hnz19wvi";
   outputHashMode = "recursive";
