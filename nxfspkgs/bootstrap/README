@@ -1,0 +1,33 @@
+Strategy
+
+Starting with empty nix store.  Building up to a version of stdenv
+
+Install order
+
+-3a. dependencies for local {nix, crosstools}.  See nix-from-scratch/Makefile.  $(HOME)/ext
+-3b. local nix, built from source.  see nix-from-scratch/pkgs.  $(HOME)/nixroot
+-2.  crosstools-ng.  see nix-from-scratch/pkgs/crosstools-ng.
+-1.  crosstools. see nix-from-scratch/crosstool.  $(HOME)/nxfs-toolchain
+0.
+1.  nxfs-toolchain-0.  crosstools toolchain in NIXROOT/nix/store     (copied from NXFS_TOOLCHAIN)
+2.  nxfs-sysroot-0.    crosstools ld-linux,libc in NIXROOT/nix/store (copied from NXFS_TOOLCHAIN)
+3.  nxfs-gnumake-0.    gnumake 4.4.1.  build in stage0, install to ./gnumake/,   then run ./copy2nix.sh
+4.  nxfs-coreutils-0.  coreutils 9.5.  build in stage0, install to ./coreutils/, then run ./copy2nix.sh
+5.  nxfs-bash-0.       bash 5.2.32.    build in stage0, install to ./bash/,      then run ./copy2nix.sh
+6.  nxfs-m4-0.         m4 1.4.19       build in stage0, install to ./m4/,        then run ./copy2nix.sh
+
+typical problems
+
+1. for new bootstrap dir, staging directory (e.g. nxfs-bash-0/bash) must exist
+   in advance.  Otherwise empty PREFIX result (e.g. see PREFIX:=... in nxfs-bash-0/bash/Makefile)
+
+design notes
+
+1. During bootstrap, we don't have stdenv, so no stdenv.mkDerivation function.
+   We can use a nxfspkgs path in a derivation, but it won't get recognized as a runtime dependency
+   To introduce a runtime dependency, introduce a file into output directory, that contains
+   store path for that dependency.
+
+cookbook / howto / useful
+
+1. nix-store -q --references /path/to/nix/store/foo.drv
