@@ -1,6 +1,10 @@
 Reprising hello from nix pills/07-working-derivation
 
 $ cd nix-from-scratch/nix-experiments/ex2
+$ nix-build
+
+Or via nix-repl:
+
 $ nix repl   # won't work yet with nix-from-scratch nix
 
 nix-repl> :l <nixpkgs>
@@ -13,4 +17,3 @@ this derivtaion produced ths following outputs
 
 Every asset in the set passed to 'derivation' also gets stored in shell environment passed to the builder 'hello-builder.sh'
 derivations turn into their output paths
-
