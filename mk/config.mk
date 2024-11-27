@@ -27,7 +27,7 @@ export PREFIX
 # Unlikely to need to change anything below this line
 # ----------------------------------------------------------------
 
-PATH:=$(PREFIX)/bin:$(PATH)
+PATH:=$(NXFS_TOOLCHAIN_PREFIX)/bin:$(PREFIX)/bin:$(PATH)
 export PATH
 
 PKG_CONFIG_PATH:=$(PREFIX)/lib/pkgconfig:$(PREFIX)/share/pkgconfig
