@@ -1,0 +1,29 @@
+Package repository (in the style of nixpkgs) for bootstrap.
+
+Separate from nixpkgs, because we want to use this to bootstrap
+starting with nix store that's empty except for deus-ex-machina nxfs-toolchain
+
+
+Prerequisites
+1. nxfs-toolchain must have been installed into nix as a fixed-output derivation.
+   See instructions in bootstrap/nxfs-toolchain/default.nix
+
+Look Ma!
+
+1.
+  $ cd nixfspkgs
+  $ nix repl
+  nix-repl> :l default.nix
+  Added 1 variables.
+  nix-repl> nxfs-toolchain-0
+  «derivation /home/roland/nixroot/nix/store/5wh5s3abc7v2zh7fp4961f40hbv89ni6-nxfs-toolchain.drv»
+
+2. simple non-customizable nxfs-toolchain derivation
+
+  $ cd nixfspkgs
+  $ nix-build default.nix -A nxfs-toolchain-0
+  /home/roland/nixroot/nix/store/hpbqm9jq3r620ql61myn26w549xp7gm1-nxfs-toolchain
+  $ ./result/bin/x86_64-pc-linux-gnu-gcc --version
+  Copyright (C) 2023 Free Software Foundation, Inc.
+  This is free software; see the source for copying conditions.  There is NO
+  warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
