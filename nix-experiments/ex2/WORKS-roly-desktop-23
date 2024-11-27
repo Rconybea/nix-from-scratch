@@ -1,0 +1,53 @@
+build:
+
+  (with /nix/store)
+
+  $ cd nix-from-scratch/nix-experiments/ex2
+  $ nix-build
+
+store-path:
+
+  /nix/store/qfxzss65rqgczc5vaaq5slrywv6gm0ml-hello
+
+derivation (suppressing warnings)
+
+  $ nix show-derivation /nix/store/8w151zxkhi46vzx1x0h059bskk22d38a-hello.drv
+  {
+    "/nix/store/8w151zxkhi46vzx1x0h059bskk22d38a-hello.drv": {
+      "args": [
+        "/nix/store/g2pyvsxv03q51qmx03w9258ywzpr0hxs-hello-builder.sh"
+      ],
+      "builder": "/nix/store/xfb3ykw9r5hpayd05sr0cizwadzq1d8q-bash-5.2-p15/bin/bash",
+      "env": {
+        "builder": "/nix/store/xfb3ykw9r5hpayd05sr0cizwadzq1d8q-bash-5.2-p15/bin/bash",
+        "coreutils": "/nix/store/mnjksxz8alkwf6pa74a9j04h93p3y2sy-coreutils-9.3",
+        "gcc": "/nix/store/frxg2hvacachpkv3ywdpmfl5pl2yg5y6-gcc-wrapper-12.3.0",
+        "name": "hello",
+        "out": "/nix/store/qfxzss65rqgczc5vaaq5slrywv6gm0ml-hello",
+        "src": "/nix/store/qlkbbp94snh5crxz7jc6lni5ksbrbm55-hello.c",
+        "system": "x86_64-linux"
+      },
+      "inputDrvs": {
+        "/nix/store/5lz9p8xhf89kb1c1kk6jxrzskaiygnlh-bash-5.2-p15.drv": [
+          "out"
+        ],
+        "/nix/store/aaz1aay8nnadr76w9rwdj1w6c089dwqm-gcc-wrapper-12.3.0.drv": [
+          "out"
+        ],
+        "/nix/store/axv5yl1vp2q282x413vr9bq4jrxlclx3-coreutils-9.3.drv": [
+          "out"
+        ]
+      },
+      "inputSrcs": [
+        "/nix/store/g2pyvsxv03q51qmx03w9258ywzpr0hxs-hello-builder.sh",
+        "/nix/store/qlkbbp94snh5crxz7jc6lni5ksbrbm55-hello.c"
+      ],
+      "name": "hello",
+      "outputs": {
+        "out": {
+          "path": "/nix/store/qfxzss65rqgczc5vaaq5slrywv6gm0ml-hello"
+        }
+      },
+      "system": "x86_64-linux"
+    }
+  }
