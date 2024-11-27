@@ -3,20 +3,6 @@ THIS_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 # Always root directory for nix-from-scratch (even if not a git repo)
 TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 
-# NOTE: / in standard nix install
-NIX_PREFIX:=$(HOME)/nixroot
-export NIX_PREFIX
-
-# NOTE: /nix/store in standard nix install
-NIX_STORE_DIR:=$(NIX_PREFIX)/nix/store
-# NOTE: /usr/share/doc/nix in standard nix install
-NIX_DOC_DIR:=$(NIX_PREFIX)/doc
-# NOTE: /nix/var in standard nix install 
-NIX_LOCALSTATE_DIR:=$(NIX_PREFIX)/var
-# NOTE: /etc/nix in standard nix install 
-NIX_SYSCONF_DIR:=$(NIX_PREFIX)/etc
-# NOTE: /usr
-
 # provides:
 #   TOP_DIR
 #   ARCHIVE_DIR
@@ -25,6 +11,9 @@ NIX_SYSCONF_DIR:=$(NIX_PREFIX)/etc
 #   PKG_CONFIG_PATH  exported
 #
 include $(TOP_DIR)/mk/config.mk
+
+# NOTE: / in standard nix install
+export NIX_PREFIX
 
 version:=2.24.9
 # unique package name
