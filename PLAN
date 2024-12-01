@@ -89,3 +89,51 @@
 8. try using nxfs-toolchain in another derivation
 
    This is not working at all
+
+   Aha - problem is executable copied into nix store tries to invoke dynamic linker
+   x86_64-ld-linux.so with path that isn't available during a sandbox build.
+
+8-take2.
+
+   Import as fixed-output derivations,
+   externally-provided packages:
+
+8a. nxfs-sysroot-0
+
+   This gets libc, x86_64-ld-linux.so into nix store
+
+8b. nxfs-bash-0
+
+   Before taking hash, use patchelf --set-interpreter to set linker
+   to in-store dynamic linker
+
+8-take3.
+
+   Can't get anything to run from inside nix-build,
+   unless invoke ld-linux-x86-64.so explicitly.
+   Suspect this is an outcome of using crosstools-ng to build compiler.
+   Noticing that lddtree has in-store libc (built by crosstools ng) with interpreter
+   /lib64/ld-linux-x86-64.so.2
+
+   We want libc with interpreter path/to/nix/store/$hash-sysroot/lib/ld-linux-x86-64.so.2
+
+   We'd love to patch libc to use it's associated interpreter _before_ we put it into the
+   nix store for the first time.  But that isn't possible, because fixed-output derivation
+   means it's content addressed, so we don't know hash until after final bits-to-be-imported
+   are fully determined.
+
+   Instead: will import sufficient tools to migrate libc to a genuinely in-store version,
+   starting from a regular nix derivation.  This means we're going to patch in-store
+   libc and friends using in-store tools
+
+   New Plan:
+   - prepare fixed-output-derivation tools:
+     - bash
+     - patchelf
+     - tar
+     - coreutils
+   - write derivation, where builder looks like:
+     - all components invoked using explicit call to ld-linux
+     - copy stage0 libc (using tar)
+     - patchelf to point to itself
+     - patchelf print interpreter on libc.so
