@@ -19,7 +19,19 @@ ARCHIVE_DIR:=$(TOP_DIR)/archive
 # 4. $PREFIX/share/cmake in $CMAKE_MODULE_PATH
 #    (for a build using cmake to get cmake modules for dependent components)
 #
-# provides PREFIX;  set from ./bootstrap.sh
+# provides
+# - PREFIX;
+# - NIX_PREFIX
+# - NIX_STORE_DIR
+# - NIX_DOC_DIR
+# - NIX_LOCALSTATE_DIR
+# - NIX_SYSCONF_DIR
+# - NXFS_TOOLCHAIN_PREFIX
+# - NXFS_BOOTSTRAP_PREFIX  (? not using)
+# - NXFS_HOST_TUPLE
+# - NXFS_BUILD_TUPLE
+# - NXFS_TOOLCHAIN_SYSROOT
+#
 include $(TOP_DIR)/mk/prefix.mk
 export PREFIX
 
