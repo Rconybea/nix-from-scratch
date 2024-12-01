@@ -1,0 +1,75 @@
+
+
+1. When you have libc that's not installed to /lib,
+   must set linker (patchelf --set-interpreter)
+   to the x86_64-ld-linux.so prepared along with that libc.
+
+   Don't expect courteous errors if you get this wrong --
+   most likely mysterious segfault.
+
+   Also: a nix-shell that can run outside-the-store bash
+   may well also be able to access the dynamic linker in question,
+   which interferes with debugging this problem.
+
+   My own path to enlightenment: running
+     strace -f nix-build
+   in earlier failing version of
+     nix-from-scratch/nxfspkgs/nix-pills/example1d,
+   happened to notice execve() call returning ENOENT.
+
+   https://www.man7.org/linux/man-pages/man2/execve.2.html
+
+2. When bootstrapping a toolchain into the nix store,
+   need to patchelf to get required dynamic-linker coordination.
+
+   There's a chicken-and-egg problem for
+   an executable prepared with an outside-nix-store libc:
+   cannot patchelf before you copy into the nix store,
+   because that will change the fixed-output-derivation's hash.
+
+   Instead, during initial portion of bootstrap,
+   use in-store linker directly.
+
+   For example write
+      nix/store/$hash-sysroot/path/to/x86_64-ld-linux.so.2 $executable $args
+   instead of
+      $executable $args
+
+3. patchelf --set-interpreter
+
+   Not sure why, but patchelf --set-interpreter doesn't work
+   (at least for bash)
+   when importing into nix store something prepared outside the nix store.
+   Even impure build fails. ???
+
+   But prepending ld-linux-x86-64.so does work.  I don't understand this yet.
+
+4. Nix uses different hash presentation in different places.
+   (perhaps for historical reasons?).
+   For example in nixpkgs generally expected to use sha256 with base32
+   presentation.  But nix store paths do something else
+
+5. Use
+     $ nix-build --option substitute false
+
+   to suppress binary cache
+
+7. Use
+     $ readelf -l path/to/executable-or-library
+
+   to see 'program header table'.  This includes INTERP entry:
+
+     $ readelf -l /home/roland/nixroot/nix/store/f83xlrzbp68xby8imh9d5cdw06a4j3dj-nxfs-wip-1/lib/libc.so.6
+
+     Elf file type is DYN (Shared object file)
+     Entry point 0x27cc0
+     There are 14 program headers, starting at offset 64
+
+     Program Headers:
+       Type           Offset             VirtAddr           PhysAddr
+                      FileSiz            MemSiz              Flags  Align
+       PHDR           0x0000000000000040 0x0000000000000040 0x0000000000000040
+                      0x0000000000000310 0x0000000000000310  R      0x8
+       INTERP         0x0000000000198f40 0x0000000000198f40 0x0000000000198f40
+                      0x000000000000001c 0x000000000000001c  R      0x10
+           [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
