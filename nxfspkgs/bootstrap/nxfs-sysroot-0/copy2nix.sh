@@ -9,8 +9,12 @@
 
 set -e
 
+# must match the directory name we're picking up.
+# onless want to copy it first
+sysroot_name=sysroot
+
 nxfs_toolchain=${HOME}/nxfs-toolchain
-nxfs_sysroot=${nxfs_toolchain}/x86_64-pc-linux-gnu/sysroot
+nxfs_sysroot=${nxfs_toolchain}/x86_64-pc-linux-gnu/${sysroot_name}
 
 # establish output hash for target dir tree
 #
@@ -29,7 +33,7 @@ cat <<EOF > default.nix
 # automatically created by nxfspkgs/bootstrap/copy2nix.sh -- DO NOT EDIT
 
 derivation {
-  name = "nxfs-sysroot";
+  name = "${sysroot_name}";
   system = "x86_64-linux";
   builder = ./builder.sh;
   buildInputs = [];
