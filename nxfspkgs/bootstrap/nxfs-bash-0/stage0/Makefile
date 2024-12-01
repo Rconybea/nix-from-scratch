@@ -41,9 +41,9 @@ srcdir:=src
 builddir:=build
 # 1. PREFIX has been repointed to package-specific bootstrap dir, do not use
 # 2. dynamic linker ld-linux-x86-64.so.2 and libc.so.6 *must* go together
-#
+#    
 cflags:=-I$(sysroot_storepath)/usr/include
-ldflags:=-Wl,--use-new-dtags, -Wl,-rpath,$(sysroot_storepath)/usr/lib -Wl,-rpath,$(sysroot_storepath)/lib -Wl,--dynamic-linker,$(sysroot_storepath)/lib/ld-linux-x86-64.so.2
+ldflags:=-Wl,-enable-new-dtags -Wl,-rpath,$(sysroot_storepath)/usr/lib -Wl,-rpath,$(sysroot_storepath)/lib -Wl,-dynamic-linker,$(sysroot_storepath)/lib/ld-linux-x86-64.so.2
 #
 configure_extra_args:=--host=$(NXFS_HOST_TUPLE) --build=$(NXFS_BUILD_TUPLE) --without-bash-malloc bash_cv_strtold_broken=no
 post_install_hook:=./post-install-hook.sh "--prefix=$(PREFIX)"
