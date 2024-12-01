@@ -1,0 +1,7 @@
+roly-desktop-23:
+
+1. PATH should contain
+     ~/nixroot/nix/bin
+
+2. copy subtree into store
+     $ ./copy2nix.sh  -> uploads ./tar to nix store
