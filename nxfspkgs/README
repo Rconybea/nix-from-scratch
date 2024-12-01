@@ -5,8 +5,76 @@ starting with nix store that's empty except for deus-ex-machina nxfs-toolchain
 
 
 Prerequisites
-1. nxfs-toolchain must have been installed into nix as a fixed-output derivation.
-   See instructions in bootstrap/nxfs-toolchain/default.nix
+1. dependencies for local {nix, crosstools} installed.
+   See nix-from-scratch/Makefile.  Individual packages in nix-from-scratch/pkgs/.
+
+   This guide prepared with build-time deps installed to ${HOME}/ext
+   (see PREFIX in nix-from-scratch/mk/prefix.mk)
+
+2. local nix built from source.
+
+   This guide assumes nix installed to ${HOME}/nixroot,
+   with nix store in ${HOME}/nixroot/nix/store.
+   NIX_PREFIX, NIX_STORE_DIR in nix-from-scratch/mk/prefix.mk
+
+3. crosstools-ng (along with needed deps).  See nix-from-scratch/pkgs/crosstools-ng.
+
+4. native toolchain (gcc, libc etc.) built using crosstools-ng.
+
+   See nix-from-scratch/crosstool/.config.
+
+   This guide prepared with crosstools installed to ${HOME}/nxfs-toolchain
+   (see NXFS_TOOLCHAIN_PREFIX in nix-from-scratch/mk/prefix.mk)
+
+Overview / Plan
+1. stage0 (see ./bootstrap)
+
+   starting with empty nix store.
+
+   Purpose of stage0 is to prepare a foundation for a toolchain that doesn't use
+   anything outside the nix store.
+
+   Prepare necessary packages outside nix (using crosstool-ng toolchain).
+   upload to nix store as fixed-output derivations.
+
+   Need at least the following packages:
+   - bootstrap/nxfs-sysroot-0    libc, ld-linux.so      see nix-from-scratch/crosstool/.config
+   - bootstrap/nxfs-coreutils-0  mkdir, chmod           v 9.5    asof 30nov2024
+   - bootstrap/nxfs-patchelf-0   patchelf               v 0.18   asof 30nov2024
+   - bootstrap/nxfs-tar-0        tar                    v 1.35   asof 30nov2024
+   - bootstrap/nxfs-bash-0       bash                   v 5.2.32 asof 30nov2024
+
+   The libc.so (prepared outside the nix store) expects to be installed to /lib/x8_64-linux-gnu/.
+
+   This location isn't accessible from inside a nix build,
+   Since we can only import artifacts prepared outside the nix store as content-addressed
+   fixed-output derivations,  we also can't patch them from outside the nix store.
+
+   This means an in-store build will have to invoke the dynamic loader explicitly.
+   For example scripts will invoke bash using
+     $sysroot/lib/ld-linux-x86_64.so $bash args...
+   instead of just
+     $bash args...
+
+2. stage1 (see ./bootstrap-1)
+
+   Purpose of stage1 is to establish an in-store sysroot, containing {libc.so, ld-linux.so} that
+   correctly refer to each other's in-store location.
+
+   Accomplish this by copying stage0 artifacts and patching with patchelf.
+   This will use a regular nix derivation.  Fixed output derivations will be back
+   (with a vengeance) for additional toolchain components.
+
+   Note we're not using a regular nixpgs-style derivation here.
+   Can't use stdenv.mkDerivation, because we don't have stdenv yet.
+   We could use nixpkgs/default.nix ingredients that don't depend on anything in stdenv.
+
+   Might make sense to take nixpkgs as an argument, but deferring that possibility for now.
+   In the meantime, just produce naked derivations.
+
+   Build:
+   - bootstrap-1/nxfs-sysroot-1   libc, ld-linux.so
+   - bootstrap-1/nxfs-bash-1      bash
 
 Look Ma!
 
@@ -27,3 +95,5 @@ Look Ma!
   Copyright (C) 2023 Free Software Foundation, Inc.
   This is free software; see the source for copying conditions.  There is NO
   warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Install order
