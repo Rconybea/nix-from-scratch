@@ -2,6 +2,11 @@ Strategy
 
 Starting with empty nix store.  Building up to a version of stdenv
 
+Build environment
+
+Need:
+- /home/roland/nixroot/bin         (e.g. for nix-build)
+
 Install order
 
 -3a. dependencies for local {nix, crosstools}.  See nix-from-scratch/Makefile.  $(HOME)/ext
@@ -15,11 +20,28 @@ Install order
 4.  nxfs-coreutils-0.  coreutils 9.5.  build in stage0, install to ./coreutils/, then run ./copy2nix.sh
 5.  nxfs-bash-0.       bash 5.2.32.    build in stage0, install to ./bash/,      then run ./copy2nix.sh
 6.  nxfs-m4-0.         m4 1.4.19       build in stage0, install to ./m4/,        then run ./copy2nix.sh
+7.  nxfs-gnutar-0.     tar 1.35        build in stage0, install to ./tar/,       then run ./copy2nix.sh
 
 typical problems
 
 1. for new bootstrap dir, staging directory (e.g. nxfs-bash-0/bash) must exist
    in advance.  Otherwise empty PREFIX result (e.g. see PREFIX:=... in nxfs-bash-0/bash/Makefile)
+
+2. in each nxfs-foo-0/ with a fixed-output derivation, the derivation name
+   ('foo' in 'derivation { name = "foo"; ... }'
+
+   MUST MATCH the name of the directory subtree being imported into nix store.
+   Store paths
+
+     | context          | construction                |
+     |------------------+-----------------------------+
+     | nix store add .. | {hash} + {toplevel dirname} |
+     | derivation       | (hash) + (derivation name)  |
+
+   This constraint only applies to fixed-output derivations
+
+   In particular for sysroot, since we're picking up subdir from inside crosstools-ng toolchain,
+   name will be 'sysroot'
 
 design notes
 
