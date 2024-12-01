@@ -1,0 +1,50 @@
+roly-desktop-23:
+
+1. PATH should constain
+     ~/nixroot/nix/bin
+
+2. copy subtree into store
+     $ ./copy2nix.sh     -> uploads ~/nxfs-toolchain/x86_64-pc-linux-gnu/sysroot to nix store
+
+3. create store derivation from ./default.nix
+
+     $ nix-instantiate   -> creates store derivation for ./default.nix
+
+   roly-desktop-23:
+     /home/roland/nixroot/nix/store/cvxwbn2w4cgk78wv1jjp6n6six47mskv-sysroot.drv
+
+4. inspect store derivation
+
+     $ nix derivation show /home/roland/nixroot/nix/store/cvxwbn2w4cgk78wv1jjp6n6six47mskv-sysroot.drv
+     {
+       "/home/roland/nixroot/nix/store/cvxwbn2w4cgk78wv1jjp6n6six47mskv-sysroot.drv": {
+         "args": [],
+         "builder": "/home/roland/nixroot/nix/store/jh2s6hanagyjcdssq3fl60zg4xfpkhf5-builder.sh",
+         "env": {
+           "buildInputs": "",
+           "builder": "/home/roland/nixroot/nix/store/jh2s6hanagyjcdssq3fl60zg4xfpkhf5-builder.sh",
+           "name": "sysroot",
+           "out": "/home/roland/nixroot/nix/store/3hxbb31dh1xkipqy7jnp9k4kkf9lh1mc-sysroot",
+           "outputHash": "07c26hwv5wg2xcmjfd02vihpmk5ymgnv6b5dvcz4mc0k976rvdi4",
+           "outputHashAlgo": "sha256",
+           "outputHashMode": "recursive",
+           "system": "x86_64-linux"
+         },
+         "inputDrvs": {},
+         "inputSrcs": [
+           "/home/roland/nixroot/nix/store/jh2s6hanagyjcdssq3fl60zg4xfpkhf5-builder.sh"
+         ],
+         "name": "sysroot",
+         "outputs": {
+           "out": {
+             "hash": "24b69dcd4913b04a3edbad2cb3edabbecc7a61dc0234272bebe2f1b23934821d",
+             "hashAlgo": "sha256",
+             "method": "nar",
+             "path": "/home/roland/nixroot/nix/store/3hxbb31dh1xkipqy7jnp9k4kkf9lh1mc-sysroot"
+           }
+         },
+         "system": "x86_64-linux"
+       }
+     }
+
+   The out path (...-sysroot) must match the value reported by 'nix store add .. '
