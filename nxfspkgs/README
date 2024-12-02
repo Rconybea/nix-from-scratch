@@ -73,8 +73,13 @@ Overview / Plan
    In the meantime, just produce naked derivations.
 
    Build:
-   - bootstrap-1/nxfs-sysroot-1   libc, ld-linux.so
-   - bootstrap-1/nxfs-bash-1      bash
+   - bootstrap-1/nxfs-sysroot-1          libc, ld-linux.so
+   - bootstrap-1/nxfs-bash-1             bash
+   - bootstrap-1/nxfs-redirect-elf-file  shell util
+   - bootstrap-1/nxfs-patchelf-1         patchelf
+   - bootstrap-1/nxfs-coreutils-1        mkdir,cp,head,basename,...
+   - bootstrap-1/nxfs-tar-1
+
 
 Look Ma!
 
