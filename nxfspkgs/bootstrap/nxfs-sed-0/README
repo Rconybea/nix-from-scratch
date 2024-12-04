@@ -1,0 +1,22 @@
+We do not need sed to demo an working in-store compiler.
+However, we do need sed to run an autotools configure script.
+In particular, need it for the configure script that comes with the sed package.
+
+roly-chicago-24 (attempt 3dec2024)
+
+1. PATH should contain
+     ~/nixroot/bin
+
+2. ensure PREFIX dir exists
+     $ mkdir -p ./sed
+
+3. build in stage0
+     $ (cd stage0 && make compile && make install)
+
+4. copy subtree into store
+     $ ./copy2nix.sh -> a. uploads ./sed to nix store
+                        b. creates fixed-output-derivtion default.nix
+
+5. nix-build
+     prints store path,
+     ./result symlink keeps uploaded path alive
