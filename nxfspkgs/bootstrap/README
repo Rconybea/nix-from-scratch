@@ -1,28 +1,43 @@
 Strategy
 
-Starting with empty nix store.  Building up to a version of stdenv
+Starting with empty nix store.  Long-term goal is to build a viable version of stdenv.
+Short-term goal is get a foundation with which we can assemble packages
+(using our own naive nix-from-scratch-provided nix expressions)
+from native .nix files
 
 Build environment
 
 Need:
 - /home/roland/nixroot/bin         (e.g. for nix-build)
 
+----------------------------------------------------------------
 Install order
 
--3a. dependencies for local {nix, crosstools}.  See nix-from-scratch/Makefile.  $(HOME)/ext
--3b. local nix, built from source.  see nix-from-scratch/pkgs.  $(HOME)/nixroot
--2.  crosstools-ng.  see nix-from-scratch/pkgs/crosstools-ng.
--1.  crosstools. see nix-from-scratch/crosstool.  $(HOME)/nxfs-toolchain
-0.
-1.  nxfs-toolchain-0.  crosstools toolchain in NIXROOT/nix/store     (copied from NXFS_TOOLCHAIN)
-2.  nxfs-sysroot-0.    crosstools ld-linux,libc in NIXROOT/nix/store (copied from NXFS_TOOLCHAIN)
-3.  nxfs-gnumake-0.    gnumake 4.4.1.  build in stage0, install to ./gnumake/,   then run ./copy2nix.sh
-4.  nxfs-coreutils-0.  coreutils 9.5.  build in stage0, install to ./coreutils/, then run ./copy2nix.sh
-5.  nxfs-bash-0.       bash 5.2.32.    build in stage0, install to ./bash/,      then run ./copy2nix.sh
-6.  nxfs-m4-0.         m4 1.4.19       build in stage0, install to ./m4/,        then run ./copy2nix.sh
-7.  nxfs-gnutar-0.     tar 1.35        build in stage0, install to ./tar/,       then run ./copy2nix.sh
+0.  deps for {nix, crosstools-ng}.  See nix-from-scratch/Makefile.
+                       build + install to PREFIX=$(HOME)/ext
+1.  nix.               built from source.  see nix-from-scratch/pkgs.
+                       Install to NIX_PREFIX=$(HOME)/nixroot
+2.  crosstools-ng.     see nix-from-scratch/pkgs/crosstools-ng.
+3.  crosstools.        see nix-from-scratch/crosstool.  Directory for configure+install toolchain,
+                       install to NXFS_TOOLCHAIN=$(HOME)/nxfs-toolchain
 
-typical problems
+remaining stage0 steps can be done in any order
+4.  nxfs-toolchain-0.  crosstools toolchain in NIXROOT/nix/store     (copied from NXFS_TOOLCHAIN)
+5.  nxfs-sysroot-0.    crosstools ld-linux,libc in NIXROOT/nix/store (copied from NXFS_TOOLCHAIN)
+
+6.  nxfs-gnumake-0.    gnumake 4.4.1.  build in stage0, install (to ./gnumake/),   then run ./copy2nix.sh
+7.  nxfs-coreutils-0.  coreutils 9.5.  build in stage0, install (to ./coreutils/), then run ./copy2nix.sh
+8.  nxfs-bash-0.       bash 5.2.32.    build in stage0, install (to ./bash/),      then run ./copy2nix.sh
+9.  nxfs-gnutar-0.     tar 1.35        build in stage0, install (to ./tar/),       then run ./copy2nix.sh
+10. nxfs-sed-0.        sed 4.9         build in stage0, install (to ./sed/),       then run ./copy2nix.sh
+
+m4 maybe not needed in stage0 (as of 3dec2024)
+11.  nxfs-m4-0.         m4 1.4.19       build in stage0, install (to ./m4/),        then run ./copy2nix.sh
+
+Then continue in ../bootstrap-1
+
+----------------------------------------------------------------
+Typical Problems
 
 1. for new bootstrap dir, staging directory (e.g. nxfs-bash-0/bash) must exist
    in advance.  Otherwise empty PREFIX result (e.g. see PREFIX:=... in nxfs-bash-0/bash/Makefile)
