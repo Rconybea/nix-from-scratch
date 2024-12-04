@@ -26,7 +26,36 @@ Prerequisites
    This guide prepared with crosstools installed to ${HOME}/nxfs-toolchain
    (see NXFS_TOOLCHAIN_PREFIX in nix-from-scratch/mk/prefix.mk)
 
-Overview / Plan
+Overview
+
+0. (may) start with empty nix store
+
+1. stage0 - adopt externally-compiled toolchain into nix store.
+            Includes dynamic linker (ld-linux-x86-64.so), libc, gcc, linux header,
+            coreutils, bash, patchelf, tar.
+
+            Goal: everything needed by toolchain is present in nix store.
+            It's in an awkward-to-use state however: ELF executables and libraries
+            still refer to their external original locations and to /lib64.
+
+            This stage is special: it's the only bootstrap stage that uses
+            binaries prepared on host outside nix environment.
+            In practice not expected to be reproducible.
+
+2. stage1 - incrementally redirect stage0 components so that they refer to their
+            permanent in-store locations.
+
+            This is accomplished entirely using nix derivations, involving
+            just artifacts prepared in stage0 and stage1.
+
+            Goal: externally-provided toolchain wholly re-homed to nix store.
+
+3. stage2 - now that we have an in-store toolchain, use to build a native toolchain,
+            from source.
+
+
+
+Details
 1. stage0 (see ./bootstrap)
 
    starting with empty nix store.
