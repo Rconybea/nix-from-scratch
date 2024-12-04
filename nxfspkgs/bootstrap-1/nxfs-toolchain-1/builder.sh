@@ -39,8 +39,9 @@ ${mkdir} -p ${staging}
 ${chmod} u+w ${staging}/bin
 ${chmod} u+w ${staging}/x86_64-pc-linux-gnu
 ${chmod} u+w ${staging}/x86_64-pc-linux-gnu/bin
+${chmod} u+w ${staging}/libexec/gcc/x86_64-pc-linux-gnu/13.2.0
 
-for dir in ${staging}/bin ${staging}/x86_64-pc-linux-gnu/bin; do
+for dir in ${staging}/bin ${staging}/x86_64-pc-linux-gnu/bin ${staging}/libexec/gcc/x86_64-pc-linux-gnu/13.2.0; do
     for file in ${dir}/*; do
         echo "consider [${file}]"
 
@@ -52,6 +53,7 @@ for dir in ${staging}/bin ${staging}/x86_64-pc-linux-gnu/bin; do
     done
 done
 
+${chmod} u-w ${staging}/libexec/gcc/x86_64-pc-linux-gnu/13.2.0
 ${chmod} u-w ${staging}/x86_64-pc-linux-gnu/bin
 ${chmod} u-w ${staging}/x86_64-pc-linux-gnu
 ${chmod} u-w ${staging}/bin
@@ -61,4 +63,4 @@ ${chmod} u-w ${staging}/bin
 #
 final=${out}
 
-(cd ${staging} && (${tar} cf - . | ${tar} xf - -C ${final}))
+(cd ${staging} && (${tar} cf - . | ${tar} xf - -C ${final} ))
