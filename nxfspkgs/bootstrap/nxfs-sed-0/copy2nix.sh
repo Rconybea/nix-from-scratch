@@ -1,11 +1,11 @@
-#1/bin/bash
+#!/bin/bash
 #
 # Require:
 # 1. nxfs-sysroot  [$HOME/nxfs-toolchain/x86_64-pc-linux-gnu/sysroot]
 # 2. sysroot installed to nix store [nxfspkgs/bootstrap/nxfs-sysroot-0]
 #
 # Use
-#   $ cd nxfspkgs/bootstrap/nxfs-sed-0 && make compile && make install
+#   $ cd nxfspkgs/bootstrap/nxfs-sed-0/stage0 && make compile && make install
 #   $ cd nxfspkgs/bootstrap/nxfs-sed-0 && ./copy2nix.sh
 
 set -e
@@ -28,7 +28,7 @@ nix-store --add ${uploaddir}
 # create fixed-output derivation (FOD) using the obtained hash
 #
 cat <<EOF > default.nix
-# automatically created by nxfspkgs/bootstrap/nxfs-sed-0/copy2nix.sh -- DO NOT EDIT
+# automatically created by nxfspkgs/bootstrap/nxfs-${name}-0/copy2nix.sh -- DO NOT EDIT
 
 derivation {
   name = "${name}";
