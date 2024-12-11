@@ -9,7 +9,7 @@
 
 set -e
 
-name=gnumake
+name=make
 uploaddir=./${name}
 
 nixroot=${HOME}/nixroot

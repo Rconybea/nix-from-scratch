@@ -11,7 +11,8 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../../../..)
 #
 include $(TOP_DIR)/mk/config.mk
 
-PREFIX:=$(realpath ../gnumake)  #$(NXFS_BOOTSTRAP_PREFIX)/gnumake
+stem:=make
+PREFIX:=$(realpath ../$(stem))  #$(NXFS_BOOTSTRAP_PREFIX)/gnumake
 
 # REQUIRE:
 #  - sysroot available in nix store
@@ -19,7 +20,6 @@ PREFIX:=$(realpath ../gnumake)  #$(NXFS_BOOTSTRAP_PREFIX)/gnumake
 sysroot_storepath:=$(shell nix-build ../../nxfs-sysroot-0)
 
 version:=4.4.1
-stem:=make
 # unique package name
 name:=$(stem)-$(version)
 # local directory for unpacked source
