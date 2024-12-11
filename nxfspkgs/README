@@ -66,12 +66,16 @@ Details
    Prepare necessary packages outside nix (using crosstool-ng toolchain).
    upload to nix store as fixed-output derivations.
 
-   Need at least the following packages:
+   Need at least the following packages to run gcc
+   - bootstrap/nxfs-toolchain-0  gcc, g++, binutils     see nix-from-scratch/crosstool/.config
    - bootstrap/nxfs-sysroot-0    libc, ld-linux.so      see nix-from-scratch/crosstool/.config
    - bootstrap/nxfs-coreutils-0  mkdir, chmod           v 9.5    asof 30nov2024
    - bootstrap/nxfs-patchelf-0   patchelf               v 0.18   asof 30nov2024
    - bootstrap/nxfs-tar-0        tar                    v 1.35   asof 30nov2024
    - bootstrap/nxfs-bash-0       bash                   v 5.2.32 asof 30nov2024
+   and to invoke autotools confiugre
+   - bootstrap/nxfs-sed-0
+   - bootstrap/nxfs-gawk-0
 
    The libc.so (prepared outside the nix store) expects to be installed to /lib/x8_64-linux-gnu/.
 
@@ -87,8 +91,10 @@ Details
 
 2. stage1 (see ./bootstrap-1)
 
-   Purpose of stage1 is to establish an in-store sysroot, containing {libc.so, ld-linux.so} that
-   correctly refer to each other's in-store location.
+   Purpose of stage1 is to:
+   1. establish an in-store sysroot, containing {libc.so, ld-linux.so} that
+      correctly refer to each other's in-store location
+   2. provide redirected versions of other stage0 packages
 
    Accomplish this by copying stage0 artifacts and patching with patchelf.
    This will use a regular nix derivation.  Fixed output derivations will be back
@@ -107,7 +113,9 @@ Details
    - bootstrap-1/nxfs-redirect-elf-file  shell util
    - bootstrap-1/nxfs-patchelf-1         patchelf
    - bootstrap-1/nxfs-coreutils-1        mkdir,cp,head,basename,...
-   - bootstrap-1/nxfs-tar-1
+   - bootstrap-1/nxfs-tar-1              tar
+   - bootstrap-1/nxfs-sed-1              sed
+   - bootstrap-1/nxfs-gawk-1             gawk
 
 
 Look Ma!
