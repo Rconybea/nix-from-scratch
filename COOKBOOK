@@ -1,0 +1,36 @@
+Things we can do with installed nix
+
+0. links
+
+https://github.com/nix-community/awesome-nix
+
+1.
+
+$ go-nixroot-nix
+$ echo $NIX_PATH
+/home/roland/nixroot
+$ nix-instantiate --eval -E '<nixpkgs>'
+/home/roland/nixroot/nixpkgs
+
+See https://nixos.org/guides/nix-pills/15-nix-search-paths
+
+----------------------------------------------------------------
+2.
+
+We can't really build anything entirely within nix,
+because the nix store is empty
+
+----------------------------------------------------------------
+3.
+
+To get logs for a thing that failed, say
+/home/roland/nixstore/kpkm0isv....-gnutar-1.12.dev
+
+$ nix-store --read-log /home/roland//nix/store/kpkm0isv....-gnutar-1.12.dev
+
+----------------------------------------------------------------
+4.
+
+To keep build dir for a thing that failed:
+
+$ nix-build '<nixpkgs>' -v --keep-failed -A minimal-bootstrap.gnutar
