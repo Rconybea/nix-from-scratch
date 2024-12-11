@@ -8,8 +8,6 @@ let
   nxfs-sysroot-1         = import ../nxfs-sysroot-1/default.nix;
   nxfs-redirect-elf-file = import ../nxfs-redirect-elf-file/default.nix;
 
-  sed               = "${nxfs-sed-0}/bin/tar";
-
   tar               = "${nxfs-tar-1}/bin/tar";
   bash              = "${nxfs-bash-1}/bin/bash";
   basename          = "${nxfs-coreutils-1}/bin/basename";
