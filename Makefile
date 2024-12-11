@@ -198,3 +198,5 @@ pkgs/mpfr:
 .PHONY: pkgs/stage1-binutils
 pkgs/stage1-binutils: pkgs/texinfo 
 
+.PHONY: pkgs/sed
+pkgs/sed:
