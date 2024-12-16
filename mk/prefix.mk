@@ -1,7 +1,7 @@
 # default below replaced by ./bootstrap.sh --prefix=PREFIX
 PREFIX:=$(HOME)/ext
 
-NIX_PREFIX:=$(HOME)/nixroot
+NIX_PREFIX:=$(shell realpath $(HOME)/nixroot)
 # NOTE: /nix/store in standard nix install
 NIX_STORE_DIR:=$(NIX_PREFIX)/nix/store
 # NOTE: /usr/share/doc/nix in standard nix install
