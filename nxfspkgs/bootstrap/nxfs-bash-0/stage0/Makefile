@@ -51,5 +51,29 @@ post_install_hook:=./post-install-hook.sh "--prefix=$(PREFIX)"
 .PHONY: all
 all: install
 
+# provides targets:
+# - $(tarball_path)
+# - state/fetch.result
+# - fetch
+# - sh256
+# - state/expected.sha256
+# - state/verify.result
+# - verify
+# - state/unpack.result
+# - unpack
+# - state/patch.result
+# - patch
+# - state/config.result
+# - config
+# - state/compile.mk
+# - compile
+# - state/install.mk
+# - install
+# - distclean
+# - verifyclean
+# - unpackclean
+# - configclean
+# - clean
+#
 include $(TOP_DIR)/mk/buildphases.mk
 
