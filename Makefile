@@ -145,7 +145,10 @@ pkgs/libssh2: pkgs/openssl
 pkgs/openssl: pkgs/perl pkgs/zlib
 
 .PHONY: pkgs/perl
-pkgs/perl: 
+pkgs/perl: pkgs/libxcrypt
+
+.PHONY: pkgs/libxcrypt
+pkgs/libxcrypt:
 
 .PHONY: pkgs/sqlite
 pkgs/sqlite: pkgs/pkgconf pkgs/libtool
