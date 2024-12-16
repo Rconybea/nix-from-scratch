@@ -33,7 +33,9 @@ derivation {
   args         = [ ./builder.sh ];
 
   #src         = nxfs-sed-source;
-  src          = builtins.fetchTarball { url = "https://ftp.gnu.org/gnu/grep/grep-3.11.tar.xz"; };
+  src          = builtins.fetchTarball { name = "grep-3.11-source";
+                                         url = "https://ftp.gnu.org/gnu/grep/grep-3.11.tar.xz";
+                                         sha256 = "0pm0zpzmmy6lq5ii03y1nqr1sdjalnwp69i5c926c9dm03v7v0bv"; };
 
   target_tuple ="x86_64-pc-linux-gnu";
 }

@@ -32,8 +32,9 @@ derivation {
   builder      = "${nxfs-bash-1}/bin/bash";
   args         = [ ./builder.sh ];
 
-  #src         = nxfs-sed-source;
-  src          = builtins.fetchTarball { url = "https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz"; };
+  src          = builtins.fetchTarball { name = "sed-4.9-source";
+                                         url = "https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz";
+                                         sha256 = "170m9hyxnhnxisvmii5z7m8i446ab97kam10rqjylj70dk8wh169"; };
 
-  target_tuple ="x86_64-pc-linux-gnu";
+  target_tuple = "x86_64-pc-linux-gnu";
 }

@@ -33,7 +33,9 @@ derivation {
   args         = [ ./builder.sh ];
 
   #src         = nxfs-sed-source;
-  src          = builtins.fetchTarball { url = "https://ftp.gnu.org/gnu/gawk/gawk-5.3.0.tar.xz"; };
+  src          = builtins.fetchTarball { name = "gawk-5.3.0-source";
+                                         url = "https://ftp.gnu.org/gnu/gawk/gawk-5.3.0.tar.xz";
+                                         sha256 = "03fsh86d3jbafmbhm1n0rx8wzsbvlfmpdscfx85dqx6isyk35sd9"; };
 
   target_tuple ="x86_64-pc-linux-gnu";
 }
