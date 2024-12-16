@@ -1,0 +1,15 @@
+roly-desktop-23:
+
+1. PATH should contain
+     ~/nixroot/bin
+
+2. build in stage0
+     $ (cd stage0 && make compile && make install)
+
+3. copy subtree into store
+     $ ./copy2nix.sh -> a. uploads ./patchelf to nix store
+                        b. creates fixed-output-derivtion default.nix
+
+4. nix-build
+     prints store path,
+     ./result symlink keeps uploaded path alive
