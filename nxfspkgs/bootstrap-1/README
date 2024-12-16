@@ -1,8 +1,8 @@
 Introduction
 
-Order is important here.  Builders progressively replace stage-0 packages with stage-1 replacements.
+Order is important here.  Builders progressively replace stage-0 packages with stage-1 versions.
 The replaced version points to in-nix-store sysroot.  Replacement is by redirecting
-ELF interpreter and supplying RUNPATH
+ELF interpreter and supplying RUNPATH.   We don't invoke any package-supplied build tools in this phase.
 
 In ../bootstrap-2 we'll begin attempting entirely in-store builds,
 using the toolchain and cohorts provided in this phase.
@@ -10,11 +10,12 @@ using the toolchain and cohorts provided in this phase.
 ----------------------------------------------------------------
 Dependency Tower
 
-   +-----------------------------------------------------------+
-   | nxfs-sed-1    nxfs-gawk-1   nxfxs-grep-1  nxfs-gnumake-1  |
-   +-----------------------------------------------------------+
-   |                       nxfs-toolchain-1                    |
-   +-----------------------------------------------------------+
+   +----------------------+--------------------+---------------+
+   |                      |    nxfs-perl-1     | nxfs-sed-1    |
+   |  nxfs-toolchain-1    |                    | nxfs-gawk-1   |
+   |                      +--------------------+ nxfs-gawk-1   |
+   |                      |  nxfs-libxcyrpt-1  | nxfs-grep-1   |
+   +----------------------+--------------------+---------------+
    |                       nxfs-tar-1                          |
    +-----------------------------------------------------------+
    |                       nxfs-coreutils-1                    |
