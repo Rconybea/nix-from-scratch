@@ -20,7 +20,7 @@ let
 in
 
 derivation {
-  name               = "nxfs-grep-1";
+  name               = "nxfs-libxcrypt-1";
   system             = builtins.currentSystem;
 
   bash               = bash;
