@@ -38,14 +38,16 @@ remaining stage0 steps can be done in any order.
 7.  nxfs-gnumake-0.    gnumake 4.4.1.  build in stage0, install (to ./gnumake/),   then run ./copy2nix.sh
 8.  nxfs-coreutils-0.  coreutils 9.5.  build in stage0, install (to ./coreutils/), then run ./copy2nix.sh
 9.  nxfs-bash-0.       bash 5.2.32.    build in stage0, install (to ./bash/),      then run ./copy2nix.sh
-10. nxfs-gnutar-0.     tar 1.35        build in stage0, install (to ./tar/),       then run ./copy2nix.sh
+10. nxfs-tar-0.        tar 1.35        build in stage0, install (to ./tar/),       then run ./copy2nix.sh
 11. nxfs-sed-0.        sed 4.9         build in stage0, install (to ./sed/),       then run ./copy2nix.sh
 12. nxfs-grep-0.       grep 3.11       build in stage0, install (to ./grep/),      then run ./copy2nix.sh
 13. nxfs-perl-0.       perl 5.40.0     build in stage0, install (to ./perl/),      then run ./copy2nix.sh
+14. nxfs-gawk-0.       gawk 5.3.0      build in stage0, install (to ./gawk/),      then run ./copy2nix.sh
 
 m4 maybe not needed in stage0 (as of 3dec2024)
-14. nxfs-gawk-0.       gawk 5.3.0      build in stage0, install (to ./gawk/),      then run ./copy2nix.sh
 15. nxfs-m4-0.         m4 1.4.19       build in stage0, install (to ./m4/),        then run ./copy2nix.sh
+16. nxfs-libxcrypt-0.  libxcrypt       build in stage0, install (to ./libxcrypt),  then run ./copy2nix.sh
+17. nxfs-perl-0.
 
 Then continue in ../bootstrap-1
 
