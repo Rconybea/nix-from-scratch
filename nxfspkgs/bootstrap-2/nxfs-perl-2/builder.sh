@@ -69,11 +69,17 @@ perlout=${out}/lib/perl5/${version_major_minor}
 
 cd ${builddir}
 
+#x86_64-pc-linux-gnu-gcc -E -dM ${sysroot}/usr/include/errno.h > ${out}/errno-defs   # works, produces defs
+#nxfs-gcc -E -dM -DNO_LOCALE -v ${sysroot}/usr/include/errno.h > ${out}/errno-defs2  # works, produces defs
+#ls
+
 # -d: use defaults
 # -e: stop questions after config.sh
 # -s: silent mode
 #
-sh Configure -de -Dperl_lc_all_uses_name_value_pairs=define -Dcpp=x86_64-pc-linux-gnu-gcc -Dcc=x86_64-pc-linux-gnu-gcc -Dgcc=x86_64-pc-linux-gnu-gcc -Dccflags="-I${sysroot}/usr/include" -Dldflags="-Wl,-enable-new-dtags" -Dprefix=${out} -Dvendorprefix=${out} -Duseshrplib -Dprivlib=${perlout}/core_perl -Darchlib=${perlout}/core_perl -Dsitelib=${perlout}/site_perl -Dsitearch=${perlout}/site_perl -Dvendorlib=${perlout}/vendor_perl -Dvendorarch=${perlout}/vendor_perl
+# removing -Dcpp=nxfs-gcc (why did we need this)
+#
+sh Configure -de -Dperl_lc_all_uses_name_value_pairs=define -Dcc=${gcc_wrapper}/bin/nxfs-gcc -Dccflags="-DNO_LOCALE -v" -Dldflags="-Wl,-enable-new-dtags" -Dprefix=${out} -Dsysroot=${sysroot} -Dvendorprefix=${out} -Duseshrplib -Dprivlib=${perlout}/core_perl -Darchlib=${perlout}/core_perl -Dsitelib=${perlout}/site_perl -Dsitearch=${perlout}/site_perl -Dvendorlib=${perlout}/vendor_perl -Dvendorarch=${perlout}/vendor_perl
 
 make SHELL=${CONFIG_SHELL}
 
