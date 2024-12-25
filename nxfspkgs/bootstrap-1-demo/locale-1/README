@@ -1,0 +1,7 @@
+locale test.
+
+context: trying to get perl to build in stage2.
+fails because nix-build running in that stage doesn't have access to any locales,
+which causes a static assert to fail.
+
+One way to try to fix may be to supply a sufficient locale setup in stage1.
