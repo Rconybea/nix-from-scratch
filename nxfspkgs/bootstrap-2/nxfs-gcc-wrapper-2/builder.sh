@@ -32,18 +32,30 @@ gxx_basename=$(basename ${gxx})
 
 mkdir -p ${out}/bin
 
+# also provide secondary names
+#   nxfs-gcc
+#   nxfs-g++
+#
+# Might be helpful when diagnosing certain problems during bootstrap,
+# to use a name that's distinct from the destination binary's name,
+# so we can know which one's being invoked.
+
 # prepare gcc-wrapper script from template
 tmp=${builddir}/bin/${gcc_basename}
 cp ${gcc_wrapper_script} ${tmp}
+sed -i -e s:@bash@:${bash}/bin/bash: ${tmp}
 sed -i -e s:@unwrapped_gcc@:${unwrapped_gcc}: ${tmp}
 sed -i -e s:@sysroot@:${sysroot}: ${tmp}
 chmod +x ${tmp}
 cp ${tmp} ${out}/bin
+cp ${tmp} ${out}/bin/nxfs-gcc
 
 # prepare gxx-wrapper script from template
 tmp=${builddir}/bin/${gxx_basename}
 cp ${gxx_wrapper_script} ${tmp}
+sed -i -e s:@bash@:${bash}/bin/bash: ${tmp}
 sed -i -e s:@unwrapped_gxx@:${unwrapped_gxx}: ${tmp}
 sed -i -e s:@sysroot@:${sysroot}: ${tmp}
 chmod +x ${tmp}
 cp ${tmp} ${out}/bin
+cp ${tmp} ${out}/bin/nxfs-g++

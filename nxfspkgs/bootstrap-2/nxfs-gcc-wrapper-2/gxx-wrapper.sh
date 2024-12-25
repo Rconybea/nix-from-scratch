@@ -1,3 +1,5 @@
+#! @bash@
+#
 # Script to provide a version of gcc
 # that build executables that use nix-store-locaated libc + ELF interpreter.
 #
