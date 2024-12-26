@@ -7,6 +7,7 @@ let
   nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
   nxfs-grep-2        = import ../nxfs-grep-2/default.nix;
   nxfs-bash-2        = import ../nxfs-bash-2/default.nix;
+  nxfs-perl-2        = import ../nxfs-perl-2/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
@@ -26,6 +27,7 @@ derivation {
   gnused       = nxfs-sed-2;
   gawk         = nxfs-gawk-2;
   grep         = nxfs-grep-2;
+  perl         = nxfs-perl-2;
 
   toolchain    = nxfs-toolchain-1;
   sysroot      = nxfs-sysroot-1;
