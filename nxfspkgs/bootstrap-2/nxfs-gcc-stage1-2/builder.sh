@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 
 echo "gcc_wrapper=${gcc_wrapper}"
 echo "toolchain=${toolchain}"
@@ -9,6 +9,7 @@ echo "gawk=${gawk}"
 echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
+echo "texinfo=${texinfo}";
 echo "coreutils=${coreutils}"
 echo "sysroot=${sysroot}"
 #echo "mkdir=${mkdir}"
@@ -32,7 +33,7 @@ set -x
 # 4. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
 # 5. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
 #
-export PATH="${findutils}/bin:${coreutils}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
+export PATH="${texinfo}/bin:${autoconf}/bin:${findutils}/bin:${coreutils}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
 
 # WARNING!
 #   ${toolchain}/x86_64-pc-linux-gnu/sysroot/usr/include/obstack.h [~/nixroot/nix/store/rh8qr...]

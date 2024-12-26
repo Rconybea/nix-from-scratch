@@ -9,6 +9,8 @@ let
   nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;
   nxfs-coreutils-2   = import ../nxfs-coreutils-2/default.nix;
   nxfs-binutils-2    = import ../nxfs-binutils-2/default.nix;
+  nxfs-autoconf-2    = import ../nxfs-autoconf-2/default.nix;
+  nxfs-texinfo-2     = import ../nxfs-texinfo-2/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
@@ -38,6 +40,7 @@ derivation {
   sed          = nxfs-sed-2;
   grep         = nxfs-grep-2;
   gcc_wrapper  = nxfs-gcc-wrapper-2;
+  texinfo      = nxfs-texinfo-2;
 
   binutils     = nxfs-binutils-2;
 
