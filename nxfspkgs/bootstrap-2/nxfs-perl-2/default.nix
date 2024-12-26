@@ -7,10 +7,10 @@ let
   nxfs-gnumake-2     = import ../nxfs-gnumake-2/default.nix;
   nxfs-tar-2         = import ../nxfs-tar-2/default.nix;
   nxfs-bash-2        = import ../nxfs-bash-2/default.nix;
+  nxfs-coreutils-2   = import ../nxfs-coreutils-2/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
-  nxfs-coreutils-1   = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
 
 in
 
@@ -21,7 +21,7 @@ derivation {
 
   toolchain    = nxfs-toolchain-1;
   sysroot      = nxfs-sysroot-1;
-  coreutils    = nxfs-coreutils-1;
+  coreutils    = nxfs-coreutils-2;
 
   bash         = nxfs-bash-2;
   tar          = nxfs-tar-2;
