@@ -17,7 +17,7 @@ stage0pkgs="nxfs-patchelf-0 nxfs-gnumake-0 nxfs-coreutils-0 nxfs-bash-0 nxfs-tar
 
 for subdir in $stage0pkgs; do
     pushd $subdir
-    (cd stage0 && make fetch && make config && make compile && make install)
+    make -C stage0 install
     ./copy2nix.sh
     nix-build
     popd

@@ -54,10 +54,20 @@ Overview
 3. stage2 - now that we have an in-store toolchain, use to build a native toolchain,
             from source.
 
+----------------------------------------------------------------
+Build
+
+0. Satisfy prerequsites above
+  $ cd nix-from-scratch/nxfspkgs
+
+1.
+  $ (cd ./bootstrap && ./build-stage0)
+Or, see ./bootstrap/README to build+adopt packages individually
 
 
 Details
-1. stage0 (see ./bootstrap)
+
+1. stage0 (see nxfspkgs/bootstrap)
 
    starting with empty nix store.
 
@@ -70,13 +80,14 @@ Details
    Need at least the following packages to run gcc
    - bootstrap/nxfs-toolchain-0  gcc, g++, binutils     see nix-from-scratch/crosstool/.config
    - bootstrap/nxfs-sysroot-0    libc, ld-linux.so      see nix-from-scratch/crosstool/.config
-   - bootstrap/nxfs-coreutils-0  mkdir, chmod           v 9.5    asof 30nov2024
-   - bootstrap/nxfs-patchelf-0   patchelf               v 0.18   asof 30nov2024
-   - bootstrap/nxfs-tar-0        tar                    v 1.35   asof 30nov2024
-   - bootstrap/nxfs-bash-0       bash                   v 5.2.32 asof 30nov2024
-   and to invoke autotools confiugre
-   - bootstrap/nxfs-sed-0
-   - bootstrap/nxfs-gawk-0
+   - bootstrap/nxfs-patchelf-0   patchelf               v 0.18.0 asof 4jan2025
+   - bootstrap/nxfs-gnumake-0    make                   v 4.4.1  asof 4jan2025
+   - bootstrap/nxfs-coreutils-0  mkdir, chmod..         v 9.5    asof 4jan2025
+   - bootstrap/nxfs-bash-0       bash                   v 5.2.32 asof 4jan2025
+   - bootstrap/nxfs-tar-0        tar                    v 1.35   asof 4jan2025
+   - bootstrap/nxfs-sed-0        sed                    v 4.9    asof 4jan2025
+   - bootstrap/nxfs-grep-0       grep                   v 3.11   asof 4jan2025
+   - bootstrap/nxfs-libxcrypt-0  libxcrypt library
 
    The libc.so (prepared outside the nix store) expects to be installed to /lib/x8_64-linux-gnu/.
 
