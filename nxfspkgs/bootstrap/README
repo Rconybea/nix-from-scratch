@@ -17,7 +17,7 @@ Starting with empty nix store.  Long-term (will take multiple passes)
 goal is to build a viable version of stdenv.
 
 Short-term goal is get a foundation with which we can assemble packages
-(using our own naive nix-from-scratch-provided nix expressions)
+(using our own nix-from-scratch-provided nix expressions),
 from native .nix files
 
 Build environment
@@ -67,10 +67,12 @@ Then continue in ../bootstrap-1
 Procedure for each package foo (excepting nxfs-toolchain-0, nxfs-sysroot-0)
 
 1.
-  $cd nix-from-scratch/nxfspkgs/bootstrap/nxfs-foo-0
+  $ cd nix-from-scratch/nxfspkgs/bootstrap/nxfs-foo-0
 
 2.
 Except for nxfs-toolchain-0, nxfs-sysroot-0:
+  $ make -C stage0 install
+or spelled-out:
   $ (cd stage0 && make fetch && make config && make compile && make install)
 
 3.
