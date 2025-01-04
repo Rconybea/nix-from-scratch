@@ -64,7 +64,13 @@ Build
   $ (cd ./bootstrap && ./build-stage0)
 Or, see ./bootstrap/README to build+adopt packages individually
 
+2.
+  $ nix-build -A nxfs-bootstrap-1
+Or, see ./bootstrap-1/README to prepare packages individually
 
+3. WIP asof 4jan2025
+
+----------------------------------------------------------------
 Details
 
 1. stage0 (see nxfspkgs/bootstrap)

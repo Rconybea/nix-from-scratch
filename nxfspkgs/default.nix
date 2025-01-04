@@ -12,4 +12,5 @@
   nxfs-toolchain-0 = import ./bootstrap/nxfs-toolchain-0/default.nix;
   nxfs-sysroot-0   = import ./bootstrap/nxfs-sysroot-0/default.nix;
 
+  nxfs-bootstrap-1 = import ./bootstrap-1/default.nix;
 }
