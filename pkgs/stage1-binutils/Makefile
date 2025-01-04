@@ -58,6 +58,10 @@ builddir:=build
 # --disable-werror:   tolerate warnings
 # --enable-new-dtags: use RUNPATH instead of deprecated RPATH
 #
+# --enable-default-hash-style=gnu:
+#    1. use faster hash mechanism by default
+#    2. don't build classic ELF hash by default
+#
 configure_extra_args:=--with-sysroot=$(PREFIX_FIXPOINT) --target=$(TARGET) --disable-nls --enable-gprofng=no --disable-werror --enable-new-dtags --enable-default-hash-style=gnu
 post_install_hook:=
 
