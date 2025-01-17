@@ -32,5 +32,9 @@ set -x
 set -e
 
 cd ../${src_dir}
+echo 2>&1 'pre-configure-hook: libtoolize'
 libtoolize
+echo 2>&1 'pre-configure-hook: autoreconf -fi'
+autoreconf -fi
+echo 2>&1 'pre-configure-hook: autoreconf --install'
 autoreconf --install
