@@ -22,7 +22,7 @@ let
 in
 
 derivation {
-  name               = "nxfs-sed-1";
+  name               = "nxfs-gawk-1";
   system             = builtins.currentSystem;
 
   bash               = bash;
