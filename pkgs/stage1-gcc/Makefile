@@ -59,6 +59,8 @@ patch_script:=gcc-patch.sh
 # --target: if doesn't match config.guess (I think)
 #           so that binutils build prepares for a cross linker
 #
+# see also linux/default.nix in nixpkgs.  sets --with-native-system-header-dir and --with-build-sysroot
+#
 configure_extra_args:=--target=$(TARGET) --with-sysroot=$(PREFIX_FIXPOINT) --with-newlib --enable-default-pie --enable-default-ssp --disable-nls --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
 
 post_install_hook:=
