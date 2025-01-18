@@ -1,10 +1,23 @@
+----------------------------------------------------------------
+TL;DR
+
+Prerequisites:
+1. {nix, crosstools-ng} built from source.
+   See nix-from-scratch/pkgs/nix, nix-from-scratch/pkgs/crosstools-ng
+
+Then:
+  $ cd nix-from-scratch/nxfspkgs/bootstrap
+  $ ./build-stage0.sh
+Or see "Procedure for each package foo" below to build+adopt packages individually
+
+----------------------------------------------------------------
 Strategy
 
 Starting with empty nix store.  Long-term (will take multiple passes)
 goal is to build a viable version of stdenv.
 
 Short-term goal is get a foundation with which we can assemble packages
-(using our own naive nix-from-scratch-provided nix expressions)
+(using our own nix-from-scratch-provided nix expressions),
 from native .nix files
 
 Build environment
@@ -44,11 +57,31 @@ remaining stage0 steps can be done in any order.
 13. nxfs-gawk-0.       gawk 5.3.0      build in stage0, install (to ./gawk/),      then run ./copy2nix.sh
 14. nxfs-libxcrypt-0.  libxcrypt       build in stage0, install (to ./libxcrypt),  then run ./copy2nix.sh
 
-m4 maybe not needed in stage0 (as of 3dec2024)
-15. nxfs-perl-0.       perl 5.40.0     build in stage0, install (to ./perl/),      then run ./copy2nix.sh
-16. nxfs-m4-0.         m4 1.4.19       build in stage0, install (to ./m4/),        then run ./copy2nix.sh
+perl,m4 likely not needed in stage0 (as of 4jan2025),  keeping around in case need to revise
+(15). nxfs-perl-0.       perl 5.40.0     build in stage0, install (to ./perl/),      then run ./copy2nix.sh
+(16). nxfs-m4-0.         m4 1.4.19       build in stage0, install (to ./m4/),        then run ./copy2nix.sh
 
 Then continue in ../bootstrap-1
+
+----------------------------------------------------------------
+Procedure for each package foo (excepting nxfs-toolchain-0, nxfs-sysroot-0)
+
+1.
+  $ cd nix-from-scratch/nxfspkgs/bootstrap/nxfs-foo-0
+
+2.
+Except for nxfs-toolchain-0, nxfs-sysroot-0:
+  $ make -C stage0 install
+or spelled-out:
+  $ (cd stage0 && make fetch && make config && make compile && make install)
+
+3.
+  $ ./copy2nix.sh
+
+4.
+if all went well, then just
+  $ nix-build
+should immediately return store path for adopted build output
 
 ----------------------------------------------------------------
 Typical Problems

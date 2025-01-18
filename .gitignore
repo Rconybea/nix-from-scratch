@@ -4,4 +4,6 @@ pkgs/*/log
 pkgs/*/src
 pkgs/*/binary
 pkgs/*/build
+nxfspkgs/*/result
 nxfspkgs/bootstrap-2/*/result
+

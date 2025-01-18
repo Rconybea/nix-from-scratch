@@ -1,0 +1,19 @@
+1. Trying to use native stdenv (see nixpkgs/pkgs/stdenv/native)
+   Since nix-bootstrap-replication (mentioned below) not successful.
+
+   Plan:
+   - NIX_PREFIX=NIX/PREFIX/value/from/pkgs/nix/Makefile
+     (we have $NIX_PREFIX/nixpkgs containing nixpkgs collection)
+   - placeholder=/path/to/nix-from-scratch
+     (we have add'l packages in $placeholder/nixfromscratchpkgs)
+   - set NIX_PATH=$placeholder:$NIX_PREFIX
+     (both <nixfromscratchpkgs>, <nixpkgs> should work)
+
+2. Trying to replicate nix bootstrap from (almost) nothing:
+   (Lots of apparent progress, but blocked on gnutar)
+
+  nix-build '<nixpkgs>' -A make-minimal-bootstrap-sources
+
+  (from regular nix environment)
+
+  Creates a tree under ./result

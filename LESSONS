@@ -73,3 +73,30 @@
        INTERP         0x0000000000198f40 0x0000000000198f40 0x0000000000198f40
                       0x000000000000001c 0x000000000000001c  R      0x10
            [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
+
+8. Typical install assumes either or both of {/bin/sh, /bin/bash} exist.
+
+   This is not the case when nix-builder runs.
+
+   Autotools builds may try to make this configurable via the CONFIG_SHELL variable,
+   but don't consistently support it.
+
+   Symptom will be something like
+      path/to/foo: cannot execute: required file not found
+
+   where 'foo' is a shell script with a shebang.
+
+   Our workaround is to rewrite the offending script, replacing just the shebang
+   with nix-store path to bash.
+
+   For example nxfs-gmp-2 build complained when invoking the 'm4-ccas' script.
+   Fix with interplation in nxfs-gmp-2/builder.sh:
+
+     bash_program=${bash}/bin/bash
+
+     chmod -R +w ${src2}
+     sed -i "1s:#!.*/bin/sh:#!${bash_program}:" ${src2}/mpn/m4-ccas
+     chmod -R -w ${src2}
+
+   EDITORIAL: would like a way to provide this from the nix-build-constructed chroot environment.
+   Nix is already chrooting a bunch of directories,  would like to add a couple more.

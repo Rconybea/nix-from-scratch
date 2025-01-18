@@ -12,18 +12,7 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 #
 include $(TOP_DIR)/mk/config.mk
 
-# we're bootstrapping.
-#  PREFIX_FIXPOINT is our ultimate destination.
-#  PREFIX is just for stage1   (cross-compiler)
-#
-PREFIX_FIXPOINT:=$(PREFIX)
-PREFIX:=$(PREFIX)/stage1
-
-# eventually need to match what nixpkgs uses to select?
-#TARGET=$(shell echo "$$(uname -m)-nxfs-$$(uname -o | tr [:upper:] [:lower:])-gnu")
-#TARGET=$(shell echo "$$(uname -m)-nxfs-$$(uname -o)-macos")
-#TARGET=aarch64-darwin
-TARGET=x86_64-nxfs-linux-gnu
+PREFIX:=$(PREFIX)/native-toolchain-experiment
 
 version:=2.43.1
 # unique package name
@@ -62,7 +51,7 @@ builddir:=build
 #    1. use faster hash mechanism by default
 #    2. don't build classic ELF hash by default
 #
-configure_extra_args:=--with-sysroot=$(PREFIX_FIXPOINT) --target=$(TARGET) --disable-nls --enable-gprofng=no --disable-werror --enable-new-dtags --enable-default-hash-style=gnu
+configure_extra_args:=--disable-nls --enable-gprofng=no --disable-werror --enable-new-dtags --enable-default-hash-style=gnu
 post_install_hook:=
 
 all: compile

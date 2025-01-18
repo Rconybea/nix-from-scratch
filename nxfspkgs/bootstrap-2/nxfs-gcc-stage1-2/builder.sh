@@ -1,7 +1,17 @@
 #! /bin/bash
 
+# See also
+#   https://gcc.gnu.org/install/configure.html
+
+echo "src=${src}"
+echo "mpc=${mpc}"
+echo "mpfr=${mpfr}"
+echo "gmp=${gmp}"
 echo "gcc_wrapper=${gcc_wrapper}"
 echo "toolchain=${toolchain}"
+echo "bison=${bison}";
+echo "flex=${flex}";
+echo "diffutils=${diffutils}"
 echo "findutils=${findutils}"
 echo "coreutils=${coreutils}"
 echo "gnumake=${gnumake}"
@@ -9,16 +19,12 @@ echo "gawk=${gawk}"
 echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
-echo "texinfo=${texinfo}";
+#echo "texinfo=${texinfo}";
 echo "coreutils=${coreutils}"
 echo "sysroot=${sysroot}"
 #echo "mkdir=${mkdir}"
 #echo "head=${head}"
 echo "bash=${bash}"
-echo "gcc_src=${gcc_src}"
-echo "mpfr_src=${mpfr_src}"
-echo "mpc_src=${mpc_src}"
-echo "gmp_src=${gmp_src}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
@@ -33,26 +39,15 @@ set -x
 # 4. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
 # 5. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
 #
-export PATH="${texinfo}/bin:${autoconf}/bin:${findutils}/bin:${coreutils}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
-
-# WARNING!
-#   ${toolchain}/x86_64-pc-linux-gnu/sysroot/usr/include/obstack.h [~/nixroot/nix/store/rh8qr...]
-#   ${sysroot}/usr/include                                         [~/nixroot/nix/store/4ban...]
-# provide obstack.h which shadows the one in ${src}
-#
-#export CFLAGS="-I${coreutils}/include -I${sysroot}/usr/include -I${toolchain}/include"
+export PATH="${bison}/bin:${flex}/bin:${texinfo}/bin:${m4}/bin:${diffutils}/bin:${findutils}/bin:${coreutils}/bin:${binutils}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
 
 #ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
 
-src=${gcc_src}
 #src2=${src}
 src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
 
 mkdir -p ${src2}
-mkdir -p ${src2}/mpfr
-mkdir -p ${src2}/mpc
-mkdir -p ${src2}/gmp
 mkdir -p ${builddir}
 
 mkdir ${out}
@@ -61,35 +56,19 @@ bash_program=${bash}/bin/bash
 
 # 1. copy source tree to temporary directory,
 #
-(cd ${gcc_src}  && (tar cf - . | tar xf - -C ${src2}))
-(cd ${mpfr_src} && (tar cf - . | tar xf - -C ${src2}/mpfr))
-(cd ${mpc_src}  && (tar cf - . | tar xf - -C ${src2}/mpc))
-(cd ${gmp_src}  && (tar cf - . | tar xf - -C ${src2}/gmp))
+(cd ${src}  && (tar cf - . | tar xf - -C ${src2}))
 
 chmod -R +w ${src2}
-(cd ${src2} && sed -e '/m64=/s:lib64:lib:' -i.orig ./gcc/config/i386/t-linux64)
-# don't want to touch m4 files;
-# changing those requires subsequently running automake,
-# which in turn needs perl,
-# and we run into trouble trying to build this in boostrap environment
-#
-(cd ${src2} && find . -type f | grep -v '.m4$' | grep -v '*.ac$' | xargs --replace=xx sed -i -e "1s:#! /bin/sh:#! ${bash_program}:" -e "1s:#!/usr/bin/env bash:#! ${bash_program}:" xx)
+(cd ${src2} && sed -i -e '/m64=/s:lib64:lib:' ./gcc/config/i386/t-linux64)
+(cd ${src2} && sed -i -e "1s:#!/bin/sh:#!${bash_program}:" move-if-change)
 
-# ----------------------------------------------------------------
-# NOTE: omitting coreutils unicode patch
-#       since we don't need it for bootstrap
-# ----------------------------------------------------------------
+# binutils before toolchain, want to use the bootstrap-2 versions from nxfs-binutils-2
+#
+(cd ${src2} && find . -type f | grep -v '*.l$' | xargs --replace=xx sed -i -e "1s:#! /bin/sh:#! ${bash_program}:" -e "1s:#!/usr/bin/env sh:#! ${bash_program}:" -e "#1:#!/usr/bin/env bash:#! ${bash_program}:" xx)
+#(cd ${src2} && find . -type f | grep -v '.m4$' | grep -v '*.ac$' | xargs --replace=xx sed -i -e "1s:#! /bin/sh:#! ${bash_program}:" -e "1s:#!/usr/bin/env bash:#! ${bash_program}:" xx)
 
 # ${src2}/configure honors CONFIG_SHELL
 export CONFIG_SHELL="${bash_program}"
-
-# 1.
-# we shouldn't need special compiler/linker instructions,
-# since stage-1 toolchain "knows where it lives"
-#
-# 2.
-# do need to give --host and --build arguments to configure,
-# since we're using a cross compiler.
 
 # --disable-nls:                    no internationalization.  don't need during bootstrap
 # --enable-gprofng=no:              don't need gprofng tool during bootstrap
@@ -106,10 +85,37 @@ export CONFIG_SHELL="${bash_program}"
 #   --without-headers           will need kernel headers compatible with target.  Don't look for them for now.
 #   --disable-shared            necessary so we can invoke gcc without libc
 #   --disable-multilib
+#
+# other interesting args we may adopt:
+#   --with-native-system-header-dir=dirname   look for native system headers here, instead of in /usr/include
+#                                             may want to point this at sysroot/usr/include
+#   --with-stage1-libs
+#   --with-stage1-ldflags
+#   --with-boot-libs
+#   --with-boot-ldflags
 
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --disable-nls --with-glibc-version=2.40 --with-newlib --without-headers --enable-default-pie --enable-default-ssp --disable-nls --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ CFLAGS="${CFLAGS}" LDFLAGS="-Wl,-enable-new-dtags")
+# WARNING!
+#   ${toolchain}/x86_64-pc-linux-gnu/sysroot/usr/include/obstack.h [~/nixroot/nix/store/rh8qr...]
+#   ${sysroot}/usr/include                                         [~/nixroot/nix/store/4ban...]
+# provide obstack.h which shadows the one in ${src}
+#
+#export CFLAGS="-I${coreutils}/include -I${sysroot}/usr/include -I${toolchain}/include"
+export CFLAGS="-idirafter ${sysroot}/usr/include"
+# TODO: -O2
 
-# (MAKEINFO=true use 'path/to/bin/true' for MAKEINFO, to suppress building docs (would need texinfo <- perl))
+LDFLAGS="-B${sysroot}/lib"
+LDFLAGS="${LDFLAGS} -L${flex}/lib -L${mpc}/lib -L${mpfr}/lib -L${gmp}/lib"
+LDFLAGS="${LDFLAGS} -Wl,-rpath,${mpc}/lib -Wl,-rpath,${mpfr}/lib -Wl,-rpath,${gmp}/lib -Wl,-rpath,${sysroot}/lib"
+export LDFLAGS
+
+# NOTE: nxfs-gcc automatically inserts flags
+#          -Wl,--rpath=${sysroot}/lib -Wl,--dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2
+#       We still need them explictly here
+#
+#
+# this builds:
+#(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --disable-bootstrap --with-native-system-header-dir=${sysroot}/usr/include --disable-lto --disable-nls --with-glibc-version=2.40 --with-newlib --without-headers --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" --with-boot-ldflags="-B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --disable-bootstrap --with-native-system-header-dir=${sysroot}/usr/include --disable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" --with-boot-ldflags="-B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
-
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})

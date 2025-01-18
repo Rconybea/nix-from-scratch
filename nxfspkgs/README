@@ -3,7 +3,7 @@ Package repository (in the style of nixpkgs) for bootstrap.
 Separate from nixpkgs, because we want to use this to bootstrap
 starting with nix store that's empty except for deus-ex-machina nxfs-toolchain
 
-
+----------------------------------------------------------------
 Prerequisites
 1. dependencies for local {nix, crosstools} installed.
    See nix-from-scratch/Makefile.  Individual packages in nix-from-scratch/pkgs/.
@@ -26,6 +26,7 @@ Prerequisites
    This guide prepared with crosstools installed to ${HOME}/nxfs-toolchain
    (see NXFS_TOOLCHAIN_PREFIX in nix-from-scratch/mk/prefix.mk)
 
+----------------------------------------------------------------
 Overview
 
 0. (may) start with empty nix store
@@ -53,10 +54,26 @@ Overview
 3. stage2 - now that we have an in-store toolchain, use to build a native toolchain,
             from source.
 
+----------------------------------------------------------------
+Build
 
+0. Satisfy prerequsites above
+  $ cd nix-from-scratch/nxfspkgs
 
+1.
+  $ (cd ./bootstrap && ./build-stage0)
+Or, see ./bootstrap/README to build+adopt packages individually
+
+2.
+  $ nix-build -A nxfs-bootstrap-1
+Or, see ./bootstrap-1/README to prepare packages individually
+
+3. WIP asof 4jan2025
+
+----------------------------------------------------------------
 Details
-1. stage0 (see ./bootstrap)
+
+1. stage0 (see nxfspkgs/bootstrap)
 
    starting with empty nix store.
 
@@ -69,13 +86,14 @@ Details
    Need at least the following packages to run gcc
    - bootstrap/nxfs-toolchain-0  gcc, g++, binutils     see nix-from-scratch/crosstool/.config
    - bootstrap/nxfs-sysroot-0    libc, ld-linux.so      see nix-from-scratch/crosstool/.config
-   - bootstrap/nxfs-coreutils-0  mkdir, chmod           v 9.5    asof 30nov2024
-   - bootstrap/nxfs-patchelf-0   patchelf               v 0.18   asof 30nov2024
-   - bootstrap/nxfs-tar-0        tar                    v 1.35   asof 30nov2024
-   - bootstrap/nxfs-bash-0       bash                   v 5.2.32 asof 30nov2024
-   and to invoke autotools confiugre
-   - bootstrap/nxfs-sed-0
-   - bootstrap/nxfs-gawk-0
+   - bootstrap/nxfs-patchelf-0   patchelf               v 0.18.0 asof 4jan2025
+   - bootstrap/nxfs-gnumake-0    make                   v 4.4.1  asof 4jan2025
+   - bootstrap/nxfs-coreutils-0  mkdir, chmod..         v 9.5    asof 4jan2025
+   - bootstrap/nxfs-bash-0       bash                   v 5.2.32 asof 4jan2025
+   - bootstrap/nxfs-tar-0        tar                    v 1.35   asof 4jan2025
+   - bootstrap/nxfs-sed-0        sed                    v 4.9    asof 4jan2025
+   - bootstrap/nxfs-grep-0       grep                   v 3.11   asof 4jan2025
+   - bootstrap/nxfs-libxcrypt-0  libxcrypt library
 
    The libc.so (prepared outside the nix store) expects to be installed to /lib/x8_64-linux-gnu/.
 
@@ -89,7 +107,7 @@ Details
    instead of just
      $bash args...
 
-2. stage1 (see ./bootstrap-1)
+2. stage1 (see nxfspkgs/bootstrap-1)
 
    Purpose of stage1 is to:
    1. establish an in-store sysroot, containing {libc.so, ld-linux.so} that
@@ -121,7 +139,7 @@ Details
 Look Ma!
 
 1.
-  $ cd nixfspkgs
+  $ cd nxfspkgs
   $ nix repl
   nix-repl> :l default.nix
   Added 1 variables.
@@ -130,12 +148,10 @@ Look Ma!
 
 2. simple non-customizable nxfs-toolchain derivation
 
-  $ cd nixfspkgs
+  $ cd nxfspkgs
   $ nix-build default.nix -A nxfs-toolchain-0
   /home/roland/nixroot/nix/store/hpbqm9jq3r620ql61myn26w549xp7gm1-nxfs-toolchain
   $ ./result/bin/x86_64-pc-linux-gnu-gcc --version
   Copyright (C) 2023 Free Software Foundation, Inc.
   This is free software; see the source for copying conditions.  There is NO
   warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-Install order

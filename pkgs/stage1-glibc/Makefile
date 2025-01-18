@@ -53,7 +53,7 @@ patch_script:=glibc-patch.sh
 #           so that binutils build prepares for a cross linker
 #
 pre_configure_hook:=../glibc-preconfigure.sh --prefix=$(PREFIX) # runs in build directory
-configure_extra_args:=--host=$(TARGET) --build=x86_64-pc-linux-gnu --enable-kernel=4.19 --with-headers=$(PREFIX)/include --disable-nscd libc_cv_slibdir=$(PREFIX)/lib #--build=$(THIS_DIR)/$(srcdir)/scripts/config.guess 
+configure_extra_args:=--host=$(TARGET) --build=x86_64-pc-linux-gnu --enable-kernel=4.19 --with-headers=$(NXFS_TOOLCHAIN_SYSROOT)/usr/include --disable-nscd libc_cv_slibdir=$(PREFIX)/lib #--build=$(THIS_DIR)/$(srcdir)/scripts/config.guess 
 
 post_install_hook:=
 

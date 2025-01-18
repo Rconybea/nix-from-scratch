@@ -8,6 +8,31 @@ In ../bootstrap-2 we'll begin attempting entirely in-store builds,
 using the toolchain and cohorts provided in this phase.
 
 ----------------------------------------------------------------
+TL;DR
+
+Prerequisites:  stage0 packages built, see ../bootstrap
+
+Then:
+  $ cd nix-from-scratch/nxfspkgs/bootstrap-1
+  $ nix-build
+
+----------------------------------------------------------------
+Or, to build stage1 versions individually:
+
+  $ nix-build -A nxfs-sysroot-1
+  $ nix-build -A nxfs-redirect-elf-file
+  $ nix-build -A nxfs-bash-1
+  $ nix-build -A nxfs-patchelf-1
+  $ nix-build -A nxfs-coreutils-1
+  $ nix-build -A nxfs-tar-1
+  $ nix-build -A nxfs-libxcrypt-1
+  $ nix-build -A nxfs-toolchain-1
+  $ nix-build -A nxfs-grep-1
+  $ nix-build -A nxfs-gawk-1
+  $ nix-build -A nxfs-gnumake-1
+  $ nix-build -A nxfs-sed-1
+
+----------------------------------------------------------------
 Dependency Tower
 
    +----------------------+--------------------+----------------+
@@ -30,7 +55,6 @@ Dependency Tower
    +------------------------------------------------------------+
    |                        bootstrap-0                         |
    +------------------------------------------------------------+
-
 
 ----------------------------------------------------------------
 Caveats

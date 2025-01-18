@@ -131,7 +131,7 @@ else
             if [[ -n ${ldflags_arg} ]]; then
                 ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}"
             else
-                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" 
+                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}"
             fi
         fi
     else
