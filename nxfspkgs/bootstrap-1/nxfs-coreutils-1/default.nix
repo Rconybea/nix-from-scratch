@@ -20,13 +20,13 @@ in
 derivation {
   name = "nxfs-coreutils-1";
   system = builtins.currentSystem;
+  builder = bash;
 
   bash = bash;
   chmod = chmod;
   basename = basename;
   head = head;
   mkdir = mkdir;
-  builder = bash;
   patchelf = patchelf;
   tar = tar;
 
