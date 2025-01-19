@@ -1,4 +1,6 @@
 let
+  nxfs-findutils-1       = import ./nxfs-findutils-1/default.nix;
+  nxfs-diffutils-1       = import ./nxfs-diffutils-1/default.nix;
   nxfs-sed-1             = import ./nxfs-sed-1/default.nix;
   nxfs-gnumake-1         = import ./nxfs-gnumake-1/default.nix;
   nxfs-gawk-1            = import ./nxfs-gawk-1/default.nix;
@@ -27,10 +29,12 @@ derivation {
   bash_builder = "./builder.sh";
   args = [bash ./builder.sh];
 
-  buildInputs = [nxfs-sed-1 nxfs-gnumake-1 nxfs-gawk-1 nxfs-grep-1 nxfs-toolchain-1 nxfs-libxcrypt-1 nxfs-tar-1
+  buildInputs = [nxfs-findutils-1 nxfs-diffutils-1 nxfs-sed-1 nxfs-gnumake-1 nxfs-gawk-1 nxfs-grep-1 nxfs-toolchain-1 nxfs-libxcrypt-1 nxfs-tar-1
                  nxfs-coreutils-1 nxfs-patchelf-1 nxfs-bash-1 nxfs-redirect-elf-file nxfs-sysroot-1
                 ];
 
+  nxfs-diffutils-1       = nxfs-diffutils-1;
+  nxfs-findutils-1       = nxfs-findutils-1;
   nxfs-sed-1             = nxfs-sed-1;
   nxfs-gnumake-1         = nxfs-gnumake-1;
   nxfs-gawk-1            = nxfs-gawk-1;
