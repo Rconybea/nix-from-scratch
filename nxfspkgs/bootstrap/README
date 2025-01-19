@@ -46,16 +46,19 @@ Install order
 4.  nxfs-toolchain-0.  crosstools toolchain in NIXROOT/nix/store     (copied from NXFS_TOOLCHAIN)
 5.  nxfs-sysroot-0.    crosstools ld-linux,libc in NIXROOT/nix/store (copied from NXFS_TOOLCHAIN)
 
-remaining stage0 steps can be done in any order.
-6.  nxfs-patchelf-0.   patchelf 0.18.0 build in stage0, install (to ./patchelf/),  then run ./copy2nix.sh
-7.  nxfs-gnumake-0.    gnumake 4.4.1.  build in stage0, install (to ./gnumake/),   then run ./copy2nix.sh
-8.  nxfs-coreutils-0.  coreutils 9.5.  build in stage0, install (to ./coreutils/), then run ./copy2nix.sh
-9.  nxfs-bash-0.       bash 5.2.32.    build in stage0, install (to ./bash/),      then run ./copy2nix.sh
-10. nxfs-tar-0.        tar 1.35        build in stage0, install (to ./tar/),       then run ./copy2nix.sh
-11. nxfs-sed-0.        sed 4.9         build in stage0, install (to ./sed/),       then run ./copy2nix.sh
-12. nxfs-grep-0.       grep 3.11       build in stage0, install (to ./grep/),      then run ./copy2nix.sh
-13. nxfs-gawk-0.       gawk 5.3.0      build in stage0, install (to ./gawk/),      then run ./copy2nix.sh
-14. nxfs-libxcrypt-0.  libxcrypt       build in stage0, install (to ./libxcrypt),  then run ./copy2nix.sh
+remaining stage0 steps can be done in any order (see following section 'Procedure for each package' for details)
+
+6.  nxfs-patchelf-0.   patchelf 0.18.0  build in stage0, install (to ./patchelf/),  then run ./copy2nix.sh
+7.  nxfs-gnumake-0.    gnumake 4.4.1.   build in stage0, install (to ./gnumake/),   then run ./copy2nix.sh
+8.  nxfs-coreutils-0.  coreutils 9.5.   build in stage0, install (to ./coreutils/), then run ./copy2nix.sh
+9.  nxfs-bash-0.       bash 5.2.32.     build in stage0, install (to ./bash/),      then run ./copy2nix.sh
+10. nxfs-tar-0.        tar 1.35         build in stage0, install (to ./tar/),       then run ./copy2nix.sh
+11. nxfs-sed-0.        sed 4.9          build in stage0, install (to ./sed/),       then run ./copy2nix.sh
+12. nxfs-grep-0.       grep 3.11        build in stage0, install (to ./grep/),      then run ./copy2nix.sh
+13. nxfs-gawk-0.       gawk 5.3.0       build in stage0, install (to ./gawk/),      then run ./copy2nix.sh
+14. nxfs-libxcrypt-0.  libxcrypt        build in stage0, install (to ./libxcrypt),  then run ./copy2nix.sh
+15. nxfs-findutils-0.  findutils 4.10.0 build in stage0, install (to ./findutils),  then run ./copy2nix.sh
+16. nxfs-diffutils-0.  diffutils 3.10   build in stage0, install (to ./diffutils),  then run ./copy2nix.sh
 
 perl,m4 likely not needed in stage0 (as of 4jan2025),  keeping around in case need to revise
 (15). nxfs-perl-0.       perl 5.40.0     build in stage0, install (to ./perl/),      then run ./copy2nix.sh
@@ -69,14 +72,27 @@ Procedure for each package foo (excepting nxfs-toolchain-0, nxfs-sysroot-0)
 1.
   $ cd nix-from-scratch/nxfspkgs/bootstrap/nxfs-foo-0
 
+Directory will initiall y contain files:
+  stage0/      actual build (external to nix) prepared here.
+  foo/         directory for build result, containing a 1-line README file
+  copy2nix.sh  copy contents of foo/ (after building in stage0) to nix store
+  builder.sh
+
+Can create destination directory ./foo manually, if it was inadvertently omitted from git
+  $ mkdir ./foo
+
 2.
 Except for nxfs-toolchain-0, nxfs-sysroot-0:
   $ make -C stage0 install
 or spelled-out:
   $ (cd stage0 && make fetch && make config && make compile && make install)
 
+After this completes, destination directory ./foo will contain build output.
+
 3.
   $ ./copy2nix.sh
+
+Imports build artifacts ./foo into nix store,  and creates fixed-output derivation ./default.nix
 
 4.
 if all went well, then just
