@@ -1,6 +1,6 @@
 let
-  nxfs-python-2      = import ../nxfs-python-2/default.nix;                     # yes
   nxfs-gperf-2       = import ../nxfs-gperf-2/default.nix;                      # yes
+  nxfs-python-2      = import ../nxfs-python-2/default.nix;                     # yes
   nxfs-bison-2       = import ../nxfs-bison-2/default.nix;                      # yes
   nxfs-texinfo-2     = import ../nxfs-texinfo-2/default.nix;
   nxfs-m4-2          = import ../nxfs-m4-2/default.nix;
@@ -54,11 +54,11 @@ derivation {
   gawk         = nxfs-gawk-2;
   sed          = nxfs-sed-2;
   grep         = nxfs-grep-2;
-  gcc_wrapper  = nxfs-gcc-wrapper-2;
   binutils     = nxfs-binutils-2;
   bison        = nxfs-bison-2;
   gperf        = nxfs-gperf-2;
   python       = nxfs-python-2;
+  gcc_wrapper  = nxfs-gcc-wrapper-2;
 
   patchfile    = ./glibc-2.40-fhs-1.patch;
 

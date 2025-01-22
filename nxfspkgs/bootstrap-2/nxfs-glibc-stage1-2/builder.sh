@@ -58,6 +58,7 @@ sed -i -e 's:"/var/db/":"/var/lib/nss_db":' ./sysdeps/unix/sysv/linux/paths.h
 
 #(cd ${src2} && sed -i -e ":/bin/sh:${bash_program}:" ./libio/oldioopen.c)
 sed -i -e "s:/bin/bash:${bash_program}:" ./Makefile
+#sed -i -e "s:/bin/sh:${bash_program}:" ./lib/oldiopopen.c
 sed -i -e "s:/bin/sh:${bash_program}:" ./sysdeps/generic/paths.h
 sed -i -e "s:/bin/sh:${bash_program}:" ./sysdeps/unix/sysv/linux/paths.h
 sed -i -e "s:/bin/sh:${bash_program}:" ./sysdeps/posix/system.c
@@ -94,8 +95,10 @@ pushd ${builddir}
 echo "rootsbindir=${out}/sbin" > configparms
 
 # headers from toolchain
-/usr/bin/strace -f bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-kernel=4.19 --with-headers=${sysroot}/usr/include --disable-nscd libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+#/usr/bin/strace -f bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-kernel=4.19 --with-headers=${sysroot}/usr/include --disable-nscd libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-kernel=4.19 --with-headers=${sysroot}/usr/include --disable-nscd libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 
 #(cd ${builddir} && make help SHELL=${CONFIG_SHELL})
-/usr/bin/strace -f make all SHELL=${CONFIG_SHELL}
+#/usr/bin/strace -f make all SHELL=${CONFIG_SHELL}
+make all SHELL=${CONFIG_SHELL}
 #make install SHELL=${CONFIG_SHELL}
