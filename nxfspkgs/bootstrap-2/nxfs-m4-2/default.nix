@@ -35,7 +35,9 @@ derivation {
   args         = [ ./builder.sh ];
 
   #src         = nxfs-sed-source;
-  src          = builtins.fetchTarball { url = "https://mirror.csclub.uwaterloo.ca/gnu/m4/m4-1.4.19.tar.gz"; };
+  src          = builtins.fetchTarball { name = "m4-1.4.19-source";
+                                         url = "https://mirror.csclub.uwaterloo.ca/gnu/m4/m4-1.4.19.tar.gz";
+                                         sha256 = "02xz8gal0fdc4gzjwyiy1557q31xcpg896yc0y6kd8s5jbynvdmf"; };
 
   m4_patch    = ./m4-patch.sh;
 
