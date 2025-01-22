@@ -1,14 +1,20 @@
 let
-  nxfs-gcc-wrapper-2 = import ../nxfs-gcc-wrapper-2/default.nix;
 
+  nxfs-automake-2    = import ../nxfs-automake-2/default.nix;
+  nxfs-autoconf-2    = import ../nxfs-autoconf-2/default.nix;
+  nxfs-m4-2          = import ../nxfs-m4-2/default.nix;
+  nxfs-perl-2        = import ../nxfs-perl-2/default.nix;
+  nxfs-file-2        = import ../nxfs-file-2/default.nix;
+  nxfs-coreutils-2   = import ../nxfs-coreutils-2/default.nix;
+  nxfs-bash-2        = import ../nxfs-bash-2/default.nix;
+  nxfs-tar-2         = import ../nxfs-tar-2/default.nix;
   nxfs-gnumake-2     = import ../nxfs-gnumake-2/default.nix;
   nxfs-gawk-2        = import ../nxfs-gawk-2/default.nix;
-  nxfs-tar-2         = import ../nxfs-tar-2/default.nix;
-  nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
   nxfs-grep-2        = import ../nxfs-grep-2/default.nix;
-  nxfs-bash-2        = import ../nxfs-bash-2/default.nix;
-  nxfs-perl-2        = import ../nxfs-perl-2/default.nix;
-  nxfs-coreutils-2   = import ../nxfs-coreutils-2/default.nix;
+  nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
+  nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;
+  nxfs-diffutils-2   = import ../nxfs-diffutils-2/default.nix;
+  nxfs-gcc-wrapper-2 = import ../nxfs-gcc-wrapper-2/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
