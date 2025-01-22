@@ -34,8 +34,9 @@ derivation {
   builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];
 
-  #src         = nxfs-sed-source;
-  src          = builtins.fetchTarball { url = "https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.xz"; };
+  src          = builtins.fetchTarball { name = "patch-2.7.6-source";
+                                         url = "https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.xz";
+                                         sha256 = "1yiy0xq1ha193yga0canc9ijw4hbd92c93l7ksqlhmzsn2yph39n"; };
 
   target_tuple ="x86_64-pc-linux-gnu";
 }
