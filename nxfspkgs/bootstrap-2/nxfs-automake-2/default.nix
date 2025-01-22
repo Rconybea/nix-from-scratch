@@ -41,7 +41,13 @@ derivation {
   builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];
 
-  src          = builtins.fetchTarball { url = "https://ftp.gnu.org/gnu/automake/automake-1.17.tar.xz"; };
+  src          = builtins.fetchTarball { name = "automake-1.16.5-source";
+                                         url = "https://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.xz";
+                                         sha256 = "0pac10hgw6r4kbafdbxg7gpb503fq9a9a31r5hvdh95nd2pcngv0"; };
+
+#  src          = builtins.fetchTarball { name = "automake-1.17-source";
+#                                         url = "https://ftp.gnu.org/gnu/automake/automake-1.17.tar.xz";
+#                                         sha256 = "1nwgz937zikw5avzhvvzf57i917pq0q05s73wqr28abwqxa3bll8"; };
 
   target_tuple ="x86_64-pc-linux-gnu";
 }
