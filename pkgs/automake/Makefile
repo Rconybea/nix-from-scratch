@@ -28,6 +28,8 @@ sha256:=397767d4db3018dd4440825b60c64258b636eaf6bf99ac8b0897f06c89310acd
 #
 patch_script:=
 #
+post_configure_hook:=$(THIS_DIR)/post-configure.sh
+#
 srcdir:=src
 builddir:=build
 #

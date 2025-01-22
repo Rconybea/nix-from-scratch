@@ -15,6 +15,7 @@ state/config.result $(builddir): state/patch.result
 	mkdir -p $(builddir)
 	$(TOP_DIR)/scripts/configure-autotools.sh \
        --pre-configure-hook="$(pre_configure_hook)" \
+       --post-configure-hook="$(post_configure_hook)" \
        --configure-exec=$(configure_exec) \
 	   --configure-script=$(configure_script) \
        --prefix=$(PREFIX) --src-dir=$(srcdir) --build-dir=$(builddir) \

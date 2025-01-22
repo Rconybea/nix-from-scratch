@@ -11,6 +11,7 @@ prefix=
 src_dir=
 build_dir=
 pre_configure_hook=true
+post_configure_hook=true
 configure_exec=
 configure_script=configure
 cflags=
@@ -33,6 +34,12 @@ while [[ $# > 0 ]]; do
             tmp=${1#*=}
             if [[ -n ${tmp} ]]; then
                 pre_configure_hook=${tmp}
+            fi
+            ;;
+        --post-configure-hook=*)
+            tmp=${1#*=}
+            if [[ -n ${tmp} ]]; then
+                post_configure_hook=${tmp}
             fi
             ;;
         --configure-exec=*)
@@ -150,6 +157,8 @@ else
         fi
     fi
 fi
+
+${post_configure_hook}
 
 popd
 
