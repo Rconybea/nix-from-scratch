@@ -3,19 +3,20 @@
 set -e
 
 echo "m4=${m4}"
-echo "gcc_wrapper=${gcc_wrapper}"
-echo "toolchain=${toolchain}"
+echo "perl=${perl}"
+echo "coreutils=${coreutils}"
+echo "bash=${bash}"
+echo "tar=${tar}"
 echo "gnumake=${gnumake}"
 echo "gawk=${gawk}"
 echo "grep=${grep}"
 echo "sed=${sed}"
-echo "tar=${tar}"
-echo "coreutils=${coreutils}"
-echo "perl=${perl}"
+echo "findutils=${findutils}"
+echo "diffutils=${diffutils}"
+echo "gcc_wrapper=${gcc_wrapper}"
+
+echo "toolchain=${toolchain}"
 echo "sysroot=${sysroot}"
-#echo "mkdir=${mkdir}"
-#echo "head=${head}"
-echo "bash=${bash}"
 echo "src=${src}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
@@ -28,12 +29,11 @@ set -x
 # 3. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
 # 4. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
 #
-export PATH="${perl}/bin:${m4}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
+export PATH="${perl}/bin:${m4}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
 
-ls -l ${m4}
-ls -l ${m4}/bin
-
-m4 --version
+#ls -l ${m4}
+#ls -l ${m4}/bin
+#m4 --version
 
 #src2=${src}
 src2=${TMPDIR}/src2
