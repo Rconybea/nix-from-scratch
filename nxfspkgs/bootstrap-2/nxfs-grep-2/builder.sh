@@ -10,6 +10,8 @@ echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
 echo "coreutils=${coreutils}"
+echo "findutils=${findutils}"
+echo "diffutils=${diffutils}"
 echo "sysroot=${sysroot}"
 #echo "mkdir=${mkdir}"
 #echo "head=${head}"
@@ -24,7 +26,7 @@ echo "TMPDIR=${TMPDIR}"
 # 3. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
 # 4. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
 #
-export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
+export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${diffutils}/bin:${findutils}/bin:${bash}/bin"
 
 ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
 

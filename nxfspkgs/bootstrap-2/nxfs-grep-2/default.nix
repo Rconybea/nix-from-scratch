@@ -1,10 +1,11 @@
 let
   nxfs-grep-1        = import ../../bootstrap-1/nxfs-grep-1/default.nix;
 
+  nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
+  nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;
+  nxfs-diffutils-2   = import ../nxfs-diffutils-2/default.nix;
   nxfs-gcc-wrapper-2 = import ../nxfs-gcc-wrapper-2/default.nix;
 
-  nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
-#  nxfs-sed-1         = import ../../bootstrap-1/nxfs-sed-1/default.nix;
   nxfs-gnumake-1     = import ../../bootstrap-1/nxfs-gnumake-1/default.nix;
   nxfs-gawk-1        = import ../../bootstrap-1/nxfs-gawk-1/default.nix;
   nxfs-tar-1         = import ../../bootstrap-1/nxfs-tar-1/default.nix;
@@ -20,14 +21,17 @@ derivation {
 
   gnumake      = nxfs-gnumake-1;
   bash         = nxfs-bash-1;
-  sed          = nxfs-sed-2;
-  gcc_wrapper  = nxfs-gcc-wrapper-2;
   toolchain    = nxfs-toolchain-1;
   sysroot      = nxfs-sysroot-1;
   coreutils    = nxfs-coreutils-1;
   tar          = nxfs-tar-1;
   gawk         = nxfs-gawk-1;
   grep         = nxfs-grep-1;
+
+  sed          = nxfs-sed-2;
+  findutils    = nxfs-findutils-2;
+  diffutils    = nxfs-diffutils-2;
+  gcc_wrapper  = nxfs-gcc-wrapper-2;
 
   builder      = "${nxfs-bash-1}/bin/bash";
   args         = [ ./builder.sh ];
