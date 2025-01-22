@@ -11,6 +11,8 @@ echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
 echo "coreutils=${coreutils}"
+echo "findutils=${findutils}"
+echo "diffutils=${diffutils}"
 echo "sysroot=${sysroot}"
 #echo "mkdir=${mkdir}"
 #echo "head=${head}"
@@ -25,7 +27,7 @@ echo "TMPDIR=${TMPDIR}"
 # 3. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
 # 4. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
 #
-export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
+export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
 
 ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
 
@@ -67,7 +69,7 @@ export CONFIG_SHELL="${bash_program}"
 # do need to give --host and --build arguments to configure,
 # since we're using a cross compiler.
 
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-install-program=hostname --enable-no-install-program=kill,uptime CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags")
+(cd ${builddir} && bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-install-program=hostname --enable-no-install-program=kill,uptime CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 
