@@ -9,7 +9,16 @@
 unwrapped_gcc=@unwrapped_gcc@
 sysroot=@sysroot@
 
-2> echo "gcc-wrapper calling:"
-2> echo "  ${unwrapped_gcc} -Wl,--rpath=${sysroot}/lib -Wl,--dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2" "${@}"
+#2> echo "nxfs: gcc-wrapper calling:"
+#2> echo "nxfs:   ${unwrapped_gcc} -Wl,--rpath=${sysroot}/lib -Wl,--dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2" "${@}"
 
-${unwrapped_gcc} -Wl,-rpath=${sysroot}/lib -Wl,-dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2 "${@}"
+if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
+    # gcc has carveout when given '-v' with no other arguments:
+    #   ${unwrapped_gcc} -v
+    # prints a message and returns 0 exit code,
+    # but won't preserve that behavior if we also pass linker arguments
+    #
+    ${unwrapped_gcc} -v
+else
+    ${unwrapped_gcc} -Wl,-rpath=${sysroot}/lib -Wl,-dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2 "${@}"
+fi
