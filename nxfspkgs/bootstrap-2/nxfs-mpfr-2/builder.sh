@@ -5,18 +5,18 @@ set -x
 
 echo "gmp=${gmp}";
 echo "m4=${m4}";
-echo "gcc_wrapper=${gcc_wrapper}"
-echo "toolchain=${toolchain}"
+echo "coreutils=${coreutils}"
+echo "bash=${bash}"
+echo "tar=${tar}"
 echo "gnumake=${gnumake}"
 echo "gawk=${gawk}"
 echo "grep=${grep}"
 echo "sed=${sed}"
-echo "tar=${tar}"
-echo "coreutils=${coreutils}"
+echo "findutils=${findutils}"
+echo "diffutils=${diffutils}"
+echo "gcc_wrapper=${gcc_wrapper}"
+echo "toolchain=${toolchain}"
 echo "sysroot=${sysroot}"
-#echo "mkdir=${mkdir}"
-#echo "head=${head}"
-echo "bash=${bash}"
 echo "src=${src}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
@@ -27,7 +27,7 @@ echo "TMPDIR=${TMPDIR}"
 # 3. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
 # 4. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
 #
-export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${m4}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
+export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${m4}/bin:${coreutils}/bin:${bash}/bin:${tar}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${findutils}/bin:${diffutils}/bin"
 
 ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
 
