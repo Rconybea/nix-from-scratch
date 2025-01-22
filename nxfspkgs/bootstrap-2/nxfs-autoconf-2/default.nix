@@ -38,7 +38,9 @@ derivation {
   args         = [ ./builder.sh ];
 
   #src         = nxfs-sed-source;
-  src          = builtins.fetchTarball { url = "https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.xz"; };
+  src          = builtins.fetchTarball { name = "autoconf-2.72-source";
+                                         url = "https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.xz";
+                                         sha256 = "1r3922ja9g5ziinpqxgfcc51jhrxvjqnrmc5054jgskylflxc1fp"; };
 
   target_tuple ="x86_64-pc-linux-gnu";
 }
