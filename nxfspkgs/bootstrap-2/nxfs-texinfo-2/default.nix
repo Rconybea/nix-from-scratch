@@ -19,16 +19,22 @@ derivation {
 
   system       = builtins.currentSystem;
 
-  gnumake      = nxfs-gnumake-2;
+  automake     = nxfs-automake-2;
+  autoconf     = nxfs-autoconf-2;
+  m4           = nxfs-m4-2;
+  perl         = nxfs-perl-2;
+  file         = nxfs-file-2;
+  coreutils    = nxfs-coreutils-2;
   bash         = nxfs-bash-2;
-  sed          = nxfs-sed-2;
-  gcc_wrapper  = nxfs-gcc-wrapper-2;
   tar          = nxfs-tar-2;
-  gnused       = nxfs-sed-2;
+  gnumake      = nxfs-gnumake-2;
   gawk         = nxfs-gawk-2;
   grep         = nxfs-grep-2;
-  perl         = nxfs-perl-2;
-  coreutils    = nxfs-coreutils-2;
+  gnused       = nxfs-sed-2;
+  sed          = nxfs-sed-2;
+  findutils    = nxfs-findutils-2;
+  diffutils    = nxfs-diffutils-2;
+  gcc_wrapper  = nxfs-gcc-wrapper-2;
 
   toolchain    = nxfs-toolchain-1;
   sysroot      = nxfs-sysroot-1;

@@ -3,19 +3,22 @@
 set -e
 set -x
 
-echo "gcc_wrapper=${gcc_wrapper}"
-echo "toolchain=${toolchain}"
+echo "automake=${automake}"
+echo "autoconf=${autoconf}"
+echo "m4=${m4}"
+echo "perl=${perl}"
+echo "file=${file}"
+echo "coreutils=${coreutils}"
+echo "bash=${bash}"
 echo "gnumake=${gnumake}"
 echo "gawk=${gawk}"
 echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
-echo "coreutils=${coreutils}"
 echo "sysroot=${sysroot}"
-#echo "mkdir=${mkdir}"
-#echo "head=${head}"
-echo "bash=${bash}"
+echo "gcc_wrapper=${gcc_wrapper}"
 echo "src=${src}"
+echo "toolchain=${toolchain}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
@@ -25,7 +28,7 @@ echo "TMPDIR=${TMPDIR}"
 # 3. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
 # 4. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
 #
-export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${perl}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
+export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${automake}/bin:${autoconf}/bin:${m4}/bin:${perl}/bin:${file}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
 
 ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
 
@@ -38,6 +41,7 @@ mkdir -p ${builddir}
 mkdir ${out}
 
 bash_program=${bash}/bin/bash
+file_program=${file}/bin/file
 
 # 1. copy source tree to temporary directory,
 #
@@ -46,8 +50,11 @@ bash_program=${bash}/bin/bash
 # 2. substitute nix-store path-to-bash for /bin/sh.
 #
 #
-#chmod -R +w ${src2}
-#(cd ${src2} && ${bash_program} ${m4_patch})
+chmod -R +w ${src2}
+# note: text replacement of /usr/bin/file here causes build to need m4,automake, triggers build failure further downstream.
+#(cd ${src2} && (find . -type f | xargs --replace=xx sed -i -e "s:/usr/bin/file:${file_program}:" xx))
+
+# need writeable for autom4te cache
 #chmod -R -w ${src2}
 
 # Must skip:
@@ -67,7 +74,8 @@ export CONFIG_SHELL="${bash_program}"
 # do need to give --host and --build arguments to configure,
 # since we're using a cross compiler.
 
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags")
+(cd ${builddir} && bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
+
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
