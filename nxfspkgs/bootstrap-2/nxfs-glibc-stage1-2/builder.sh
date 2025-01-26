@@ -11,6 +11,7 @@ echo "gcc_wrapper=${gcc_wrapper}"
 echo "toolchain=${toolchain}"
 echo "diffutils=${diffutils}"
 echo "findutils=${findutils}"
+echo "gzip=${gzip}"
 echo "coreutils=${coreutils}"
 echo "gnumake=${gnumake}"
 echo "gawk=${gawk}"
@@ -29,15 +30,18 @@ echo "TMPDIR=${TMPDIR}"
 set -e
 set -x
 
-export PATH="${python}/bin:${texinfo}/bin:${bison}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${diffutils}/bin:${findutils}/bin:${gnumake}/bin:${tar}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${coreutils}/bin:${patch}/bin:${bash}/bin"
+export PATH="${gperf}/bin:${python}/bin:${texinfo}/bin:${bison}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gzip}/bin:${diffutils}/bin:${findutils}/bin:${gnumake}/bin:${tar}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${coreutils}/bin:${patch}/bin:${bash}/bin"
 
-src2=${TMPDIR}/src2
+#src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
 
-mkdir -p ${src2}
+#mkdir -p ${src2}
 mkdir -p ${builddir}
 
 mkdir ${out}
+mkdir ${source}
+
+src2=${source}
 
 bash_program=${bash}/bin/bash
 python_program=${python}/bin/python3
@@ -98,7 +102,31 @@ echo "rootsbindir=${out}/sbin" > configparms
 #/usr/bin/strace -f bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-kernel=4.19 --with-headers=${sysroot}/usr/include --disable-nscd libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-kernel=4.19 --with-headers=${sysroot}/usr/include --disable-nscd libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 
+# The compiler (nxfs-gcc, from ../nxfs-gcc-wrapper-2), that we passed to configure,
+# automatically makes two link-time changes when it builds a library/executable
+# 1. sets ELF interpreter to specific dynamic linker
+# 2. sets RPATH/RUNPATH to pickup libc
+# both coming from nix-from-scratch/nxfspkgs/bootstrap-1/nxfs-sysroot-1.
+#
+# We need that behavior above, to convince configure that compiler builds working executables.
+# However its counterproductive when we build libc, and executables that depend on it.
+#
+# Use the backdoor environment variable NXFS_SYSROOT_DIR to get nxfs-gcc to use
+# the {ld-linux-x86-64.so.2, glibc} that we're building here.
+#
+export NXFS_SYSROOT_DIR=${out}
+
 #(cd ${builddir} && make help SHELL=${CONFIG_SHELL})
 #/usr/bin/strace -f make all SHELL=${CONFIG_SHELL}
 make all SHELL=${CONFIG_SHELL}
-#make install SHELL=${CONFIG_SHELL}
+
+# Final cleanup -- nxfs-gcc will create an RPATH entry in
+#   {libc.so.6, ld-linux-x86-64.so.2}
+# In other libs/exes the inserted RPATH tells them how to find libc;
+# we don't want that in libc itself,  and RPATH is unnecessary in the
+# the dynamic linker
+#
+patchelf --remove-rpath libc.so.6
+patchelf --remove-rpath elf/ld-linux-x86-64.so.2
+
+make install SHELL=${CONFIG_SHELL}

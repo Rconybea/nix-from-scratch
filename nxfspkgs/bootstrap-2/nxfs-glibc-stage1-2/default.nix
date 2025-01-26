@@ -1,9 +1,10 @@
 let
-  nxfs-gperf-2       = import ../nxfs-gperf-2/default.nix;                      # yes
   nxfs-python-2      = import ../nxfs-python-2/default.nix;                     # yes
   nxfs-bison-2       = import ../nxfs-bison-2/default.nix;                      # yes
   nxfs-texinfo-2     = import ../nxfs-texinfo-2/default.nix;
   nxfs-m4-2          = import ../nxfs-m4-2/default.nix;
+  nxfs-gzip-2        = import ../nxfs-gzip-2/default.nix;                       # yes
+  nxfs-gperf-2       = import ../nxfs-gperf-2/default.nix;                      # yes
   nxfs-gcc-wrapper-2 = import ../nxfs-gcc-wrapper-2/default.nix;                # yes
   nxfs-sed-2         = import ../nxfs-sed-2/default.nix;                        # yes
   nxfs-grep-2        = import ../nxfs-grep-2/default.nix;                       # yes
@@ -42,11 +43,13 @@ derivation {
   toolchain    = nxfs-toolchain-1;
   sysroot      = nxfs-sysroot-1;
 
-  patch        = nxfs-patch-2;
+  python       = nxfs-python-2;
+  bison        = nxfs-bison-2;
   texinfo      = nxfs-texinfo-2;
   m4           = nxfs-m4-2;
-  diffutils    = nxfs-diffutils-2;
-  findutils    = nxfs-findutils-2;
+  patch        = nxfs-patch-2;
+  gperf        = nxfs-gperf-2;
+  gzip         = nxfs-gzip-2;
   coreutils    = nxfs-coreutils-2;
   bash         = nxfs-bash-2;
   tar          = nxfs-tar-2;
@@ -55,9 +58,8 @@ derivation {
   sed          = nxfs-sed-2;
   grep         = nxfs-grep-2;
   binutils     = nxfs-binutils-2;
-  bison        = nxfs-bison-2;
-  gperf        = nxfs-gperf-2;
-  python       = nxfs-python-2;
+  diffutils    = nxfs-diffutils-2;
+  findutils    = nxfs-findutils-2;
   gcc_wrapper  = nxfs-gcc-wrapper-2;
 
   patchfile    = ./glibc-2.40-fhs-1.patch;
@@ -69,6 +71,8 @@ derivation {
                                          url = "https://ftp.gnu.org/gnu/glibc/glibc-2.40.tar.xz";
                                          sha256 = "0ncvsz2r8py3z0v52fqniz5lq5jy30h0m0xx41ah19nl1rznflkh";
                                        };
+
+  outputs      = [ "out" "source" ];
 
   target_tuple = "x86_64-pc-linux-gnu";
 }
