@@ -1,4 +1,6 @@
 let
+  nxfs-gcc-stage1-2 = import ./nxfs-gcc-stage1-2/default.nix;
+
   nxfs-mpc-2 = import ./nxfs-mpc-2/default.nix;
   nxfs-mpfr-2 = import ./nxfs-mpfr-2/default.nix;
   nxfs-gmp-2 = import ./nxfs-gmp-2/default.nix;
@@ -10,10 +12,14 @@ let
   nxfs-texinfo-2 = import ./nxfs-texinfo-2/default.nix;
   nxfs-automake-2 = import ./nxfs-automake-2/default.nix;
   nxfs-autoconf-2 = import ./nxfs-autoconf-2/default.nix;
+
+  nxfs-binutils-2 = import ./nxfs-binutils-2/default.nix;
   nxfs-m4-2 = import ./nxfs-m4-2/default.nix;
   nxfs-perl-2 = import ./nxfs-perl-2/default.nix;
 
   nxfs-gperf-2 = import ./nxfs-gperf-2/default.nix;
+  nxfs-gzip-2 = import ./nxfs-gzip-2/default.nix;
+  nxfs-python-2 = import ./nxfs-python-2/default.nix;
   nxfs-zlib-2 = import ./nxfs-zlib-2/default.nix;
   nxfs-file-2 = import ./nxfs-file-2/default.nix;
 
@@ -39,6 +45,8 @@ derivation {
 
   builder = bash;
 
+  nxfs-gcc-stage1-2 = nxfs-gcc-stage1-2;
+
   nxfs-mpc-2 = nxfs-mpc-2;
   nxfs-mpfr-2 = nxfs-mpfr-2;
   nxfs-gmp-2 = nxfs-gmp-2;
@@ -50,10 +58,15 @@ derivation {
   nxfs-texinfo-2 = nxfs-texinfo-2;
   nxfs-automake-2 = nxfs-automake-2;
   nxfs-autoconf-2 = nxfs-autoconf-2;
+
+  nxfs-binutils-2 = nxfs-binutils-2;
   nxfs-m4-2 = nxfs-m4-2;
   nxfs-perl-2 = nxfs-perl-2;
 
   nxfs-gperf-2 = nxfs-gperf-2;
+  nxfs-gzip-2 = nxfs-gzip-2;
+
+  nxfs-python-2 = nxfs-python-2;
   nxfs-zlib-2 = nxfs-zlib-2;
   nxfs-file-2 = nxfs-file-2;
 
