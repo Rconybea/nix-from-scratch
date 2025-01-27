@@ -4,6 +4,7 @@
 #  https://www.linuxfromscratch.org/lfs/view/12.2/chapter05/glibc.html
 
 echo "src=${src}"
+echo "patchelf=${patchelf}"
 echo "python=${python}"
 echo "bison=${bison}"
 echo "patch=${patch}"
@@ -30,7 +31,7 @@ echo "TMPDIR=${TMPDIR}"
 set -e
 set -x
 
-export PATH="${gperf}/bin:${python}/bin:${texinfo}/bin:${bison}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gzip}/bin:${diffutils}/bin:${findutils}/bin:${gnumake}/bin:${tar}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${coreutils}/bin:${patch}/bin:${bash}/bin"
+export PATH="${patchelf}/bin:${gperf}/bin:${python}/bin:${texinfo}/bin:${bison}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gzip}/bin:${diffutils}/bin:${findutils}/bin:${gnumake}/bin:${tar}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${coreutils}/bin:${patch}/bin:${bash}/bin"
 
 #src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
@@ -135,3 +136,5 @@ patchelf --remove-rpath libc.so.6
 patchelf --remove-rpath elf/ld-linux-x86-64.so.2
 
 make install SHELL=${CONFIG_SHELL}
+
+patchelf --remove-rpath ${out}/lib/libc.so.6

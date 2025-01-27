@@ -1,4 +1,5 @@
 let
+  nxfs-patchelf-2    = import ../nxfs-patchelf-2/default.nix;                   # yes
   nxfs-python-2      = import ../nxfs-python-2/default.nix;                     # yes
   nxfs-bison-2       = import ../nxfs-bison-2/default.nix;                      # yes
   nxfs-texinfo-2     = import ../nxfs-texinfo-2/default.nix;
@@ -43,6 +44,7 @@ derivation {
   toolchain    = nxfs-toolchain-1;
   sysroot      = nxfs-sysroot-1;
 
+  patchelf     = nxfs-patchelf-2;
   python       = nxfs-python-2;
   bison        = nxfs-bison-2;
   texinfo      = nxfs-texinfo-2;
