@@ -83,9 +83,10 @@ find . -type f | xargs --replace=xx sed -i -e '1s:#! */bin/sh:#!'${bash_program}
 find . -type f | xargs --replace=xx sed -i -e '1s:#! */bin/bash:#!'${bash_program}':' xx
 find . -type f | xargs --replace=xx sed -i -e '1s:#! */usr/bin/python3:#!'${python_program}':' xx
 
-# patch: fix bad function signature on locfile_hash() in locfile-kw.h
+# patch: fix bad function signature on locfile_hash() in locfile-kw.h, and charmap_hash() in charmap-kw.h
 #
 sed -i -e '/^locfile_hash/s:register unsigned int len:register size_t len:' locale/programs/locfile-kw.h
+sed -i -e '/^charmap_hash/s:register unsigned int len:register size_t len:' locale/programs/charmap-kw.h
 
 set +e
 
