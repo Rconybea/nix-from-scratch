@@ -1,0 +1,19 @@
+nxfs-tar-0 has builtin support for uncompressing tar archives.
+We think we need explicit gzip to help assemble locales
+
+1. PATH should contain
+     ~/nixroot/bin
+
+2. ensure PREFIX dir exists
+     $ mkdir -p ./gzip
+
+3. build in stage0
+     $ (cd stage0 && make compile && make install)
+
+4. copy subtree into store
+     $ ./copy2nix.sh -> a. uploads ./gzip to nix store
+                        b. creates fixed-output-derivtion default.nix
+
+5. nix-build (to verify fixed-output-derivation working as intended)
+     immediately prints the same store path as ./copy2nix.sh
+     ./result symlink keeps uploaded path alive

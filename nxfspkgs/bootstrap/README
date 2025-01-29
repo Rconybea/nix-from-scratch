@@ -59,6 +59,7 @@ remaining stage0 steps can be done in any order (see following section 'Procedur
 14. nxfs-libxcrypt-0.  libxcrypt        build in stage0, install (to ./libxcrypt),  then run ./copy2nix.sh
 15. nxfs-findutils-0.  findutils 4.10.0 build in stage0, install (to ./findutils),  then run ./copy2nix.sh
 16. nxfs-diffutils-0.  diffutils 3.10   build in stage0, install (to ./diffutils),  then run ./copy2nix.sh
+17. nxfs-gzip-0.       gzip 1.13        build in stage0, install (to ./gzip),       then run ./copy2nix.sh
 
 perl,m4 likely not needed in stage0 (as of 4jan2025),  keeping around in case need them later
 (17). nxfs-perl-0.       perl 5.40.0     build in stage0, install (to ./perl/),      then run ./copy2nix.sh
@@ -72,7 +73,7 @@ Procedure for each package foo (excepting nxfs-toolchain-0, nxfs-sysroot-0)
 1.
   $ cd nix-from-scratch/nxfspkgs/bootstrap/nxfs-foo-0
 
-Directory will initiall y contain files:
+Directory will initially contain files:
   stage0/      actual build (external to nix) prepared here.
   foo/         directory for build result, containing a 1-line README file
   copy2nix.sh  copy contents of foo/ (after building in stage0) to nix store
