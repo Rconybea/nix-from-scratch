@@ -6,6 +6,7 @@ let
     nxfs-bash-0 = import ../../bootstrap/nxfs-bash-0/default.nix;
 
     bash = "${nxfs-bash-0}/bin/bash";
+    head = "${nxfs-coreutils-0}/bin/head";
     mkdir = "${nxfs-coreutils-0}/bin/mkdir";
     chmod = "${nxfs-coreutils-0}/bin/chmod";
     ls = "${nxfs-coreutils-0}/bin/ls";

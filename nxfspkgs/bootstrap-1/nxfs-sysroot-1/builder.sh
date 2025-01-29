@@ -3,12 +3,13 @@
 set -e
 
 echo
-echo "mkdir=${mkdir}";
-echo "chmod=${chmod}";
+echo "head=${head}"
+echo "mkdir=${mkdir}"
+echo "chmod=${chmod}"
 #echo "ls=${ls}";
 #echo "touch=${touch}";
 #echo "whoami=${whoami}";
-echo "bash=${bash}";
+echo "bash=${bash}"
 echo "sysroot=${nxfs_sysroot_0}"
 echo "patchelf=${patchelf}"
 echo "tar=${tar}"
@@ -83,17 +84,36 @@ echo "libc interpreter (before redirecting): ${old_interp}"
 
 # first need to open up write permission..
 ${chmod} u+w ${staging}
+${chmod} u+w ${staging}/usr/bin
 ${chmod} u+w ${staging}/${lib_relpath}
 ${chmod} u+w ${libc_staging}
 
 ${patchelf} --set-interpreter ${ld_final} ${libc_staging}
 
-${chmod} u-w ${libc_staging}
-${chmod} u-w ${staging}/${lib_relpath}
-${chmod} u-w ${staging}
-
 new_interp=$(${patchelf} --print-interpreter ${libc_staging})
 echo "libc interpreter (after redirecting): ${new_interp}"
+
+# also want to make some programss in ${staging}/usr/bin usable
+
+redirect_elf_file() {
+    local file=$1
+
+    ${chmod} u+w ${file}
+    ${patchelf} --set-interpreter ${ld_final} ${file}
+    ${patchelf} --set-rpath ${out}/usr/lib:${out}/lib ${file}
+}
+
+redirect_elf_file ${staging}/usr/bin/gencat
+redirect_elf_file ${staging}/usr/bin/getconf
+redirect_elf_file ${staging}/usr/bin/getent
+redirect_elf_file ${staging}/usr/bin/iconv
+redirect_elf_file ${staging}/usr/bin/locale
+redirect_elf_file ${staging}/usr/bin/localedef
+redirect_elf_file ${staging}/usr/bin/makedb
+redirect_elf_file ${staging}/usr/bin/pcprofiledump
+redirect_elf_file ${staging}/usr/bin/pldd
+redirect_elf_file ${staging}/usr/bin/sprof
+redirect_elf_file ${staging}/usr/bin/zdump
 
 # ----------------------------------------------------------------
 # copy to final destination
