@@ -3,24 +3,24 @@
 set -e
 
 echo
-echo "chmod=${chmod}";
-echo "bash=${bash}";
-echo "basename=${basename}";
-echo "head=${head}";
-echo "mkdir=${mkdir}";
-echo "tar=${tar}";
-echo "nxfs_sysroot_1=${nxfs_sysroot_1}";
-echo "nxfs_sed_0=${nxfs_sed_0}";
-echo "redirect_elf_file=${redirect_elf_file}";
-echo "target_interpreter=${target_interpreter}";
-echo "target_runpath=${target_runpath}";
+echo "nxfs_sed_0=${nxfs_sed_0}"
+echo "bash=${bash}"
+echo "basename=${basename}"
+echo "tar=${tar}"
+echo "patchelf=${patchelf}"
+echo "sysroot=${sysroot}"
+echo "redirect_elf_file=${redirect_elf_file}"
+echo "target_interpreter=${target_interpreter}"
+echo "target_runpath=${target_runpath}"
 echo "TMP=${TMP}"
 echo
 
-${mkdir} ${out}
+export PATH="${tar}/bin:${coreutils}/bin:${patchelf}/bin"
+
+mkdir ${out}
 
 # libc: only as smoke test for valid sysroot
-libc=${nxfs_sysroot_1}/lib/libc.so.6
+libc=${sysroot}/lib/libc.so.6
 
 # ----------------------------------------------------------------
 # helper bash script
@@ -45,12 +45,12 @@ echo "stage1 libc:          ${libc}"
 #
 staging=${TMP}
 
-${mkdir} -p ${staging}
+mkdir -p ${staging}
 
-(cd ${nxfs_sed_0} && (${tar} cf - . | ${tar} xf - -C ${staging}))
+(cd ${nxfs_sed_0} && (tar cf - . | tar xf - -C ${staging}))
 
-${chmod} u+w ${staging}
-${chmod} u+w ${staging}/bin
+chmod u+w ${staging}
+chmod u+w ${staging}/bin
 
 for dir in ${staging}/bin; do
     for file in ${dir}/*; do
@@ -64,11 +64,11 @@ for dir in ${staging}/bin; do
     done
 done
 
-${chmod} u-w ${staging}/bin
+chmod u-w ${staging}/bin
 
 # ----------------------------------------------------------------
 # copy to final destination
 #
 final=${out}
 
-(cd ${staging} && (${tar} cf - . | ${tar} xf - -C ${final}))
+(cd ${staging} && (tar cf - . | tar xf - -C ${final}))

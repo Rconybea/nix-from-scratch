@@ -3,13 +3,9 @@
 set -e
 
 echo
-echo "head=${head}"
-echo "mkdir=${mkdir}"
 echo "chmod=${chmod}"
-#echo "ls=${ls}";
-#echo "touch=${touch}";
-#echo "whoami=${whoami}";
 echo "bash=${bash}"
+echo "coreutils=${coreutils}"
 echo "sysroot=${nxfs_sysroot_0}"
 echo "patchelf=${patchelf}"
 echo "tar=${tar}"
@@ -17,9 +13,9 @@ echo "out=${out}"
 echo "TMP=${TMP}"
 echo
 
-#echo "builder running as [$(${whoami})]"
+export PATH=${patchelf}/bin:${coreutils}/bin:${tar}/bin
 
-${mkdir} ${out}
+mkdir ${out}
 
 lib_relpath=lib
 ld_relpath=${lib_relpath}/ld-linux-x86-64.so.2
@@ -55,17 +51,9 @@ echo "stage0  libc:           ${libc_stage0}"
 #
 staging=${TMP}/sysroot
 
-${mkdir} ${staging}
+mkdir ${staging}
 
-(cd ${nxfs_sysroot_0} && (${tar} cf - . | ${tar} xf - -C ${staging}))
-
-#echo "staging:"
-#${ls} -l ${staging}
-#echo "${staging}/lib:"
-#${ls} -l ${staging}/lib
-
-#echo "staging/${libc_relpath}:"
-#${ls} -l ${staging}/${libc_relpath}"
+(cd ${nxfs_sysroot_0} && (tar cf - . | tar xf - -C ${staging}))
 
 ld_staging=${staging}/${ld_relpath}
 libc_staging=${staging}/${libc_relpath}
@@ -79,18 +67,18 @@ libc_final=${out}/${libc_relpath}
 echo "final   dynamic linker: ${ld_final}"
 echo "final   libc:           ${libc_final}"
 
-old_interp=$(${patchelf} --print-interpreter ${libc_staging})
+old_interp=$(patchelf --print-interpreter ${libc_staging})
 echo "libc interpreter (before redirecting): ${old_interp}"
 
 # first need to open up write permission..
-${chmod} u+w ${staging}
-${chmod} u+w ${staging}/usr/bin
-${chmod} u+w ${staging}/${lib_relpath}
-${chmod} u+w ${libc_staging}
+chmod u+w ${staging}
+chmod u+w ${staging}/usr/bin
+chmod u+w ${staging}/${lib_relpath}
+chmod u+w ${libc_staging}
 
-${patchelf} --set-interpreter ${ld_final} ${libc_staging}
+patchelf --set-interpreter ${ld_final} ${libc_staging}
 
-new_interp=$(${patchelf} --print-interpreter ${libc_staging})
+new_interp=$(patchelf --print-interpreter ${libc_staging})
 echo "libc interpreter (after redirecting): ${new_interp}"
 
 # also want to make some programss in ${staging}/usr/bin usable
@@ -98,9 +86,9 @@ echo "libc interpreter (after redirecting): ${new_interp}"
 redirect_elf_file() {
     local file=$1
 
-    ${chmod} u+w ${file}
-    ${patchelf} --set-interpreter ${ld_final} ${file}
-    ${patchelf} --set-rpath ${out}/usr/lib:${out}/lib ${file}
+    chmod u+w ${file}
+    patchelf --set-interpreter ${ld_final} ${file}
+    patchelf --set-rpath ${out}/usr/lib:${out}/lib ${file}
 }
 
 redirect_elf_file ${staging}/usr/bin/gencat
@@ -120,4 +108,4 @@ redirect_elf_file ${staging}/usr/bin/zdump
 #
 final=${out}
 
-(cd ${staging} && (${tar} cf - . | ${tar} xf - -C ${final}))
+(cd ${staging} && (tar cf - . | tar xf - -C ${final}))

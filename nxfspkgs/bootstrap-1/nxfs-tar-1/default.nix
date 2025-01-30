@@ -7,14 +7,7 @@ let
   nxfs-sysroot-1         = import ../nxfs-sysroot-1/default.nix;
   nxfs-redirect-elf-file = import ../nxfs-redirect-elf-file/default.nix;
 
-  tar               = "${nxfs-tar-0}/bin/tar";
-
   bash              = "${nxfs-bash-1}/bin/bash";
-  basename          = "${nxfs-coreutils-1}/bin/basename";
-  chmod             = "${nxfs-coreutils-1}/bin/chmod";
-  head              = "${nxfs-coreutils-1}/bin/head";
-  mkdir             = "${nxfs-coreutils-1}/bin/mkdir";
-  patchelf          = "${nxfs-patchelf-1}/bin/patchelf";
 
   redirect_elf_file = "${nxfs-redirect-elf-file}/bootstrap-scripts/redirect-elf-file.sh";
 in
@@ -24,14 +17,11 @@ derivation {
   system             = builtins.currentSystem;
 
   bash               = bash;
-  chmod              = chmod;
-  basename           = basename;
-  head               = head;
-  mkdir              = mkdir;
   builder            = bash;
-  patchelf           = patchelf;
-  tar                = tar;
 
+  tar                = nxfs-tar-0;
+  coreutils          = nxfs-coreutils-1;
+  patchelf           = nxfs-patchelf-1;
   redirect_elf_file  = redirect_elf_file;
 
   nxfs_tar_0         = nxfs-tar-0;

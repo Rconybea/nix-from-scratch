@@ -3,20 +3,19 @@
 set -e
 
 echo
-echo "chmod=${chmod}";
-echo "bash=${bash}";
-echo "basename=${basename}";
-echo "head=${head}";
-echo "mkdir=${mkdir}";
-echo "nxfs_sysroot_1=${nxfs_sysroot_1}";
-echo "nxfs_coreutils_0=${nxfs_coreutils_0}";
-echo "redirect_elf_file=${redirect_elf_file}";
-echo "target_interpreter=${target_interpreter}";
-echo "target_runpath=${target_runpath}";
+echo "bash=${bash}"
+echo "nxfs_sysroot_1=${nxfs_sysroot_1}"
+echo "coreutils=${coreutils}"
+echo "patchelf=${patchelf}"
+echo "redirect_elf_file=${redirect_elf_file}"
+echo "target_interpreter=${target_interpreter}"
+echo "target_runpath=${target_runpath}"
 echo "TMP=${TMP}"
 echo
 
-${mkdir} ${out}
+export PATH=${tar}/bin:${coreutils}/bin:${patchelf}/bin
+
+mkdir ${out}
 
 # libc: only as smoke test for valid sysroot
 libc=${nxfs_sysroot_1}/lib/libc.so.6
@@ -36,7 +35,7 @@ if [[ ! -f ${libc} ]]; then
     ok=0
 fi
 
-echo "stage0 coreutils dir: ${nxfs_coreutils_0}"
+echo "stage0 coreutils dir: ${coreutils}"
 echo "stage1 libc:          ${libc}"
 
 # ----------------------------------------------------------------
@@ -44,13 +43,13 @@ echo "stage1 libc:          ${libc}"
 #
 staging=${TMP}
 
-${mkdir} -p ${staging}
+mkdir -p ${staging}
 
-(cd ${nxfs_coreutils_0} && (${tar} cf - . | ${tar} xf - -C ${staging}))
+(cd ${coreutils} && (tar cf - . | tar xf - -C ${staging}))
 
-${chmod} u+w ${staging}
-${chmod} u+w ${staging}/bin
-${chmod} u+w ${staging}/libexec/coreutils
+chmod u+w ${staging}
+chmod u+w ${staging}/bin
+chmod u+w ${staging}/libexec/coreutils
 
 for dir in ${staging}/bin ${staging}/libexec/coreutils; do
     for file in ${dir}/*; do
@@ -64,12 +63,12 @@ for dir in ${staging}/bin ${staging}/libexec/coreutils; do
     done
 done
 
-${chmod} u-w ${staging}/libexec/coreutils
-${chmod} u-w ${staging}/bin
+chmod u-w ${staging}/libexec/coreutils
+chmod u-w ${staging}/bin
 
 # ----------------------------------------------------------------
 # copy to final destination
 #
 final=${out}
 
-(cd ${staging} && (${tar} cf - . | ${tar} xf - -C ${final}))
+(cd ${staging} && (tar cf - . | tar xf - -C ${final}))

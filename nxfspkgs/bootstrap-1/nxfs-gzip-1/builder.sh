@@ -3,11 +3,12 @@
 set -e
 
 echo
+echo "gzip=${gzip}"
+echo "bash=${bash}"
 echo "tar=${tar}"
 echo "coreutils=${coreutils}"
-echo "bash=${bash}"
 echo "patchelf=${patchelf}"
-echo "nxfs_sysroot_1=${nxfs_sysroot_1}"
+echo "sysroot=${sysroot}"
 echo "redirect_elf_file=${redirect_elf_file}"
 echo "target_interpreter=${target_interpreter}"
 echo "target_runpath=${target_runpath}"
@@ -19,7 +20,7 @@ export PATH=${tar}/bin:${coreutils}/bin:${patchelf}/bin
 mkdir ${out}
 
 # libc: only as smoke test for valid sysroot
-libc=${nxfs_sysroot_1}/lib/libc.so.6
+libc=${sysroot}/lib/libc.so.6
 
 # ----------------------------------------------------------------
 # helper bash script
@@ -36,7 +37,7 @@ if [[ ! -f ${libc} ]]; then
     ok=0
 fi
 
-echo "stage0 tar dir:       ${tar}"
+echo "stage0 gzip dir:      ${gzip}"
 echo "stage1 libc:          ${libc}"
 
 # ----------------------------------------------------------------
@@ -46,7 +47,7 @@ staging=${TMP}
 
 mkdir -p ${staging}
 
-(cd ${tar} && (tar cf - . | tar xf - -C ${staging}))
+(cd ${gzip} && (tar cf - . | tar xf - -C ${staging}))
 
 chmod u+w ${staging}
 chmod u+w ${staging}/bin
@@ -60,6 +61,14 @@ for dir in ${staging}/bin; do
         else
             echo "skip non-regular-file [${file}]"
         fi
+
+        if $(is_elf_file ${file}); then
+            echo "is_elf_file->yes [${file}]"
+        else
+            echo "is_elf_file->no [${file}]"
+        fi
+
+        #sed -i -e '1s:#!/bin/bash:#!${bash}:' ${file}
     done
 done
 

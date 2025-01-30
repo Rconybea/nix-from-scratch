@@ -3,9 +3,9 @@
 set -e
 
 echo
-echo "chmod=${chmod}";
+echo "tar=${tar}";
+echo "coreutils=${coreutils}";
 echo "bash=${bash}";
-echo "mkdir=${mkdir}";
 echo "nxfs_sysroot_1=${nxfs_sysroot_1}";
 echo "nxfs_bash_0=${nxfs_bash_0}";
 echo "redirect_elf_file=${redirect_elf_file}";
@@ -16,7 +16,9 @@ echo
 
 set -e
 
-${mkdir} ${out}
+export PATH=${tar}/bin:${patchelf}/bin:${coreutils}/bin
+
+mkdir ${out}
 
 libc=${nxfs_sysroot_1}/lib/libc.so.6
 
@@ -44,32 +46,32 @@ echo "stage1 libc:     ${libc}"
 #
 staging=${TMP}
 
-${mkdir} -p ${staging}
+mkdir -p ${staging}
 
-(cd ${nxfs_bash_0} && (${tar} cf - . | ${tar} xf - -C ${staging}))
+(cd ${nxfs_bash_0} && (tar cf - . | tar xf - -C ${staging}))
 
 bash_staging=${staging}/bin/bash
 
 echo "staging bash: ${bash_staging}"
 
-old_runpath=$(${patchelf} --print-rpath ${bash_staging})
+old_runpath=$(patchelf --print-rpath ${bash_staging})
 
 echo "bash runpath (before redirecting): ${old_runpath}"
 
-${chmod} u+w ${staging}
-${chmod} u+w ${staging}/bin
-${chmod} u+w ${bash_staging}
+chmod u+w ${staging}
+chmod u+w ${staging}/bin
+chmod u+w ${bash_staging}
 
 redirect_elf_file ${bash_staging} ${target_interpreter} ${target_runpath}
 
-#${patchelf} --set-interpreter ${nxfs_sysroot_1}/lib64/ld-linux-x86-64.so.2 ${bash_staging}
-#${patchelf} --set-rpath ${nxfs_sysroot_1}/usr/lib:${nxfs_sysroot_1}/lib ${bash_staging}
+#patchelf --set-interpreter ${nxfs_sysroot_1}/lib64/ld-linux-x86-64.so.2 ${bash_staging}
+#patchelf --set-rpath ${nxfs_sysroot_1}/usr/lib:${nxfs_sysroot_1}/lib ${bash_staging}
 
-${chmod} u-w ${bash_staging}
-${chmod} u-w ${staging}/bin
-${chmod} u-w ${staging}
+chmod u-w ${bash_staging}
+chmod u-w ${staging}/bin
+chmod u-w ${staging}
 
-#new_runpath=$(${patchelf} --print-rpath ${bash_staging})
+#new_runpath=$(patchelf --print-rpath ${bash_staging})
 
 #echo "bash runpath (after redirecting): ${new_runpath}"
 
@@ -78,4 +80,4 @@ ${chmod} u-w ${staging}
 #
 final=${out}
 
-(cd ${staging} && (${tar} cf - . | ${tar} xf - -C ${final}))
+(cd ${staging} && (tar cf - . | tar xf - -C ${final}))
