@@ -4,10 +4,11 @@ set -e
 
 echo
 echo "gzip=${gzip}"
-echo "bash=${bash}"
+echo "sed=${sed}"
 echo "tar=${tar}"
 echo "coreutils=${coreutils}"
 echo "patchelf=${patchelf}"
+echo "bash=${bash}"
 echo "sysroot=${sysroot}"
 echo "redirect_elf_file=${redirect_elf_file}"
 echo "target_interpreter=${target_interpreter}"
@@ -15,7 +16,7 @@ echo "target_runpath=${target_runpath}"
 echo "TMP=${TMP}"
 echo
 
-export PATH=${tar}/bin:${coreutils}/bin:${patchelf}/bin
+export PATH=${sed}/bin:${tar}/bin:${coreutils}/bin:${patchelf}/bin
 
 mkdir ${out}
 
@@ -40,6 +41,7 @@ fi
 echo "stage0 gzip dir:      ${gzip}"
 echo "stage1 libc:          ${libc}"
 
+
 # ----------------------------------------------------------------
 # copy to temporary staging dir
 #
@@ -63,9 +65,9 @@ for dir in ${staging}/bin; do
         fi
 
         if $(is_elf_file ${file}); then
-            echo "is_elf_file->yes [${file}]"
+            :
         else
-            echo "is_elf_file->no [${file}]"
+            sed -i -e '1s:#! */bin/bash:#!'${bash}':' ${file}
         fi
 
         #sed -i -e '1s:#!/bin/bash:#!${bash}:' ${file}

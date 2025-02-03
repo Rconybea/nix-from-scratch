@@ -1,6 +1,7 @@
 let
   nxfs-gzip-0             = import ../../bootstrap/nxfs-gzip-0/default.nix;
 
+  nxfs-sed-1             = import ../nxfs-sed-1/default.nix;
   nxfs-tar-1             = import ../nxfs-tar-1/default.nix;
   nxfs-coreutils-1       = import ../nxfs-coreutils-1/default.nix;
   nxfs-patchelf-1        = import ../nxfs-patchelf-1/default.nix;
@@ -22,6 +23,7 @@ derivation {
 
   gzip               = nxfs-gzip-0;
 
+  sed                = nxfs-sed-1;
   tar                = nxfs-tar-1;
   coreutils          = nxfs-coreutils-1;
   patchelf           = nxfs-patchelf-1;
