@@ -16,6 +16,7 @@ echo "diffutils=${diffutils}";
 echo "sysroot=${sysroot}"
 echo "bash=${bash}"
 echo "src=${src}"
+echo "nxfs_system=${nxfs_system}";
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
@@ -36,6 +37,7 @@ mkdir -p ${src2}
 mkdir -p ${builddir}
 
 mkdir ${out}
+mkdir ${source}
 
 # 1. copy source tree to temporary directory,
 #
@@ -50,7 +52,32 @@ bash_program=${bash}/bin/bash
 #   .m4 and .in files (assume they trigger re-running autoconf)
 #   test/ files
 #
-sed -i -e "s:/bin/sh:${bash_program}:g" ${src2}/configure ${src2}/build-aux/* ${src2}/io.c
+sed -i -e "s:/bin/sh:${bash_program}:g" ${src2}/configure ${src2}/build-aux/*
+
+# The file io.c contains sveral calls like
+#   execl("/bin/sh", "sh", "-c", command, NULL)
+# rewrite these to
+#   execl("/path/to/nix/store/bash/bin/bash", "bash", "c", command, NULL)
+#
+sed -i -e 's:"/bin/sh", "sh":"'${bash_program}'", "bash":' ${src2}/io.c
+
+# insert decl
+#    statc int nxfs_system(const char* line);
+# near the top of builtin.c
+#
+sed -i -e '/^static size_t mbc_byte_count/ i\
+static int nxfs_system(const char* line);\
+' ${src2}/builtin.c
+
+nxfs_system_src=${nxfs_system}/src/nxfs_system.c
+
+# use nxfs_system() instead of glibc system() to implement gawk's system() builtin
+#
+sed -i -e 's:status = system(cmd):status = nxfs_system(cmd):' ${src2}/builtin.c
+
+# add definition of nxfs_system() to builtin.c
+#
+cat ${nxfs_system_src} >> ${src2}/builtin.c
 
 # ${src}/configure honors CONFIG_SHELL
 export CONFIG_SHELL="${bash_program}"
@@ -66,8 +93,10 @@ export CONFIG_SHELL="${bash_program}"
 # inspect shebang
 head -5 ${src2}/configure
 
-(cd ${builddir} && ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags")
+(cd ${builddir} && ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags" SHELL=${CONFIG_SHELL})
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
+
+(cd ${src2} && (tar cvf - . | tar xf - -C ${source}))
