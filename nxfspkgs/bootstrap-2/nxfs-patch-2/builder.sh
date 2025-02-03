@@ -1,8 +1,5 @@
 #!/bin/bash
 
-set -e
-set -x
-
 echo "coreutils=${coreutils}"
 echo "bash=${bash}"
 echo "tar=${tar}"
@@ -19,6 +16,9 @@ echo "sysroot=${sysroot}"
 echo "src=${src}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
+
+set -e
+set -x
 
 # 1. ${gcc_wrapper}/bin/x86_64-pc-linux-gnu-{gcc,g++} builds viable executables.
 # 2. ${toolchain}/bin/x86_64-pc-linux-gnu-gcc can build executables,
