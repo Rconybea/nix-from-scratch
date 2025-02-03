@@ -1,8 +1,9 @@
 let
   nxfs-tar-1         = import ../../bootstrap-1/nxfs-tar-1/default.nix;
+  nxfs-gnumake-1     = import ../../bootstrap-1/nxfs-gnumake-1/default.nix;
+  nxfs-gawk-1        = import ../../bootstrap-1/nxfs-gawk-1/default.nix;
 
   nxfs-gnumake-2     = import ../nxfs-gnumake-2/default.nix;
-  nxfs-gawk-2        = import ../nxfs-gawk-2/default.nix;
   nxfs-grep-2        = import ../nxfs-grep-2/default.nix;
   nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
   nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;
@@ -27,8 +28,8 @@ derivation {
   coreutils    = nxfs-coreutils-1;
   tar          = nxfs-tar-1;
 
-  gnumake      = nxfs-gnumake-2;
-  gawk         = nxfs-gawk-2;
+  gnumake      = nxfs-gnumake-1;
+  gawk         = nxfs-gawk-1;
   grep         = nxfs-grep-2;
   sed          = nxfs-sed-2;
   findutils    = nxfs-findutils-2;
