@@ -16,7 +16,7 @@ let
 in
 
 derivation {
-  name         = "sed";
+  name         = "nxfs-sed-2";
   system       = builtins.currentSystem;
 
   gnumake      = nxfs-gnumake-1;
