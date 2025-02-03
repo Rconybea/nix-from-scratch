@@ -5,6 +5,7 @@ let
   nxfs-mpfr-2 = import ./nxfs-mpfr-2/default.nix;
   nxfs-gmp-2 = import ./nxfs-gmp-2/default.nix;
   nxfs-patch-2 = import ./nxfs-patch-2/default.nix;
+  nxfs-patchelf-2 = import ./nxfs-patchelf-2/default.nix;
 
   nxfs-bison-2 = import ./nxfs-bison-2/default.nix;
   nxfs-flex-2 = import ./nxfs-flex-2/default.nix;
@@ -51,6 +52,7 @@ derivation {
   nxfs-mpfr-2 = nxfs-mpfr-2;
   nxfs-gmp-2 = nxfs-gmp-2;
   nxfs-patch-2 = nxfs-patch-2;
+  nxfs-patchelf-2 = nxfs-patchelf-2;
 
   nxfs-bison-2 = nxfs-bison-2;
   nxfs-flex-2 = nxfs-flex-2;
