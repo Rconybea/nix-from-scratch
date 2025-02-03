@@ -20,7 +20,8 @@ let
   nxfs-binutils-2    = import ../nxfs-binutils-2/default.nix;
 #  nxfs-autoconf-2    = import ../nxfs-autoconf-2/default.nix;
 
-  nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
+  nxfs-locale-archive-1 = import ../../bootstrap-1/nxfs-locale-archive-1/default.nix; # yes
+  nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;   # yes
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;     # yes
 
 in
@@ -28,8 +29,7 @@ in
 # PLAN
 #   - building with nxfs-toolchain-1 (redirected crosstool-ng toolchain):
 #     compiler expects to use binutils from the crosstool-ng toolchain
-#   - in this derivation preparing a compiler that, *when run*,
-#     will use binutils from nxfs-binutils-2
+#   - in this derivation building glibc from source from within nix environment
 #
 derivation {
   name         = "nxfs-glibc-stage1-2";
@@ -37,12 +37,13 @@ derivation {
   # reminder: for __noChroot to take effect, needs nix.conf to contain:
   #   sandbox = relaxed
   #
-  __noChroot = true;
+  #__noChroot = true;
 
   system       = builtins.currentSystem;
 
-  toolchain    = nxfs-toolchain-1;
-  sysroot      = nxfs-sysroot-1;
+  locale_archive = nxfs-locale-archive-1;
+  toolchain      = nxfs-toolchain-1;
+  sysroot        = nxfs-sysroot-1;
 
   patchelf     = nxfs-patchelf-2;
   python       = nxfs-python-2;
