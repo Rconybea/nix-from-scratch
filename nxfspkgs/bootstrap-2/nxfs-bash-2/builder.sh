@@ -53,6 +53,7 @@ bash_program=${bash}/bin/bash
 #   .m4 and .in files (assume they trigger re-running autoconf)
 #   test/ files
 #
+
 #sed -i -e "s:/bin/sh:${bash_program}:g" ${src2}/configure #${src2}/build-aux/*
 
 # ${src}/configure honors CONFIG_SHELL
