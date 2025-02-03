@@ -44,7 +44,7 @@ mkdir ${out}
 # 2. substitute nix-store path-to-bash for /bin/sh.
 #
 #
-#chmod -R +w ${src2}
+chmod -R +w ${src2}
 
 bash_program=${bash}/bin/bash
 # Must skip:
@@ -52,6 +52,16 @@ bash_program=${bash}/bin/bash
 #   test/ files
 #
 #sed -i -e "s:/bin/sh:${bash_program}:g" ${src2}/configure #${src2}/build-aux/*
+
+# 1. Replace
+#     const char *default_shell = "/bin/sh";
+#   with
+#     const char *default_shell = "$path/to/nix/store/$somehash/bin/bash";
+#
+#   Need this so that the gnu extension $(shell ..) works from within nix-build !
+#   Building bootstrap-2-demo/gnumake-1 verifies
+#
+(cd ${src2} && sed -i -e 's:"/bin/sh":"'${bash_program}'":' ./src/job.c)
 
 # ${src}/configure honors CONFIG_SHELL
 export CONFIG_SHELL="${bash_program}"

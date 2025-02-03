@@ -12,7 +12,7 @@ let
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
   nxfs-coreutils-1   = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
-  nxfs-bash-1        = import ../../bootstrap-1/nxfs-bash-1/default.nix;
+  nxfs-bash-2        = import ../nxfs-bash-2/default.nix;
 
 in
 
@@ -22,7 +22,7 @@ derivation {
   system       = builtins.currentSystem;
 
   gnumake      = nxfs-gnumake-1;
-  bash         = nxfs-bash-1;
+  bash         = nxfs-bash-2;
   toolchain    = nxfs-toolchain-1;
   sysroot      = nxfs-sysroot-1;
   coreutils    = nxfs-coreutils-1;
@@ -35,7 +35,7 @@ derivation {
   diffutils    = nxfs-diffutils-2;
   gcc_wrapper  = nxfs-gcc-wrapper-2;
 
-  builder      = "${nxfs-bash-1}/bin/bash";
+  builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];
 
   #src         = nxfs-sed-source;
