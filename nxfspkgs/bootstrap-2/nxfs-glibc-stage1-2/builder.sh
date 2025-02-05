@@ -66,7 +66,7 @@ sed -i -e "s:/bin/sh:${bash_program}:" ./sysdeps/unix/sysv/linux/paths.h
 
 sed -i -e '/^define SHELL_NAME/ s:"sh":"bash":' -e "s:/bin/sh:${bash_program}:" ./sysdeps/posix/system.c
 
-sed -i -e "s:/bin/sh:${bash_program}:" ./libio/oldiopopen.c)
+sed -i -e "s:/bin/sh:${bash_program}:" ./libio/oldiopopen.c
 sed -i -e "s:/bin/sh:${bash_program}:" ./scripts/build-many-glibcs.py
 sed -i -e "s:/bin/sh:${bash_program}:" ./scripts/cross-test-ssh.sh
 sed -i -e "s:/bin/sh:${bash_program}:" ./scripts/config.guess
