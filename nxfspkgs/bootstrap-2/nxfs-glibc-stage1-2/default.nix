@@ -37,7 +37,7 @@ derivation {
   # reminder: for __noChroot to take effect, needs nix.conf to contain:
   #   sandbox = relaxed
   #
-  #__noChroot = true;
+  __noChroot = true;
 
   system       = builtins.currentSystem;
 
