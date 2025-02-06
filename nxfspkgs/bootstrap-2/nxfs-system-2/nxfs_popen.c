@@ -12,7 +12,7 @@
  */
 
 #include <stdio.h>
-#include <pid.h>
+#include <signal.h>
 
 #define SHELL_PATH "@bash_path@"
 #define SHELL_NAME "bash"
@@ -86,9 +86,10 @@ nxfs_popen (char const* command, char const* mode)
         close (parent_end);
         return NULL;
     } else {
-        /* adopt parent_end */
-        FILE* fp = fdopen(parent_end);
-        fp->pid = child_pid;
+        FILE* fp = fdopen(parent_end, mode);
+
+        // if we were creating an nxfs_proc_file* here, we could set .pid on it
+        //fp->pid = child_pid;
 
         return fp;
     }
