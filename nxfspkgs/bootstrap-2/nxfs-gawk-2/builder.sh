@@ -1,8 +1,5 @@
 #!/bin/bash
 
-set -e
-#set -x
-
 echo "gcc_wrapaper=${gcc_wrapper}"
 echo "toolchain=${toolchain}"
 echo "gnumake=${gnumake}"
@@ -20,6 +17,9 @@ echo "nxfs_system=${nxfs_system}";
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
+set -e
+set -x
+
 # 1. ${gcc_wrapper}/bin/x86_64-pc-linux-gnu-{gcc,g++} builds viable executables.
 # 2. ${toolchain}/bin/x86_64-pc-linux-gnu-gcc can build executables,
 #    but they won't run unless we pass special linker flags
@@ -28,7 +28,7 @@ echo "TMPDIR=${TMPDIR}"
 #
 export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
 
-ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
+#ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
 
 src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
@@ -61,23 +61,51 @@ sed -i -e "s:/bin/sh:${bash_program}:g" ${src2}/configure ${src2}/build-aux/*
 #
 sed -i -e 's:"/bin/sh", "sh":"'${bash_program}'", "bash":' ${src2}/io.c
 
-# insert decl
-#    statc int nxfs_system(const char* line);
-# near the top of builtin.c
-#
-sed -i -e '/^static size_t mbc_byte_count/ i\
+# ----------------------------------------------------------------
+
+if [[ false ]]; then
+    # insert decl
+    #    static int nxfs_system(const char* line);
+    # near the top of builtin.c
+    #
+    sed -i -e '/^static size_t mbc_byte_count/ i\
 static int nxfs_system(const char* line);\
 ' ${src2}/builtin.c
 
-nxfs_system_src=${nxfs_system}/src/nxfs_system.c
+    nxfs_system_src=${nxfs_system}/src/nxfs_system.c
 
-# use nxfs_system() instead of glibc system() to implement gawk's system() builtin
-#
-sed -i -e 's:status = system(cmd):status = nxfs_system(cmd):' ${src2}/builtin.c
+    # use nxfs_system() instead of glibc system() to implement gawk's system() builtin
+    #
+    sed -i -e 's:status = system(cmd):status = nxfs_system(cmd):' ${src2}/builtin.c
 
-# add definition of nxfs_system() to builtin.c
-#
-cat ${nxfs_system_src} >> ${src2}/builtin.c
+    # add definition of nxfs_system() to builtin.c
+    #
+    cat ${nxfs_system_src} >> ${src2}/builtin.c
+fi
+
+# ----------------------------------------------------------------
+
+if [[ false ]]; then
+    # insert decl
+    #    static FILE* nxfs_popen(char const*, char const*);
+    # near the top of io.c
+    #
+    sed -i -e '/^static int iop_close/ i\
+static FILE* nxfs_popen(char const* command, char const* line);\
+       ' ${src2}/io.c
+
+    nxfs_popen_src=${nxfs_system}/src/nxfs_popen.c
+
+    # use nxfs_popen() instead of glibc popen() to implement gawk's pipe builtin
+    #
+    sed -i -e 's:= popen:= nxfs_popen:' ${src2}/io.c
+
+    # add definition of nxfs_popen() to io.c
+    #
+    cat ${nxfs_popen_src} >> ${src2}/io.c
+fi
+
+# ----------------------------------------------------------------
 
 # ${src}/configure honors CONFIG_SHELL
 export CONFIG_SHELL="${bash_program}"
