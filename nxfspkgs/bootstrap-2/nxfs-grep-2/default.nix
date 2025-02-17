@@ -16,7 +16,7 @@ let
 in
 
 derivation {
-  name         = "grep";
+  name         = "nxfs-grep-2";
   system       = builtins.currentSystem;
 
   gnumake      = nxfs-gnumake-1;
