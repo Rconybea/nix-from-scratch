@@ -20,6 +20,8 @@ let
   nxfs-binutils-2    = import ../nxfs-binutils-2/default.nix;
 #  nxfs-autoconf-2    = import ../nxfs-autoconf-2/default.nix;
 
+  nxfs-lc-all-sort-2 = import ../nxfs-lc-all-sort-2/default.nix;
+
   nxfs-locale-archive-1 = import ../../bootstrap-1/nxfs-locale-archive-1/default.nix; # yes
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;   # yes
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;     # yes
@@ -66,6 +68,8 @@ derivation {
   gcc_wrapper  = nxfs-gcc-wrapper-2;
 
   patchfile    = ./glibc-2.40-fhs-1.patch;
+
+  lc_all_sort  = nxfs-lc-all-sort-2;
 
   builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];

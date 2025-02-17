@@ -22,16 +22,38 @@ echo "tar=${tar}"
 echo "texinfo=${texinfo}";
 echo "coreutils=${coreutils}"
 echo "sysroot=${sysroot}"
-#echo "mkdir=${mkdir}"
-#echo "head=${head}"
 echo "bash=${bash}"
+echo "lc_all_sort=${lc_all_sort}"
+
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
 set -e
 set -x
 
-export PATH="${patchelf}/bin:${gperf}/bin:${python}/bin:${texinfo}/bin:${bison}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${sysroot}/usr/bin:${sysroot}/sbin:${gzip}/bin:${diffutils}/bin:${findutils}/bin:${gnumake}/bin:${tar}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${coreutils}/bin:${patch}/bin:${bash}/bin"
+
+export PATH=${bash}/bin:${PATH}
+export PATH=${patch}/bin:${PATH}
+export PATH=${coreutils}/bin:${PATH}
+export PATH=${sed}/bin:${PATH}
+export PATH=${grep}/bin:${PATH}
+export PATH=${gawk}/bin:${PATH}
+export PATH=${tar}/bin:${PATH}
+export PATH=${gnumake}/bin:${PATH}
+export PATH=${findutils}/bin:${PATH}
+export PATH=${diffutils}/bin:${PATH}
+export PATH=${gzip}/bin:${PATH}
+export PATH=${sysroot}/sbin:${PATH}
+export PATH=${toolchain}/x86_64-pc-linux-gnu/debug-root/usr/bin:${PATH}
+export PATH=${toolchain}/x86_64-pc-linux-gnu/bin:${PATH}
+export PATH=${toolchain}/bin:${PATH}
+export PATH=${gcc_wrapper}/bin:${PATH}
+export PATH=${bison}/bin:${PATH}
+export PATH=${texinfo}/bin:${PATH}
+export PATH=${python}/bin:${PATH}
+export PATH=${gperf}/bin:${PATH}
+export PATH=${patchelf}/bin:${PATH}
+export PATH=${lc_all_sort}/bin:${PATH}
 
 mkdir ${out}
 mkdir ${source}
@@ -44,6 +66,7 @@ mkdir -p ${builddir}
 
 bash_program=${bash}/bin/bash
 python_program=${python}/bin/python3
+sort_program=${coreutils}/bin/sort
 
 # 1. copy source tree to temporary directory
 #
@@ -105,6 +128,10 @@ export CONFIG_SHELL="${bash_program}"
 pushd ${builddir}
 
 echo "rootsbindir=${out}/sbin" > configparms
+
+find ${src2} -name '*.awk' | xargs --replace=xx sed -i -e 's:LC_ALL=C sort -u:lc-all-sort-wrapper -u:' xx
+find ${src2} -name '*.awk' | xargs --replace=xx sed -i -e 's:sort -t:'${sort_program}' -t:' -e 's:sort -u:'${sort_program}' -u:' xx
+(find ${src2} -name '*.awk' | xargs --replace=xx grep sort xx ) || true
 
 # headers from toolchain
 #/usr/bin/strace -f bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-kernel=4.19 --with-headers=${sysroot}/usr/include --disable-nscd libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
