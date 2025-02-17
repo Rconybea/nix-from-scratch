@@ -1,0 +1,6 @@
+Aptenodytes;forsteri;Mille,JF;1778;Emperor
+Pygoscelis;papua;Wagler;1832;Gentoo
+Eudyptula;minor;Bonaparte;1867;Little Blue
+Spheniscus;demersus;Brisson;1760;African
+Megadyptes;antipodes;Viellot;1816;Southern Rockhopper
+Torvaldis;linux;Ewing,L;1996;Tux
