@@ -20,7 +20,7 @@ echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
 #echo "texinfo=${texinfo}";
-echo "coreutils=${coreutils}"
+echo "glibc=${glibc}"
 echo "sysroot=${sysroot}"
 #echo "mkdir=${mkdir}"
 #echo "head=${head}"
@@ -39,9 +39,23 @@ set -x
 # 4. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
 # 5. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
 #
-export PATH="${bison}/bin:${flex}/bin:${texinfo}/bin:${m4}/bin:${diffutils}/bin:${findutils}/bin:${coreutils}/bin:${binutils}/bin:${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
-
-#ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
+export PATH=${bash}/bin:$PATH
+export PATH=${coreutils}/bin:$PATH
+export PATH=${tar}/bin:$PATH
+export PATH=${sed}/bin:$PATH
+export PATH=${grep}/bin:$PATH
+export PATH=${gawk}/bin:$PATH
+export PATH=${gnumake}/bin:$PATH
+export PATH=${toolchain}/x86_64-pc-linux-gnu/bin:$PATH
+export PATH=${toolchain}/bin:$PATH
+export PATH=${gcc_wrapper}/bin:$PATH
+export PATH=${binutils}/bin:$PATH
+export PATH=${findutils}/bin:$PATH
+export PATH=${diffutils}/bin:$PATH
+export PATH=${m4}/bin:$PATH
+export PATH=${texinfo}/bin:$PATH
+export PATH=${flex}/bin:$PATH
+export PATH=${bison}/bin:$PATH
 
 #src2=${src}
 src2=${TMPDIR}/src2
@@ -100,22 +114,31 @@ export CONFIG_SHELL="${bash_program}"
 # provide obstack.h which shadows the one in ${src}
 #
 #export CFLAGS="-I${coreutils}/include -I${sysroot}/usr/include -I${toolchain}/include"
-export CFLAGS="-idirafter ${sysroot}/usr/include"
+export CFLAGS="-idirafter ${glibc}/include"
 # TODO: -O2
 
 LDFLAGS="-B${sysroot}/lib"
 LDFLAGS="${LDFLAGS} -L${flex}/lib -L${mpc}/lib -L${mpfr}/lib -L${gmp}/lib"
-LDFLAGS="${LDFLAGS} -Wl,-rpath,${mpc}/lib -Wl,-rpath,${mpfr}/lib -Wl,-rpath,${gmp}/lib -Wl,-rpath,${sysroot}/lib"
+LDFLAGS="${LDFLAGS} -Wl,-rpath,${mpc}/lib -Wl,-rpath,${mpfr}/lib -Wl,-rpath,${gmp}/lib"
+LDFLAGS="${LDFLAGS} -Wl,-rpath,${glibc}/lib"
 export LDFLAGS
 
-# NOTE: nxfs-gcc automatically inserts flags
-#          -Wl,--rpath=${sysroot}/lib -Wl,--dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2
+# glibc:
+#  - built by crosstools-ng gcc (adopted into nix store)
+#  - entirely from within nix, see nxfs-glibc-stage1-2
+# here we tell nxfs-gcc to use this glibc instead of crosstools-ng glibc
+#
+#export NXFS_SYSROOT_DIR=${glibc}
+
+# NOTE: nxfs-gcc automatically inserts flags 
+# 
+#          -Wl,--rpath=${NXFS_SYSROOT_DIR}/lib -Wl,--dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 #       We still need them explictly here
 #
 #
 # this builds:
-#(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --disable-bootstrap --with-native-system-header-dir=${sysroot}/usr/include --disable-lto --disable-nls --with-glibc-version=2.40 --with-newlib --without-headers --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" --with-boot-ldflags="-B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --disable-bootstrap --with-native-system-header-dir=${sysroot}/usr/include --disable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" --with-boot-ldflags="-B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --disable-bootstrap --with-native-system-header-dir=${sysroot}/usr/include --disable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib" CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+# --disable-libstdcxx
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
