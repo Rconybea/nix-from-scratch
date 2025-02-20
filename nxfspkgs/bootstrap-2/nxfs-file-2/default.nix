@@ -13,6 +13,7 @@ let
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
@@ -41,5 +42,5 @@ derivation {
                                          url = "https://astron.com/pub/file/file-5.44.tar.gz";
                                          sha256 = "1zzm575fk4lsg8h0jk6jhcyk13w1qxm3ykssyqrmzq7wiginj9a3"; };
 
-  target_tuple ="x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

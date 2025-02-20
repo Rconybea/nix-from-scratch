@@ -13,6 +13,7 @@ let
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
@@ -40,5 +41,5 @@ derivation {
                                          url = "https://ftp.gnu.org/gnu/findutils/findutils-4.10.0.tar.xz";
                                          sha256 = "17psmb481vpq03lmi8l4r4nm99v4yg3ri5bn4gyy0z1zzi63ywan"; };
 
-  target_tuple = "x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

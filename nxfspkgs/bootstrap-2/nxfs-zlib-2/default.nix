@@ -17,6 +17,7 @@ let
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
@@ -47,5 +48,5 @@ derivation {
                                          url = "https://zlib.net/fossils/zlib-1.3.1.tar.gz";
                                          sha256 = "1xx5zcp66gfjsxrads0gkfk6wxif64x3i1k0czmqcif8bk43rik9"; };
 
-  target_tuple ="x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

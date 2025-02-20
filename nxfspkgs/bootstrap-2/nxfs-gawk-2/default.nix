@@ -15,6 +15,7 @@ let
   nxfs-coreutils-1   = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
 
   nxfs-system-2      = import ../nxfs-system-2/default.nix;
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
@@ -47,5 +48,5 @@ derivation {
 
   outputs      = [ "out" "source" ];
 
-  target_tuple ="x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

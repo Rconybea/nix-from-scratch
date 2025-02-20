@@ -14,6 +14,7 @@ let
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
@@ -39,7 +40,8 @@ derivation {
   args         = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "perl-5.40.0-source";
+                                         sha256 = "1yiqddm0l774a87y13jmqm6w0j0dja7ycnigzkkbsy7gm5bkb8ig";
                                          url = "https://www.cpan.org/src/5.0/perl-5.40.0.tar.xz"; };
 
-  target_tuple ="x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

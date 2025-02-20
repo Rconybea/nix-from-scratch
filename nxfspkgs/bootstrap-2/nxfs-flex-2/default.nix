@@ -1,8 +1,4 @@
 let
-#  nxfs-texinfo-2     = import ../nxfs-texinfo-2/default.nix;
-#  nxfs-automake-2    = import ../nxfs-automake-2/default.nix;
-#  nxfs-autoconf-2    = import ../nxfs-autoconf-2/default.nix;
-
   nxfs-m4-2          = import ../nxfs-m4-2/default.nix;
   nxfs-file-2        = import ../nxfs-file-2/default.nix;
   nxfs-coreutils-2   = import ../nxfs-coreutils-2/default.nix;
@@ -19,6 +15,7 @@ let
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
@@ -53,5 +50,5 @@ derivation {
                                          url = "https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz";
                                          sha256 = "05gbq5hklzdfvjjc3hyr98hrm8wkr20ds0y3l7c825va798c04qw"; };
 
-  target_tuple ="x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

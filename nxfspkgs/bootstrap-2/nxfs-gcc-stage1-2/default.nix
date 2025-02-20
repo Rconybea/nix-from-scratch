@@ -23,6 +23,7 @@ let
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 # PLAN
@@ -68,5 +69,5 @@ derivation {
                                          sha256 = "1bdp6l9732316ylpzxnamwpn08kpk91h7cmr3h1rgm3wnkfgxzh9";
                                        };
 
-  target_tuple = "x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

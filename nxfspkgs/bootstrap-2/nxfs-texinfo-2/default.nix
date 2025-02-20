@@ -18,6 +18,8 @@ let
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
+
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
@@ -48,10 +50,9 @@ derivation {
   builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];
 
-  #src         = nxfs-sed-source;
   src          = builtins.fetchTarball { name = "texinfo-6.7-source";
                                          url = "https://ftp.gnu.org/gnu/texinfo/texinfo-6.7.tar.xz";
                                          sha256 = "0bgzsh574c3qh0s5mbq7iyrd5zfh3x431719yzch7jjg28kidm6r"; };
 
-  target_tuple ="x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

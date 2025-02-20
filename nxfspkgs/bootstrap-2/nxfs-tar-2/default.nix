@@ -15,6 +15,7 @@ let
   nxfs-coreutils-1   = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
   nxfs-bash-1        = import ../../bootstrap-1/nxfs-bash-1/default.nix;
 
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
@@ -44,5 +45,5 @@ derivation {
                                          url = "https://ftp.gnu.org/gnu/tar/tar-1.35.tar.xz";
                                          sha256 = "0cmdg6gq9v04631lfb98xg45la1b0y9r5wyspn97ri11krdlyfqz"; };
 
-  target_tuple ="x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

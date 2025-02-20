@@ -18,7 +18,6 @@ let
   nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;                  # yes
   nxfs-coreutils-2   = import ../nxfs-coreutils-2/default.nix;                  # yes
   nxfs-binutils-2    = import ../nxfs-binutils-2/default.nix;
-#  nxfs-autoconf-2    = import ../nxfs-autoconf-2/default.nix;
 
   nxfs-lc-all-sort-2 = import ../nxfs-lc-all-sort-2/default.nix;
 
@@ -26,6 +25,7 @@ let
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;   # yes
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;     # yes
 
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 # PLAN
@@ -81,5 +81,5 @@ derivation {
 
   outputs      = [ "out" "source" ];
 
-  target_tuple = "x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

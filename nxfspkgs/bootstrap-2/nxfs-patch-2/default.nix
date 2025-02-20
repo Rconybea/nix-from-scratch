@@ -12,6 +12,8 @@ let
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
+
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
@@ -41,5 +43,5 @@ derivation {
                                          url = "https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.xz";
                                          sha256 = "1yiy0xq1ha193yga0canc9ijw4hbd92c93l7ksqlhmzsn2yph39n"; };
 
-  target_tuple ="x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

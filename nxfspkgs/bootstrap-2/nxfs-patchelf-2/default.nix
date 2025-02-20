@@ -12,6 +12,8 @@ let
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
+
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
@@ -41,5 +43,5 @@ derivation {
                                          url = "https://github.com/NixOS/patchelf/releases/download/0.18.0/patchelf-0.18.0.tar.gz";
                                          sha256 = "0s328cmgrbhsc344q323dhg70h8lf8532ywjf8jwjirxq6a5h06w"; };
 
-  target_tuple ="x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }

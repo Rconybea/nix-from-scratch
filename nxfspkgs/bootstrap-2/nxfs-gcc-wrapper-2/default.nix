@@ -4,7 +4,9 @@ let
   nxfs-sysroot-1 = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
   nxfs-coreutils-1 = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
   nxfs-bash-1 = import ../../bootstrap-1/nxfs-bash-1/default.nix;
+  nxfs-defs = import ../nxfs-defs.nix;
 in
+
 
 derivation {
   name = "gcc-wrapper";
@@ -26,5 +28,5 @@ derivation {
   gcc = "${nxfs-toolchain-1}/bin/x86_64-pc-linux-gnu-gcc";
   gxx = "${nxfs-toolchain-1}/bin/x86_64-pc-linux-gnu-g++";
 
-  target_tuple="x86_64-pc-linux-gnu";
+  target_tuple=nxfs-defs.target_tuple;
 }

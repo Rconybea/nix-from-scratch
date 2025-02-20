@@ -13,6 +13,8 @@ let
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
   nxfs-coreutils-1   = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
   nxfs-bash-1        = import ../../bootstrap-1/nxfs-bash-1/default.nix;
+
+  nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
@@ -40,5 +42,5 @@ derivation {
                                          url = "https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz";
                                          sha256 = "170m9hyxnhnxisvmii5z7m8i446ab97kam10rqjylj70dk8wh169"; };
 
-  target_tuple = "x86_64-pc-linux-gnu";
+  target_tuple = nxfs-defs.target_tuple;
 }
