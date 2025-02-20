@@ -117,10 +117,10 @@ export CONFIG_SHELL="${bash_program}"
 export CFLAGS="-idirafter ${glibc}/include"
 # TODO: -O2
 
-LDFLAGS="-B${sysroot}/lib"
+LDFLAGS="-B${glibc}/lib -B${sysroot}/lib"
 LDFLAGS="${LDFLAGS} -L${flex}/lib -L${mpc}/lib -L${mpfr}/lib -L${gmp}/lib"
 LDFLAGS="${LDFLAGS} -Wl,-rpath,${mpc}/lib -Wl,-rpath,${mpfr}/lib -Wl,-rpath,${gmp}/lib"
-LDFLAGS="${LDFLAGS} -Wl,-rpath,${glibc}/lib"
+LDFLAGS="${LDFLAGS} -Wl,-rpath,${glibc}/lib -Wl,-rpath,${sysroot}/lib"
 export LDFLAGS
 
 # glibc:
@@ -137,8 +137,7 @@ export LDFLAGS
 #
 #
 # this builds:
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --disable-bootstrap --with-native-system-header-dir=${sysroot}/usr/include --disable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib" CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
-# --disable-libstdcxx
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --disable-bootstrap --with-native-system-header-dir=${sysroot}/usr/include --disable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
