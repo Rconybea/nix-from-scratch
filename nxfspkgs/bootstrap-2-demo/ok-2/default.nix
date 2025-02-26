@@ -1,5 +1,5 @@
 let
-  nxfs-gcc-stage1-wrapper-2 = import ../../bootstrap-2/nxfs-gcc-stage1-wrapper-2/default.nix;
+  nxfs-gcc-stage2-wrapper-2 = import ../../bootstrap-2/nxfs-gcc-stage2-wrapper-2/default.nix;
   nxfs-gcc-stage1-2 = import ../../bootstrap-2/nxfs-gcc-stage1-2/default.nix;
   nxfs-binutils-2 = import ../../bootstrap-2/nxfs-binutils-2/default.nix;
   nxfs-toolchain-1 = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
@@ -23,7 +23,7 @@ derivation {
   builder = bash;
   args = [ ./builder.sh ];
 
-  gcc_wrapper = nxfs-gcc-stage1-wrapper-2;
+  gcc_wrapper = nxfs-gcc-stage2-wrapper-2;
   gcc = nxfs-gcc-stage1-2;
   binutils = nxfs-binutils-2;
 #  toolchain = nxfs-toolchain-1;
