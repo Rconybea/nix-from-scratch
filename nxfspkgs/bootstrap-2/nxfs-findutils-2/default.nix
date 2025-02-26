@@ -1,6 +1,6 @@
 let
   nxfs-diffutils-2   = import ../nxfs-diffutils-2/default.nix;
-  nxfs-gcc-wrapper-2 = import ../nxfs-gcc-wrapper-2/default.nix;
+  nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-sed-1         = import ../../bootstrap-1/nxfs-sed-1/default.nix;
   nxfs-grep-1        = import ../../bootstrap-1/nxfs-grep-1/default.nix;
@@ -32,7 +32,7 @@ derivation {
   sed          = nxfs-sed-1;
   grep         = nxfs-grep-1;
   diffutils    = nxfs-diffutils-2;
-  gcc_wrapper  = nxfs-gcc-wrapper-2;
+  gcc_wrapper  = nxfs-toolchain-wrapper-1;
 
   builder      = "${nxfs-bash-1}/bin/bash";
   args         = [ ./builder.sh ];

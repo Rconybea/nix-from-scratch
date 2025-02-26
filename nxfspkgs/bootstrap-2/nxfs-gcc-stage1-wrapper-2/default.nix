@@ -17,7 +17,6 @@ derivation {
   bash = nxfs-bash-1;
   sed = nxfs-sed-1;
   toolchain = nxfs-toolchain-1;
-  #sysroot = nxfs-sysroot-1;
   coreutils = nxfs-coreutils-1;
   gnused = nxfs-sed-1;
 
@@ -27,8 +26,8 @@ derivation {
   gcc_wrapper_script = ./gcc-wrapper.sh;
   gxx_wrapper_script = ./gxx-wrapper.sh;
 
-  gcc = "${nxfs-toolchain-1}/bin/x86_64-pc-linux-gnu-gcc";
-  gxx = "${nxfs-toolchain-1}/bin/x86_64-pc-linux-gnu-g++";
+  gcc = "${nxfs-toolchain-1}/bin/${nxfs-defs.target_tuple}-gcc";
+  gxx = "${nxfs-toolchain-1}/bin/${nxfs-defs.target_tuple}-g++";
 
   target_tuple=nxfs-defs.target_tuple;
 }

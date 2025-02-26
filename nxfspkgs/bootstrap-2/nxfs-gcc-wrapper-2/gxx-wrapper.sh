@@ -7,7 +7,15 @@
 # and by defult produces executables that assume /lib64
 
 unwrapped_gxx=@unwrapped_gxx@
-sysroot=@sysroot@
+libstdcxx=@libstdcxx@
+glibc=@glibc@
+
+target_tuple=@target_tuple@
+cxx_version=@cxx_version@
+
+if [[ -z "${NXFS_SYSROOT_DIR}" ]]; then
+    NXFS_SYSROOT_DIR=${glibc}
+fi
 
 if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     # gcc has carveout when given '-v' with no other arguments:
@@ -17,5 +25,6 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gxx} -v
 else
-    ${unwrapped_gxx} -Wl,-rpath=${sysroot}/lib -Wl,-dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2 "${@}"
+    cxxdir=${libstdcxx}/${target_tuple}/include/c++/${cxx_version}
+    ${unwrapped_gxx} -I${cxxdir} -I${cxxdir}/${target_tuple} -I${NXFS_SYSROOT_DIR}/include -B${NXFS_SYSROOT_DIR}/lib -L${libstdcxx}/lib -Wl,-rpath=${libstdcxx}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2 "${@}"
 fi

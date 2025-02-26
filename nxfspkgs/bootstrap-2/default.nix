@@ -33,7 +33,7 @@ let
   nxfs-sed-2 = import ./nxfs-sed-2/default.nix;
   nxfs-findutils-2 = import ./nxfs-findutils-2/default.nix;
   nxfs-diffutils-2 = import ./nxfs-diffutils-2/default.nix;
-  nxfs-gcc-wrapper-2 = import ./nxfs-gcc-wrapper-2/default.nix;
+  nxfs-toolchain-wrapper-1 = import ./../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-bash-1 = import ../bootstrap-1/nxfs-bash-1/default.nix;
 
@@ -81,5 +81,5 @@ derivation {
   nxfs-sed-2 = nxfs-sed-2;
   nxfs-findutils-2 = nxfs-findutils-2;
   nxfs-diffutils-2 = nxfs-diffutils-2;
-  nxfs-gcc-wrapper-2 = nxfs-gcc-wrapper-2;
+  nxfs-gcc-wrapper-2 = nxfs-toolchain-wrapper-1;
 }

@@ -7,7 +7,7 @@ let
   nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
   nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;
   nxfs-diffutils-2   = import ../nxfs-diffutils-2/default.nix;
-  nxfs-gcc-wrapper-2 = import ../nxfs-gcc-wrapper-2/default.nix;
+  nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-gnumake-1     = import ../../bootstrap-1/nxfs-gnumake-1/default.nix;
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
@@ -34,7 +34,7 @@ derivation {
   sed          = nxfs-sed-2;
   findutils    = nxfs-findutils-2;
   diffutils    = nxfs-diffutils-2;
-  gcc_wrapper  = nxfs-gcc-wrapper-2;
+  gcc_wrapper  = nxfs-toolchain-wrapper-1;
 
   # source code for nxfs_system() = nix-centric re-implementation of system()
   nxfs_system  = nxfs-system-2;

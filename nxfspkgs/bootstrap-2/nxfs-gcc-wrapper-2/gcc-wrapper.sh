@@ -7,10 +7,7 @@
 # and by defult produces executables that assume /lib64
 
 unwrapped_gcc=@unwrapped_gcc@
-sysroot=@sysroot@
-
-#2> echo "nxfs: gcc-wrapper calling:"
-#2> echo "nxfs:   ${unwrapped_gcc} -Wl,--rpath=${sysroot}/lib -Wl,--dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2" "${@}"
+glibc=@glibc@
 
 # Caller won't usually set this,  in which case nxfs-gcc points destination ELF to imported sysroot
 # (see nix-from-scratch/nxfspkgs/bootstrap-1/nxfs-sysroot-1).
@@ -23,7 +20,7 @@ sysroot=@sysroot@
 # Workaround is in glibc build to call configure with NXFS_SYSROOT_DIR empty,  then compile with NXFS_SYSROOT set to ${output}
 #
 if [[ -z "${NXFS_SYSROOT_DIR}" ]]; then
-    NXFS_SYSROOT_DIR=${sysroot}
+    NXFS_SYSROOT_DIR=${glibc}
 fi
 
 if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
@@ -34,5 +31,5 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gcc} -v
 else
-    ${unwrapped_gcc} -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2 "${@}"
+    ${unwrapped_gcc} -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2 "${@}" -I${NXFS_SYSROOT_DIR}/include
 fi

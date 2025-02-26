@@ -6,7 +6,7 @@ let
   nxfs-m4-2          = import ../nxfs-m4-2/default.nix;
   nxfs-gzip-2        = import ../nxfs-gzip-2/default.nix;                       # yes
   nxfs-gperf-2       = import ../nxfs-gperf-2/default.nix;                      # yes
-  nxfs-gcc-wrapper-2 = import ../nxfs-gcc-wrapper-2/default.nix;                # yes
+  nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;                # yes
   nxfs-sed-2         = import ../nxfs-sed-2/default.nix;                        # yes
   nxfs-grep-2        = import ../nxfs-grep-2/default.nix;                       # yes
   nxfs-gawk-2        = import ../nxfs-gawk-2/default.nix;                       # yes
@@ -65,7 +65,7 @@ derivation {
   binutils     = nxfs-binutils-2;
   diffutils    = nxfs-diffutils-2;
   findutils    = nxfs-findutils-2;
-  gcc_wrapper  = nxfs-gcc-wrapper-2;
+  gcc_wrapper  = nxfs-toolchain-wrapper-1;
 
   patchfile    = ./glibc-2.40-fhs-1.patch;
 

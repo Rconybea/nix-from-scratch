@@ -2,33 +2,29 @@
 # and inject additional arguments
 #
 
-echo "toolchain=${toolchain}"
 echo "sed=${sed}"
 echo "coreutils=${coreutils}"
-echo "sysroot=${sysroot}"
+echo "glibc=${glibc}"
 echo "bash=${bash}"
 
 echo "gcc_wrapper_script=${gcc_wrapper_script}"
 echo "gxx_wrapper_script=${gxx_wrapper_script}"
 
 echo "gcc=${gcc}";
-echo "gxx=${gxx}";
 
 builddir=${TMPDIR}
 
-export PATH="${toolchain}/bin:${sed}/bin:${coreutils}/bin:${bash}/bin"
+export PATH="${gcc}/bin:${glibc}/bin:${sed}/bin:${coreutils}/bin:${bash}/bin"
 
-# path/to/nix/store/{hash}-x86_64-pc-linux-gnu-gcc
-unwrapped_gcc=${gcc}
-# path/to/nix/store/{hash}-x86_64-pc-linux-gnu-gxx
-unwrapped_gxx=${gxx}
+unwrapped_gcc=${gcc}/bin/gcc
+unwrapped_gxx=${gcc}/bin/g++
 
 mkdir -p ${builddir}/bin
 
 # x86_64-pc-linux-gnu-gcc
-gcc_basename=$(basename ${gcc})
+gcc_basename=gcc
 # x86_64-pc-linux-gnu-gxx
-gxx_basename=$(basename ${gxx})
+gxx_basename=g++
 
 mkdir -p ${out}/bin
 
@@ -45,7 +41,7 @@ tmp=${builddir}/bin/${gcc_basename}
 cp ${gcc_wrapper_script} ${tmp}
 sed -i -e s:@bash@:${bash}/bin/bash: ${tmp}
 sed -i -e s:@unwrapped_gcc@:${unwrapped_gcc}: ${tmp}
-sed -i -e s:@sysroot@:${sysroot}: ${tmp}
+sed -i -e s:@glibc@:${glibc}: ${tmp}
 chmod +x ${tmp}
 cp ${tmp} ${out}/bin
 cp ${tmp} ${out}/bin/nxfs-gcc
@@ -55,7 +51,11 @@ tmp=${builddir}/bin/${gxx_basename}
 cp ${gxx_wrapper_script} ${tmp}
 sed -i -e s:@bash@:${bash}/bin/bash: ${tmp}
 sed -i -e s:@unwrapped_gxx@:${unwrapped_gxx}: ${tmp}
-sed -i -e s:@sysroot@:${sysroot}: ${tmp}
+sed -i -e s:@glibc@:${glibc}: ${tmp}
+sed -i -e s:@libstdcxx@:${libstdcxx}: ${tmp}
+sed -i -e s:@target_tuple@:${target_tuple}: ${tmp}
+sed -i -e s:@cxx_version@:${cxx_version}: ${tmp}
 chmod +x ${tmp}
+
 cp ${tmp} ${out}/bin
 cp ${tmp} ${out}/bin/nxfs-g++
