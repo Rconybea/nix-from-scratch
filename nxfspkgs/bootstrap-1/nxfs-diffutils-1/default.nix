@@ -8,12 +8,6 @@ let
   nxfs-redirect-elf-file = import ../nxfs-redirect-elf-file/default.nix;
 
   bash = "${nxfs-bash-1}/bin/bash";
-  #basename = "${nxfs-coreutils-0}/bin/basename";
-  #chmod = "${nxfs-coreutils-0}/bin/chmod";
-  #head = "${nxfs-coreutils-0}/bin/head";
-  #mkdir = "${nxfs-coreutils-0}/bin/mkdir";
-  #patchelf = "${nxfs-patchelf-1}/bin/patchelf";
-  #tar = "${nxfs-tar-0}/bin/tar";
 
   redirect_elf_file = "${nxfs-redirect-elf-file}/bootstrap-scripts/redirect-elf-file.sh";
 in
