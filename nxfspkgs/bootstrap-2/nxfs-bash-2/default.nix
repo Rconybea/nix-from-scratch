@@ -3,7 +3,6 @@ let
   nxfs-gnumake-1     = import ../../bootstrap-1/nxfs-gnumake-1/default.nix;
   nxfs-gawk-1        = import ../../bootstrap-1/nxfs-gawk-1/default.nix;
 
-  nxfs-gnumake-2     = import ../nxfs-gnumake-2/default.nix;
   nxfs-tar-2         = import ../nxfs-tar-2/default.nix;
   nxfs-grep-2        = import ../nxfs-grep-2/default.nix;
   nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
