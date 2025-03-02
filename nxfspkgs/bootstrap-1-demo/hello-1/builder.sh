@@ -11,7 +11,7 @@ echo "coreutils=${coreutils}";
 echo "sysroot=${sysroot}";
 echo
 
-export PATH=${toolchain}/bin:${coreutils}/bin:
+export PATH=${toolchain}/bin:${coreutils}/bin
 
 mkdir -p ${out}
 
