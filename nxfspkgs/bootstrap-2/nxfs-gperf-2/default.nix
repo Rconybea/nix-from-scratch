@@ -1,8 +1,4 @@
 let
-
-#  nxfs-texinfo-2     = import ../nxfs-texinfo-2/default.nix;
-#  nxfs-m4-2          = import ../nxfs-m4-2/default.nix;
-
   nxfs-coreutils-2   = import ../nxfs-coreutils-2/default.nix;
   nxfs-bash-2        = import ../nxfs-bash-2/default.nix;
   nxfs-tar-2         = import ../nxfs-tar-2/default.nix;
@@ -28,13 +24,11 @@ derivation {
   toolchain    = nxfs-toolchain-1;
   sysroot      = nxfs-sysroot-1;
 
-#  texinfo      = nxfs-texinfo-2;
-#  m4           = nxfs-m4-2;
   coreutils    = nxfs-coreutils-2;
-  bash         = nxfs-bash-2;
-  tar          = nxfs-tar-2;
   gnumake      = nxfs-gnumake-2;
   gawk         = nxfs-gawk-2;
+  bash         = nxfs-bash-2;
+  tar          = nxfs-tar-2;
   grep         = nxfs-grep-2;
   sed          = nxfs-sed-2;
   findutils    = nxfs-findutils-2;
