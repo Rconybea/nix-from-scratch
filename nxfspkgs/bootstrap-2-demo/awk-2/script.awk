@@ -1,14 +1,13 @@
 #!/usr/bin/gawk -f
 
 BEGIN {
-	FS=";";
+    FS=";";
 }
 
 #{ cmd="echo"; system("echo " $1) | cmd; }
 
 
-{ 
-  command = "sort -r "
-  print $1 | command 
+{
+  command = "@sort_program@ -r "
+  print $1 | command
 }
-

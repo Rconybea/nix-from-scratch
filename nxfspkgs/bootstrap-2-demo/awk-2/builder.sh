@@ -7,6 +7,9 @@ mkdir ${out}
 
 cp ${script} ${out}/script.awk
 sed -i -e 's:/usr/bin/gawk:'${gawk_program}':' ${out}/script.awk
-sed -i -e 's:sort:'${sort_program}':' ${out}/script.awk
+sed -i -e 's:@sort_program@:'${sort_program}':' ${out}/script.awk
 
-strace -f ${out}/script.awk ${input} > ${out}/output1.txt
+echo "script.awk:"
+cat ${out}/script.awk
+
+${out}/script.awk ${input} > ${out}/output1.txt
