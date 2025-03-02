@@ -22,10 +22,10 @@ derivation {
   system       = builtins.currentSystem;
 
   coreutils    = nxfs-coreutils-2;
-  bash         = nxfs-bash-2;
-  tar          = nxfs-tar-2;
   gnumake      = nxfs-gnumake-2;
   gawk         = nxfs-gawk-2;
+  bash         = nxfs-bash-2;
+  tar          = nxfs-tar-2;
   grep         = nxfs-grep-2;
   gnused       = nxfs-sed-2;
   sed          = nxfs-sed-2;
