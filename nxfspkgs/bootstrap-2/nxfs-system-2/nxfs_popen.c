@@ -11,18 +11,14 @@
  *    but that calls execlp() instead of execl()
  */
 
+#include <stdlib.h>
 #include <stdio.h>
-#include <pid.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/wait.h>
 
 #define SHELL_PATH "@bash_path@"
 #define SHELL_NAME "bash"
-
-/* mirror of glibc _IO_proc_file */
-struct nxfs_proc_file {
-    FILE file;
-    pid_t pid;
-    struct nxfs_proc_file* next;
-};
 
 /* mode must be "r" or "w" */
 FILE *
