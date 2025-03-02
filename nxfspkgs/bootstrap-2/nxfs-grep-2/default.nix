@@ -1,9 +1,6 @@
 let
   nxfs-grep-1        = import ../../bootstrap-1/nxfs-grep-1/default.nix;
 
-  nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
-  nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;
-  nxfs-diffutils-2   = import ../nxfs-diffutils-2/default.nix;
   nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-gnumake-1     = import ../../bootstrap-1/nxfs-gnumake-1/default.nix;
@@ -13,6 +10,10 @@ let
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
   nxfs-coreutils-1   = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
   nxfs-bash-1        = import ../../bootstrap-1/nxfs-bash-1/default.nix;
+
+  nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
+  nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;
+  nxfs-diffutils-2   = import ../nxfs-diffutils-2/default.nix;
 
   nxfs-defs = import ../nxfs-defs.nix;
 in
@@ -33,6 +34,7 @@ derivation {
   sed          = nxfs-sed-2;
   findutils    = nxfs-findutils-2;
   diffutils    = nxfs-diffutils-2;
+
   gcc_wrapper  = nxfs-toolchain-wrapper-1;
 
   builder      = "${nxfs-bash-1}/bin/bash";
