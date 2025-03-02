@@ -23,8 +23,9 @@ let
   nxfs-python-2 = import ./nxfs-python-2/default.nix;
   nxfs-zlib-2 = import ./nxfs-zlib-2/default.nix;
   nxfs-file-2 = import ./nxfs-file-2/default.nix;
-
   nxfs-coreutils-2 = import ./nxfs-coreutils-2/default.nix;
+
+  nxfs-system-2 = import ./nxfs-system-2/default.nix;
   nxfs-bash-2 = import ./nxfs-bash-2/default.nix;
   nxfs-tar-2 = import ./nxfs-tar-2/default.nix;
   nxfs-gnumake-2 = import ./nxfs-gnumake-2/default.nix;
@@ -33,7 +34,7 @@ let
   nxfs-sed-2 = import ./nxfs-sed-2/default.nix;
   nxfs-findutils-2 = import ./nxfs-findutils-2/default.nix;
   nxfs-diffutils-2 = import ./nxfs-diffutils-2/default.nix;
-  nxfs-toolchain-wrapper-1 = import ./../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
+#  nxfs-toolchain-wrapper-1 = import ./../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-bash-1 = import ../bootstrap-1/nxfs-bash-1/default.nix;
 
@@ -73,6 +74,8 @@ derivation {
   nxfs-file-2 = nxfs-file-2;
 
   nxfs-coreutils-2 = nxfs-coreutils-2;
+
+  nxfs-system-2 = nxfs-system-2;
   nxfs-bash-2 = nxfs-bash-2;
   nxfs-tar-2 = nxfs-tar-2;
   nxfs-gnumake-2 = nxfs-gnumake-2;
@@ -81,5 +84,5 @@ derivation {
   nxfs-sed-2 = nxfs-sed-2;
   nxfs-findutils-2 = nxfs-findutils-2;
   nxfs-diffutils-2 = nxfs-diffutils-2;
-  nxfs-gcc-wrapper-2 = nxfs-toolchain-wrapper-1;
+#  nxfs-gcc-wrapper-2 = nxfs-toolchain-wrapper-1;
 }
