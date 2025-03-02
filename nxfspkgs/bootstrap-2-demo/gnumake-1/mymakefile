@@ -1,0 +1,6 @@
+
+myvar:=$(shell echo hello)
+
+all:
+	echo ${myvar} > ./makeallresult
+
