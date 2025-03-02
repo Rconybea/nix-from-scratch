@@ -6,6 +6,7 @@ let
   nxfs-tar-2         = import ../nxfs-tar-2/default.nix;
   nxfs-gnumake-2     = import ../nxfs-gnumake-2/default.nix;
   nxfs-gawk-2        = import ../nxfs-gawk-2/default.nix;
+  nxfs-system-2      = import ../nxfs-system-2/default.nix;
   nxfs-grep-2        = import ../nxfs-grep-2/default.nix;
   nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
   nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;
@@ -29,6 +30,7 @@ derivation {
   tar          = nxfs-tar-2;
   gnumake      = nxfs-gnumake-2;
   gawk         = nxfs-gawk-2;
+  nxfs_system  = nxfs-system-2;
   grep         = nxfs-grep-2;
   gnused       = nxfs-sed-2;
   sed          = nxfs-sed-2;
@@ -46,6 +48,9 @@ derivation {
   src          = builtins.fetchTarball { name = "python-3.12.6-source";
                                          url = "https://www.python.org/ftp/python/3.12.6/Python-3.12.6.tar.xz";
                                          sha256 = "0ggdm1l4dhr3qn0rwzjha5r15m3mfyl0hj8j89xip7jx10mip952"; };
+
+  # nix-build -A source
+  outputs = [ "out" "source" ];
 
   target_tuple = nxfs-defs.target_tuple;
 }

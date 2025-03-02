@@ -1,25 +1,24 @@
 #!/bin/bash
 
-set -e
-set -x
-
 echo "gcc_wrapper=${gcc_wrapper}"
 echo "toolchain=${toolchain}"
 echo "findutils=${findutils}"
 echo "gnumake=${gnumake}"
 echo "gawk=${gawk}"
+echo "nxfs_system=${nxfs_system}"
 echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
 echo "coreutils=${coreutils}"
 echo "sysroot=${sysroot}"
-#echo "mkdir=${mkdir}"
-#echo "head=${head}"
 echo "zlib=${zlib}"
 echo "bash=${bash}"
 echo "src=${src}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
+
+set -e
+set -x
 
 # 1. ${gcc_wrapper}/bin/x86_64-pc-linux-gnu-{gcc,g++} builds viable executables.
 # 2. ${toolchain}/bin/x86_64-pc-linux-gnu-gcc can build executables,
@@ -28,9 +27,6 @@ echo "TMPDIR=${TMPDIR}"
 # 4. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
 #
 export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${findutils}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
-#export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${perl}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
-
-ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
 
 src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
@@ -39,6 +35,7 @@ mkdir -p ${src2}
 mkdir -p ${builddir}
 
 mkdir ${out}
+mkdir ${source}
 
 bash_program=${bash}/bin/bash
 
@@ -46,13 +43,44 @@ bash_program=${bash}/bin/bash
 #
 (cd ${src} && (tar cf - . | tar xf - -C ${src2}))
 
-# 2. substitute nix-store path-to-bash for /bin/sh.
-#
-#
-#chmod -R +w ${src2}
-#(cd ${src2} && ${bash_program} ${m4_patch})
-#chmod -R -w ${src2}
+chmod -R +w ${src2}
 
+# ----------------------------------------------------------------
+# replace /bin/sh with nix-store bash when invoking subprocesses
+# ----------------------------------------------------------------
+
+pushd ${src2}/Lib
+
+sed -i -e "s:'/bin/sh':'"${bash_program}"':" subprocess.py
+
+popd
+
+# ----------------------------------------------------------------
+# interpolate nxfs_system() instead of glibc system()
+# nxfs_system uses nix-store bash instead of /bin/sh
+# ----------------------------------------------------------------
+
+pushd ${src2}/Modules
+
+dest_c=posixmodule.c
+
+sed -i -e '/Legacy wrapper/ i\
+static int nxfs_system(const char* line);\
+' ${dest_c}
+
+nxfs_system_src=${nxfs_system}/src/nxfs_system.c
+
+# use nxfs_system() instead of glibc system() to implement python's system() builtin
+#
+sed -i -e "s:system(bytes):nxfs_system(bytes):" ${dest_c}
+
+# add definition of nxfs_system() to builtin.c
+#
+cat ${nxfs_system_src} >> ${dest_c}
+
+popd
+
+# ----------------------------------------------------------------
 # Must skip:
 #   .m4 and .in files (assume they trigger re-running autoconf)
 #   test/ files
@@ -99,3 +127,5 @@ LDFLAGS="-Wl,-rpath=${out}/lib -L${zlib}/lib -Wl,-rpath=${zlib}/lib"
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
+
+(cd ${src2} && (tar cf - . | tar xf - -C ${source}))
