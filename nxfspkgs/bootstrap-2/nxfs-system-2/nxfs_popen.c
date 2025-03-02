@@ -87,9 +87,32 @@ nxfs_popen (char const* command, char const* mode)
         return NULL;
     } else {
         /* adopt parent_end */
-        FILE* fp = fdopen(parent_end);
-        fp->pid = child_pid;
+        FILE* fp = fdopen(parent_end, mode);
 
         return fp;
     }
+}
+
+/* pclose() won't work for a FILE* created by nxfs_popen();
+ * believe it's because glibc some secret state,
+ * which entangles its implementation of {popen(), pclose()}
+ */
+int
+nxfs_pclose (FILE* fp)
+{
+    int status = 0;
+    pid_t pid = -1;
+
+    // fclose: close given file stream.  flush buffered data
+    if (fclose(fp) == EOF) {
+        // control here if flush failed (e.g. out of disk)
+        return -1;
+    }
+
+    while ((pid = wait(&status)) == -1) {
+        if (errno != EINTR)
+            return -1;
+    }
+
+    return status;
 }
