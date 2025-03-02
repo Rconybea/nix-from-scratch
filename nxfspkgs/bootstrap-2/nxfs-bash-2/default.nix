@@ -23,14 +23,14 @@ derivation {
 
   system       = builtins.currentSystem;
 
-  bash         = nxfs-bash-1;
   toolchain    = nxfs-toolchain-1;
   sysroot      = nxfs-sysroot-1;
   coreutils    = nxfs-coreutils-1;
-
-  tar          = nxfs-tar-2;
   gnumake      = nxfs-gnumake-1;
   gawk         = nxfs-gawk-1;
+  bash         = nxfs-bash-1;
+
+  tar          = nxfs-tar-2;
   grep         = nxfs-grep-2;
   sed          = nxfs-sed-2;
   findutils    = nxfs-findutils-2;
