@@ -28,7 +28,7 @@ echo "TMPDIR=${TMPDIR}"
 #
 export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
 
-ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
+#ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
 
 src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
@@ -61,8 +61,12 @@ sed -i -e "s:/bin/sh:${bash_program}:g" ${src2}/configure ${src2}/build-aux/*
 #
 sed -i -e 's:"/bin/sh", "sh":"'${bash_program}'", "bash":' ${src2}/io.c
 
+# ----------------------------------------------------------------
+# nxfs_system
+# ----------------------------------------------------------------
+
 # insert decl
-#    statc int nxfs_system(const char* line);
+#    static int nxfs_system(const char* line);
 # near the top of builtin.c
 #
 sed -i -e '/^static size_t mbc_byte_count/ i\
@@ -78,6 +82,34 @@ sed -i -e 's:status = system(cmd):status = nxfs_system(cmd):' ${src2}/builtin.c
 # add definition of nxfs_system() to builtin.c
 #
 cat ${nxfs_system_src} >> ${src2}/builtin.c
+
+# ----------------------------------------------------------------
+# nxfs_popen
+# ----------------------------------------------------------------
+
+# insert decl
+#   static FILE* nxfs_popen(char const* cmd, char const* mode);
+# near the top of io.c
+#
+sed -i -e '/^static int iop_close/ i\
+static FILE* nxfs_popen(char const* cmd, char const* mode);\
+static int nxfs_pclose(FILE* fp);\
+' ${src2}/io.c
+
+nxfs_popen_src=${nxfs_system}/src/nxfs_popen.c
+
+# use nxfs_popen() instead of glibc popen() to implement gawk's '|' builtin
+#
+sed -i -e "s: popen(: nxfs_popen(:" ${src2}/io.c
+sed -i -e "s:pclose(rp->output.fp):nxfs_pclose(rp->output.fp):" ${src2}/io.c
+sed -i -e "s:pclose(current):nxfs_pclose(current):" ${src2}/io.c
+sed -i -e "s:pclose(rp->ifp):nxfs_pclose(rp->ifp):" ${src2}/io.c
+
+# add definition of nxfs_popen() and nxfs_pclose() to io.c
+#
+cat ${nxfs_popen_src} >> ${src2}/io.c
+
+# ----------------------------------------------------------------
 
 # ${src}/configure honors CONFIG_SHELL
 export CONFIG_SHELL="${bash_program}"
@@ -99,4 +131,5 @@ head -5 ${src2}/configure
 
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
 
+# save edited source
 (cd ${src2} && (tar cvf - . | tar xf - -C ${source}))
