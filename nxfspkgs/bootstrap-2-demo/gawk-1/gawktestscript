@@ -1,0 +1,7 @@
+BEGIN {} END {
+  if (system("test -f foo") != 0) {
+    print "Cannot find foo"
+  } else {
+    print "Foo is a file"
+  }
+}
