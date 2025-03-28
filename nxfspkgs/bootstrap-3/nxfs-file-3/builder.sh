@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo "binutils=${binutils}"
 echo "coreutils=${coreutils}"
 echo "tar=${tar}"
 echo "bash=${bash}"
@@ -10,10 +9,9 @@ echo "grep=${grep}"
 echo "sed=${sed}"
 echo "findutils=${findutils}"
 echo "diffutils=${diffutils}"
-echo "gcc_wrapper=${gcc_wrapper}"
 
-echo "toolchain=${toolchain}"
-echo "sysroot=${sysroot}"
+echo "gcc_wrapper=${gcc_wrapper}"
+echo "binutils=${binutils}"
 
 echo "src=${src}"
 echo "target_tuple=${target_tuple}"

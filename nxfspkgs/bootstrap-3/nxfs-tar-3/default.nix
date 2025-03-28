@@ -1,48 +1,74 @@
+{
+  # nxfsenv   :: { mkDerivation :: attrs -> derivation,
+  #                gcc-wrapper :: derivation  (also as gcc_wrapper)
+  #                binutils    :: derivation
+  #                gawk        :: derivation
+  #                gnumake     :: derivation
+  #                gnugrep     :: derivation
+  #                gnutar      :: derivation
+  #                gnused      :: derivation
+  #                coreutils   :: derivation
+  #                bash        :: derivation
+  #                glibc       :: derivation
+  #                nxfs-defs   :: { target_tuple :: string }
+  #              }
+  nxfsenv,
+  # nxfsenv-3 :: {
+  #                gnugrep     :: derivation
+  #                gnused      :: derivation
+  #                findutils   :: derivation
+  #                diffutils   :: derivation
+  #              }
+  nxfsenv-3,
+} :
+
 let
-  nxfs-tar-2         = import ../../bootstrap-2/nxfs-tar-2/default.nix;
-  nxfs-gnumake-2     = import ../../bootstrap-2/nxfs-gnumake-2/default.nix;
-  nxfs-gawk-2        = import ../../bootstrap-2/nxfs-gawk-2/default.nix;
-
-  nxfs-grep-3        = import ../nxfs-grep-3/default.nix;
-  nxfs-sed-3         = import ../nxfs-sed-3/default.nix;
-  nxfs-findutils-3   = import ../nxfs-findutils-3/default.nix;
-  nxfs-diffutils-3   = import ../nxfs-diffutils-3/default.nix;
-  nxfs-gcc-wrapper-2 = import ../../bootstrap-2/nxfs-gcc-wrapper-2/default.nix;
-  nxfs-glibc-stage1-2 = import ../../bootstrap-2/nxfs-glibc-stage1-2/default.nix;
-  nxfs-binutils-2    = import ../../bootstrap-2/nxfs-binutils-2/default.nix;
-
-  nxfs-coreutils-2   = import ../../bootstrap-2/nxfs-coreutils-2/default.nix;
-  nxfs-bash-2        = import ../../bootstrap-2/nxfs-bash-2/default.nix;
-
-  nxfs-defs          = import ../nxfs-defs.nix;
+  version = "1.35";
 in
 
-derivation {
+nxfsenv.mkDerivation {
   name         = "nxfs-tar-3";
+  version      = version;
 
-  system       = builtins.currentSystem;
-
-  bash         = nxfs-bash-2;
-  coreutils    = nxfs-coreutils-2;
-  tar          = nxfs-tar-2;
-
-  gnumake      = nxfs-gnumake-2;
-  gawk         = nxfs-gawk-2;
-  grep         = nxfs-grep-3;
-  sed          = nxfs-sed-3;
-  findutils    = nxfs-findutils-3;
-  diffutils    = nxfs-diffutils-3;
-  gcc_wrapper  = nxfs-gcc-wrapper-2;
-  glibc        = nxfs-glibc-stage1-2;
-  binutils     = nxfs-binutils-2;
-
-  builder      = "${nxfs-bash-2}/bin/bash";
-  args         = [ ./builder.sh ];
-
-  #src         = nxfs-sed-source;
-  src          = builtins.fetchTarball { name = "tar-1.35-source";
-                                         url = "https://ftp.gnu.org/gnu/tar/tar-1.35.tar.xz";
+  src          = builtins.fetchTarball { name = "tar-${version}-source";
+                                         url = "https://ftp.gnu.org/gnu/tar/tar-${version}.tar.xz";
                                          sha256 = "0cmdg6gq9v04631lfb98xg45la1b0y9r5wyspn97ri11krdlyfqz"; };
 
-  target_tuple = nxfs-defs.target_tuple;
+  buildPhase = ''
+    set -e
+
+    src2=$TMPDIR/src2
+    builddir=$TMPDIR/build
+
+    mkdir -p $src2
+    mkdir -p $builddir
+
+    # 1. copy source tree to temporary directory,
+    #
+    (cd $src && (tar cf - . | tar xf - -C $src2))
+
+    bash_program=$bash/bin/bash
+
+    # $src/configure honors CONFIG_SHELL
+    export CONFIG_SHELL="$bash_program"
+
+    (cd $builddir && $bash_program $src2/configure --prefix=$out CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && make SHELL=$CONFIG_SHELL)
+    (cd $builddir && make install SHELL=$CONFIG_SHELL)
+  '';
+
+  buildInputs = [
+    nxfsenv.gcc_wrapper
+    nxfsenv.binutils
+    nxfsenv.gawk
+    nxfsenv.gnumake
+    nxfsenv.gnutar
+    nxfsenv-3.gnugrep
+    nxfsenv-3.gnused
+    nxfsenv-3.findutils
+    nxfsenv-3.diffutils
+    nxfsenv.coreutils
+    nxfsenv.bash
+    nxfsenv.glibc
+  ];
 }

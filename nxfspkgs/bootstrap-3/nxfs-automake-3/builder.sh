@@ -28,10 +28,10 @@ export LD_LIBRARY_PATH=${libxcrypt}/lib
 
 
 src2=${TMPDIR}/src2
-# perl builds in source tree
-builddir=${src2}
+builddir=${TMPDIR}/build
 
 mkdir -p ${src2}
+mkdir -p ${builddir}
 
 mkdir ${out}
 
@@ -62,9 +62,6 @@ export CONFIG_SHELL="${bash_program}"
 # do need to give --host and --build arguments to configure,
 # since we're using a cross compiler.
 
-version_major_minor=5.40
-perlout=${out}/lib/perl5/${version_major_minor}
-
 cd ${builddir}
 
 CCFLAGS=
@@ -75,9 +72,10 @@ LDFLAGS="-Wl,-enable-new-dtags"
 #
 # removing -Dcpp=nxfs-gcc (why did we need this)
 #
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple})
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} CC=nxfs-gcc CXX=nxfs-g++ LDFLAGS="${LDFLAGS}")
 
-make SHELL=${CONFIG_SHELL}
+(cd ${builddir} && sed -i -e 's:#! */bin/sh:#! '${bash_program}':' ./pre-inst-env)
 
-make install SHELL=${CONFIG_SHELL}
+(cd ${builddir} && make SHELL=${CONFIG_SHELL})
 
+(cd ${builddir} && make install SHELL=${CONFIG_SHELL})

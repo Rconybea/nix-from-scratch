@@ -19,11 +19,8 @@ echo "gawk=${gawk}"
 echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
-#echo "texinfo=${texinfo}";
 echo "glibc=${glibc}"
 echo "sysroot=${sysroot}"
-#echo "mkdir=${mkdir}"
-#echo "head=${head}"
 echo "bash=${bash}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
@@ -42,8 +39,6 @@ export PATH=${sed}/bin:$PATH
 export PATH=${grep}/bin:$PATH
 export PATH=${gawk}/bin:$PATH
 export PATH=${gnumake}/bin:$PATH
-#export PATH=${toolchain}/x86_64-pc-linux-gnu/bin:$PATH
-#export PATH=${toolchain}/bin:$PATH
 export PATH=${gcc_wrapper}/bin:$PATH
 export PATH=${binutils}/bin:$PATH
 export PATH=${findutils}/bin:$PATH
@@ -60,6 +55,7 @@ mkdir -p ${src2}
 mkdir -p ${builddir}
 
 mkdir ${out}
+mkdir ${source}
 
 bash_program=${bash}/bin/bash
 
@@ -113,22 +109,21 @@ export CFLAGS="-idirafter ${glibc}/include"
 # TODO: -O2
 
 LDFLAGS="-B${glibc}/lib"
-#LDFLAGS="${LDFLAGS} -B${sysroot}/lib"
 LDFLAGS="${LDFLAGS} -L${flex}/lib -L${mpc}/lib -L${mpfr}/lib -L${gmp}/lib"
 LDFLAGS="${LDFLAGS} -Wl,-rpath,${mpc}/lib -Wl,-rpath,${mpfr}/lib -Wl,-rpath,${gmp}/lib"
 LDFLAGS="${LDFLAGS} -Wl,-rpath,${glibc}/lib"
-#LDFLAGS="${LDFLAGS} -Wl,-rpath,${sysroot}/lib"
 export LDFLAGS
 
-# NOTE: nxfs-gcc automatically inserts flags 
-# 
+# NOTE: nxfs-gcc automatically inserts flags
+#
 #          -Wl,--rpath=${NXFS_SYSROOT_DIR}/lib -Wl,--dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
-#       We still need them explictly here
+#       But still need them explictly here
 #
 #
 # this builds:
-(cd ${builddir} && ${bash_program} ${src2}/libstdc++-v3/configure --prefix=${out} --with-gxx-include-dir=${out}/x86_64-pc-linux-gnu/include/c++/14.2.0 --host=${target_tuple} --build=${target_tuple} --disable-nls --disable-multilib --disable-libstdcxx-pch CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
-
+(cd ${builddir} && ${bash_program} ${src2}/libstdc++-v3/configure --prefix=${out} --with-gxx-include-dir=${out}/${target_tuple}/include/c++/${version} --host=${target_tuple} --build=${target_tuple} --disable-nls --disable-multilib --enable-libstdcxx-pch CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
+
+(cd ${src2} && (tar cf - . | tar xf - -C ${source}))

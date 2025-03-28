@@ -1,48 +1,96 @@
+{
+  # nxfsenv   :: { mkDerivation :: attrs -> derivation,
+  #                gcc-wrapper :: derivation  (also as gcc_wrapper)
+  #                binutils    :: derivation
+  #                gawk        :: derivation
+  #                gnumake     :: derivation
+  #                gnugrep     :: derivation
+  #                gnutar      :: derivation
+  #                gnused      :: derivation
+  #                coreutils   :: derivation
+  #                bash        :: derivation
+  #                glibc       :: derivation
+  #                nxfs-defs   :: { target_tuple :: string }
+  #              }
+  nxfsenv,
+  # nxfsenv-3 :: {
+  #                gawk        :: derivation
+  #                bash        :: derivation
+  #                gnutar      :: derivation
+  #                gnugrep     :: derivation
+  #                gnused      :: derivation
+  #                findutils   :: derivation
+  #                diffutils   :: derivation
+  #              }
+  nxfsenv-3,
+} :
+
 let
-  nxfs-gnumake-2     = import ../../bootstrap-2/nxfs-gnumake-2/default.nix;
-
-  nxfs-gawk-3        = import ../nxfs-gawk-3/default.nix;
-  nxfs-grep-3        = import ../nxfs-grep-3/default.nix;
-  nxfs-sed-3         = import ../nxfs-sed-3/default.nix;
-  nxfs-findutils-3   = import ../nxfs-findutils-3/default.nix;
-  nxfs-diffutils-3   = import ../nxfs-diffutils-3/default.nix;
-  nxfs-gcc-wrapper-2 = import ../../bootstrap-2/nxfs-gcc-wrapper-2/default.nix;
-  nxfs-glibc-stage1-2 = import ../../bootstrap-2/nxfs-glibc-stage1-2/default.nix;
-  nxfs-binutils-2    = import ../../bootstrap-2/nxfs-binutils-2/default.nix;
-
-  nxfs-tar-3         = import ../nxfs-tar-3/default.nix;
-  nxfs-coreutils-2   = import ../../bootstrap-2/nxfs-coreutils-2/default.nix;
-  nxfs-bash-3        = import ../nxfs-bash-3/default.nix;
-
-  nxfs-defs          = import ../nxfs-defs.nix;
+  version = "4.4.1";
 in
 
-derivation {
+nxfsenv.mkDerivation {
   name         = "nxfs-gnumake-3";
 
-  system       = builtins.currentSystem;
-
-  gnumake      = nxfs-gnumake-2;
-  bash         = nxfs-bash-3;
-  coreutils    = nxfs-coreutils-2;
-  tar          = nxfs-tar-3;
-
-  gawk         = nxfs-gawk-3;
-  grep         = nxfs-grep-3;
-  sed          = nxfs-sed-3;
-  findutils    = nxfs-findutils-3;
-  diffutils    = nxfs-diffutils-3;
-  gcc_wrapper  = nxfs-gcc-wrapper-2;
-  glibc        = nxfs-glibc-stage1-2;
-  binutils     = nxfs-binutils-2;
-
-  builder      = "${nxfs-bash-3}/bin/bash";
-  args         = [ ./builder.sh ];
-
-  src          = builtins.fetchTarball { name = "make-4.4.1-source";
-                                         url = "https://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz";
+  src          = builtins.fetchTarball { name = "make-${version}-source";
+                                         url = "https://ftp.gnu.org/gnu/make/make-${version}.tar.gz";
                                          sha256 = "141z25axp7iz11sqci8c312zlmcmfy8bpyjpf0b0gfi8ri3kna7q";
                                        };
 
-  target_tuple = nxfs-defs.target_tuple;
+  buildPhase = ''
+    set -e
+
+    src2=$TMPDIR/src2
+    builddir=$TMPDIR/build
+
+    mkdir -p $src2
+    mkdir -p $builddir
+
+    # 1. copy source tree to temporary directory,
+    #
+    (cd $src && (tar cf - . | tar xf - -C $src2))
+
+    # 2. substitute nix-store path-to-bash for /bin/sh.
+    #
+    #
+    chmod -R +w $src2
+
+    bash_program=$bash/bin/bash
+    # Must skip:
+    #   .m4 and .in files (assume they trigger re-running autoconf)
+    #   test/ files
+    #
+    #sed -i -e "s:/bin/sh:$bash_program:g" $src2/configure #$src2/build-aux/*
+
+    # 1. Replace
+    #     const char *default_shell = "/bin/sh";
+    #   with
+    #     const char *default_shell = "$path/to/nix/store/$somehash/bin/bash";
+    #
+    #   Need this so that the gnu extension $(shell ..) works from within nix-build !
+    #   Building bootstrap-2-demo/gnumake-1 verifies
+    #
+    (cd $src2 && sed -i -e 's:"/bin/sh":"'$bash_program'":' ./src/job.c)
+
+    # $src/configure honors CONFIG_SHELL
+    export CONFIG_SHELL="$bash_program"
+
+    (cd $builddir && $bash_program $src2/configure --prefix=$out --without-guile CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && make SHELL=$CONFIG_SHELL)
+    (cd $builddir && make install SHELL=$CONFIG_SHELL)
+  '';
+
+  buildInputs = [ nxfsenv.gcc_wrapper
+                  nxfsenv.binutils
+                  nxfsenv.gnumake
+                  nxfsenv-3.gawk
+                  nxfsenv-3.gnutar
+                  nxfsenv-3.gnugrep
+                  nxfsenv-3.gnused
+                  nxfsenv-3.findutils
+                  nxfsenv-3.diffutils
+                  nxfsenv.coreutils
+                  nxfsenv-3.bash
+                  nxfsenv.glibc
+                ];
 }

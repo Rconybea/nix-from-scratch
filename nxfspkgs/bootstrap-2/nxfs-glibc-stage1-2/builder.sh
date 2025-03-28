@@ -124,17 +124,18 @@ popd
 # note: the 'locale' program does not honor this.  However setlocale() does.
 export LOCPATH=${locale_archive}/lib/locale
 export CONFIG_SHELL="${bash_program}"
+export CFLAGS=${CFLAGS:-}
 
 pushd ${builddir}
 
 echo "rootsbindir=${out}/sbin" > configparms
 
-find ${src2} -name '*.awk' | xargs --replace=xx sed -i -e 's:LC_ALL=C sort -u:lc-all-sort-wrapper -u:' xx
-find ${src2} -name '*.awk' | xargs --replace=xx sed -i -e 's:sort -t:'${sort_program}' -t:' -e 's:sort -u:'${sort_program}' -u:' xx
-(find ${src2} -name '*.awk' | xargs --replace=xx grep sort xx ) || true
+find ${src2} -name '*.awk' | xargs --replace={} sed -i -e 's:LC_ALL=C sort -u:lc-all-sort-wrapper -u:' {}
+find ${src2} -name '*.awk' | xargs --replace={} sed -i -e 's:sort -t:'${sort_program}' -t:' -e 's:sort -u:'${sort_program}' -u:' {}
+(find ${src2} -name '*.awk' | xargs --replace={} grep sort {} ) || true
 
 # headers from toolchain
-#/usr/bin/strace -f bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-kernel=4.19 --with-headers=${sysroot}/usr/include --disable-nscd libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+#/usr/bin/strace -f bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-kernel=4.19 --with-headers=${sysroot}/usr/include --disable-nscd libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS}"
 #
 # libc_cv_complocaledir: this sets compiled-in default locale directory.
 # We need something that comes from the nix store so that basic locale queries

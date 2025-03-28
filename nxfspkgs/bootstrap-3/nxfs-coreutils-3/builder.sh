@@ -1,8 +1,5 @@
 #!/bin/bash
 
-set -e
-set -x
-
 echo "gcc_wrapper=${gcc_wrapper}"
 echo "glibc=${glibc}"
 echo "gnumake=${gnumake}"
@@ -18,16 +15,18 @@ echo "src=${src}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
+set -e
+set -x
+
 # 1. ${gcc_wrapper}/bin/x86_64-pc-linux-gnu-{gcc,g++} builds viable executables.
 # 2. ${toolchain}/bin/x86_64-pc-linux-gnu-gcc can build executables,
 #    but they won't run unless we pass special linker flags
 # 3. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
 # 4. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
 #
-export PATH="${gcc_wrapper}/bin:${glibc}/bin:${binutils}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
+export PATH="${gcc_wrapper}/bin:${glibc}/bin:${binutils}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
 
 src2=${src}
-#src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
 
 mkdir -p ${src2}
@@ -64,7 +63,7 @@ export CONFIG_SHELL="${bash_program}"
 # do need to give --host and --build arguments to configure,
 # since we're using a cross compiler.
 
-(cd ${builddir} && bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-install-program=hostname --enable-no-install-program=kill,uptime CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+(cd ${builddir} && bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-install-program=hostname --enable-no-install-program=kill,uptime CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 

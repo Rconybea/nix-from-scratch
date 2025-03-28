@@ -6,7 +6,7 @@ let
   nxfs-tar-2         = import ../nxfs-tar-2/default.nix;
   nxfs-gnumake-2     = import ../nxfs-gnumake-2/default.nix;
   nxfs-gawk-2        = import ../nxfs-gawk-2/default.nix;
-  nxfs-system-2      = import ../nxfs-system-2/default.nix;
+  nxfs-popen-2       = import ../nxfs-popen-2/default.nix;
   nxfs-grep-2        = import ../nxfs-grep-2/default.nix;
   nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
   nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;
@@ -30,7 +30,7 @@ derivation {
   tar          = nxfs-tar-2;
   gnumake      = nxfs-gnumake-2;
   gawk         = nxfs-gawk-2;
-  nxfs_system  = nxfs-system-2;
+  popen        = nxfs-popen-2;
   grep         = nxfs-grep-2;
   gnused       = nxfs-sed-2;
   sed          = nxfs-sed-2;

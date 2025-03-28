@@ -1,29 +1,34 @@
 let
-  nxfs-binutils-2    = import ../nxfs-binutils-2/default.nix;
-  nxfs-mpc-2         = import ../nxfs-mpc-2/default.nix;
-  nxfs-mpfr-2        = import ../nxfs-mpfr-2/default.nix;
-  nxfs-gmp-2         = import ../nxfs-gmp-2/default.nix;
-  nxfs-bison-2       = import ../nxfs-bison-2/default.nix;
-  nxfs-flex-2        = import ../nxfs-flex-2/default.nix;
-  nxfs-texinfo-2     = import ../nxfs-texinfo-2/default.nix;
-  nxfs-m4-2          = import ../nxfs-m4-2/default.nix;
-  nxfs-gnumake-2     = import ../nxfs-gnumake-2/default.nix;
-  nxfs-coreutils-2   = import ../nxfs-coreutils-2/default.nix;
-  nxfs-bash-2        = import ../nxfs-bash-2/default.nix;
-  nxfs-tar-2         = import ../nxfs-tar-2/default.nix;
-  nxfs-gawk-2        = import ../nxfs-gawk-2/default.nix;
-  nxfs-grep-2        = import ../nxfs-grep-2/default.nix;
-  nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
-  nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;
-  nxfs-diffutils-2   = import ../nxfs-diffutils-2/default.nix;
-  nxfs-gcc-stage2-wrapper-2 = import ../nxfs-gcc-stage2-wrapper-2/default.nix;
+  nxfs-binutils-2           = import ../nxfs-binutils-2;
+  nxfs-mpc-2                = import ../nxfs-mpc-2;
+  nxfs-mpfr-2               = import ../nxfs-mpfr-2;
+  nxfs-gmp-2                = import ../nxfs-gmp-2;
+  nxfs-bison-2              = import ../nxfs-bison-2;
+  nxfs-flex-2               = import ../nxfs-flex-2;
+  nxfs-texinfo-2            = import ../nxfs-texinfo-2;
+  nxfs-m4-2                 = import ../nxfs-m4-2;
+  nxfs-gnumake-2            = import ../nxfs-gnumake-2;
+  nxfs-coreutils-2          = import ../nxfs-coreutils-2;
+  nxfs-bash-2               = import ../nxfs-bash-2;
+  nxfs-tar-2                = import ../nxfs-tar-2;
+  nxfs-gawk-2               = import ../nxfs-gawk-2;
+  nxfs-grep-2               = import ../nxfs-grep-2;
+  nxfs-sed-2                = import ../nxfs-sed-2;
+  nxfs-findutils-2          = import ../nxfs-findutils-2;
+  nxfs-diffutils-2          = import ../nxfs-diffutils-2;
 
-  nxfs-glibc-stage1-2 = import ../nxfs-glibc-stage1-2/default.nix;
+  nxfs-gcc-stage2-wrapper-2 = import ../nxfs-gcc-stage2-wrapper-2;
+  nxfs-gcc-stage1-2         = import ../nxfs-gcc-stage1-2;
+  nxfs-glibc-stage1-2       = import ../nxfs-glibc-stage1-2;
 
-  nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
+  nxfs-toolchain-1          = import ../../bootstrap-1/nxfs-toolchain-1;
+  nxfs-sysroot-1            = import ../../bootstrap-1/nxfs-sysroot-1;
 
-  nxfs-defs = import ../nxfs-defs.nix;
+  nxfs-defs                 = import ../nxfs-defs.nix;
+in
+
+let
+  version = nxfs-gcc-stage1-2.version;
 in
 
 # PLAN
@@ -34,6 +39,7 @@ in
 #
 derivation {
   name         = "nxfs-libstdcxx-stage2-2";
+  version      = version;
 
   system       = builtins.currentSystem;
 
@@ -64,10 +70,12 @@ derivation {
   builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];
 
-  src          = builtins.fetchTarball { name = "gcc-14.2.0-source";
-                                         url = "https://ftp.gnu.org/gnu/gcc/gcc-14.2.0/gcc-14.2.0.tar.xz";
+  src          = builtins.fetchTarball { name = "gcc-${version}-source";
+                                         url = "https://ftp.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz";
                                          sha256 = "1bdp6l9732316ylpzxnamwpn08kpk91h7cmr3h1rgm3wnkfgxzh9";
                                        };
+
+  outputs      = [ "out" "source" ];
 
   target_tuple = nxfs-defs.target_tuple;
 }

@@ -1,0 +1,30 @@
+Provide special versions of posix functions system(), popen(), pclose().
+
+The posix versions don't work from inside nix-build,
+because (as required by posix) they hardwire /bin/sh, and ignore PATH.
+
+Use templates here to kitbash sources for programs that rely on the above posix functions,
+after expanding template variable:
+
+    @bash_path@ -> /path/to/nix/store/bash
+
+And substitute for posix functions:
+
+    system() -> nxfs_system()
+    popen()  -> nxfs_popen()
+    pclose() -> nxfs_pclose()
+
+Some packages that rely on these:
+
+    nxfs-popen-2:    expanded to use bash from nxfs-bash-2.
+    nxfs-gnumake-2:  use nxfs_system() to implement gnumake $(shell ..) feature
+    nxfs-gawk-2:     use nxfs_popen()/nxfs_pclose() to implement awk '|' feature
+    nxfs-python-2:   use nxfs_system()/nxfs_popen()/nxfs_pclose() to implement python os wrappers
+
+See also nxfs-gnumake-2, need similar carve-out for gnumake $(shell ...) feature;
+but we don't rely on nxfs-popen-template-2 there
+
+We need these features to build nxfs-glibc-stage1-2. This prepares glibc modified to contain
+nix-ified system() and popen(), that refer to nix-store bash instead of /bin/sh.
+
+Packages built with nxfs-glibc-stage1-2 are not expected to need the special function versions provided here.

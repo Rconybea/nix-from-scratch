@@ -11,7 +11,6 @@ echo "sed=${sed}"
 echo "findutils=${findutils}"
 echo "diffutils=${diffutils}"
 echo "gcc_wrapper=${gcc_wrapper}"
-#echo "sysroot=${sysroot}"
 echo "src=${src}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
@@ -63,4 +62,3 @@ export CONFIG_SHELL="${bash_program}"
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
-

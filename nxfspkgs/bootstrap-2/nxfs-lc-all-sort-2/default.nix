@@ -10,6 +10,14 @@ derivation {
   name = "gcc-wrapper";
   system = builtins.currentSystem;
 
+  # Shim for glibc build.
+  # Provides script 'bin/lc-all-sort';
+  # lc-all-sort invokes 'sort' (from coreutils) in environment with LC_ALL=C.
+  #
+  # Out-of-the-box glibc build invokes 'LC_ALL=C sort' in context that assumes
+  # sort resolves to /bin/sort.
+  # In nix build /bin isn't available, so we need a workaround.
+
   bash = nxfs-bash-1;
   sed = nxfs-sed-1;
   toolchain = nxfs-toolchain-1;

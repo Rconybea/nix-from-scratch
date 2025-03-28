@@ -1,0 +1,8 @@
+Goal
+
+Provide a substitute for nixpkgs stdenv,
+but built on bootstrap from the nix-from-scratch toolchain.
+
+nixpkgs stdenv derivation looks like:
+just a setup script, that begins by setting $initialPath and $defaultNativeBuildInputs to
+stdenv ingredients.

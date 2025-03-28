@@ -27,10 +27,10 @@ export LD_LIBRARY_PATH=${libxcrypt}/lib
 
 
 src2=${TMPDIR}/src2
-# perl builds in source tree
-builddir=${src2}
+builddir=${TMPDIR}/build
 
 mkdir -p ${src2}
+mkdir -p ${builddir}
 
 mkdir ${out}
 
@@ -53,17 +53,6 @@ bash_program=${bash}/bin/bash
 # ${src}/configure honors CONFIG_SHELL
 export CONFIG_SHELL="${bash_program}"
 
-# 1.
-# we shouldn't need special compiler/linker instructions,
-# since stage-1 toolchain "knows where it lives"
-#
-# 2.
-# do need to give --host and --build arguments to configure,
-# since we're using a cross compiler.
-
-version_major_minor=5.40
-perlout=${out}/lib/perl5/${version_major_minor}
-
 cd ${builddir}
 
 CCFLAGS=
@@ -79,4 +68,3 @@ LDFLAGS="-Wl,-enable-new-dtags"
 make SHELL=${CONFIG_SHELL}
 
 make install SHELL=${CONFIG_SHELL}
-

@@ -24,6 +24,8 @@ let
   nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
   nxfs-defs = import ../nxfs-defs.nix;
+
+  version = "14.2.0";
 in
 
 # PLAN
@@ -34,6 +36,7 @@ in
 #
 derivation {
   name         = "nxfs-gcc-stage1-2";
+  version      = version;
 
   system       = builtins.currentSystem;
 
@@ -64,10 +67,12 @@ derivation {
   builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];
 
-  src          = builtins.fetchTarball { name = "gcc-14.2.0-source";
-                                         url = "https://ftp.gnu.org/gnu/gcc/gcc-14.2.0/gcc-14.2.0.tar.xz";
+  src          = builtins.fetchTarball { name = "gcc-${version}-source";
+                                         url = "https://ftp.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz";
                                          sha256 = "1bdp6l9732316ylpzxnamwpn08kpk91h7cmr3h1rgm3wnkfgxzh9";
                                        };
+
+  outputs      = [ "out" "source" ];
 
   target_tuple = nxfs-defs.target_tuple;
 }

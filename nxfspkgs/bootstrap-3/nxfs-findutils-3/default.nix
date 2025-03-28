@@ -1,43 +1,79 @@
-let
-  nxfs-diffutils-3   = import ../nxfs-diffutils-3/default.nix;
-  nxfs-gcc-wrapper-2 = import ../../bootstrap-2/nxfs-gcc-wrapper-2/default.nix;
-  nxfs-glibc-stage1-2 = import ../../bootstrap-2/nxfs-glibc-stage1-2/default.nix;
+{
+  # expect this to be final env from bootstrap-2
+  nxfsenv,
+  # packages from bootstrap stage 3
+  nxfsenv-3,
+} :
 
-  nxfs-sed-2         = import ../../bootstrap-2/nxfs-sed-2/default.nix;
-  nxfs-grep-2        = import ../../bootstrap-2/nxfs-grep-2/default.nix;
-  nxfs-gawk-2        = import ../../bootstrap-2/nxfs-gawk-2/default.nix;
-  nxfs-gnumake-2     = import ../../bootstrap-2/nxfs-gnumake-2/default.nix;
-  nxfs-tar-2         = import ../../bootstrap-2/nxfs-tar-2/default.nix;
-  nxfs-bash-2        = import ../../bootstrap-2/nxfs-bash-2/default.nix;
-  nxfs-coreutils-2   = import ../../bootstrap-2/nxfs-coreutils-2/default.nix;
-  nxfs-binutils-2     = import ../../bootstrap-2/nxfs-binutils-2/default.nix;
-  nxfs-defs          = import ../nxfs-defs.nix;
+let
+  version = "4.10.0";
 in
 
-
-derivation {
+nxfsenv.mkDerivation {
   name         = "nxfs-findutils-3";
+  version      = version;
 
-  system       = builtins.currentSystem;
-
-  coreutils    = nxfs-coreutils-2;
-  bash         = nxfs-bash-2;
-  tar          = nxfs-tar-2;
-  gnumake      = nxfs-gnumake-2;
-  gawk         = nxfs-gawk-2;
-  sed          = nxfs-sed-2;
-  grep         = nxfs-grep-2;
-  diffutils    = nxfs-diffutils-3;
-  gcc_wrapper  = nxfs-gcc-wrapper-2;
-  binutils     = nxfs-binutils-2;
-  glibc        = nxfs-glibc-stage1-2;
-
-  builder      = "${nxfs-bash-2}/bin/bash";
-  args         = [ ./builder.sh ];
-
-  src          = builtins.fetchTarball { name = "findutils-4.10.0-source";
-                                         url = "https://ftp.gnu.org/gnu/findutils/findutils-4.10.0.tar.xz";
+  src          = builtins.fetchTarball { name = "findutils-${version}-source";
+                                         url = "https://ftp.gnu.org/gnu/findutils/findutils-${version}.tar.xz";
                                          sha256 = "17psmb481vpq03lmi8l4r4nm99v4yg3ri5bn4gyy0z1zzi63ywan"; };
 
-  target_tuple = nxfs-defs.target_tuple;
+  buildPhase = ''
+    set -e
+
+    src2=$TMPDIR/src2
+    builddir=$TMPDIR/build
+
+    mkdir -p $src2
+    mkdir -p $builddir
+
+    # this might get us past the build.
+    # Won't work for invoking `locate`, because location here will
+    # be readonly downstream
+    #
+    mkdir -p $out/var/lib/locate
+
+    bash_program=$bash/bin/bash
+
+    # 1. copy source tree to temporary directory,
+    #
+    (cd $src && (tar cf - . | tar xf - -C $src2))
+
+    # 2. substitute nix-store path-to-bash for /bin/sh.
+    #
+    #
+    chmod -R +w $src2
+    sed -i "1s:#!.*/bin/sh:#!$bash_program:" $src2/build-aux/mkinstalldirs
+    chmod -R -w $src2
+
+    # $src/configure honors CONFIG_SHELL
+    export CONFIG_SHELL="$bash_program"
+
+    # 1.
+    # we shouldn't need special compiler/linker instructions,
+    # since stage-1 toolchain "knows where it lives"
+    #
+    # 2.
+    # do need to give --host and --build arguments to configure,
+    # since we're using a cross compiler.
+
+    (cd $builddir && $bash_program $src2/configure --prefix=$out --localstatedir=$out/var/lib/locate CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+
+    (cd $builddir && make SHELL=$CONFIG_SHELL)
+
+    (cd $builddir && make install SHELL=$CONFIG_SHELL)
+  '';
+
+  buildInputs = [
+    nxfsenv-3.diffutils
+    nxfsenv.gcc_wrapper
+    nxfsenv.binutils
+    nxfsenv.gnumake
+    nxfsenv.gawk
+    nxfsenv.gnutar
+    nxfsenv.gnugrep
+    nxfsenv.gnused
+    nxfsenv.coreutils
+    nxfsenv.bash
+    nxfsenv.glibc
+  ];
 }

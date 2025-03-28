@@ -1,0 +1,6 @@
+1. hello-b-1
+
+   Preqreq: bootstrap complete through stage 1.
+
+    $ cd nix-from-scratch/nxfspkgs
+    $ nix-build -A bootstrap-1-demo.hello-b-1

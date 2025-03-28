@@ -5,7 +5,7 @@ echo "toolchain=${toolchain}"
 echo "findutils=${findutils}"
 echo "gnumake=${gnumake}"
 echo "gawk=${gawk}"
-echo "nxfs_system=${nxfs_system}"
+echo "popen=${popen}"
 echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
@@ -68,7 +68,7 @@ sed -i -e '/Legacy wrapper/ i\
 static int nxfs_system(const char* line);\
 ' ${dest_c}
 
-nxfs_system_src=${nxfs_system}/src/nxfs_system.c
+nxfs_system_src=${popen}/src/nxfs_system.c
 
 # use nxfs_system() instead of glibc system() to implement python's system() builtin
 #

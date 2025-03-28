@@ -65,6 +65,8 @@ mkdir -p ${src2}
 mkdir -p ${builddir}
 
 mkdir ${out}
+mkdir -p ${out}/${target_tuple}/lib
+mkdir ${source}
 
 bash_program=${bash}/bin/bash
 
@@ -123,6 +125,29 @@ LDFLAGS="${LDFLAGS} -Wl,-rpath,${mpc}/lib -Wl,-rpath,${mpfr}/lib -Wl,-rpath,${gm
 LDFLAGS="${LDFLAGS} -Wl,-rpath,${glibc}/lib -Wl,-rpath,${sysroot}/lib"
 export LDFLAGS
 
+# The wrapper (nxfs-gcc) injects compiler- and linker- flags to pull in toolchain glibc.
+# This works for much of the gcc build,  however the additional flags are lost when the gcc
+# built invokes freshly-build xgcc to build support libraries like libgcc_s.so.
+# This fails, because ld (from nxfs-binutils-2) can't find {crti.o, crtn.o, -lc}.
+#
+# Two ways we might try to fix this:
+#
+# A. Introduce a binutils wrapper for ld that reintroduces the missing flags.
+#    So ld{w} ... would invoke
+#      ld{u} -rpath=${NXFS_SYSROOT_DIR}/lib -dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2 ...
+#
+# B. Notice that the xgcc invocation has -B flags for ${out}/${target_tuple}/lib under our own ${out} dir,
+#    so we could try to copy (or, symlink) {crti.o,crtn.o,libc.so,} from there
+#    I expect this is problematic for the same reason we can't just copy libc.so: it expects to know where it lives.
+#
+ln -s ${glibc}/lib/crti.o ${out}/${target_tuple}/lib/crti.o
+ln -s ${glibc}/lib/crtn.o ${out}/${target_tuple}/lib/crtn.o
+ln -s ${glibc}/lib/libc.so ${out}/${target_tuple}/lib/libc.so
+ln -s ${glibc}/lib/libc.so.6 ${out}/${target_tuple}/lib/libc.so.6
+# omitting: Mcrt1.o, Scrt1.o, crt1.o gcrt1.o grcrt1.o ld-linux-x86-64.so.2
+#           libBrokenLocale.so libBrokenLocale.so.1
+#           libanl.so libanl.so.1 etc.
+
 # glibc:
 #  - built by crosstools-ng gcc (adopted into nix store)
 #  - entirely from within nix, see nxfs-glibc-stage1-2
@@ -130,14 +155,22 @@ export LDFLAGS
 #
 #export NXFS_SYSROOT_DIR=${glibc}
 
-# NOTE: nxfs-gcc automatically inserts flags 
-# 
+# NOTE: nxfs-gcc automatically inserts flags
+#
 #          -Wl,--rpath=${NXFS_SYSROOT_DIR}/lib -Wl,--dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 #       We still need them explictly here
 #
-#
-# this builds:
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --disable-bootstrap --with-native-system-header-dir=${sysroot}/usr/include --disable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --disable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --disable-bootstrap --with-native-system-header-dir=${sysroot}/usr/include --enable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
+
+# gcc build doesn't
+
+# can now remove the sysroot debris we temporarily put into ${out}/${target_tuple}
+rm ${out}/${target_tuple}/lib/crti.o
+rm ${out}/${target_tuple}/lib/crtn.o
+rm ${out}/${target_tuple}/lib/libc.so
+rm ${out}/${target_tuple}/lib/libc.so.6
+
+(cd ${src2} && (tar cf - . | tar xf - -C ${source}))

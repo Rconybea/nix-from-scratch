@@ -1,31 +1,35 @@
 let
-  nxfs-patchelf-2    = import ../nxfs-patchelf-2/default.nix;                   # yes
-  nxfs-python-2      = import ../nxfs-python-2/default.nix;                     # yes
-  nxfs-bison-2       = import ../nxfs-bison-2/default.nix;                      # yes
-  nxfs-texinfo-2     = import ../nxfs-texinfo-2/default.nix;
-  nxfs-m4-2          = import ../nxfs-m4-2/default.nix;
-  nxfs-gzip-2        = import ../nxfs-gzip-2/default.nix;                       # yes
-  nxfs-gperf-2       = import ../nxfs-gperf-2/default.nix;                      # yes
-  nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;                # yes
-  nxfs-sed-2         = import ../nxfs-sed-2/default.nix;                        # yes
-  nxfs-grep-2        = import ../nxfs-grep-2/default.nix;                       # yes
-  nxfs-gawk-2        = import ../nxfs-gawk-2/default.nix;                       # yes
-  nxfs-gnumake-2     = import ../nxfs-gnumake-2/default.nix;                    # yes
-  nxfs-tar-2         = import ../nxfs-tar-2/default.nix;                        # yes
-  nxfs-patch-2       = import ../nxfs-patch-2/default.nix;                      # yes
-  nxfs-bash-2        = import ../nxfs-bash-2/default.nix;                       # yes
-  nxfs-diffutils-2   = import ../nxfs-diffutils-2/default.nix;
-  nxfs-findutils-2   = import ../nxfs-findutils-2/default.nix;                  # yes
-  nxfs-coreutils-2   = import ../nxfs-coreutils-2/default.nix;                  # yes
-  nxfs-binutils-2    = import ../nxfs-binutils-2/default.nix;
+  nxfs-patchelf-2          = import ../nxfs-patchelf-2/default.nix;                   # yes
+  nxfs-python-2            = import ../nxfs-python-2/default.nix;                     # yes
+  nxfs-bison-2             = import ../nxfs-bison-2/default.nix;                      # yes
+  nxfs-texinfo-2           = import ../nxfs-texinfo-2/default.nix;
+  nxfs-m4-2                = import ../nxfs-m4-2/default.nix;
+  nxfs-gzip-2              = import ../nxfs-gzip-2/default.nix;                       # yes
+  nxfs-gperf-2             = import ../nxfs-gperf-2/default.nix;                      # yes
+  nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix; # yes
+  nxfs-sed-2               = import ../nxfs-sed-2/default.nix;                        # yes
+  nxfs-grep-2              = import ../nxfs-grep-2/default.nix;                       # yes
+  nxfs-gawk-2              = import ../nxfs-gawk-2/default.nix;                       # yes
+  nxfs-gnumake-2           = import ../nxfs-gnumake-2/default.nix;                    # yes
+  nxfs-tar-2               = import ../nxfs-tar-2/default.nix;                        # yes
+  nxfs-patch-2             = import ../nxfs-patch-2/default.nix;                      # yes
+  nxfs-bash-2              = import ../nxfs-bash-2/default.nix;                       # yes
+  nxfs-diffutils-2         = import ../nxfs-diffutils-2/default.nix;
+  nxfs-findutils-2         = import ../nxfs-findutils-2/default.nix;                  # yes
+  nxfs-coreutils-2         = import ../nxfs-coreutils-2/default.nix;                  # yes
+  nxfs-binutils-2          = import ../nxfs-binutils-2/default.nix;
 
-  nxfs-lc-all-sort-2 = import ../nxfs-lc-all-sort-2/default.nix;
+  nxfs-lc-all-sort-2       = import ../nxfs-lc-all-sort-2/default.nix;
 
-  nxfs-locale-archive-1 = import ../../bootstrap-1/nxfs-locale-archive-1/default.nix; # yes
-  nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;   # yes
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;     # yes
+  nxfs-locale-archive-1    = import ../../bootstrap-1/nxfs-locale-archive-1/default.nix; # yes
+  nxfs-toolchain-1         = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;   # yes
+  nxfs-sysroot-1           = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;     # yes
 
-  nxfs-defs = import ../nxfs-defs.nix;
+  nxfs-defs                = import ../nxfs-defs.nix;
+in
+
+let
+  version = "2.40";
 in
 
 # PLAN
@@ -74,8 +78,8 @@ derivation {
   builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];
 
-  src          = builtins.fetchTarball { name = "glibc-2.40-source";
-                                         url = "https://ftp.gnu.org/gnu/glibc/glibc-2.40.tar.xz";
+  src          = builtins.fetchTarball { name = "glibc-${version}-source";
+                                         url = "https://ftp.gnu.org/gnu/glibc/glibc-${version}.tar.xz";
                                          sha256 = "0ncvsz2r8py3z0v52fqniz5lq5jy30h0m0xx41ah19nl1rznflkh";
                                        };
 

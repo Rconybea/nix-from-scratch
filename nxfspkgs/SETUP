@@ -1,0 +1,10 @@
+1. Need env vars:
+
+     PATH=$HOME/nixroot/bin:$HOME/nxfs-toolchain/bin:"${PATH}"
+     NIX_PATH=$HOME/proj/nix-from-scratch
+
+   With these setup, should be able to do:
+
+     $ nix repl
+     > import <nxfspkgs>
+     > (import <nxfspkgs>).build-support.autotools

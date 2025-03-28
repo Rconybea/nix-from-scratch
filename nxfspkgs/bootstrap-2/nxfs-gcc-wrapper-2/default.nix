@@ -1,7 +1,8 @@
 let
-  nxfs-gcc-stage1-2 = import ../nxfs-gcc-stage1-2/default.nix;
+  nxfs-gcc-stage2-2 = import ../nxfs-gcc-stage2-2;
+  #nxfs-gcc-stage1-2 = import ../nxfs-gcc-stage1-2/default.nix;
   nxfs-glibc-stage1-2 = import ../nxfs-glibc-stage1-2/default.nix;
-  nxfs-libstdcxx-stage2-2 = import ../nxfs-libstdcxx-stage2-2/default.nix;
+  #nxfs-libstdcxx-stage2-2 = import ../nxfs-libstdcxx-stage2-2/default.nix;
 
   nxfs-sed-1 = import ../../bootstrap-1/nxfs-sed-1/default.nix;
   nxfs-coreutils-1 = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
@@ -11,11 +12,11 @@ let
 in
 
 derivation {
-  name = "gcc-stage3-wrapper-2";
+  name = "gcc-wrapper-2";
   system = builtins.currentSystem;
 
   glibc = nxfs-glibc-stage1-2;
-  libstdcxx = nxfs-libstdcxx-stage2-2;
+  #libstdcxx = nxfs-libstdcxx-stage2-2;
   cxx_version = "14.2.0";
 
   bash = nxfs-bash-1;
@@ -30,7 +31,7 @@ derivation {
   gcc_wrapper_script = ./gcc-wrapper.sh;
   gxx_wrapper_script = ./gxx-wrapper.sh;
 
-  gcc = nxfs-gcc-stage1-2;
+  gcc = nxfs-gcc-stage2-2;
 
   target_tuple = nxfs-defs.target_tuple;
 }

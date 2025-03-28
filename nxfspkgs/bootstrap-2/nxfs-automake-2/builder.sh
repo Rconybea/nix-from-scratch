@@ -15,8 +15,6 @@ echo "sed=${sed}"
 echo "tar=${tar}"
 echo "coreutils=${coreutils}"
 echo "sysroot=${sysroot}"
-#echo "mkdir=${mkdir}"
-#echo "head=${head}"
 echo "bash=${bash}"
 echo "src=${src}"
 echo "target_tuple=${target_tuple}"
@@ -101,13 +99,6 @@ export CONFIG_SHELL="${bash_program}"
 
 (cd ${builddir} && sed -i -e 's:#! */bin/sh:#! '${bash_program}':' ./pre-inst-env)
 
-# debris from investigating build failure
-#(cd ${builddir} && sed -i -e '/\$(AM_V_GEN)\$(PERL) \$(srcdir)\/gen-testsuite-part/i placeholder$(AM_V_GEN)$(PERL) -Dtrace $(srcdir)/gen-testsuite-part --srcdir $(srcdir)' Makefile)
-#(cd ${builddir} && sed -i -e '/\$(AM_V_GEN)\$(PERL) \$(srcdir)\/gen-testsuite-part/i placeholderecho hiroly [$$(pwd)]' Makefile)
-#(cd ${builddir} && sed -i -e 's:^placeholder:\t:' Makefile)
-#(cd ${builddir} && grep -C 5 '/gen-testsuite-part' Makefile)
-
-#(cd ${builddir} && /usr/bin/strace -f -e trace=chdir make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})

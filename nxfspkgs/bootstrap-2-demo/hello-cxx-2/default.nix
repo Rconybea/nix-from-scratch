@@ -1,37 +1,40 @@
-let
-  nxfs-gcc-stage3-wrapper-2 = import ../../bootstrap-2/nxfs-gcc-stage3-wrapper-2/default.nix;
-  nxfs-gcc-stage1-2 = import ../../bootstrap-2/nxfs-gcc-stage1-2/default.nix;
-  nxfs-libstdcxx-stage2-2 = import ../../bootstrap-2/nxfs-libstdcxx-stage2-2/default.nix;
-  nxfs-binutils-2 = import ../../bootstrap-2/nxfs-binutils-2/default.nix;
-  nxfs-toolchain-1 = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-gawk-2 = import ../../bootstrap-2/nxfs-gawk-2/default.nix;
-  nxfs-coreutils-1 = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
-  nxfs-sed-1 = import ../../bootstrap-1/nxfs-sed-1/default.nix;
-  nxfs-bash-1 = import ../../bootstrap-1/nxfs-bash-1/default.nix;
-  nxfs-sysroot-1 = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
+{
+  # nxfsenv :: { mkDerivation :: attrs -> derivation,
+  #              gcc-wrapper :: derivation,
+  #              gcc         :: derivation,
+  #              binutils    :: derivation,
+  #              coreutils   :: derivation,
+  #              bash        :: derivation,
+  #              sysroot     :: derivation,
+  #              nxfs-defs   :: { target_tuple :: string }
+  #            }
+  nxfsenv,
+} :
 
-  mkdir = "${nxfs-coreutils-1}/bin/mkdir";
-  bash = "${nxfs-bash-1}/bin/bash";
+let
+  gcc_wrapper  = nxfsenv.gcc-wrapper;
+  bash         = nxfsenv.bash;
 
 in
 
-derivation {
+# see nxfspkgs/build-support/autotools/{default.nix, default-builder.sh, setup.sh}
+#
+nxfsenv.mkDerivation {
   name = "hello-cxx-2";
   system = builtins.currentSystem;
 
-  bash = bash;
+  # to entirely replace the default build script,
+  # uncomment 2 line below + provide local builder.sh
+  #   builder = bash_program;
+  #   args = [ ./builder.sh ];
 
-  builder = bash;
-  args = [ ./builder.sh ];
-
-  gcc_wrapper = nxfs-gcc-stage3-wrapper-2;
-  gcc = nxfs-gcc-stage1-2;
-  libstdcxx = nxfs-libstdcxx-stage2-2;
-  binutils = nxfs-binutils-2;
-  gawk = nxfs-gawk-2;
-  sed = nxfs-sed-1;
-  coreutils = nxfs-coreutils-1;
-  sysroot = nxfs-sysroot-1;
+  buildPhase = ''
+    gxx=nxfs-g++
+    mkdir -p $out/bin
+    $gxx -o $out/bin/hello $src -lstdc++
+  '';
 
   src = ./main.cpp;
+
+  buildInputs = with nxfsenv; [ gcc_wrapper gcc binutils coreutils ];
 }

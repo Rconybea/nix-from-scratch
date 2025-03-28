@@ -1,48 +1,98 @@
+{
+  # nxfsenv   :: { mkDerivation :: attrs -> derivation,
+  #                gcc-wrapper :: derivation  (also as gcc_wrapper)
+  #                binutils    :: derivation
+  #                perl        :: derivation
+  #                gawk        :: derivation
+  #                gnumake     :: derivation
+  #                gnugrep     :: derivation
+  #                gnutar      :: derivation
+  #                gnused      :: derivation
+  #                coreutils   :: derivation
+  #                bash        :: derivation
+  #                glibc       :: derivation
+  #                nxfs-defs   :: { target_tuple :: string }
+  #              }
+  nxfsenv,
+  # nxfsenv-3 :: {
+  #                m4          :: derivation
+  #                perl        :: derivation
+  #                pkgconf     :: derivation
+  #                coreutils   :: derivation
+  #                gnumake     :: derivation
+  #                gawk        :: derivation
+  #                bash        :: derivation
+  #                gnutar      :: derivation
+  #                gnugrep     :: derivation
+  #                gnused      :: derivation
+  #                findutils   :: derivation
+  #                diffutils   :: derivation
+  #              }
+  nxfsenv-3,
+} :
+
 let
-  nxfs-perl-3        = import ../nxfs-perl-3/default.nix;
-  nxfs-m4-3          = import ../nxfs-m4-3/default.nix;
-  nxfs-binutils-3    = import ../nxfs-binutils-3/default.nix;
-  nxfs-coreutils-3   = import ../nxfs-coreutils-3/default.nix;
-  nxfs-bash-3        = import ../nxfs-bash-3/default.nix;
-  nxfs-tar-3         = import ../nxfs-tar-3/default.nix;
-  nxfs-gnumake-3     = import ../nxfs-gnumake-3/default.nix;
-  nxfs-gawk-3        = import ../nxfs-gawk-3/default.nix;
-  nxfs-grep-3        = import ../nxfs-grep-3/default.nix;
-  nxfs-sed-3         = import ../nxfs-sed-3/default.nix;
-  nxfs-findutils-3   = import ../nxfs-findutils-3/default.nix;
-  nxfs-diffutils-3   = import ../nxfs-diffutils-3/default.nix;
-  nxfs-gcc-wrapper-2 = import ../../bootstrap-2/nxfs-gcc-wrapper-2/default.nix;
-
-  nxfs-defs = import ../nxfs-defs.nix;
-
   version = "2.72";
 in
 
-derivation {
+nxfsenv.mkDerivation {
   name         = "nxfs-autoconf-3";
-
-  system       = builtins.currentSystem;
-
-  perl         = nxfs-perl-3;
-  m4           = nxfs-m4-3;
-  binutils     = nxfs-binutils-3;
-  coreutils    = nxfs-coreutils-3;
-  bash         = nxfs-bash-3;
-  tar          = nxfs-tar-3;
-  gnumake      = nxfs-gnumake-3;
-  gawk         = nxfs-gawk-3;
-  grep         = nxfs-grep-3;
-  sed          = nxfs-sed-3;
-  findutils    = nxfs-findutils-3;
-  diffutils    = nxfs-diffutils-3;
-  gcc_wrapper  = nxfs-gcc-wrapper-2;
-
-  builder      = "${nxfs-bash-3}/bin/bash";
-  args         = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "autoconf-${version}-source";
                                          url = "https://ftp.gnu.org/gnu/autoconf/autoconf-${version}.tar.xz";
                                          sha256 = "1r3922ja9g5ziinpqxgfcc51jhrxvjqnrmc5054jgskylflxc1fp"; };
 
-  target_tuple = nxfs-defs.target_tuple;
+  buildPhase = ''
+    set -e
+
+    src2=$TMPDIR/src2
+    builddir=$src2
+
+    mkdir -p $src2
+
+    # 1. copy source tree to temporary directory,
+    #
+    (cd $src && (tar cf - . | tar xf - -C $src2))
+
+    # 2. since we're building in source tree,
+    #    will need to be able to write there
+    #
+    chmod -R +w $src2
+
+    bash_program=$bash/bin/bash
+
+    # $src/configure honors CONFIG_SHELL
+    export CONFIG_SHELL="$bash_program"
+
+    cd $builddir
+
+    CCFLAGS=
+    LDFLAGS="-Wl,-enable-new-dtags"
+
+    # -e: stop questions after config.sh
+    # -s: silent mode
+    #
+    # removing -Dcpp=nxfs-gcc (why did we need this)
+    #
+    (cd $builddir && $bash_program $src2/configure --prefix=$out)
+
+    make SHELL=$CONFIG_SHELL
+
+    make install SHELL=$CONFIG_SHELL
+    '';
+
+  buildInputs = [ nxfsenv.gcc_wrapper
+                  nxfsenv.binutils
+                  nxfsenv-3.perl
+                  nxfsenv-3.m4
+                  nxfsenv-3.gnumake
+                  nxfsenv-3.gawk
+                  nxfsenv-3.gnutar
+                  nxfsenv-3.gnugrep
+                  nxfsenv-3.gnused
+                  nxfsenv-3.findutils
+                  nxfsenv-3.diffutils
+                  nxfsenv-3.coreutils
+                  nxfsenv-3.bash
+                ];
 }

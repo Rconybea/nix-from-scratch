@@ -1,41 +1,92 @@
+{
+  # nxfsenv :: { mkDerivation :: attrs -> derivation,
+  #              gcc-wrapper :: derivation,  (also as gcc_wrapper)
+  #              binutils    :: derivation,
+  #              gawk        :: derivation,
+  #              gnumake     :: derivation,
+  #              gnugrep     :: derivation,
+  #              gnutar      :: derivation,
+  #              gnused      :: derivation,
+  #              coreutils   :: derivation,
+  #              bash        :: derivation,
+  #              glibc       :: derivation,
+  #              nxfs-defs   :: { target_tuple :: string }
+  #            }
+  nxfsenv,
+} :
+
 let
-  nxfs-gcc-wrapper-2 = import ../../bootstrap-2/nxfs-gcc-wrapper-2/default.nix;
-  nxfs-glibc-stage1-2 = import ../../bootstrap-2/nxfs-glibc-stage1-2/default.nix;
-  nxfs-binutils-2 = import ../../bootstrap-2/nxfs-binutils-2/default.nix;
-
-  nxfs-sed-2         = import ../../bootstrap-2/nxfs-sed-2/default.nix;
-  nxfs-grep-2        = import ../../bootstrap-2/nxfs-grep-2/default.nix;
-  nxfs-gawk-2        = import ../../bootstrap-2/nxfs-gawk-2/default.nix;
-  nxfs-gnumake-2     = import ../../bootstrap-2/nxfs-gnumake-2/default.nix;
-  nxfs-tar-2         = import ../../bootstrap-2/nxfs-tar-2/default.nix;
-  nxfs-bash-2        = import ../../bootstrap-2/nxfs-bash-2/default.nix;
-  nxfs-coreutils-2   = import ../../bootstrap-2/nxfs-coreutils-2/default.nix;
-  nxfs-defs          = import ../nxfs-defs.nix;
-
+  version = "3.10";
 in
 
-derivation {
+nxfsenv.mkDerivation {
   name         = "nxfs-diffutils-3";
+  version      = version;
 
-  system       = builtins.currentSystem;
-
-  coreutils    = nxfs-coreutils-2;
-  bash         = nxfs-bash-2;
-  tar          = nxfs-tar-2;
-  gnumake      = nxfs-gnumake-2;
-  gawk         = nxfs-gawk-2;
-  sed          = nxfs-sed-2;
-  grep         = nxfs-grep-2;
-  gcc_wrapper  = nxfs-gcc-wrapper-2;
-  libc         = nxfs-glibc-stage1-2;
-  binutils     = nxfs-binutils-2;
-
-  builder      = "${nxfs-bash-2}/bin/bash";
-  args         = [ ./builder.sh ];
-
-  src          = builtins.fetchTarball { name = "diffutils-3.10-source";
-                                         url = "https://ftp.gnu.org/gnu/diffutils/diffutils-3.10.tar.xz";
+  src          = builtins.fetchTarball { name = "diffutils-${version}-source";
+                                         url = "https://ftp.gnu.org/gnu/diffutils/diffutils-${version}.tar.xz";
                                          sha256 = "13cxlscmjns6dk4yp0nmmyp1ldjkbag68lmgrizcd5dzz00xi8j7"; };
 
-  target_tuple = nxfs-defs.target_tuple;
+  buildPhase = ''
+    set -e
+
+    echo "src=$src"
+    echo "TMPDIR=$TMPDIR"
+
+    src2=$TMPDIR/src2
+    builddir=$TMPDIR/build
+
+    mkdir -p $src2
+    mkdir -p $builddir
+    mkdir -p $out
+
+    # this might get us past the build.
+    # Won't work for invoking `locate`, because location here will
+    # be readonly downstream
+    #
+    mkdir -p $out/var/lib/locate
+
+    bash_program=$bash/bin/bash
+
+    # 1. copy source tree to temporary directory,
+    #
+    (cd $src && (tar cf - . | tar xf - -C $src2))
+
+    # 2. substitute nix-store path-to-bash for /bin/sh.
+    #
+    #
+    #chmod -R +w $src2
+    #sed -i "1s:#!.*/bin/sh:#!$bash_program:" $src2/build-aux/mkinstalldirs
+    #chmod -R -w $src2
+
+    # $src/configure honors CONFIG_SHELL
+    export CONFIG_SHELL="$bash_program"
+
+    # 1.
+    # we shouldn't need special compiler/linker instructions,
+    # since stage-1 toolchain "knows where it lives"
+    #
+    # 2.
+    # do need to give --host and --build arguments to configure,
+    # since we're using a cross compiler.
+
+    (cd $builddir && $bash_program $src2/configure --prefix=$out --localstatedir=$out/var/lib/locate CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+
+    (cd $builddir && make SHELL=$CONFIG_SHELL)
+
+    (cd $builddir && make install SHELL=$CONFIG_SHELL)
+  '';
+
+  buildInputs = [
+    nxfsenv.gcc_wrapper
+    nxfsenv.binutils
+    nxfsenv.gawk
+    nxfsenv.gnumake
+    nxfsenv.gnugrep
+    nxfsenv.gnutar
+    nxfsenv.gnused
+    nxfsenv.coreutils
+    nxfsenv.bash
+    nxfsenv.glibc
+  ];
 }

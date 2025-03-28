@@ -64,7 +64,6 @@ export CONFIG_SHELL="${bash_program}"
 # do need to give --host and --build arguments to configure,
 # since we're using a cross compiler.
 
-version_major_minor=5.40
 perlout=${out}/lib/perl5/${version_major_minor}
 
 cd ${builddir}
@@ -82,4 +81,3 @@ sh Configure -de -Dperl_lc_all_uses_name_value_pairs=define -Dcc=${gcc_wrapper}/
 make SHELL=${CONFIG_SHELL}
 
 make install SHELL=${CONFIG_SHELL}
-

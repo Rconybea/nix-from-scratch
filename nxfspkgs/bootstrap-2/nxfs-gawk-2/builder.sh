@@ -16,7 +16,7 @@ echo "diffutils=${diffutils}";
 echo "sysroot=${sysroot}"
 echo "bash=${bash}"
 echo "src=${src}"
-echo "nxfs_system=${nxfs_system}";
+echo "popen=${popen}";
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
@@ -62,7 +62,7 @@ sed -i -e "s:/bin/sh:${bash_program}:g" ${src2}/configure ${src2}/build-aux/*
 sed -i -e 's:"/bin/sh", "sh":"'${bash_program}'", "bash":' ${src2}/io.c
 
 # ----------------------------------------------------------------
-# nxfs_system
+# nxfs_system()
 # ----------------------------------------------------------------
 
 # insert decl
@@ -73,7 +73,7 @@ sed -i -e '/^static size_t mbc_byte_count/ i\
 static int nxfs_system(const char* line);\
 ' ${src2}/builtin.c
 
-nxfs_system_src=${nxfs_system}/src/nxfs_system.c
+nxfs_system_src=${popen}/src/nxfs_system.c
 
 # use nxfs_system() instead of glibc system() to implement gawk's system() builtin
 #
@@ -96,7 +96,7 @@ static FILE* nxfs_popen(char const* cmd, char const* mode);\
 static int nxfs_pclose(FILE* fp);\
 ' ${src2}/io.c
 
-nxfs_popen_src=${nxfs_system}/src/nxfs_popen.c
+nxfs_popen_src=${popen}/src/nxfs_popen.c
 
 # use nxfs_popen() instead of glibc popen() to implement gawk's '|' builtin
 #

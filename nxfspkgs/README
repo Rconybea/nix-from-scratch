@@ -1,7 +1,12 @@
 Package repository (in the style of nixpkgs) for bootstrap.
 
 Separate from nixpkgs, because we want to use this to bootstrap
-starting with nix store that's empty except for deus-ex-machina nxfs-toolchain
+starting with nix store that's empty except for deus-ex-machina nxfs-toolchain.
+
+We could /probably/ introduce nxfspkgs as a nixpkgs overlay.
+We don't attempt this because we insist on being able to bootstrap from a restricted state, where
+nixpkgs packages won't be usable until nxfspkgs bootstrap is complete...  so we need
+it to be clear that that bootstrap doesn't depend on nixpkgs.
 
 ----------------------------------------------------------------
 Prerequisites
@@ -134,6 +139,35 @@ Details
    - bootstrap-1/nxfs-tar-1              tar
    - bootstrap-1/nxfs-sed-1              sed
    - bootstrap-1/nxfs-gawk-1             gawk
+
+3. stage2 (see nxfspkgs/bootstrap-2)
+
+   In stage2 we use the stage1 toolchain to build a native toolchain.
+   Everything in the native toolchain will have been compiled entirely from within
+   nix-build.  This implies that "unreproducible outside dependencies"
+   can enter only through the artifacts we provided in stage1.
+
+   Although we wind up with a native toolchain, prepared from known pinned
+   and checksumed source versions, we don't consider it reproducible.
+   This is because the tools that prepared it were imported.
+
+   The final stage2 toolchain still contains stray references to {stage0, stage1}
+   paths, so has some visible non-reproducible parts.
+
+4. stage3 (see nxfspkgs/bootstrap-3)
+
+   In this stage we use the stage2 packages to build everything once more.
+   We expect this to arrive at a fixpoint -- that is, that if we build the toolchain
+   again, we'll wind up with the same results.
+
+5. assembly (see nxfspkgs/bootstrap-tools)
+
+   In this stage we prepare a merged FHS-like package with final binaries+libraries;
+   we intend using this as a substitute for bootstrap
+
+    $ nix build -f nixpkgs/pkgs/stdenv/linux/make-bootstrap-tools.nix bootstrapFiles
+
+
 
 
 Look Ma!

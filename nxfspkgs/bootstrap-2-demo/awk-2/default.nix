@@ -1,29 +1,44 @@
-let
-  nxfs-toolchain-1    = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-gawk-2         = import ../../bootstrap-2/nxfs-gawk-2/default.nix;
-  nxfs-coreutils-1    = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
-  nxfs-sed-1          = import ../../bootstrap-1/nxfs-sed-1/default.nix;
-  nxfs-bash-1         = import ../../bootstrap-1/nxfs-bash-1/default.nix;
-  nxfs-sysroot-1      = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
+{
+  # nxfsenv :: { mkDerivation :: attrs -> derivation,
+  #              gcc-wrapper :: derivation,
+  #              gcc         :: derivation,
+  #              binutils    :: derivation,
+  #              coreutils   :: derivation,
+  #              bash        :: derivation,
+  #              sysroot     :: derivation,
+  #              nxfs-defs   :: { target_tuple :: string }
+  #            }
+  nxfsenv,
+} :
 
-  bash                = "${nxfs-bash-1}/bin/bash";
-in
+nxfsenv.mkDerivation {
+  name      = "demo-awk-2";
 
-derivation {
-  name      = "awk-2";
-  system    = builtins.currentSystem;
+  buildPhase = ''
+    # PATH=$toolchain/x86_64-pc-linux-gnu/debug-root/usr/bin:$PATH
 
-  bash      = bash;
+    gawk_program=$gawk/bin/gawk
+    sort_program=$coreutils/bin/sort
 
-  builder   = bash;
-  args      = [ ./builder.sh ];
+    mkdir -p $out
 
-  toolchain = nxfs-toolchain-1;
-  gawk      = nxfs-gawk-2;
-  sed       = nxfs-sed-1;
-  coreutils = nxfs-coreutils-1;
-  sysroot   = nxfs-sysroot-1;
+    cp $script $out/script.awk
+    sed -i -e 's:/usr/bin/gawk:'$gawk_program':' $out/script.awk
+    sed -i -e 's:@sort_program@:'$sort_program':' $out/script.awk
+
+    echo "script.awk:"
+    cat $out/script.awk
+
+    $out/script.awk $input > $out/output1.txt
+  '';
+
+  gawk      = nxfsenv.gawk;
+  coreutils = nxfsenv.coreutils;
 
   script    = ./script.awk;
   input     = ./input.txt;
+
+  buildInputs = with nxfsenv; [ nxfsenv.gawk
+                                nxfsenv.gnused
+                                nxfsenv.coreutils ];
 }
