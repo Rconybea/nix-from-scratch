@@ -28,12 +28,12 @@
 } :
 
 let
-  nxfs-defs                 = nxfsenv.nxfs-defs;
+  nxfs-defs = nxfsenv-3.nxfs-defs;
 
   # nxfs-nixified-gcc-source :: derivation
   nxfs-nixified-gcc-source = nixify-gcc-source {
     bash      = nxfsenv.bash;
-    file      = nxfsenv.file;
+    file      = nxfsenv-3.file;
     findutils = nxfsenv.findutils;
     sed       = nxfsenv.gnused;
     grep      = nxfsenv.gnugrep;
@@ -45,17 +45,17 @@ in
 
 let
   binutils     = nxfsenv.binutils;
-  bison        = nxfsenv.bison;
-  flex         = nxfsenv.flex;
-  texinfo      = nxfsenv.texinfo;
-  m4           = nxfsenv.m4;
+  bison        = nxfsenv-3.bison;
+  flex         = nxfsenv-3.flex;
+  texinfo      = nxfsenv-3.texinfo;
+  m4           = nxfsenv-3.m4;
   gnumake      = nxfsenv.gnumake;
   gawk         = nxfsenv.gawk;
   gnutar       = nxfsenv.gnutar;
   gnugrep      = nxfsenv.gnugrep;
   gnused       = nxfsenv.gnused;
   findutils    = nxfsenv.findutils;
-  diffutils    = nxfsenv.diffutils;
+  diffutils    = nxfsenv-3.diffutils;
   coreutils    = nxfsenv.coreutils;
   bash         = nxfsenv.bash;
   which        = nxfsenv-3.which;

@@ -48,14 +48,6 @@ nxfsenv.mkDerivation {
     # $src/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$bash_program"
 
-    # 1.
-    # we shouldn't need special compiler/linker instructions,
-    # since stage-1 toolchain "knows where it lives"
-    #
-    # 2.
-    # do need to give --host and --build arguments to configure,
-    # since we're using a cross compiler.
-
     (cd $builddir && $bash_program $src2/configure --prefix=$out --localstatedir=$out/var/lib/locate CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)

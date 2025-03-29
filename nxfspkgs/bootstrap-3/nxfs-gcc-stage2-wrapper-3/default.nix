@@ -17,7 +17,7 @@ let
   nxfs-sed-1          = bootstrap-1.nxfs-sed-1;
   nxfs-coreutils-1    = bootstrap-1.nxfs-coreutils-1;
   nxfs-bash-1         = bootstrap-1.nxfs-bash-1;
-  nxfs-defs           = nxfsenv.nxfs-defs;
+  nxfs-defs           = nxfsenv-3.nxfs-defs;
 in
 
 nxfsenv.mkDerivation {

@@ -317,6 +317,7 @@ in
 let
   nxfsenv-3-16 = nxfsenv-3-10 // { texinfo  = texinfo-3;
                                    bison    = bison-3;
+                                   flex     = flex-3;
                                    pkgconf  = pkgconf-3;
                                    m4       = m4-3;
                                    python   = python-3;

@@ -7,6 +7,7 @@
   #              gnugrep     :: derivation,
   #              gnutar      :: derivation,
   #              gnused      :: derivation,
+  #              findutils   :: derivation,
   #              coreutils   :: derivation,
   #              bash        :: derivation,
   #              glibc       :: derivation,
@@ -30,9 +31,6 @@ nxfsenv.mkDerivation {
   buildPhase = ''
     set -e
 
-    echo "src=$src"
-    echo "TMPDIR=$TMPDIR"
-
     src2=$TMPDIR/src2
     builddir=$TMPDIR/build
 
@@ -52,23 +50,8 @@ nxfsenv.mkDerivation {
     #
     (cd $src && (tar cf - . | tar xf - -C $src2))
 
-    # 2. substitute nix-store path-to-bash for /bin/sh.
-    #
-    #
-    #chmod -R +w $src2
-    #sed -i "1s:#!.*/bin/sh:#!$bash_program:" $src2/build-aux/mkinstalldirs
-    #chmod -R -w $src2
-
     # $src/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$bash_program"
-
-    # 1.
-    # we shouldn't need special compiler/linker instructions,
-    # since stage-1 toolchain "knows where it lives"
-    #
-    # 2.
-    # do need to give --host and --build arguments to configure,
-    # since we're using a cross compiler.
 
     (cd $builddir && $bash_program $src2/configure --prefix=$out --localstatedir=$out/var/lib/locate CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
@@ -85,6 +68,7 @@ nxfsenv.mkDerivation {
     nxfsenv.gnugrep
     nxfsenv.gnutar
     nxfsenv.gnused
+    nxfsenv.findutils
     nxfsenv.coreutils
     nxfsenv.bash
     nxfsenv.glibc

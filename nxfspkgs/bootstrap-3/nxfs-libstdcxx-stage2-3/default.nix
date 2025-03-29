@@ -22,19 +22,19 @@ let
   gcc_wrapper = gcc-stage2-wrapper-3;
 
   binutils    = nxfsenv.binutils;
-  bison       = nxfsenv.bison;
-  flex        = nxfsenv.flex;
-  texinfo     = nxfsenv.texinfo;
-  m4          = nxfsenv.m4;
+  bison       = nxfsenv-3.bison;
+  flex        = nxfsenv-3.flex;
+  texinfo     = nxfsenv-3.texinfo;
+  m4          = nxfsenv-3.m4;
   gawk        = nxfsenv.gawk;
-  file        = nxfsenv.file;
+  file        = nxfsenv-3.file;
   gnumake     = nxfsenv.gnumake;
   gnused      = nxfsenv.gnused;
   gnugrep     = nxfsenv.gnugrep;
   gnutar      = nxfsenv.gnutar;
   bash        = nxfsenv.bash;
   findutils   = nxfsenv.findutils;
-  diffutils   = nxfsenv.diffutils;
+  diffutils   = nxfsenv-3.diffutils;
   coreutils   = nxfsenv.coreutils;
   which       = nxfsenv-3.which;
 in
@@ -70,15 +70,15 @@ nxfsenv.mkDerivation {
 
   outputs      = [ "out" "source" ];
 
-  target_tuple = nxfsenv.nxfs-defs.target_tuple;
+  target_tuple = nxfsenv-3.nxfs-defs.target_tuple;
 
   buildPhase = ''
     # See also
     #   https://gcc.gnu.org/install/configure.html
 
-    echo "mpc=$mpc"
-    echo "mpfr=$mpfr"
-    echo "gmp=$gmp"
+    #echo "mpc=$mpc"
+    #echo "mpfr=$mpfr"
+    #echo "gmp=$gmp"
 
     set -e
 

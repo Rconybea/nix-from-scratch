@@ -18,7 +18,7 @@ let
   bash      = nxfsenv-3.bash;
   which     = nxfsenv-3.which;
 
-  nxfs-defs = nxfsenv.nxfs-defs;
+  nxfs-defs = nxfsenv-3.nxfs-defs;
 in
 
 let
@@ -27,7 +27,7 @@ in
 
 nxfsenv.mkDerivation {
   name               = "gcc-stage3-wrapper-3";
-  version            = version;
+  version            = gcc-unwrapped.version;
   system             = builtins.currentSystem;
 
   libstdcxx          = libstdcxx;

@@ -23,14 +23,14 @@
 } :
 
 let
-  bison     = nxfsenv.bison;
-  texinfo   = nxfsenv.texinfo;
+  bison     = nxfsenv-3.bison;
+  texinfo   = nxfsenv-3.texinfo;
   m4        = nxfsenv.m4;
-  python    = nxfsenv.python;
-  patchelf  = nxfsenv.patchelf;
-  gzip      = nxfsenv.gzip;
-  patch     = nxfsenv.patch;
-  gperf     = nxfsenv.gperf;
+  python    = nxfsenv-3.python;
+  patchelf  = nxfsenv-3.patchelf;
+  gzip      = nxfsenv-3.gzip;
+  patch     = nxfsenv-3.patch;
+  gperf     = nxfsenv-3.gperf;
   coreutils = nxfsenv.coreutils;
   bash      = nxfsenv.bash;
   gnutar    = nxfsenv.gnutar;
@@ -39,11 +39,11 @@ let
   gnused    = nxfsenv.gnused;
   gnugrep   = nxfsenv.gnugrep;
   binutils  = nxfsenv.binutils;
-  diffutils = nxfsenv.diffutils;
+  diffutils = nxfsenv-3.diffutils;
   findutils = nxfsenv.findutils;
   which     = nxfsenv-3.which;
 
-  nxfs-defs = nxfsenv.nxfs-defs;
+  nxfs-defs = nxfsenv-3.nxfs-defs;
 in
 
 let
@@ -69,11 +69,6 @@ nxfsenv.mkDerivation {
   name           = "nxfs-glibc-stage1-3";
   version        = "2.40";
 
-  # reminder: for __noChroot to take effect, needs nix.conf to contain:
-  #   sandbox    = relaxed
-  #
-  #__noChroot    = true;
-
   system         = builtins.currentSystem;
 
   locale_archive = locale-archive;
@@ -84,14 +79,7 @@ nxfsenv.mkDerivation {
 
   src            = nixified-glibc-source;
 
-#  src            = builtins.fetchTarball { name   = "glibc-2.40-source";
-#                                           url    = "https://ftp.gnu.org/gnu/glibc/glibc-2.40.tar.xz";
-#                                           sha256 = "0ncvsz2r8py3z0v52fqniz5lq5jy30h0m0xx41ah19nl1rznflkh";
-#                                       };
-
   outputs      = [ "out" "source" ];
-
-#  target_tuple = nxfs-defs.target_tuple;
 
   buildPhase = ''
     # See also
@@ -117,61 +105,6 @@ nxfsenv.mkDerivation {
     # 1. copy source tree to temporary directory
     #
     (cd $src && (tar cf - . | tar xf - -C $src2))
-
-#    chmod -R +w $src2
-
-#    pushd $src2
-
-#    sed -i -e 's:\$(localstatedir)/db:\$(localstatedir)/lib/nss_db:' ./Makeconfig
-#    sed -i -e 's:/var/db/nscd/:/var/cache/nscd/:' ./nscd/nscd.h
-#    sed -i -e 's:VAR_DB = /var/db:VARDB = /var/lib/nss_db:' ./nss/db-Makefile
-#    sed -i -e 's:"/var/db/":"/var/lib/nss_db":' ./sysdeps/generic/paths.h
-#    sed -i -e 's:"/var/db/":"/var/lib/nss_db":' ./sysdeps/unix/sysv/linux/paths.h
-#
-#    sed -i -e "s:/bin/bash:$bash_program:" ./Makefile
-#    sed -i -e "s:/bin/sh:$bash_program:" ./sysdeps/generic/paths.h
-#    sed -i -e "s:/bin/sh:$bash_program:" ./sysdeps/unix/sysv/linux/paths.h
-#
-#    sed -i -e '/^define SHELL_NAME/ s:"sh":"bash":' -e "s:/bin/sh:$bash_program:" ./sysdeps/posix/system.c
-#
-#    sed -i -e "s:/bin/sh:$bash_program:" ./libio/oldiopopen.c
-#   sed -i -e "s:/bin/sh:$bash_program:" ./scripts/build-many-glibcs.py
-#    sed -i -e "s:/bin/sh:$bash_program:" ./scripts/cross-test-ssh.sh
-#    sed -i -e "s:/bin/sh:$bash_program:" ./scripts/config.guess
-#    sed -i -e "s:/bin/sh:$bash_program:" ./scripts/dso-ordering-test.py
-#    sed -i -e "s:/bin/sh:$bash_program:" ./posix/tst-vfork3.c
-#    sed -i -e "s:/bin/sh:$bash_program:" ./posix/test-errno.c
-#    sed -i -e "s:/bin/sh:$bash_program:" ./posix/tst-fexecve.c
-#    sed -i -e "s:/bin/sh:$bash_program:" ./posix/tst-spawn3.c
-#    sed -i -e "s:/bin/sh:$bash_program:" ./posix/tst-execveat.c
-#    sed -i -e "s:/bin/sh:$bash_program:" ./posix/bug-regex9.c
-#    sed -i -e "s:/bin/sh:$bash_program:" ./elf/tst-valgrind-smoke.sh
-#    sed -i -e "s:/bin/sh:$bash_program:" ./debug/xtrace.sh
-
-#    find . -type f | xargs --replace=xx sed -i -e '1s:#! */bin/sh:#!'$bash_program':' xx
-#    find . -type f | xargs --replace=xx sed -i -e '1s:#! */bin/bash:#!'$bash_program':' xx
-#    find . -type f | xargs --replace=xx sed -i -e '1s:#! */usr/bin/python3:#!'$python_program':' xx
-
-#    # patch: fix bad function signature on locfile_hash() in locfile-kw.h, and charmap_hash() in charmap-kw.h
-#    #
-#    sed -i -e '/^locfile_hash/s:register unsigned int len:register size_t len:' locale/programs/locfile-kw.h
-#    sed -i -e '/^charmap_hash/s:register unsigned int len:register size_t len:' locale/programs/charmap-kw.h
-
-#    # note: the 'locale' program does not honor this.  However setlocale() does.
-#    export LOCPATH=$locale_archive/lib/locale
-
-#    find $src2 -name '*.awk' | xargs --replace={} sed -i -e 's:LC_ALL=C sort -u:lc-all-sort-wrapper -u:' {}
-#    find $src2 -name '*.awk' | xargs --replace={} sed -i -e 's:sort -t:'$sort_program' -t:' -e 's:sort -u:'$sort_program' -u:' {}
-#    (find $src2 -name '*.awk' | xargs --replace={} grep sort {} ) || true
-
-#    set +e
-#
-#    (grep -n -R '/bin/sh' . | grep -v nix/store)
-#    (grep -n -R '/bin/bash' . | grep -v nix/store)
-#
-#    set -e
-
-#    popd
 
     export CONFIG_SHELL="$bash_program"
 
