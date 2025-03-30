@@ -35,13 +35,13 @@ let
 
   # nxfs-nixified-gcc-source :: derivation
   nxfs-nixified-gcc-source = nixify-gcc-source {
-    bash      = nxfsenv.bash;
+    bash      = nxfsenv-3.bash;
     file      = nxfsenv-3.file;
-    findutils = nxfsenv.findutils;
-    sed       = nxfsenv.gnused;
-    grep      = nxfsenv.gnugrep;
-    tar       = nxfsenv.gnutar;
-    coreutils = nxfsenv.coreutils;
+    findutils = nxfsenv-3.findutils;
+    sed       = nxfsenv-3.gnused;
+    grep      = nxfsenv-3.gnugrep;
+    tar       = nxfsenv-3.gnutar;
+    coreutils = nxfsenv-3.coreutils;
     nxfs-defs = nxfs-defs;
   };
 in
@@ -53,15 +53,15 @@ let
   texinfo      = nxfsenv-3.texinfo;
   m4           = nxfsenv-3.m4;
   binutils     = nxfsenv-3.binutils;  # may try wrapper
-  gnumake      = nxfsenv.gnumake;
-  gawk         = nxfsenv.gawk;
-  gnutar       = nxfsenv.gnutar;
-  gnugrep      = nxfsenv.gnugrep;
-  gnused       = nxfsenv.gnused;
-  findutils    = nxfsenv.findutils;
+  gnumake      = nxfsenv-3.gnumake;
+  gawk         = nxfsenv-3.gawk;
+  gnutar       = nxfsenv-3.gnutar;
+  gnugrep      = nxfsenv-3.gnugrep;
+  gnused       = nxfsenv-3.gnused;
+  findutils    = nxfsenv-3.findutils;
   diffutils    = nxfsenv-3.diffutils;
-  coreutils    = nxfsenv.coreutils;
-  bash         = nxfsenv.bash;
+  coreutils    = nxfsenv-3.coreutils;
+  bash         = nxfsenv-3.bash;
   which        = nxfsenv-3.which;
 
   version = nxfs-nixified-gcc-source.version;
@@ -102,8 +102,8 @@ nxfsenv.mkDerivation {
     set -e
 
     # should not need these..
-    export PATH=$PATH:$toolchain/x86_64-pc-linux-gnu/bin
-    export PATH=$PATH:$toolchain/bin
+#    export PATH=$PATH:$toolchain/x86_64-pc-linux-gnu/bin
+#    export PATH=$PATH:$toolchain/bin
 
     src2=$src
     builddir=$TMPDIR/build
