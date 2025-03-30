@@ -4,8 +4,8 @@
   nxfsenv,
   #  nxfsenv-3 :: { coreutils, ... }
   nxfsenv-3,
-  # gcc-stage2-wrapper-3 :: derivation
-  gcc-stage2-wrapper-3,
+  # gcc-x1-wrapper-3 :: derivation
+  gcc-x1-wrapper-3,
   # nixify-gcc-source :: derivation
   nixify-gcc-source,
   # glibc-stage1-2 :: derivation
@@ -19,23 +19,23 @@
 } :
 
 let
-  gcc_wrapper = gcc-stage2-wrapper-3;
+  gcc_wrapper = gcc-x1-wrapper-3;
 
-  binutils    = nxfsenv.binutils;
+  binutils    = nxfsenv-3.binutils;
   bison       = nxfsenv-3.bison;
   flex        = nxfsenv-3.flex;
   texinfo     = nxfsenv-3.texinfo;
   m4          = nxfsenv-3.m4;
-  gawk        = nxfsenv.gawk;
+  gawk        = nxfsenv-3.gawk;
   file        = nxfsenv-3.file;
-  gnumake     = nxfsenv.gnumake;
-  gnused      = nxfsenv.gnused;
-  gnugrep     = nxfsenv.gnugrep;
-  gnutar      = nxfsenv.gnutar;
-  bash        = nxfsenv.bash;
-  findutils   = nxfsenv.findutils;
+  gnumake     = nxfsenv-3.gnumake;
+  gnused      = nxfsenv-3.gnused;
+  gnugrep     = nxfsenv-3.gnugrep;
+  gnutar      = nxfsenv-3.gnutar;
+  bash        = nxfsenv-3.bash;
+  findutils   = nxfsenv-3.findutils;
   diffutils   = nxfsenv-3.diffutils;
-  coreutils   = nxfsenv.coreutils;
+  coreutils   = nxfsenv-3.coreutils;
   which       = nxfsenv-3.which;
 in
 
@@ -75,10 +75,6 @@ nxfsenv.mkDerivation {
   buildPhase = ''
     # See also
     #   https://gcc.gnu.org/install/configure.html
-
-    #echo "mpc=$mpc"
-    #echo "mpfr=$mpfr"
-    #echo "gmp=$gmp"
 
     set -e
 

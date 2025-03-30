@@ -290,7 +290,7 @@ in
 let
   nxfsenv-3-97 = nxfsenv-3-96 // { gcc-stage1 = gcc-x1-3; };
   # gcc-stage2-wrapper-3 :: derivation
-  gcc-stage2-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-stage2-wrapper-3
+  gcc-x1-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-x1-wrapper-3
     { nxfsenv-3 = nxfsenv-3-97;
       glibc = glibc-stage1-3;
       bootstrap-1 = bootstrap-1;
@@ -299,23 +299,23 @@ in
 let
   nxfsenv-3-98 = nxfsenv-3-97 // { };
   # libstdcxx-stage2-3 :: derivation
-  libstdcxx-stage2-3 = callPackage ./bootstrap-3/nxfs-libstdcxx-stage2-3
+  libstdcxx-x2-3 = callPackage ./bootstrap-3/nxfs-libstdcxx-x2-3
     { nxfsenv-3            = nxfsenv-3-98;
-      gcc-stage2-wrapper-3 = gcc-stage2-wrapper-3;
+      gcc-x1-wrapper-3     = gcc-x1-wrapper-3;
       nixify-gcc-source    = bootstrap-2.nxfs-nixify-gcc-source;
       glibc                = glibc-stage1-3;
-      mpc                  = bootstrap-2.nxfs-mpc-2;
-      mpfr                 = bootstrap-2.nxfs-mpfr-2;
-      gmp                  = bootstrap-2.nxfs-gmp-2;
+      mpc                  = mpc-3; #bootstrap-2.nxfs-mpc-2;
+      mpfr                 = mpfr-3; #bootstrap-2.nxfs-mpfr-2;
+      gmp                  = gmp-3; #bootstrap-2.nxfs-gmp-2;
     };
 in
 let
-  nxfsenv-3-99 = nxfsenv-3-98 // { libstdcxx = libstdcxx-stage2-3; };
+  nxfsenv-3-99 = nxfsenv-3-98 // { libstdcxx = libstdcxx-x2-3; };
   # gcc-stage3-wrapper-3 :: derivation
   gcc-stage3-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-stage3-wrapper-3
     { nxfsenv-3     = nxfsenv-3-99;
       gcc-unwrapped = gcc-x1-3;
-      libstdcxx     = libstdcxx-stage2-3;
+      libstdcxx     = libstdcxx-x2-3;
       glibc         = glibc-stage1-3;
     };
 in
@@ -407,8 +407,8 @@ in
   gcc-x0-wrapper-3     = gcc-x0-wrapper-3;
   binutils-x0-wrapper-3 = binutils-x0-wrapper-3;
   gcc-x1-3             = gcc-x1-3;
-  gcc-stage2-wrapper-3 = gcc-stage2-wrapper-3;
-  libstdcxx-stage2-3   = libstdcxx-stage2-3;
+  gcc-x1-wrapper-3     = gcc-x1-wrapper-3;
+  libstdcxx-x2-3       = libstdcxx-x2-3;
   gcc-stage3-wrapper-3 = gcc-stage3-wrapper-3;
   gcc-stage2-3         = gcc-stage2-3;
   gcc-wrapper-3        = gcc-wrapper-3;
