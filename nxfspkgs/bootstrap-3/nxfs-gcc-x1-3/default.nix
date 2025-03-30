@@ -24,9 +24,7 @@
   # glibc :: derivation
   glibc,
 
-  # toolchain :: derivation  (unwrapped version)
-  toolchain,
-  # sysroot :: derivation
+  # sysroot :: derivation   --  for linux headers
   sysroot,
 } :
 
@@ -47,12 +45,11 @@ let
 in
 
 let
-#  binutils     = nxfsenv-3.binutils;  # not actually using this
   bison        = nxfsenv-3.bison;
   flex         = nxfsenv-3.flex;
   texinfo      = nxfsenv-3.texinfo;
   m4           = nxfsenv-3.m4;
-  binutils     = nxfsenv-3.binutils;  # may try wrapper
+  binutils     = nxfsenv-3.binutils;
   gnumake      = nxfsenv-3.gnumake;
   gawk         = nxfsenv-3.gawk;
   gnutar       = nxfsenv-3.gnutar;
@@ -67,12 +64,6 @@ let
   version = nxfs-nixified-gcc-source.version;
 in
 
-# PLAN
-#   - building with nxfs-toolchain-1 (redirected crosstool-ng toolchain):
-#     compiler expects to use binutils from the crosstool-ng toolchain
-#   - in this derivation preparing a compiler that, *when run*,
-#     will use binutils from nxfs-binutils-2
-#
 nxfsenv.mkDerivation {
   name         = "nxfs-gcc-x1-3";
   version      = version;
@@ -81,7 +72,6 @@ nxfsenv.mkDerivation {
 
   glibc        = glibc;
 
-  toolchain    = toolchain;  # compiling with this
   sysroot      = sysroot;    # for system headers
 
   mpc          = mpc;
@@ -100,10 +90,6 @@ nxfsenv.mkDerivation {
     #   https://gcc.gnu.org/install/configure.html
 
     set -e
-
-    # should not need these..
-#    export PATH=$PATH:$toolchain/x86_64-pc-linux-gnu/bin
-#    export PATH=$PATH:$toolchain/bin
 
     src2=$src
     builddir=$TMPDIR/build
