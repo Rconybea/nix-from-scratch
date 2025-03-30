@@ -258,18 +258,27 @@ in
 let
   nxfsenv-3-95 = nxfsenv-3-94 // { glibc-stage1 = glibc-stage1-3; };
   # TODO switch to nxfsenv-3.glibc, along with libstdcxx
-  gcc-stage1-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-stage1-wrapper-3
+  gcc-x0-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-x0-wrapper-3
     { nxfsenv-3   = nxfsenv-3-95;
       glibc       = glibc-stage1-3;
       bootstrap-1 = bootstrap-1;
     };
 in
 let
-  nxfsenv-3-96 = nxfsenv-3-95 // { };
-  # gcc-stage1-3 :: derivation
-  gcc-stage1-3 = callPackage ./bootstrap-3/nxfs-gcc-stage1-3
+  nxfsenv-3-95a = nxfsenv-3-95 // { binutils = binutils-3; };
+  binutils-x0-wrapper-3 = callPackage ./bootstrap-3/nxfs-binutils-xo-wrapper-3
+    {
+      nxfsenv-3   = nxfsenv-3-95a;
+      glibc       = glibc-stage1-3;
+    };
+in
+let
+  nxfsenv-3-96 = nxfsenv-3-95a // { };
+  # gcc-x1-3 :: derivation
+  gcc-x1-3 = callPackage ./bootstrap-3/nxfs-gcc-x1-3
     { nxfsenv-3            = nxfsenv-3-96;
-      gcc-stage1-wrapper-3 = gcc-stage1-wrapper-3;
+      gcc-stage1-wrapper-3 = gcc-x0-wrapper-3;
+      binutils-wrapper     = binutils-x0-wrapper-3; #bootstrap-2.nxfs-binutils-stage1-wrapper-2;  # but try nxfsenv-3 version
       mpc                  = bootstrap-2.nxfs-mpc-2;
       mpfr                 = bootstrap-2.nxfs-mpfr-2;
       gmp                  = bootstrap-2.nxfs-gmp-2;
@@ -280,7 +289,7 @@ let
     };
 in
 let
-  nxfsenv-3-97 = nxfsenv-3-96 // { gcc-stage1 = gcc-stage1-3; };
+  nxfsenv-3-97 = nxfsenv-3-96 // { gcc-stage1 = gcc-x1-3; };
   # gcc-stage2-wrapper-3 :: derivation
   gcc-stage2-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-stage2-wrapper-3
     { nxfsenv-3 = nxfsenv-3-97;
@@ -306,7 +315,7 @@ let
   # gcc-stage3-wrapper-3 :: derivation
   gcc-stage3-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-stage3-wrapper-3
     { nxfsenv-3     = nxfsenv-3-99;
-      gcc-unwrapped = gcc-stage1-3;
+      gcc-unwrapped = gcc-x1-3;
       libstdcxx     = libstdcxx-stage2-3;
       glibc         = glibc-stage1-3;
     };
@@ -396,8 +405,9 @@ in
   mpc-3                = mpc-3;
   python-3             = python-3;
   glibc-stage1-3       = glibc-stage1-3;
-  gcc-stage1-wrapper-3 = gcc-stage1-wrapper-3;
-  gcc-stage1-3         = gcc-stage1-3;
+  gcc-x0-wrapper-3     = gcc-x0-wrapper-3;
+  binutils-x0-wrapper-3 = binutils-x0-wrapper-3;
+  gcc-x1-3             = gcc-x1-3;
   gcc-stage2-wrapper-3 = gcc-stage2-wrapper-3;
   libstdcxx-stage2-3   = libstdcxx-stage2-3;
   gcc-stage3-wrapper-3 = gcc-stage3-wrapper-3;

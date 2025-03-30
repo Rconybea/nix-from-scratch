@@ -12,10 +12,10 @@
 
 let
   nxfs-glibc-stage1-2 = nxfsenv.glibc-stage1;
-  nxfs-sed-1          = bootstrap-1.nxfs-sed-1;
+  gnused              = nxfsenv-3.gnused;
   nxfs-toolchain-1    = bootstrap-1.nxfs-toolchain-1;
   nxfs-coreutils-1    = bootstrap-1.nxfs-coreutils-1;
-  nxfs-bash-1         = bootstrap-1.nxfs-bash-1;
+  bash                = nxfsenv-3.bash;
   nxfs-defs           = nxfsenv-3.nxfs-defs;
 in
 
@@ -24,22 +24,27 @@ let
 in
 
 nxfsenv.mkDerivation {
-  name               = "gcc-stage1-wrapper-3";
+  name               = "gcc-x0-wrapper-3";
   system             = builtins.currentSystem;
 
   glibc              = glibc;
 
-  bash               = bootstrap-1.nxfs-bash-1;
-  sed                = bootstrap-1.nxfs-sed-1;
+  bash               = bash;
+  gnused             = gnused;
   toolchain          = bootstrap-1.nxfs-toolchain-1;
   coreutils          = bootstrap-1.nxfs-coreutils-1;
-  gnused             = bootstrap-1.nxfs-sed-1;
 
   gcc_wrapper_script = ./gcc-wrapper.sh;
   gxx_wrapper_script = ./gxx-wrapper.sh;
 
-  gcc                = "${bootstrap-1.nxfs-toolchain-1}/bin/${target_tuple}-gcc";
-  gxx                = "${bootstrap-1.nxfs-toolchain-1}/bin/${target_tuple}-g++";
+  # works with toolchain gcc,
+  # but we want to use stage2 wrapper
+  #   gcc = "${bootstrap-1.nxfs-toolchain-1}/bin/${target_tuple}-gcc";
+  #   gxx = "${bootstrap-1.nxfs-toolchain-1}/bin/${target_tuple}-g++";
+
+  # unwrapped gcc,gxx
+  gcc                = "${nxfsenv.gcc_wrapper.gcc}/bin/gcc";
+  gxx                = "${nxfsenv.gcc_wrapper.gcc}/bin/g++";
 
   target_tuple       = target_tuple;
 
@@ -48,32 +53,16 @@ nxfsenv.mkDerivation {
     # and inject additional arguments
     #
 
-    echo "toolchain=$toolchain"
-    echo "sed=$sed"
-    echo "coreutils=$coreutils"
-    echo "glibc=$glibc"
-    echo "bash=$bash"
-
-    echo "gcc_wrapper_script=$gcc_wrapper_script"
-    echo "gxx_wrapper_script=$gxx_wrapper_script"
-
-    echo "gcc=$gcc";
-    echo "gxx=$gxx";
-
     builddir=$TMPDIR
 
-    export PATH="$toolchain/bin:$sed/bin:$coreutils/bin:$bash/bin"
+    export PATH="$toolchain/bin:$gnused/bin:$coreutils/bin:$bash/bin"
 
-    # path/to/nix/store/{hash}-x86_64-pc-linux-gnu-gcc
     unwrapped_gcc=$gcc
-    # path/to/nix/store/{hash}-x86_64-pc-linux-gnu-gxx
     unwrapped_gxx=$gxx
 
     mkdir -p $builddir/bin
 
-    # x86_64-pc-linux-gnu-gcc
     gcc_basename=$(basename $gcc)
-    # x86_64-pc-linux-gnu-gxx
     gxx_basename=$(basename $gxx)
 
     mkdir -p $out/bin

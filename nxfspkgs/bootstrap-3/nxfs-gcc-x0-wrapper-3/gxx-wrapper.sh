@@ -17,5 +17,10 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gxx} -v
 else
-    ${unwrapped_gxx} -Wl,-rpath=${glibc}/lib -Wl,-dynamic-linker=${glibc}/lib/ld-linux-x86-64.so.2 "${@}"
+    #>&2 echo "nxfs-gcc-x0-wrapper-3:"
+    #>&2 echo "NXFS_SYSROOT_DIR=${NXFS_SYSROOT_DIR}"
+    #>&2 echo "CWD=$(pwd)"
+    #>&2 echo "PATH=${PATH}"
+
+    ${unwrapped_gxx} -B${glibc}/lib -Wl,-rpath=${glibc}/lib -Wl,-dynamic-linker=${glibc}/lib/ld-linux-x86-64.so.2 "${@}"
 fi

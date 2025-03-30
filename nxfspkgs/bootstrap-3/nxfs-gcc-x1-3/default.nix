@@ -8,6 +8,9 @@
   # gcc-stage1-wrapper-2 :: derivation
   gcc-stage1-wrapper-3,
 
+  # binutils-wrapper :: derivation
+  binutils-wrapper,
+
   # nixify-gcc-source :: attrset -> derivation
   nixify-gcc-source,
 
@@ -44,11 +47,12 @@ let
 in
 
 let
-  binutils     = nxfsenv.binutils;
+#  binutils     = nxfsenv-3.binutils;  # not actually using this
   bison        = nxfsenv-3.bison;
   flex         = nxfsenv-3.flex;
   texinfo      = nxfsenv-3.texinfo;
   m4           = nxfsenv-3.m4;
+  binutils     = nxfsenv-3.binutils;  # may try wrapper
   gnumake      = nxfsenv.gnumake;
   gawk         = nxfsenv.gawk;
   gnutar       = nxfsenv.gnutar;
@@ -70,7 +74,7 @@ in
 #     will use binutils from nxfs-binutils-2
 #
 nxfsenv.mkDerivation {
-  name         = "nxfs-gcc-stage1-3";
+  name         = "nxfs-gcc-x1-3";
   version      = version;
 
   system       = builtins.currentSystem;
@@ -97,6 +101,7 @@ nxfsenv.mkDerivation {
 
     set -e
 
+    # should not need these..
     export PATH=$PATH:$toolchain/x86_64-pc-linux-gnu/bin
     export PATH=$PATH:$toolchain/bin
 
@@ -203,6 +208,8 @@ nxfsenv.mkDerivation {
                   flex
                   texinfo
                   m4
+                  binutils-wrapper
+                  binutils
                   gnumake
                   gawk
                   gnutar
