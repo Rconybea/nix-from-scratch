@@ -13,16 +13,18 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 include $(TOP_DIR)/mk/config.mk
 
 version:=2.6.4
+version2:=2_6_4
 # unique package name
 name:=expat-$(version)
 # local directory for unpacked source
 unpackdir:=$(name)
 # unique tarball name (in ARCHIVE_DIR)
-tarball:=$(name).tar.xz
+tarball:=$(name).tar.gz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
-url:=https://prdownloads.sourceforge.net/expat/$(tarball)
+url:=https://github.com/libexpat/libexpat/releases/download/R_$(version2)/expat-$(version).tar.xz
+#url:=http://downloads.sourceforge.net/expat/$(tarball)
 # verify this sha
 sha256:=a695629dae047055b37d50a0ff4776d1d45d0a4c842cf4ccee158441f55ff7ee
 # Settings CFLAGS seems to break the flex configure script;
