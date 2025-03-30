@@ -25,6 +25,7 @@ in
 
 nxfsenv.mkDerivation {
   name               = "gcc-x0-wrapper-3";
+  version            = nxfsenv.gcc_wrapper.gcc.version;
   system             = builtins.currentSystem;
 
   glibc              = glibc;
