@@ -279,12 +279,11 @@ let
     { nxfsenv-3            = nxfsenv-3-96;
       gcc-stage1-wrapper-3 = gcc-x0-wrapper-3;
       binutils-wrapper     = binutils-x0-wrapper-3; #bootstrap-2.nxfs-binutils-stage1-wrapper-2;  # but try nxfsenv-3 version
-      mpc                  = bootstrap-2.nxfs-mpc-2;
-      mpfr                 = bootstrap-2.nxfs-mpfr-2;
-      gmp                  = bootstrap-2.nxfs-gmp-2;
+      mpc                  = mpc-3; #bootstrap-2.nxfs-mpc-2;
+      mpfr                 = mpfr-3; #bootstrap-2.nxfs-mpfr-2;
+      gmp                  = gmp-3; #bootstrap-2.nxfs-gmp-2;
       nixify-gcc-source    = bootstrap-2.nxfs-nixify-gcc-source;
       glibc                = glibc-stage1-3;
-      toolchain            = bootstrap-1.nxfs-toolchain-1;
       sysroot              = bootstrap-1.nxfs-sysroot-1;
     };
 in
