@@ -39,7 +39,7 @@
 mkDerivation {
   # nxfs-stdenv: intended to be a functional substitute for nixpkgs stdenv-linux
 
-  name               = "nxfs-stdenv";
+  name               = "stdenv-nxfs";
   system             = builtins.currentSystem;
 
   glibc              = glibc;
