@@ -26,7 +26,7 @@ let
 in
 
 nxfsenv.mkDerivation {
-  name               = "gcc-stage3-wrapper-3";
+  name               = "gcc-x2-wrapper-3";
   version            = gcc-unwrapped.version;
   system             = builtins.currentSystem;
 
@@ -42,9 +42,6 @@ nxfsenv.mkDerivation {
     # script to intercept calls to $gcc,
     # and inject additional arguments
     #
-
-    echo "gcc_wrapper_script=$gcc_wrapper_script"
-    echo "gxx_wrapper_script=$gxx_wrapper_script"
 
     builddir=$TMPDIR
 

@@ -312,7 +312,7 @@ in
 let
   nxfsenv-3-99 = nxfsenv-3-98 // { libstdcxx = libstdcxx-x2-3; };
   # gcc-stage3-wrapper-3 :: derivation
-  gcc-stage3-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-stage3-wrapper-3
+  gcc-x2-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-x2-wrapper-3
     { nxfsenv-3     = nxfsenv-3-99;
       gcc-unwrapped = gcc-x1-3;
       libstdcxx     = libstdcxx-x2-3;
@@ -320,11 +320,11 @@ let
     };
 in
 let
-  # gcc-stage2-3 :: derivation
-  gcc-stage2-3 = callPackage ./bootstrap-3/nxfs-gcc-stage2-3
+  # gcc-x3-3 :: derivation
+  gcc-x3-3 = callPackage ./bootstrap-3/nxfs-gcc-x3-3
     { nxfsenv-3         = nxfsenv-3-99;
       nixify-gcc-source = bootstrap-2.nxfs-nixify-gcc-source;
-      gcc-wrapper       = gcc-stage3-wrapper-3;
+      gcc-x2-wrapper-3  = gcc-x2-wrapper-3;
       binutils-wrapper  = bootstrap-2.nxfs-binutils-stage1-wrapper-2;
       mpc               = bootstrap-2.nxfs-mpc-2;
       mpfr              = bootstrap-2.nxfs-mpfr-2;
@@ -334,12 +334,12 @@ let
     };
 in
 let
-  nxfsenv-3-100 = nxfsenv-3-99 // { gcc-stage2-3 = gcc-stage2-3; };
+  nxfsenv-3-100 = nxfsenv-3-99 // { gcc-x3-3 = gcc-x3-3; };
 
   # gcc-wrapper-3 :: derivation
   gcc-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-wrapper-3
     { nxfsenv-3 = nxfsenv-3-100;
-      gcc-unwrapped = gcc-stage2-3;
+      gcc-unwrapped = gcc-x3-3;
       glibc = glibc-stage1-3;
     };
 
@@ -409,8 +409,8 @@ in
   gcc-x1-3             = gcc-x1-3;
   gcc-x1-wrapper-3     = gcc-x1-wrapper-3;
   libstdcxx-x2-3       = libstdcxx-x2-3;
-  gcc-stage3-wrapper-3 = gcc-stage3-wrapper-3;
-  gcc-stage2-3         = gcc-stage2-3;
+  gcc-x2-wrapper-3     = gcc-x2-wrapper-3;
+  gcc-x3-3             = gcc-x3-3;
   gcc-wrapper-3        = gcc-wrapper-3;
 
   # pills-example-1..nxfs-bootstrap-1 :: derivation

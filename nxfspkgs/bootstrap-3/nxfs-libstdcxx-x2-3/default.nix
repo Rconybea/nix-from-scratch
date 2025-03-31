@@ -54,7 +54,7 @@ let
 in
 
 nxfsenv.mkDerivation {
-  name         = "nxfs-libstdcxx-stage2-3";
+  name         = "nxfs-libstdcxx-x2-3";
   version      = nxfs-nixified-gcc-source.version;
 
   system       = builtins.currentSystem;
