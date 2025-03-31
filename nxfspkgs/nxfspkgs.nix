@@ -344,9 +344,22 @@ let
     };
 
 in
-
 let
-  mkDerivation-3 = (nxfs-autotools (allPkgs // { nxfsenv = { bash = bash-3; }; }));
+  nxfsenv-3-101 = nxfsenv-3-100 // { gcc = gcc-wrapper-3;
+                                     gcc-unwrapped = gcc-x3-3;
+                                   };
+  mkDerivation-3 = (nxfs-autotools nxfsenv-3-101);
+in
+let
+  nxfsenv-3-102 = nxfsenv-3-101 // { mkDerivation = mkDerivation-3; };
+
+  bzip2-3 = callPackage ./bootstrap-3/nxfs-bzip2-3
+    { nxfsenv-3 = nxfsenv-3-102;
+      patchelf = patchelf-3;
+    };
+in
+let
+
 
   # TODO: need {xz bzip2}
   #
@@ -368,7 +381,6 @@ let
                                        which        = which-3;
                                        mkDerivation = mkDerivation-3; };
 in
-
 {
   nxfs-autotools = nxfs-autotools;
 
@@ -412,6 +424,7 @@ in
   gcc-x2-wrapper-3     = gcc-x2-wrapper-3;
   gcc-x3-3             = gcc-x3-3;
   gcc-wrapper-3        = gcc-wrapper-3;
+  bzip2-3              = bzip2-3;
 
   # pills-example-1..nxfs-bootstrap-1 :: derivation
   pills-example-1       = import ./nix-pills/example1;
@@ -443,6 +456,8 @@ in
   nxfs-bootstrap-2-demo = import ./bootstrap-2-demo;
 
   nxfs-defs             = import ./bootstrap-1/nxfs-defs.nix;
+
+  mkDerivation-3        = mkDerivation-3;
 
   stdenv-nxfs           = stdenv-nxfs;
 }
