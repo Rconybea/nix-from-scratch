@@ -66,7 +66,10 @@ export CONFIG_SHELL="${bash_program}"
 # do need to give --host and --build arguments to configure,
 # since we're using a cross compiler.
 
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --without-bash-malloc bash_cv_strtold_broken=no CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags")
+CFLAGS="-I${ncurses}/include -I${sysroot}/usr/include"
+LDFLAGS="-L${ncurses}/lib -Wl,-enable-new-dtags"
+
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --with-curses --without-bash-malloc bash_cv_strtold_broken=no CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 
