@@ -67,7 +67,7 @@ export CONFIG_SHELL="${bash_program}"
 # since we're using a cross compiler.
 
 CFLAGS="-I${ncurses}/include -I${sysroot}/usr/include"
-LDFLAGS="-L${ncurses}/lib -Wl,-enable-new-dtags"
+LDFLAGS="-L${ncurses}/lib -Wl,-rpath,${ncurses}/lib -Wl,-enable-new-dtags"
 
 (cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --with-curses --without-bash-malloc bash_cv_strtold_broken=no CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
 
