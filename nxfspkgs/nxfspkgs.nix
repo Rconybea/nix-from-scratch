@@ -16,6 +16,9 @@
   args :
 
 let
+  # nxfs-defs :: { target_tuple :: string }
+  #   expect nxfs-defs.target_tuple="x86_64-pc-linux-gnu"
+  #
   nxfs-defs = import ./bootstrap-1/nxfs-defs.nix;
 
   # autotools eventually evaluates to derivation with defaults for:
@@ -47,8 +50,6 @@ let
     # coreutils,gnused,bash :: derivation
     gcc_wrapper  = import ./bootstrap-2/nxfs-gcc-wrapper-2;
     glibc        = import ./bootstrap-2/nxfs-glibc-stage1-2;
-#    gperf        = import ./bootstrap-2/nxfs-gperf-2;
-#    patchelf     = import ./bootstrap-2/nxfs-patchelf-2;
     perl         = import ./bootstrap-2/nxfs-perl-2;
     findutils    = import ./bootstrap-2/nxfs-findutils-2;
     binutils     = import ./bootstrap-2/nxfs-binutils-2;

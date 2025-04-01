@@ -3,6 +3,7 @@ let
   nxfs-gnumake-1     = import ../../bootstrap-1/nxfs-gnumake-1/default.nix;
   nxfs-gawk-1        = import ../../bootstrap-1/nxfs-gawk-1/default.nix;
 
+  nxfs-ncurses-2     = import ../nxfs-ncurses-2;
   nxfs-tar-2         = import ../nxfs-tar-2/default.nix;
   nxfs-grep-2        = import ../nxfs-grep-2/default.nix;
   nxfs-sed-2         = import ../nxfs-sed-2/default.nix;
@@ -29,6 +30,7 @@ derivation {
   gawk         = nxfs-gawk-1;
   bash         = nxfs-bash-1;
 
+  ncurses      = nxfs-ncurses-2;
   tar          = nxfs-tar-2;
   grep         = nxfs-grep-2;
   sed          = nxfs-sed-2;
