@@ -36,6 +36,7 @@ let
   nxfs-coreutils-2 = import ./nxfs-coreutils-2;
 
   nxfs-system-2 = import ./nxfs-system-2/default.nix;
+  nxfs-ncurses-2 = import ./nxfs-ncurses-2/default.nix;
   nxfs-bash-2 = import ./nxfs-bash-2/default.nix;
   nxfs-tar-2 = import ./nxfs-tar-2;
   nxfs-gnumake-2 = import ./nxfs-gnumake-2/default.nix;
@@ -104,6 +105,7 @@ derivation {
   nxfs-coreutils-2 = nxfs-coreutils-2;
 
   nxfs-system-2 = nxfs-system-2;
+  nxfs-ncurses-2 = nxfs-ncurses-2;
   nxfs-bash-2 = nxfs-bash-2;
   nxfs-tar-2 = nxfs-tar-2;
   nxfs-gnumake-2 = nxfs-gnumake-2;
