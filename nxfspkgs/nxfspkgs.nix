@@ -357,6 +357,9 @@ let
     { nxfsenv-3 = nxfsenv-3-102;
       patchelf = patchelf-3;
     };
+
+  xz-3 = callPackage ./bootstrap-3/nxfs-xz-3
+    { nxfsenv-3 = nxfsenv-3-102; };
 in
 let
 
@@ -365,6 +368,8 @@ let
   #
   stdenv-nxfs = callPackage ./stdenv { gcc          = gcc-wrapper-3;
                                        glibc        = glibc-stage1-3;
+                                       bzip2        = bzip2-3;
+                                       xz           = xz-3;
                                        patchelf     = patchelf-3;
                                        patch        = patch-3;
                                        file         = file-3;
@@ -425,6 +430,7 @@ in
   gcc-x3-3             = gcc-x3-3;
   gcc-wrapper-3        = gcc-wrapper-3;
   bzip2-3              = bzip2-3;
+  xz-3                 = xz-3;
 
   # pills-example-1..nxfs-bootstrap-1 :: derivation
   pills-example-1       = import ./nix-pills/example1;

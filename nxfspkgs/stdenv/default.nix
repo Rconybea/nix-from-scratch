@@ -2,6 +2,10 @@
   # everything in nxfsenv is from bootstrap-3/
   #  mkDerivation :: attrset -> derivation
   mkDerivation,
+  #  xz           :: derivation
+  xz,
+  #  bzip2        :: derivation
+  bzip2,
   #  patch        :: derivation
   patch,
   #  file         :: derivation
@@ -119,7 +123,7 @@ EOF
   #
   buildInputs = [ coreutils bash which ];
 
-  initialPath = [ patch file gnumake gzip gnutar
+  initialPath = [ bzip2 xz patch file gnumake gzip gnutar
                   gawk gnugrep gnused coreutils
                   findutils diffutils bash which ];
   defaultNativeBuildInputs = [ patchelf gcc ];
