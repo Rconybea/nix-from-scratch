@@ -40,17 +40,23 @@
   patchelf
 } :
 
+# mkDerivation (from autotools/default.nix) provides various interesting default.
+# All we care about here is the build *result*
+#
 mkDerivation {
   # nxfs-stdenv: intended to be a functional substitute for nixpkgs stdenv-linux
 
   name               = "stdenv-nxfs";
   system             = builtins.currentSystem;
 
-  glibc              = glibc;
-
+  # copied into build output;  *not* invoked here
   setup_program      = ./setup.sh;
 
-#  target_tuple       = nxfs-defs.target_tuple;
+#  builder            = "${bash}/bin/bash";
+#  bash               = bash;
+#  setupScript        = ./setup.sh;
+
+  glibc              = glibc;
 
   buildPhase = ''
     mkdir -p $out

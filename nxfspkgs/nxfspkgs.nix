@@ -363,10 +363,9 @@ let
     { nxfsenv-3 = nxfsenv-3-102; };
 in
 let
+  nixpkgspath = <nixpkgs>;
+  nixpkgs = import nixpkgspath {};
 
-
-  # TODO: need {xz bzip2}
-  #
   stdenv-nxfs = callPackage ./stdenv { gcc          = gcc-wrapper-3;
                                        glibc        = glibc-stage1-3;
                                        bzip2        = bzip2-3;
@@ -386,6 +385,29 @@ let
                                        bash         = bash-3;
                                        which        = which-3;
                                        mkDerivation = mkDerivation-3; };
+
+  # stdenv2nix :: attrs -> derivation
+  stdenv2nix-minimal = callPackage ./stdenv-to-nix
+    { inherit nixpkgspath; }
+    { inherit config;
+
+      # collects final bootstrap packages (built here) that
+      # we want to use to drive a nixpkgs-compatible stdenv
+      nxfs-bootstrap-pkgs = {
+        system = nxfs-defs.system;
+        gcc = gcc-wrapper-3;
+        bash = bash-3;
+        coreutils = coreutils-3;
+#        which = which-3;
+      };
+    };
+in
+let
+  # this isn't sufficient -- it decides it needs full bootstrap
+  # (possibly because of supporting nixpkgs deps needed by zlib?)
+  #
+  zlib-nixpkgs = callPackage (nixpkgspath + "/pkgs/development/libraries/zlib") { stdenv = stdenv2nix-minimal; };
+
 in
 {
   nxfs-autotools = nxfs-autotools;
@@ -467,4 +489,7 @@ in
   mkDerivation-3        = mkDerivation-3;
 
   stdenv-nxfs           = stdenv-nxfs;
+  stdenv2nix-minimal    = stdenv2nix-minimal;
+
+  zlib-nixpkgs          = zlib-nixpkgs;
 }

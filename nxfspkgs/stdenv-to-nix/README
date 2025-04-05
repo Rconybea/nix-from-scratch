@@ -1,0 +1,51 @@
+Try to create a nixpkgs stdenv from the toolchain we've built in bootstrap-3.
+
+To recap :- although in principle nixpkgs will 'just work' with non-standard store location,
+it will have to build everything (including its bootstrap chain, down to minimal bootstrap) from source.
+My experience (with 24.05, 24.11 and various attempts in between) is that I get symied by
+mysterious-to-me compile problems, and I don't have expertise to make sufficient progress on them.
+
+The needle we want to thread: create a nixpkgs-compatible stdenv without using any compiled
+nixpkgs ingredients.  Fine to invoke nix code from nixpkgs/lib, or anything else that doesn't
+use nixpkgs-provided glibc.
+
+A well-paved pathway would presumably be to establish new stdenv by bootstrapping from or modifying
+an already-working nixpkgs stdenv; that pathway isn't available to us since we don't have a nixpkgs
+stdenv yet!
+
+Also, nixpkgs stdenv has a lot of ingredients, and nixpkgs' process for bootstrapping it is complicated.
+In particular looks like we're going to use some nixpkgs files that aren't intended to be available
+from nixpkgs' top-level attribute set.
+
+Looking briefly at nixpkgs bootstrap:
+
+From our (idiosyncratic!) perspective, the nixpkgs implementation blends two separate concerns:
+A. features that will be visible in final stdenv (the stdenv 'api' if you will).
+B. features important during bootstrap process itself, that won't be needed or visible once it finishes).
+
+To be usable in nixpkgs our stdenv needs to replicate features in category A;
+but generally expect features in category B to have been covered by nxfspkgs bootstrap.
+In conclusion: inspecting linux/default.nix to understand exactly what a viable stdenv needs to
+provide (i.e. A), while setting aside detials relating to nixpkgs bootstrap process itself (i.e. B)
+
+Nixpkgs bootstrap for linux+glibc stdenv (see [nixpgks/pkgs/stdenv/linux]) is divided into about 5 phases.
+Each phase chains to the next using a parameterized 'StageFun' that uses the previous stage as an input.
+
+This stageFun works by adapting a generic stdenv-assembler (see [nixpkgs/pkgs/stdenv/generic]).
+We're going to try invoking this generic stdenv-assembler from nxfspkgs, hoping we get something
+we can then use to try building other nix pkgs.
+
+Main .nix files:
+
+1. nxfspkgs/stdenv-to-nix/default.nix
+   Provides a nix function :: attrset -> attrset -> stdenv
+   Type instead of (attrset -> stdenv) because (perhaps because by nix-fu is intermediate at best):
+   a. we're in nxfspkgs, not nixpkgs
+   b. we need to rely on elements of nixpkgs top-level attribute set:
+      specifically, nixpkgs.lib; so need to run something like `import <nixpkgs> {}`
+   c. Also need nixpkgs as filesystem path, so we can run something like
+        let nixpkgspath = <nixpkgs> in import (nixpkgspath + "/pkgs/stdenv/generic/default.nix")
+      Since the 'generic' builder isn't (afaict) otherwise accessible
+
+2. nixpkgs/stdenv/generic/default.nix
+   Provides nix function :: attrset -> stdenv

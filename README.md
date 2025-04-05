@@ -5,7 +5,7 @@
 
 # nix-from-scratch
 
-Build nix package manager and dependencies:
+Build nix package manager (aka nixcpp) and dependencies:
 1. from source code
 2. with dependencies
 3. without requiring write access to LSB directories (such as /usr)

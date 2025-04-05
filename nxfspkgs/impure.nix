@@ -53,13 +53,14 @@ in
   in
     let
       # config :: string
-      cfgfile = (leftPath configFile1 (leftPath configFile2 (leftPath configFile3)));
+      cfgfile = (leftPath configFile1 (leftPath configFile2 configFile3));
     in
-      if (builtins.pathExists cfgfile)
+      if (cfgfile != "") && (builtins.pathExists cfgfile)
       then
         import cfgfile
       else
         {}
+
 
 , # overlays allow extending nxfspkgs with additional package collections.
   #
@@ -148,4 +149,5 @@ in
 # all the attributes from args (command line arguments);
 # with substitutions from {config, overlays}
 #
-import ./nxfspkgs.nix (args // { inherit config overlays; })
+import ./nxfspkgs.nix (args // { config = { contentAddressedByDefault = false; } // config;
+                                 inherit overlays; })
