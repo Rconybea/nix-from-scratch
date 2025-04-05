@@ -188,8 +188,8 @@ let
 in
 let
   # TODO: use callPackage on these, so they're overrideable
-  gcc-wrapper-3  = bootstrap-3.gcc-wrapper-3;
-  glibc-stage1-3 = bootstrap-3.glibc-stage1-3;
+  gcc-wrapper-3  = bootstrap-3.gcc-wrapper-3;  # can comment this out
+  glibc-stage1-3 = bootstrap-3.glibc-stage1-3;  # can comment this out
 in
 let
   nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
@@ -280,9 +280,9 @@ let
     { nxfsenv-3            = nxfsenv-3-96;
       gcc-stage1-wrapper-3 = gcc-x0-wrapper-3;
       binutils-wrapper     = binutils-x0-wrapper-3; #bootstrap-2.nxfs-binutils-stage1-wrapper-2;  # but try nxfsenv-3 version
-      mpc                  = mpc-3; #bootstrap-2.nxfs-mpc-2;
-      mpfr                 = mpfr-3; #bootstrap-2.nxfs-mpfr-2;
-      gmp                  = gmp-3; #bootstrap-2.nxfs-gmp-2;
+      mpc                  = mpc-3;
+      mpfr                 = mpfr-3;
+      gmp                  = gmp-3;
       nixify-gcc-source    = bootstrap-2.nxfs-nixify-gcc-source;
       glibc                = glibc-stage1-3;
       sysroot              = bootstrap-1.nxfs-sysroot-1;
@@ -305,9 +305,9 @@ let
       gcc-x1-wrapper-3     = gcc-x1-wrapper-3;
       nixify-gcc-source    = bootstrap-2.nxfs-nixify-gcc-source;
       glibc                = glibc-stage1-3;
-      mpc                  = mpc-3; #bootstrap-2.nxfs-mpc-2;
-      mpfr                 = mpfr-3; #bootstrap-2.nxfs-mpfr-2;
-      gmp                  = gmp-3; #bootstrap-2.nxfs-gmp-2;
+      mpc                  = mpc-3;
+      mpfr                 = mpfr-3;
+      gmp                  = gmp-3;
     };
 in
 let
