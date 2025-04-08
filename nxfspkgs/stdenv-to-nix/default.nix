@@ -43,6 +43,10 @@ let
 in
 
 let
+  # makeGenericStdenv is normally invoked as part of support for a nixpkgs stdenv.
+  # see for example
+  #   nixpkgs/pkgs/linux/default.nix
+  #
   # makeGenericStdenv :: attrs -> (attrs -> derivation)
   #
   makeGenericStdenv = import (nixpkgspath + "/pkgs/stdenv/generic/default.nix");
@@ -52,15 +56,25 @@ let
   argsStdenv = {
     inherit config;
 
-    buildPlatform = platform;
-    hostPlatform = platform;
+    buildPlatform  = platform;
+    hostPlatform   = platform;
     targetPlatform = platform;
-    fetchurlBoot = nxfspkgs.fetchurlBoot;
 
-    cc = nxfspkgs.gcc;
-    shell = "${nxfspkgs.bash}/bin/bash";
+    fetchurlBoot   = import (nixpkgspath + "/pkgs/build-support/fetchurl/boot.nix") { system = builtins.currentSystem; };
 
-    initialPath = [ nxfspkgs.coreutils ];
+    cc             = nxfspkgs.gcc;
+    shell          = "${nxfspkgs.bash}/bin/bash";
+
+    # note: patch-shebangs is enabled for exactly those executables that appear in PATH, which ofc applies to bash
+    initialPath    = [ nxfspkgs.gzip
+                       nxfspkgs.gawk
+                       nxfspkgs.gnutar
+                       nxfspkgs.gnugrep
+                       nxfspkgs.gnused
+                       nxfspkgs.coreutils
+                       nxfspkgs.findutils
+                       nxfspkgs.bash
+                     ];
   };
 
 in
