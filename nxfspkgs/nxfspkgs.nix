@@ -224,6 +224,7 @@ let
                                                  mpfr = mpfr-3; };
 in
 let
+  # editor bait: pkg-config
   nxfsenv-3-d13 = nxfsenv-3-10 // { pkgconf = pkgconf-3;
                                     zlib = zlib-3; };
   # python-3 :: derivation
@@ -232,7 +233,8 @@ let
                                                      };
 in
 let
-  nxfsenv-3-16 = nxfsenv-3-10 // { texinfo  = texinfo-3;
+  nxfsenv-3-16 = nxfsenv-3-10 // { perl     = perl-3;
+                                   texinfo  = texinfo-3;
                                    bison    = bison-3;
                                    flex     = flex-3;
                                    file     = file-3;
@@ -357,8 +359,14 @@ in
 let
   nxfsenv-3-102 = nxfsenv-3-101 // { mkDerivation = mkDerivation-3; };
 
+  openssl-3 = callPackage ./bootstrap-3/nxfs-openssl-3
+    { nxfsenv-3 = nxfsenv-3-102; };
+in
+let
+  nxfsenv-3-103 = nxfsenv-3-102 // { openssl = openssl-3; };
+
   bzip2-3 = callPackage ./bootstrap-3/nxfs-bzip2-3
-    { nxfsenv-3 = nxfsenv-3-102;
+    { nxfsenv-3 = nxfsenv-3-103;
       patchelf = patchelf-3;
     };
 
@@ -457,9 +465,7 @@ in
   gcc-wrapper-3        = gcc-wrapper-3;
   bzip2-3              = bzip2-3;
   xz-3                 = xz-3;
-
-  # pills-example-1..nxfs-bootstrap-1 :: derivation
-  pills-example-1       = import ./nix-pills/example1;
+  openssl-3            = openssl-3;
 
   nxfs-bash-0           = import ./bootstrap/nxfs-bash-0;
   nxfs-coreutils-0      = import ./bootstrap/nxfs-coreutils-0;
@@ -467,6 +473,9 @@ in
 
   nxfs-toolchain-0      = import ./bootstrap/nxfs-toolchain-0;
   nxfs-sysroot-0        = import ./bootstrap/nxfs-sysroot-0;
+
+  # pills-example-1..nxfs-bootstrap-1 :: derivation
+  pills-example-1       = import ./nix-pills/example1;
 
   nxfs-bootstrap-1      = import ./bootstrap-1;
   nxfs-bootstrap-1-demo = import ./bootstrap-1-demo;
