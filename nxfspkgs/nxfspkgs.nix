@@ -382,6 +382,8 @@ let
                                      curl = curl-3;
                                      cacert = nxfs-cacert; };
 
+  # want a usable derivation using curl, that also has SSL certificates
+  fetchurl-3 = callPackage ./bootstrap-3/nxfs-fetchurl-3 { nxfsenv-3 = nxfsenv-3-104; };
 in
 let
   nixpkgspath = <nixpkgs>;
@@ -516,5 +518,7 @@ in
   stdenv-nxfs           = stdenv-nxfs;
   stdenv2nix-minimal    = stdenv2nix-minimal;
 
+
+  fetchurl-nixpkgs      = fetchurl-nixpkgs;
   zlib-nixpkgs          = zlib-nixpkgs;
 }
