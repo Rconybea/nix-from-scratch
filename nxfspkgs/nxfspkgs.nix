@@ -499,6 +499,40 @@ let
       # fortify-headers?        # default: null
       # includeFortifyHeaders?  # default: null
     };
+in
+let
+  # stdenv2nix :: attrs -> derivation
+  stdenv2nix-minimal = callPackage ./stdenv-to-nix
+    { inherit nixpkgspath; }
+    {
+      config = config // { allowUnsupportedSystem = false;
+                           allowBroken = false;
+                           checkMeta = false;
+                           configurePlatformsByDefault = true;
+                         };
+
+      # collects final bootstrap packages (built here) that
+      # we want to use to drive a nixpkgs-compatible stdenv.
+      #
+      # WARNING: to be used in stdenv, attrs added below must also add to
+      #          stdenv-to-nix argsStdenv.initialPath
+      #
+      nxfs-bootstrap-pkgs = {
+        system    = nxfs-defs.system;
+        gcc       = gcc-wrapper-nixpkgs;
+        #gcc       = gcc-wrapper-3;   # todo: need this to provide cc probably
+        binutils  = bintools-wrapper-nixpkgs;
+        gzip      = gzip-3;
+        gnutar    = gnutar-3;
+        gawk      = gawk-3;
+        gnugrep   = gnugrep-3;
+        gnused    = gnused-3;
+        bash      = bash-3;
+        coreutils = coreutils-3;
+        findutils = findutils-3;
+#        which    = which-3;
+      };
+    };
 
 in
 {
