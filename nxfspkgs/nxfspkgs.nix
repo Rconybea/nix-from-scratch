@@ -371,12 +371,24 @@ let
     };
 
   xz-3 = callPackage ./bootstrap-3/nxfs-xz-3
-    { nxfsenv-3 = nxfsenv-3-102; };
+    { nxfsenv-3 = nxfsenv-3-103; };
+
+  curl-3 = callPackage ./bootstrap-3/nxfs-curl-3
+    { nxfsenv-3 = nxfsenv-3-103; };
+in
+let
+  nxfsenv-3-104 = nxfsenv-3-103 // { bzip2 = bzip2-3;
+                                     xz = xz-3;
+                                     curl = curl-3;
+                                     cacert = nxfs-cacert; };
+
 in
 let
   nixpkgspath = <nixpkgs>;
   nixpkgs = import nixpkgspath {};
-
+in
+let
+  # a nxfs-only stdenv (noy really using this for anything..)
   stdenv-nxfs = callPackage ./stdenv { gcc          = gcc-wrapper-3;
                                        glibc        = glibc-stage1-3;
                                        bzip2        = bzip2-3;
@@ -466,6 +478,7 @@ in
   bzip2-3              = bzip2-3;
   xz-3                 = xz-3;
   openssl-3            = openssl-3;
+  curl-3               = curl-3;
 
   nxfs-bash-0           = import ./bootstrap/nxfs-bash-0;
   nxfs-coreutils-0      = import ./bootstrap/nxfs-coreutils-0;
