@@ -463,8 +463,42 @@ let
       nativeLibc             = false;
       expand-response-params = "";
     };
+in
+let
+  # works! at least in the sense that builds derivation and can invokve gcc
+  # similar invocation of gcc-wrapper in [nixpkgs/pkgs/build-support/cc-wrapper]
   #
-  zlib-nixpkgs = callPackage (nixpkgspath + "/pkgs/development/libraries/zlib") { stdenv = stdenv2nix-minimal; };
+  # gcc-wrapper-nixpkgs :: derivation
+  gcc-wrapper-nixpkgs = callPackage (nixpkgspath + "/pkgs/build-support/cc-wrapper")
+    {
+      name                   = "nxfs-gcc-wrapper";
+      lib                    = lib-nixpkgs;
+      stdenvNoCC             = stdenv2nix-no-cc;
+      runtimeShell           = bash-3;
+      cc                     = gcc-x3-3;
+      libc                   = glibc-stage1-3;
+      bintools               = bintools-wrapper-nixpkgs;
+      coreutils              = coreutils-3;
+      zlib                   = false; # looks like not needed for gcc
+      nativeTools            = false;
+      nativeLibc             = false;
+      # nativePrefix = ""       # defaults to empty string; must match bintools.nativePrefix
+      # propagateDoc?           # take from cc
+      extraTools             = [];
+      extraPackages          = [];
+      extraBuildCommands     = "";
+      nixSupport             = {};  # will appear as gcc-wrapper-nixpkgs.nixSupport, also in $out/nix-support
+      gnugrep                = gnugrep-3;
+      expand-response-params = "";
+      libcxx                 = libstdcxx-x2-3;
+      # useCcForLibs?           # whether or not to add -B, -L to nix-support/{cc-cflags,cc-ldflags}
+      #   default: yes for clang, no if cross-compiling, no if cc from bootstrap files,
+      #            yes if complicated where-are-we-in-bootstrap tests,
+      #            otherwise false
+      # gccForLibs?             # default: cc, if useCcForLibs is true
+      # fortify-headers?        # default: null
+      # includeFortifyHeaders?  # default: null
+    };
 
 in
 {
@@ -553,6 +587,7 @@ in
   stdenv2nix-minimal    = stdenv2nix-minimal;
 
   bintools-wrapper-nixpkgs = bintools-wrapper-nixpkgs;
+  gcc-wrapper-nixpkgs = gcc-wrapper-nixpkgs;
 
   fetchurl-nixpkgs      = fetchurl-nixpkgs;
   zlib-nixpkgs          = zlib-nixpkgs;

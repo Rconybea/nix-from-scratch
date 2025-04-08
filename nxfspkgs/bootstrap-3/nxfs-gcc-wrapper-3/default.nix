@@ -31,6 +31,13 @@ nxfsenv.mkDerivation {
 
   target_tuple       = nxfs-defs.target_tuple;
 
+  # This will be visible to nixpkgs via
+  #   nxfspkgs.stdenv2nix-minimal,
+  # as
+  #   stdenv.cc.targetPrefix
+  #
+  targetPrefix = "";
+
   buildPhase = ''
     # script to intercept calls to $gcc,
     # and inject additional arguments
