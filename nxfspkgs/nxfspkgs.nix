@@ -411,25 +411,58 @@ let
                                        which        = which-3;
                                        mkDerivation = mkDerivation-3; };
 
-  # stdenv2nix :: attrs -> derivation
-  stdenv2nix-minimal = callPackage ./stdenv-to-nix
+  # stdenv2nix-no-cc :: attrs -> derivation
+  stdenv2nix-no-cc = callPackage ./stdenv-to-nix
     { inherit nixpkgspath; }
-    { inherit config;
+    {
+      config = config // { allowUnsupportedSystem = false;
+                           allowBroken = false;
+                           checkMeta = false;
+                           configurePlatformsByDefault = true; };
 
       # collects final bootstrap packages (built here) that
       # we want to use to drive a nixpkgs-compatible stdenv
+      #
+      # WARNING: to be used in stdenv, attrs added below must also add to
+      #          stdenv-to-nix argsStdenv.initialPath
+      #
       nxfs-bootstrap-pkgs = {
-        system = nxfs-defs.system;
-        gcc = gcc-wrapper-3;
-        bash = bash-3;
+        system    = nxfs-defs.system;
+        gcc       = null; #gcc-wrapper-3;
+        #binutils  = binutils-x0-wrapper-3;  # todo: industrial-strength gcc wrapper should hold this, match nixpkgs pattern
+        gzip      = gzip-3;
+        gnutar    = gnutar-3;
+        gawk      = gawk-3;
+        gnugrep   = gnugrep-3;
+        gnused    = gnused-3;
+        bash      = bash-3;
         coreutils = coreutils-3;
-#        which = which-3;
+        findutils = findutils-3;
+#        which    = which-3;
       };
     };
 in
 let
-  # this isn't sufficient -- it decides it needs full bootstrap
-  # (possibly because of supporting nixpkgs deps needed by zlib?)
+  # <nixpkgs>.lib
+  lib-nixpkgs = nixpkgs.lib;
+in
+let
+  # works!
+  # btw, similar invocation of bintools-wrapper in [nixpkgs/pkgs/stdenv/linux/default.nix]
+  #
+  bintools-wrapper-nixpkgs = callPackage (nixpkgspath + "/pkgs/build-support/bintools-wrapper")
+    { name                   = "nxfs-bintools-wrapper";
+      lib                    = lib-nixpkgs;
+      stdenvNoCC             = stdenv2nix-no-cc;  # will use stdenvNoCC.mkDerivation
+      runtimeShell           = bash-3;
+      bintools               = binutils-3;
+      coreutils              = coreutils-3;
+      gnugrep                = gnugrep-3;
+      libc                   = glibc-stage1-3;
+      nativeTools            = false;
+      nativeLibc             = false;
+      expand-response-params = "";
+    };
   #
   zlib-nixpkgs = callPackage (nixpkgspath + "/pkgs/development/libraries/zlib") { stdenv = stdenv2nix-minimal; };
 
@@ -516,8 +549,10 @@ in
   mkDerivation-3        = mkDerivation-3;
 
   stdenv-nxfs           = stdenv-nxfs;
+  stdenv2nix-no-cc      = stdenv2nix-no-cc;
   stdenv2nix-minimal    = stdenv2nix-minimal;
 
+  bintools-wrapper-nixpkgs = bintools-wrapper-nixpkgs;
 
   fetchurl-nixpkgs      = fetchurl-nixpkgs;
   zlib-nixpkgs          = zlib-nixpkgs;
