@@ -38,8 +38,6 @@ nxfsenv.mkDerivation {
                                        };
 
   buildPhase = ''
-    set -e
-
     src2=$TMPDIR/src2
     builddir=$TMPDIR/build
 
