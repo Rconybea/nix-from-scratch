@@ -16,6 +16,9 @@
   args :
 
 let
+  # nxfs-cacert :: derivation    ( SSL certificates, copied from build host)
+  nxfs-cacert = import ./bootstrap/nxfs-cacert-0;
+
   # nxfs-defs :: { target_tuple :: string }
   #   expect nxfs-defs.target_tuple="x86_64-pc-linux-gnu"
   #

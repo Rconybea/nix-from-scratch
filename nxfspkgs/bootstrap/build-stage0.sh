@@ -1,7 +1,11 @@
 #!/bin/bash
 
-set -e
-set -x
+set -euo pipefail
+
+pushd nxfs-cacert-0
+./copy2nix.sh
+nix-build
+popd
 
 pushd nxfs-toolchain-0
 ./copy2nix.sh
