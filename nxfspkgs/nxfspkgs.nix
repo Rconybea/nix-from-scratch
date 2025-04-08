@@ -533,6 +533,21 @@ let
 #        which    = which-3;
       };
     };
+in
+
+let
+  fetchurl-nixpkgs = callPackage (nixpkgspath + "/pkgs/fetchurl") { stdenv = stdenv2nix-minimal; };
+
+  zlib-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/zlib")
+    {
+      stdenv = stdenv2nix-minimal;
+      fetchurl = stdenv2nix-minimal.fetchurlBoot;
+      lib = nixpkgs.lib;
+
+      # used for tests..
+      testers = false;
+      minizip = false;
+    });
 
 in
 {
