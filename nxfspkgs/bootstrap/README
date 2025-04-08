@@ -4,6 +4,15 @@ TL;DR
 Prerequisites:
 1. {nix, crosstools-ng} built from source.
    See nix-from-scratch/pkgs/nix, nix-from-scratch/pkgs/crosstools-ng
+2. SSL certificates in known location.
+   On ubuntu these are in /etc/ssl/certs.
+   If they're in a nonstandard location, may already have SSL_CERT_DIR pointing to them.
+   Alternatively openssl can tell you its default location:
+     $ openssl version -d
+     OPENSSLDIR: "/usr/lib/ssl"
+   (Note that on ubuntu /usr/lib/ssl/certs is symlink to /etc/ssl certs)
+   Although we copy these into nix store in stage 0,
+   we won't need them until much later, as part of stdenv fetchUrlBoot
 
 Then:
   $ cd nix-from-scratch/nxfspkgs/bootstrap
