@@ -21,21 +21,58 @@ export LDFLAGS
 PKG_CONFIG_PATH=
 export PKG_CONFIG_PATH
 
-# copy drv.buildInputs, drv.derivation into PATH, in left-to-right order
-for dir in ${buildInputs} ${baseInputs}; do
-    if [[ -d ${dir}/bin ]]; then
-        export PATH="${PATH}"${PATH:+:}${dir}/bin
+addToEnv() {
+    if [[ -d $1/bin ]]; then
+        eval export _PATH=${_PATH-}${_PATH:+:}$1/bin
     fi
+}
 
-#    if [[ -d ${dir}/lib ]]; then
-#        export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}"${LD_LIBRARY_PATH:+:}${dir}/lib
-#    fi
+declare pkgs=""
 
-    if [[ -d ${dir}/lib/pkgconfig ]]; then
-        export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"${PKG_CONFIG_PATH:+:}${dir}/lib/pkgconfig
+findInputs() {
+    local pkg=$1
+
+    case $pkgs in
+        *\ $pkgs\ *) # recognize is $pkgs already contains $pkg -> short-circuit
+            return 0
+            ;;
+    esac
+
+    pkgs="$pkgs $pkg "
+
+    # also add propagated build inputs of $pkg
+    if [[ -f ${pkg}/nix-support/propagated-build-inputs ]]; then
+        for i in $(cat $pkg/nix-support/propagated-build-inputs); do
+            findInputs $i
+        done
     fi
+}
+
+for i in ${propagatedBuildInputs} ${buildInputs} ${baseInputs}; do
+    findInputs $i
 done
 
+for i in $pkgs; do
+    addToEnv ${i}
+
+    if [[ -d ${i}/lib/pkgconfig ]]; then
+        eval export _PKG_CONFIG_PATH=${_PKGCONFIG_PATH-}${_PKG_CONFIG_PATH:+:}${i}/lib/pkgconfig
+    fi
+done
+PATH="${_PATH-}${_PATH:+${PATH:+:}}$PATH"
+PKG_CONFIG_PATH="${_PKG_CONFIG_PATH-}${_PKG_CONFIG_PATH:+${PKG_CONFIG_PATH:+:}}$PKG_CONFIG_PATH"
+
+## copy drv.buildInputs, drv.derivation into PATH, in left-to-right order
+#for dir in ${propagatedBuildInputs} ${buildInputs} ${baseInputs}; do
+#    if [[ -d ${dir}/bin ]]; then
+#        export PATH="${PATH}"${PATH:+:}${dir}/bin
+#    fi
+#
+##    if [[ -d ${dir}/lib ]]; then
+##        export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}"${LD_LIBRARY_PATH:+:}${dir}/lib
+##    fi
+#
+#done
 
 showPhaseHeader() {
     local phase="${1}"
@@ -93,7 +130,10 @@ installPhase() {
 }
 
 fixupPhase() {
-    :
+    if [[ -n "${propagatedBuildInputs}" ]]; then
+        mkdir -p "${out}/nix-support"
+        echo "${propagatedBuildInputs}" > "${out}/nix-support/propagated-build-inputs"
+    fi
 }
 
 installCheckPhase() {

@@ -14,6 +14,7 @@
   #              }
   nxfsenv,
   # nxfsenv-3 :: {
+  #                bzip2       :: derivation
   #                gnugrep     :: derivation
   #                gnused      :: derivation
   #                findutils   :: derivation
@@ -34,6 +35,8 @@ nxfsenv.mkDerivation {
                                          url = "https://ftp.gnu.org/gnu/tar/tar-${version}.tar.xz";
                                          sha256 = "0cmdg6gq9v04631lfb98xg45la1b0y9r5wyspn97ri11krdlyfqz"; };
 
+  bzip2 = nxfsenv-3.bzip2;
+
   buildPhase = ''
     set -e
 
@@ -49,10 +52,14 @@ nxfsenv.mkDerivation {
 
     bash_program=$bash/bin/bash
 
+
     # $src/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$bash_program"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    #CFLAGS="$bzip2/include"
+    LDFLAGS="-Wl,-enable-new-dtags"
+
+    (cd $builddir && $bash_program $src2/configure --prefix=$out CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
   '';
@@ -70,5 +77,9 @@ nxfsenv.mkDerivation {
     nxfsenv.coreutils
     nxfsenv.bash
     nxfsenv.glibc
+  ];
+
+  propagatedBuildInputs = [
+    nxfsenv-3.bzip2
   ];
 }

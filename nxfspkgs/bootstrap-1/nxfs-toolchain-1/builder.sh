@@ -56,7 +56,7 @@ for dir in ${staging}/bin ${staging}/${host_tuple}/bin ${staging}/${host_tuple}/
     done
 done
 
-chmod u-w ${staging}/${host_tuple}/debug-root/usr/bin
+#chmod u-w ${staging}/${host_tuple}/debug-root/usr/bin
 chmod u-w ${staging}/libexec/gcc/${host_tuple}/${gcc_version}
 chmod u-w ${staging}/${host_tuple}/bin
 chmod u-w ${staging}/${host_tuple}

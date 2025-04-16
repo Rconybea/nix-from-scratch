@@ -27,6 +27,10 @@ let
 #    ];
     # buildInputs :: list(derivation)  elt d[i] passed to builder as nix-store path
     buildInputs = [ ];
+
+    # inputs that should also be preserved for runtime
+    propagatedBuildInputs = [ ];
+
     system = builtins.currentSystem;
   };
 in

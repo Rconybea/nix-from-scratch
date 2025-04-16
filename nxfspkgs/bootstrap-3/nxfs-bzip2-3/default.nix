@@ -1,4 +1,18 @@
 {
+  # nxfsenv   :: { mkDerivation :: attrs -> derivation,
+  #                gcc-wrapper :: derivation  (also as gcc_wrapper)
+  #                binutils    :: derivation
+  #                gawk        :: derivation
+  #                gnumake     :: derivation
+  #                gnugrep     :: derivation
+  #                gnutar      :: derivation
+  #                gnused      :: derivation
+  #                coreutils   :: derivation
+  #                bash        :: derivation
+  #                glibc       :: derivation
+  #                nxfs-defs   :: { target_tuple :: string }
+  #              }
+  nxfsenv,
   # nxfsenv-3 :: { mkDerivation :: attrs -> derivation,
   #                  gcc :: derivation,
   #                  binutils    :: derivation,
@@ -17,23 +31,23 @@
 } :
 
 let
-  patch = nxfsenv-3.patch;
+  patch     = nxfsenv.patch; #nxfsenv-3.patch;
   findutils = nxfsenv-3.findutils;
   diffutils = nxfsenv-3.diffutils;
-  gcc = nxfsenv-3.gcc;
-  binutils = nxfsenv-3.binutils;
-  gawk = nxfsenv-3.gawk;
-  gnumake = nxfsenv-3.gnumake;
-  gnugrep = nxfsenv-3.gnugrep;
-  gnutar = nxfsenv-3.gnutar;
-  gnused = nxfsenv-3.gnused;
-  coreutils = nxfsenv-3.coreutils;
-  bash = nxfsenv-3.bash;
+  gcc       = nxfsenv.gcc_wrapper; #nxfsenv-3.gcc;
+  binutils  = nxfsenv.binutils; #nxfsenv-3.binutils;
+  gawk      = nxfsenv.gawk; #nxfsenv-3.gawk;
+  gnumake   = nxfsenv.gnumake; #nxfsenv-3.gnumake;
+  gnugrep   = nxfsenv-3.gnugrep;
+  gnutar    = nxfsenv.gnutar; #nxfsenv-3.gnutar;
+  gnused    = nxfsenv.gnused; #nxfsenv-3.gnused;
+  coreutils = nxfsenv.coreutils; #nxfsenv-3.coreutils;
+  bash      = nxfsenv.bash; #nxfsenv-3.bash;
 
-  version = "1.0.8";
+  version   = "1.0.8";
 in
 
-nxfsenv-3.mkDerivation {
+nxfsenv.mkDerivation {
   name         = "nxfs-bzip2-3";
   version      = version;
   system       = builtins.currentSystem;

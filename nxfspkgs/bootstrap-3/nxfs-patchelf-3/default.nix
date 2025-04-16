@@ -75,4 +75,12 @@ nxfsenv.mkDerivation {
                   nxfsenv-3.diffutils
                   nxfsenv-3.coreutils
                   nxfsenv-3.bash ];
+
+} // {
+  # experiment.
+  # Encountered problem with nixpkgs builds-on-top-of-nxfs, where
+  # it (specifically stdenv/generic/default.nix, invoked from stdenv2nix-minimal)
+  # complains if nixpkgs.patchelf does not set this passthru.
+  #
+  passthru.isFromBootstrapFiles = true;
 }

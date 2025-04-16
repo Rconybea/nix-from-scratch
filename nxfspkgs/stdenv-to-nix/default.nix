@@ -66,13 +66,16 @@ let
     shell          = "${nxfspkgs.bash}/bin/bash";
 
     # note: patch-shebangs is enabled for exactly those executables that appear in PATH, which ofc applies to bash
-    initialPath    = [ nxfspkgs.gnumake
+    initialPath    = [ nxfspkgs.patch
+                       nxfspkgs.gnumake
                        nxfspkgs.gzip
                        nxfspkgs.gawk
                        nxfspkgs.gnutar
+                       nxfspkgs.bzip2
                        nxfspkgs.gnugrep
                        nxfspkgs.gnused
                        nxfspkgs.coreutils
+                       nxfspkgs.diffutils
                        nxfspkgs.findutils
                        nxfspkgs.bash ];
   };
