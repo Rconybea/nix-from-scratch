@@ -8,7 +8,9 @@ let
   nxfs-redirect-elf-file = import ../nxfs-redirect-elf-file/default.nix;
 
   bash = "${nxfs-bash-0}/bin/bash";
+  # need to use nxfs-sysroot-0 linker with nxfs-bash-0 bash
   builder = "${nxfs-sysroot-0}/lib/ld-linux-x86-64.so.2";
+#  builder = "${nxfs-sysroot-1}/lib64/ld-linux-x86-64.so.2";
   redirect_elf_file = "${nxfs-redirect-elf-file}/bootstrap-scripts/redirect-elf-file.sh";
 in
 

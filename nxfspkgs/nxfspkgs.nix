@@ -78,7 +78,7 @@ let
 
   # allPkgs   :: attrset
   # path      :: path         to some .nix file
-  # overrides :: attrset      overides relative to allPkgs
+  # overrides :: attrset      overrides relative to allPkgs
   makeCallPackage = allPkgs: path: overrides:
     let
       # fn :: attrset -> derivation
@@ -457,6 +457,7 @@ let
         gcc       = null;
         #binutils  = binutils-x0-wrapper-3;  # todo: industrial-strength gcc wrapper should hold this, match nixpkgs pattern
         patch     = patch-3;
+        xz        = xz-3;
         gnumake   = gnumake-3;
         gzip      = gzip-3;
         gnutar    = gnutar-3;
@@ -555,6 +556,7 @@ let
         gcc       = gcc-wrapper-nixpkgs;
         binutils  = bintools-wrapper-nixpkgs;
         patch     = patch-3;
+        xz        = xz-3;
         gnumake   = gnumake-3;
         gzip      = gzip-3;
         gnutar    = gnutar-3;
@@ -652,6 +654,21 @@ let
       testers  = false;
       minizip  = false;
     });
+in
+let
+  xz-nixpkgs = (callPackage (nixpkgspath + "/pkgs/tools/compression/xz")
+    {
+      stdenv = stdenv2nix-minimal;
+      fetchurl = stdenv2nix-minimal.fetchurlBoot;
+      lib = nixpkgs.lib;
+      zlib = zlib-nixpkgs;
+      isMinimalBuild = true;
+
+      writeScript = nixpkgs.lib.writeScript;
+
+      # for tests..
+      testers = false;
+    });
 
 in
 #let
@@ -695,6 +712,7 @@ let
 
       testers = false;
       minizip = false;
+      writeScript = nixpkgs.lib.writeScript;
     });
 in
 {
@@ -791,6 +809,7 @@ in
   zlib-nixpkgs2          = zlib-nixpkgs2;
   zlib-nixpkgs          = zlib-nixpkgs;
   xz-nixpkgs2           = xz-nixpkgs2;
+  xz-nixpkgs            = xz-nixpkgs;
   patchelf-nixpkgs2     = patchelf-nixpkgs2;
   patchelf-nixpkgs      = patchelf-nixpkgs;
 #  bzip2-nixpkgs2        = bzip2-nixpkgs2;

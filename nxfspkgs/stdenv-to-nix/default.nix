@@ -67,6 +67,7 @@ let
 
     # note: patch-shebangs is enabled for exactly those executables that appear in PATH, which ofc applies to bash
     initialPath    = [ nxfspkgs.patch
+                       nxfspkgs.xz
                        nxfspkgs.gnumake
                        nxfspkgs.gzip
                        nxfspkgs.gawk
