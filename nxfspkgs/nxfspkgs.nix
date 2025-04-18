@@ -431,6 +431,11 @@ let
   stdenv2nix-no-cc = callPackage ./stdenv-to-nix
     { inherit nixpkgspath; }
     {
+      # Incomplete config will break nixpkgs in a variety of ways.
+      # editor bait: error: attribute
+      #
+      # See also [stdenv2nix-config-0] below
+      #
       # to see attrs in regular nixpkgs:
       #  $ nix repl
       #  > :l <nixpkgs>
@@ -442,6 +447,8 @@ let
                            checkMeta = false;
                            configurePlatformsByDefault = true;
                            enableParallelBuildingByDefault = false;
+                           showDerivationWarnings = [ ];
+                           strictDepsByDefault = false;
                          };
 
       # collects final bootstrap packages (built here in nxfspkgs) that
@@ -528,12 +535,15 @@ let
     };
 in
 let
+  # See also [stdenv2nix-no-cc] above
+  #
   stdenv2nix-config-0 = config // { allowAliases = true;
                                     allowUnsupportedSystem = false;
                                     allowBroken = false;
                                     checkMeta = false;
                                     configurePlatformsByDefault = true;
                                     enableParallelBuildingByDefault = false;
+                                    showDerivationWarnings = [ ];
                                     strictDepsByDefault = false;
                                   };
 
