@@ -610,12 +610,6 @@ let
     });
 
   # NOT YET
-  #   needs updateAutotoolsGnuConfigScriptsHook, ncurses, pkg-config, fetchurl, lib, stdenv,
-  ncurses-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/ncurses")
-    {
-    });
-
-  # NOT YET
   #   needs ncurses, termcap (but won't use), fetchpatch, fetchurl, lib, stdenv
   #
   readline82-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/readline/8.2.nix")
@@ -644,7 +638,13 @@ let
     #stdenv = stdenv2nix-minimal;
     fetchurl = stdenv2nix-minimal.fetchurlBoot;
 
+    # builds!
+    gnu-config = super.gnu-config.override { stdenv = stdenv2nix-minimal; };
+
+    # builds!
     zlib = super.zlib.override { stdenv = stdenv2nix-minimal; };
+
+    # builds!
     # xz has carve-out to prevent CONFIG_SHELL pointing to bash in bootstrapTools
     # In this context that leaves CONFIG_SHELL pointing to /bin/sh, which wedges build
     xz = (super.xz.overrideAttrs (old: { preConfigure=""; })).override { stdenv = stdenv2nix-minimal; };
@@ -665,33 +665,56 @@ let
     # so presumably interference from linux/default.nix is coming from somewhere else.
 
     #bzip2 = super.bzip2.override { stdenv = stdenv2nix-minimal; };
-    #xz = super.xz.override { stdenv = stdenv2nix-minimal; }.overrideAttrs
-    #  (old: { preConfigure=""; });
+
+    makeSetupHook =
+      (callPackage ./build-support/trivial-builders-0.nix
+        { stdenv = stdenv2nix-minimal;
+          stdenvNoCC = stdenv2nix-no-cc;
+          lib = self.lib; })
+        .makeSetupHook;
+
+    # builds!
     file = super.file.override { stdenv = stdenv2nix-minimal; };
+    # builds!
     which = super.which.override { stdenv = stdenv2nix-minimal; };
+    # builds!
     pkg-config-unwrapped = super.pkg-config-unwrapped.override {
       stdenv = stdenv2nix-minimal;
       libiconv = stdenv2nix-minimal.cc.libc; };
+    # builds!
     pkg-config = super.pkg-config.override {
       stdenvNoCC = stdenv2nix-no-cc;
+    };
+
+    ncurses = (super.ncurses.overrideAttrs (old: { passthru.binlore = null; })).override {
+      stdenv = stdenv2nix-minimal;
+      mouseSupport = false; # 1. would be nice; 2. relies on pkgs/servers/gpm; 3. gpm needs a bunch of deps
+      gpm = null;
+      binlore = null; # some sort of dependency analyzer thing; only affects passthru.binlore. Too many deps
+
+      # for tests
+      testers = false;
     };
 
     #bash = super.bash.override { stdenv = stdenv2nix-minimal; };
     gzip = super.gzip.override { stdenv = stdenv2nix-minimal; }; # NOT YET, need bash
     #texinfo = super.texinfo.override { stdenv = stdenv2nix-minimal; };
     #coreutils = super.coreutils.override { stdenv = stdenv2nix-minimal; };
-  };
+
+
+
+  };  # end of overlay
 
   nixpkgs = import nixpkgspath { overlays = [ overlay ]; };
 in
 let
 
+  gnu-config-nixpkgs2 = nixpkgs.gnu-config;
   # this will try to build, but still winds up requiring nixpkgs bootstrap
   #zlib-nixpkgs2 = nixpkgs.zlib.override { stdenv = stdenv2nix-minimal; };
   zlib-nixpkgs2 = nixpkgs.zlib;
   xz-nixpkgs2 = nixpkgs.xz;   # nixpgks/pkgs/tools/compression/xz
 
-  # no good, attempts nixpkgs bootstrap
   patchelf-nixpkgs2 = nixpkgs.patchelf; # nixpkgs/pkgs/development/tools/misc/patchelf
 
 #  bzip2-nixpkgs2 = nixpkgs.bzip2;
@@ -703,6 +726,13 @@ let
   pkg-config-unwrapped-nixpkgs2 = nixpkgs.pkg-config-unwrapped;  # working
   pkg-config-nixpkgs2 = nixpkgs.pkg-config;
 
+  # builds, but relies on kitbashed nixpkgs trivial-builders.
+  # See trivial-builders-0 above
+  #
+  updateAutotoolsGnuConfigScriptsHook-nixpkgs2 = nixpkgs.updateAutotoolsGnuConfigScriptsHook;
+
+  ncurses-nixpkgs2 = nixpkgs.ncurses;
+
   # gzip-nixpkgs: not good, needs bash
   gzip-nixpkgs2 = nixpkgs.gzip; # needs bash
 #  texinfo-nixpkgs2 = nixpkgs.texinfo;
@@ -710,6 +740,7 @@ let
 
   coreutils-nixpkgs2 = nixpkgs.coreutils;
 
+  # builds!
   fetchurl-nixpkgs = callPackage (nixpkgspath + "/pkgs/build-support/fetchurl")
     { lib = nixpkgs.lib;
       curl = curl-3;
@@ -717,6 +748,31 @@ let
       cacert = nxfs-cacert;
     };
 
+  # builds!
+  gnu-config-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/gnu-config")
+    {
+      stdenv   = stdenv2nix-minimal;
+      fetchurl = stdenv2nix-minimal.fetchurlBoot;
+      lib      = nixpkgs.lib;
+    });
+
+  # Works, but relies on kitbashing nixpkgs trivial-builders.
+  # See trivial-builders-0 above.
+  #
+  # Otherwise:
+  #   Needs makeSetupHook from build-support/trivial-builders/default.nix
+  #   Even though that's just a shell script thing, it resides in trivial-builders
+  #   alongside peers that have more elaborate dependencies.
+  #   Then trivial-builders is setup as an overlay.
+  #   Full immediate dependency set:
+  #     lib,config,runtimeShell,stdenv,stdenvNoCC,jq,shellcheck-minimal,lndir
+  #
+  updateAutotoolsGnuConfigScriptsHook-nixpkgs = nixpkgs.makeSetupHook {
+    name = "update-autotools-gnu-config-scripts-hook";
+    substitutions = { gnu_config = gnu-config-nixpkgs; };
+  } (nixpkgspath + "/pkgs/build-support/setup-hooks/update-autotools-gnu-config-scripts.sh");
+
+  # builds!
   zlib-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/zlib")
     {
       stdenv   = stdenv2nix-minimal;
@@ -728,9 +784,8 @@ let
       minizip  = false;
     });
 
-  #  Needs libiconv, fetchurl, stdenv, lib
+  # builds!
   #  looks like libiconf should get resolved to stdenv.cc.glibc --> hack that in.
-  #
   pkg-config-unwrapped-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/tools/misc/pkg-config")
     {
       stdenv = stdenv2nix-minimal;
@@ -742,6 +797,7 @@ let
 
 in
 let
+  # builds!
   xz-nixpkgs = (callPackage (nixpkgspath + "/pkgs/tools/compression/xz")
     {
       stdenv = stdenv2nix-minimal;
@@ -756,6 +812,7 @@ let
       testers = false;
     });
 
+  # builds!
   pkg-config-nixpkgs = (callPackage (nixpkgspath + "/pkgs/build-support/pkg-config-wrapper")
     {
       stdenvNoCC = stdenv2nix-no-cc;
@@ -763,6 +820,25 @@ let
       lib = nixpkgs.lib;
       buildPackages = stdenv2nix-minimal.buildPackages;
     });
+
+  # NOT YET
+  #   needs updateAutotoolsGnuConfigScriptsHook, ncurses, pkg-config, fetchurl, lib, stdenv,
+  ncurses-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/ncurses")
+    {
+      stdenv = stdenv2nix-minimal;
+      fetchurl = stdenv2nix-minimal.fetchurlBoot;
+      lib = nixpkgs.lib;
+      pkg-config = pkg-config-nixpkgs;  # or pkg-config-nixpkgs2;
+      buildPackages = stdenv2nix-minimal.buildPackages;
+      updateAutotoolsGnuConfigScriptsHook = nixpkgs.updateAutotoolsGnuConfigScriptsHook;
+      ncurses = null;  # would be used if cross compiling
+      mouseSupport = false; # 1. would be nice; 2. relies on pkgs/servers/gpm; 3. gpm needs a bunch of deps
+      gpm = null;
+      binlore = null; # some sort of dependency analyzer thing; only affects passthru.binlore. Too many deps
+
+      # for tests
+      testers = false;
+    }).overrideAttrs(old: { passthru.binlore = null; });
 
 in
 #let
@@ -812,6 +888,7 @@ in
 {
   nxfs-autotools = nxfs-autotools;
 
+  nixpkgs              = nixpkgs;
   which-3              = which-3;
   diffutils-3          = diffutils-3;
   findutils-3          = findutils-3;
@@ -900,6 +977,9 @@ in
 
   # fetchurl-nixpkgs :: { url :: string, urls :: list[string], ... } -> ... store-path?
   fetchurl-nixpkgs      = fetchurl-nixpkgs;
+  gnu-config-nixpkgs    = gnu-config-nixpkgs;
+  gnu-config-nixpkgs2   = gnu-config-nixpkgs2;
+  updateAutotoolsGnuConfigScriptsHook-nixpkgs = updateAutotoolsGnuConfigScriptsHook-nixpkgs;
   zlib-nixpkgs2          = zlib-nixpkgs2;
   zlib-nixpkgs          = zlib-nixpkgs;
   xz-nixpkgs2           = xz-nixpkgs2;
@@ -908,6 +988,8 @@ in
   pkg-config-unwrapped-nixpkgs = pkg-config-unwrapped-nixpkgs;
   pkg-config-nixpkgs2 = pkg-config-nixpkgs2;
   pkg-config-nixpkgs = pkg-config-nixpkgs;
+  ncurses-nixpkgs2      = ncurses-nixpkgs2;
+  ncurses-nixpkgs       = ncurses-nixpkgs;
 
   patchelf-nixpkgs2     = patchelf-nixpkgs2;
   patchelf-nixpkgs      = patchelf-nixpkgs;
