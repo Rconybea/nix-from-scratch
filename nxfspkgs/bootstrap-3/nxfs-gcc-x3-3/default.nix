@@ -193,4 +193,20 @@ nxfsenv.mkDerivation {
                    which
                  ];
 
+} // {
+  # experiment
+  # ----------
+  # Encountered problem with nixpkgs builds-on-top-of-nxfs, where
+  # it (specifically stdenv/generic/default.nix, invoked from stdenv2nix-minimal)
+  # complains if nixpkgs.patchelf.stdenv.cc.cc doesn't advertise itself as coming
+  # from bootstrapFiles.
+  #
+  # See:
+  # - assertion (isBuiltByBootstrapFilesCompiler (prevStage).patchelf)
+  #   in nixpkgs/pkgs/stdenv/linux/default.nix
+  # - isBuiltByBootstrapFilesCompiler defined in nixpkgs/pkgs/stdenv/linux/default.nix
+  #
+  # Try setting this passthru, see if that unwedges
+  #
+  passthru.isFromBootstrapFiles = true;
 }
