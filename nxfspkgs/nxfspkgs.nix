@@ -588,17 +588,45 @@ in
 let
   # for some reason attempting to inject patchelf via overlay fails.
   # (complaint from stdenv [nixpkgs/pkgs/stdenv/linux/default.nix] that previous
-  # stage patchelf isn't from bootstrapTools..
+  # stage patchelf isn't built by bootstrap files compiler..
   # Point mayyyyy be that nuke-references is going to be used on things from within
   # scope of bootstrapTools and that won't work for patchelf built on top of a nxfs toolchain
   # anyway, the check is something our nxfs patchelf doesn't pass
   # )
 
+  # works, but not if we try to replace nixpkgs.patchelf with this derivation
+  # debug tools
+  #   $ nix repl
+  #   > :l <nxfspkgs>
+  #   > builtins.attrNames patchelf-nixpkgs
+  #   > patchelf-nixpkgs.stdenv.cc --> nxfs-gcc-wrapper-14.2.0.drv
+  #   > patchelf-nixpkgs.stdenv.cc.cc --> nxfs-gcc-x3-3.drv
+  #
   patchelf-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/tools/misc/patchelf")
     {
       stdenv   = stdenv2nix-minimal;
       fetchurl = stdenv2nix-minimal.fetchurlBoot;
       lib      = nixpkgs.lib;
+    });
+
+  # NOT YET
+  #   needs updateAutotoolsGnuConfigScriptsHook, ncurses, pkg-config, fetchurl, lib, stdenv,
+  ncurses-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/ncurses")
+    {
+    });
+
+  # NOT YET
+  #   needs ncurses, termcap (but won't use), fetchpatch, fetchurl, lib, stdenv
+  #
+  readline82-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/readline/8.2.nix")
+    {
+
+    });
+
+  # NOT YET
+  #   needs readline, texinfo, bison
+  bash-nixpkgs = (callPackage (nixpkgspath + "/pkgs/shells/bash/5.nix")
+    {
     });
 
   overlay = self: super: {
@@ -611,7 +639,8 @@ let
                          strictDepsByDefault = false;
                        };
 
-    # stdenv: this assignment isn't effective - still gets various bootstrap tests
+    # stdenv: this assignment isn't immediate effective.  Triggers bootstrap asserts:
+    # (1) isFromBootstrapFiles (prevStage).binutils.bintools
     #stdenv = stdenv2nix-minimal;
     fetchurl = stdenv2nix-minimal.fetchurlBoot;
 
@@ -619,16 +648,40 @@ let
     # xz has carve-out to prevent CONFIG_SHELL pointing to bash in bootstrapTools
     # In this context that leaves CONFIG_SHELL pointing to /bin/sh, which wedges build
     xz = (super.xz.overrideAttrs (old: { preConfigure=""; })).override { stdenv = stdenv2nix-minimal; };
+
+    # Does not work: presumably nixpkgs patchelf derivation gets injected somewhere.
+    # (1) checks patchelf.stdenv.cc.cc satisfies 'isBuiltByBootstrapFilesCompiler'
+    # (2) checks .... satisfies 'isBuiltByNixpkgsCompiler'
+    #patchelf = patchelf-nixpkgs;
+    #
+    # Also does not work: complains that patchelf isn't built by bootstrapFiles compiler.
+    # check is in nixpkgs/pkgs/stdenv/linux/defualt.nix:
+    #   isBuiltByBootstrapFilesCompiler
+    #    = pkgs: isFromNixpkgs pkg && isFromBootstrapFiles pkg.stdenv.cc.cc
     #patchelf = super.patchelf.override { stdenv = stdenv2nix-minimal; };
+    #
+    # On second thought, assertions come from nixpkgs/pkgs/stdenv/linux/default.nix.
+    # Our minimal stdenv only depends on nixpkgs/pkgs/stdenv/generic/default.nix,
+    # so presumably interference from linux/default.nix is coming from somewhere else.
+
     #bzip2 = super.bzip2.override { stdenv = stdenv2nix-minimal; };
     #xz = super.xz.override { stdenv = stdenv2nix-minimal; }.overrideAttrs
     #  (old: { preConfigure=""; });
     file = super.file.override { stdenv = stdenv2nix-minimal; };
     which = super.which.override { stdenv = stdenv2nix-minimal; };
-    #gzip = super.gzip.override { stdenv = stdenv2nix-minimal; };
+    pkg-config-unwrapped = super.pkg-config-unwrapped.override {
+      stdenv = stdenv2nix-minimal;
+      libiconv = stdenv2nix-minimal.cc.libc; };
+    pkg-config = super.pkg-config.override {
+      stdenvNoCC = stdenv2nix-no-cc;
+    };
+
+    #bash = super.bash.override { stdenv = stdenv2nix-minimal; };
+    gzip = super.gzip.override { stdenv = stdenv2nix-minimal; }; # NOT YET, need bash
     #texinfo = super.texinfo.override { stdenv = stdenv2nix-minimal; };
     #coreutils = super.coreutils.override { stdenv = stdenv2nix-minimal; };
   };
+
   nixpkgs = import nixpkgspath { overlays = [ overlay ]; };
 in
 let
@@ -637,13 +690,23 @@ let
   #zlib-nixpkgs2 = nixpkgs.zlib.override { stdenv = stdenv2nix-minimal; };
   zlib-nixpkgs2 = nixpkgs.zlib;
   xz-nixpkgs2 = nixpkgs.xz;   # nixpgks/pkgs/tools/compression/xz
+
+  # no good, attempts nixpkgs bootstrap
   patchelf-nixpkgs2 = nixpkgs.patchelf; # nixpkgs/pkgs/development/tools/misc/patchelf
+
 #  bzip2-nixpkgs2 = nixpkgs.bzip2;
+
+  # file-nixpkgs2: no good, attempts nixpkgs bootstrap
   file-nixpkgs2 = nixpkgs.file;
-  which-nixpkgs2 = nixpkgs.which;
-#  gzip-nixpkgs2 = nixpkgs.gzip;
+
+  which-nixpkgs2 = nixpkgs.which;  # working
+  pkg-config-unwrapped-nixpkgs2 = nixpkgs.pkg-config-unwrapped;  # working
+  pkg-config-nixpkgs2 = nixpkgs.pkg-config;
+
+  # gzip-nixpkgs: not good, needs bash
+  gzip-nixpkgs2 = nixpkgs.gzip; # needs bash
 #  texinfo-nixpkgs2 = nixpkgs.texinfo;
-#  bash-nixpkgs2 = nixpkgs.bash;
+  bash-nixpkgs2 = nixpkgs.bash;
 
   coreutils-nixpkgs2 = nixpkgs.coreutils;
 
@@ -664,6 +727,19 @@ let
       testers  = false;
       minizip  = false;
     });
+
+  #  Needs libiconv, fetchurl, stdenv, lib
+  #  looks like libiconf should get resolved to stdenv.cc.glibc --> hack that in.
+  #
+  pkg-config-unwrapped-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/tools/misc/pkg-config")
+    {
+      stdenv = stdenv2nix-minimal;
+      fetchurl = stdenv2nix-minimal.fetchurlBoot;
+      lib = nixpkgs.lib;
+      # TODO: overlay on nixpkgs shouldn't need this
+      libiconv = stdenv2nix-minimal.cc.libc;
+    });
+
 in
 let
   xz-nixpkgs = (callPackage (nixpkgspath + "/pkgs/tools/compression/xz")
@@ -678,6 +754,14 @@ let
 
       # for tests..
       testers = false;
+    });
+
+  pkg-config-nixpkgs = (callPackage (nixpkgspath + "/pkgs/build-support/pkg-config-wrapper")
+    {
+      stdenvNoCC = stdenv2nix-no-cc;
+      pkg-config = pkg-config-unwrapped-nixpkgs;
+      lib = nixpkgs.lib;
+      buildPackages = stdenv2nix-minimal.buildPackages;
     });
 
 in
@@ -820,14 +904,19 @@ in
   zlib-nixpkgs          = zlib-nixpkgs;
   xz-nixpkgs2           = xz-nixpkgs2;
   xz-nixpkgs            = xz-nixpkgs;
+  pkg-config-unwrapped-nixpkgs2 = pkg-config-unwrapped-nixpkgs2;
+  pkg-config-unwrapped-nixpkgs = pkg-config-unwrapped-nixpkgs;
+  pkg-config-nixpkgs2 = pkg-config-nixpkgs2;
+  pkg-config-nixpkgs = pkg-config-nixpkgs;
+
   patchelf-nixpkgs2     = patchelf-nixpkgs2;
   patchelf-nixpkgs      = patchelf-nixpkgs;
 #  bzip2-nixpkgs2        = bzip2-nixpkgs2;
   file-nixpkgs2         = file-nixpkgs2;
   which-nixpkgs2        = which-nixpkgs2;
-#  gzip-nixpkgs2         = gzip-nixpkgs2;
+  gzip-nixpkgs2         = gzip-nixpkgs2;
 #  texinfo-nixpkgs2      = texinfo-nixpkgs2;
-#  bash-nixpkgs2         = bash-nixpkgs2;
+  bash-nixpkgs2         = bash-nixpkgs2;
 #  coreutils-nixpkgs2    = coreutils-nixpkgs2;
 #  perl-nixpkgs          = perl-nixpkgs;
   bison-nixpkgs         = bison-nixpkgs;
