@@ -587,9 +587,42 @@ let
     };
 in
 let
+  # not sure this has any effect -- failed experiment?
   stdenv2nix-config = stdenv2nix-config-0 // { replaceStdenv = stdenv2nix-minimal; };
 in
 let
+  # try getting stdenv bootstrap stages so we can inspect derivations from nix repl.
+  # Just using this for inspection, not otherwise useful.
+  #
+  # This isn't quite the same things as what nixpkgs uses, we're not supplying overlays
+  # (see [nixpkgs/pkgs/top-level/default.nix])
+  #
+  # Here we're following nixpkgs/default.nix expression
+  #   stages = stdenvStages {
+  #     inherit lib localSystem crossSystem config overlays crossOverlays
+  #   }
+  # with argument
+  #   stdenvStages ? import ../stdenv
+  #
+  # USE:
+  #   $ nix repl
+  #   > (builtins.elemAt stdenv-stages 0) {}
+  #   {
+  #     __raw = true; binutils = null; coreutils = null; gcc-unwrapped = null; gnugrep = null;
+  #   }
+  stdenv-stages = (callPackage (nixpkgspath + "/pkgs/stdenv")
+    (let
+      localSystem = nixpkgs.lib.systems.elaborate builtins.currentSystem;
+    in
+      {
+        lib = nixpkgs.lib;
+        localSystem = localSystem;
+        crossSystem = localSystem; # same as localSystem
+        config = stdenv2nix-config-0;
+        overlays = [];
+        crossOverlays = [];
+      }));
+
   # for some reason attempting to inject patchelf via overlay fails.
   # (complaint from stdenv [nixpkgs/pkgs/stdenv/linux/default.nix] that previous
   # stage patchelf isn't built by bootstrap files compiler..
@@ -627,89 +660,210 @@ let
     {
     });
 
-  overlay = self: super: {
-    config = config // { allowAliases = true;
-                         allowUnsupportedSystem = false;
-                         allowBroken = false;
-                         checkMeta = false;
-                         configurePlatformsByDefault = true;
-                         enableParallelBuildingByDefault = false;
-                         strictDepsByDefault = false;
-                       };
+  overlay = self: super:
+    # RULES:
+    #  - overlay should not be recursive (so can compose with other overlays).  Use 'self'
+    #  - refs to library functions should use 'super'
+    #  - refs to other packages should use 'self' rather than 'super'
+    #  - overlays should not depend on any nix packages except {'self', 'super'}
 
-    # stdenv: this assignment isn't immediate effective.  Triggers bootstrap asserts:
-    # (1) isFromBootstrapFiles (prevStage).binutils.bintools
-    #stdenv = stdenv2nix-minimal;
-    fetchurl = stdenv2nix-minimal.fetchurlBoot;
+    let
+      # establish package-set in which callPackage tracks the effects introduced by this overlay.
+      #newScope = extra: super.lib.callPackageWith (super // defaults // extra);
+      #defaults = {};
+    in
+      {
+        config = config // { allowAliases = true;
+                             allowUnsupportedSystem = false;
+                             allowBroken = false;
+                             checkMeta = false;
+                             configurePlatformsByDefault = true;
+                             enableParallelBuildingByDefault = false;
+                             strictDepsByDefault = false;
+                           };
 
-    # builds!
-    gnu-config = super.gnu-config.override { stdenv = stdenv2nix-minimal; };
+        # --------------------------------
+        # stdenv: this assignment isn't immediate effective.  Triggers bootstrap asserts:
+        # (1) isFromBootstrapFiles (prevStage).binutils.bintools
+        #stdenv = stdenv2nix-minimal;
+        # --------------------------------
 
-    # builds!
-    zlib = super.zlib.override { stdenv = stdenv2nix-minimal; };
+        fetchurl = stdenv2nix-minimal.fetchurlBoot;
 
-    # builds!
-    # xz has carve-out to prevent CONFIG_SHELL pointing to bash in bootstrapTools
-    # In this context that leaves CONFIG_SHELL pointing to /bin/sh, which wedges build
-    xz = (super.xz.overrideAttrs (old: { preConfigure=""; })).override { stdenv = stdenv2nix-minimal; };
+        # builds! - with stdenvStages, don't even need override
+        #gnu-config = super.gnu-config.override { stdenv = stdenv2nix-minimal; };
 
-    # Does not work: presumably nixpkgs patchelf derivation gets injected somewhere.
-    # (1) checks patchelf.stdenv.cc.cc satisfies 'isBuiltByBootstrapFilesCompiler'
-    # (2) checks .... satisfies 'isBuiltByNixpkgsCompiler'
-    #patchelf = patchelf-nixpkgs;
+        # builds! - with stdenvStages, don't even need override
+        #zlib = super.zlib.override { stdenv = stdenv2nix-minimal; };
+
+        # builds! - with stdenvStages, don't need override
+        # xz has carve-out to prevent CONFIG_SHELL pointing to bash in bootstrapTools
+        # In this context that leaves CONFIG_SHELL pointing to /bin/sh, which wedges build
+        xz = (super.xz.overrideAttrs (old: { preConfigure=""; })); # .override { stdenv = stdenv2nix-minimal; };
+
+        # Does not work: presumably nixpkgs patchelf derivation gets injected somewhere.
+        # (1) checks patchelf.stdenv.cc.cc satisfies 'isBuiltByBootstrapFilesCompiler'
+        # (2) checks .... satisfies 'isBuiltByNixpkgsCompiler'
+        #patchelf = patchelf-nixpkgs;
+        #
+        # Also does not work: complains that patchelf isn't built by bootstrapFiles compiler.
+        # check is in nixpkgs/pkgs/stdenv/linux/defualt.nix:
+        #   isBuiltByBootstrapFilesCompiler
+        #    = pkgs: isFromNixpkgs pkg && isFromBootstrapFiles pkg.stdenv.cc.cc
+        #patchelf = super.patchelf.override { stdenv = stdenv2nix-minimal; };
+        #
+        # On second thought, assertions come from nixpkgs/pkgs/stdenv/linux/default.nix.
+        # Our minimal stdenv only depends on nixpkgs/pkgs/stdenv/generic/default.nix,
+        # so presumably interference from linux/default.nix is coming from somewhere else.
+
+        #bzip2 = super.bzip2.override { stdenv = stdenv2nix-minimal; };
+
+        makeSetupHook =
+          (callPackage ./build-support/trivial-builders-0.nix
+            {
+              stdenv = stdenv2nix-minimal;
+              stdenvNoCC = stdenv2nix-no-cc;
+              lib = self.lib; })
+            .makeSetupHook;
+
+        dieHook = super.dieHook;
+
+        # builds! -- with stdenvStages, don't need override
+        # file = super.file.override { stdenv = stdenv2nix-minimal; };
+        # builds!  -- with stdenvStages, don't need override
+        # which = super.which.override { stdenv = stdenv2nix-minimal; };
+        # builds!
+        #pkg-config-unwrapped = super.pkg-config-unwrapped.override {
+        #  stdenv = stdenv2nix-minimal;
+        #  libiconv = stdenv2nix-minimal.cc.libc; };
+
+        # builds! -- with stdenvStages, don't need override
+        # pkg-config = super.pkg-config.override { stdenvNoCC = stdenv2nix-no-cc; };
+
+        # builds!
+        gettext = super.gettext.override {
+#          stdenv = stdenv2nix-minimal;
+#          fetchurl = stdenv2nix-minimal.fetchurlBoot;
+          bash = bash-3;
+        };
+
+        ncurses = (super.ncurses.overrideAttrs (old: { passthru.binlore = null; })).override {
+#          stdenv = stdenv2nix-minimal;
+          mouseSupport = false; # 1. would be nice; 2. relies on pkgs/servers/gpm; 3. gpm needs a bunch of deps
+          gpm = null;
+          binlore = null; # some sort of dependency analyzer thing; only affects passthru.binlore. Too many deps
+
+          # for tests
+          testers = false;
+        };
+
+        # builds!
+        perl536 = (super.perl536.overrideAttrs (old: {})).override {
+#          stdenv = stdenv2nix-minimal;
+#          fetchurl = stdenv2nix-minimal.fetchurlBoot;
+          fetchFromGitHub = null;
+          makeWrapper = null;
+          enableCrypt = false;
+        };
+
+        # builds!
+        perl538 = (super.perl538.overrideAttrs (old: {})).override {
+#          stdenv = stdenv2nix-minimal;
+#          fetchurl = stdenv2nix-minimal.fetchurlBoot;
+          fetchFromGitHub = null;
+          makeWrapper = null;
+          #      enableCrypt = false;
+        };
+
+        perl = self.perl538;
+
+        # perl536, perl538, perl:
+        #   This gets us working perl interpreter,
+        #   but perlPackages still depends on before-override perl
+        perlPackages = super.lib.recurseIntoAttrs self.perl538.pkgs;
+
+        libxcrypt = (super.libxcrypt.overrideAttrs (old:
+          {
+            # No idea why libxcrypt builds without this in nixpkgs
+            postConfigure = ''
+              patchShebangs build-aux/scripts/move-if-change
+            '';
+          })); #.override { stdenv = stdenv2nix-minimal; fetchurl = stdenv2nix-minimal.fetchurlBoot; };
+
+        #gnum4 = super.gnum4.override { stdenv = stdenv2nix-minimal; };
+        #m4 = self.gnum4;
+
+        help2man = (super.help2man.overrideAttrs (old:
+          {
+            # no idea why we need this (given help2man works in nixpkgs)
+            postConfigure = ''
+            patchShebangs build-aux/mkinstalldirs
+            patchShebangs build-aux/find-vpath
+            '';
+          }));
+
+        bison = (super.bison.overrideAttrs (old:
+          {
+            # no idea why we need this (given help2man works in nixpkgs)
+            postConfigure = ''
+            patchShebangs build-aux/move-if-change
+            '';
+          }));
+
+        # builds!
+        #bash = super.bash.override { stdenv = stdenv2nix-minimal; };
+
+        gzip = (super.gzip.overrideAttrs (old:
+          {
+            # omit SHELL=/bin/sh
+            makeFlags = [
+              "GREP=grep"
+              "ZLESS_MAN=zless.1"
+              "ZLESS_PROG=zless"
+            ];
+
+            postConfigure = ''
+            patchShebangs build-aux/compile
+            '';
+          }));
+
+        #gzip = super.gzip.override { stdenv = stdenv2nix-minimal; }; # NOT YET, need bash
+        #texinfo = super.texinfo.override { stdenv = stdenv2nix-minimal; };
+        #coreutils = super.coreutils.override { stdenv = stdenv2nix-minimal; };
+      };  # end of overlay
+
+  # nixpkgs anatomy
+  #   nixpkgs/default.nix
+  #   -> nixpkgs/pkgs/toplevel/impure.nix
+  #   -> nixpkgs/pkgs/toplevel/default.nix
+  #      -> nixpkgs/pkgs/toplevel/stage.nix    (uses stdenv, stdenvNoCC)
+  #         -> nixpkgs/pkgs/toplevel/splice.nix
+  #         -> nixpkgs/pkgs/toplevel/aliases.nix
+  #      -> nixpkgs/pkgs/stdenv/booter.nix     (assembles stdenv)
+
+  nixpkgs = import nixpkgspath {
+    # evaluates!
+    #   -> nixpkgs.stdenv is stdenv2nix-minimal.
+    #   -> nixpkgs.stdenvNoCC is stdenv2nix-minimal with .cc=null
     #
-    # Also does not work: complains that patchelf isn't built by bootstrapFiles compiler.
-    # check is in nixpkgs/pkgs/stdenv/linux/defualt.nix:
-    #   isBuiltByBootstrapFilesCompiler
-    #    = pkgs: isFromNixpkgs pkg && isFromBootstrapFiles pkg.stdenv.cc.cc
-    #patchelf = super.patchelf.override { stdenv = stdenv2nix-minimal; };
-    #
-    # On second thought, assertions come from nixpkgs/pkgs/stdenv/linux/default.nix.
-    # Our minimal stdenv only depends on nixpkgs/pkgs/stdenv/generic/default.nix,
-    # so presumably interference from linux/default.nix is coming from somewhere else.
+    stdenvStages = {config,
+                     lib,
+                     localSystem,
+                     crossSystem,
+                     overlays,
+                     crossOverlays
+                   } :
+                     let
+                       # TODO: this is probably missing a bunch of important things.
+                       # see linux/default.nix for details.
+                       #
+                       stage0 = {} : { config = config;
+                                       overlays = overlays;
+                                       stdenv = stdenv2nix-minimal; };
+                     in
+                       [ stage0 ];
 
-    #bzip2 = super.bzip2.override { stdenv = stdenv2nix-minimal; };
-
-    makeSetupHook =
-      (callPackage ./build-support/trivial-builders-0.nix
-        { stdenv = stdenv2nix-minimal;
-          stdenvNoCC = stdenv2nix-no-cc;
-          lib = self.lib; })
-        .makeSetupHook;
-
-    # builds!
-    file = super.file.override { stdenv = stdenv2nix-minimal; };
-    # builds!
-    which = super.which.override { stdenv = stdenv2nix-minimal; };
-    # builds!
-    pkg-config-unwrapped = super.pkg-config-unwrapped.override {
-      stdenv = stdenv2nix-minimal;
-      libiconv = stdenv2nix-minimal.cc.libc; };
-    # builds!
-    pkg-config = super.pkg-config.override {
-      stdenvNoCC = stdenv2nix-no-cc;
-    };
-
-    ncurses = (super.ncurses.overrideAttrs (old: { passthru.binlore = null; })).override {
-      stdenv = stdenv2nix-minimal;
-      mouseSupport = false; # 1. would be nice; 2. relies on pkgs/servers/gpm; 3. gpm needs a bunch of deps
-      gpm = null;
-      binlore = null; # some sort of dependency analyzer thing; only affects passthru.binlore. Too many deps
-
-      # for tests
-      testers = false;
-    };
-
-    #bash = super.bash.override { stdenv = stdenv2nix-minimal; };
-    gzip = super.gzip.override { stdenv = stdenv2nix-minimal; }; # NOT YET, need bash
-    #texinfo = super.texinfo.override { stdenv = stdenv2nix-minimal; };
-    #coreutils = super.coreutils.override { stdenv = stdenv2nix-minimal; };
-
-
-
-  };  # end of overlay
-
-  nixpkgs = import nixpkgspath { overlays = [ overlay ]; };
+    overlays = [ overlay ]; };
 in
 let
 
@@ -730,9 +884,6 @@ let
   pkg-config-unwrapped-nixpkgs2 = nixpkgs.pkg-config-unwrapped;  # working
   pkg-config-nixpkgs2 = nixpkgs.pkg-config;
 
-  # builds, but relies on kitbashed nixpkgs trivial-builders.
-  # See trivial-builders-0 above
-  #
   updateAutotoolsGnuConfigScriptsHook-nixpkgs2 = nixpkgs.updateAutotoolsGnuConfigScriptsHook;
 
   ncurses-nixpkgs2 = nixpkgs.ncurses;
@@ -817,6 +968,35 @@ let
     });
 
   # builds!
+  gettext-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/gettext")
+    {
+      stdenv = stdenv2nix-minimal;
+      fetchurl = stdenv2nix-minimal.fetchurlBoot;
+      lib = nixpkgs.lib;
+      bash = bash-3;
+      updateAutotoolsGnuConfigScriptsHook = nixpkgs.updateAutotoolsGnuConfigScriptsHook;
+      # TODO: overlay on nixpkgs shouldn't need this
+      libiconv = stdenv2nix-minimal.cc.libc;
+    });
+
+  # builds!
+  help2man-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/tools/misc/help2man")
+    {
+      stdenv = stdenv2nix-minimal;
+      fetchurl = stdenv2nix-minimal.fetchurlBoot;
+      lib = nixpkgs.lib;
+      perlPackages = nixpkgs.perlPackages;
+      gettext = nixpkgs.gettext; #nixpkgs-nixpkgs;
+      libintl = null;  # get this functionality from glibc anyways
+
+    }).overrideAttrs(old: {
+      postConfigure = ''
+      patchShebangs build-aux/mkinstalldirs
+      patchShebangs build-aux/find-vpath
+      '';
+    });
+
+  # builds!
   pkg-config-nixpkgs = (callPackage (nixpkgspath + "/pkgs/build-support/pkg-config-wrapper")
     {
       stdenvNoCC = stdenv2nix-no-cc;
@@ -825,8 +1005,7 @@ let
       buildPackages = stdenv2nix-minimal.buildPackages;
     });
 
-  # NOT YET
-  #   needs updateAutotoolsGnuConfigScriptsHook, ncurses, pkg-config, fetchurl, lib, stdenv,
+  # builds!
   ncurses-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/ncurses")
     {
       stdenv = stdenv2nix-minimal;
@@ -844,38 +1023,97 @@ let
       testers = false;
     }).overrideAttrs(old: { passthru.binlore = null; });
 
+
+
+  # NOT QUITE.  Needs runtimeShell =
+  #
+  gzip-nixpkgs = (callPackage (nixpkgspath + "/pkgs/tools/compression/gzip")
+    {
+      stdenv = stdenv2nix-minimal;
+      fetchurl = stdenv2nix-minimal.fetchurlBoot;
+      lib = nixpkgs.lib;
+      updateAutotoolsGnuConfigScriptsHook = nixpkgs.updateAutotoolsGnuConfigScriptsHook;
+      xz = xz-nixpkgs;
+    });
+
 in
-#let
-#  perl-interpreter-nixpkgs = (import (nixpkgspath + "/pkgs/development/interpreters/perl")
-#    {
-#      callPackage = makeCallPackage
-#        (nxfspkgs // envpkgs // { lib = nixpkgs.lib;
-#                                  fetchurl = stdenv2nix-minimal.fetchurlBoot;
-#                                  stdenv = stdenv2nix-minimal;
-#                                  config = stdenv2nix-config;
-#                                  coreutils = coreutils-3;
-#                                  zlib = zlib-nixpkgs;
-#                                  fetchFromGitHub = nixpkgs.fetchFromGitHub;
-#                                  buildPackages = stdenv2nix-minimal.buildPackages;
-#                                });
-#    });
-#in
+let
+  # builds!
+  #
+  # nixpkgs
+  #
+  # CAVEATS:
+  # 1. does not support perl packages !!
+  # 2. does not support libxcrypt
+  # 3. broken for cross-compiling (no doubt in good company..)
+  # 4. uses bootstrap coreutils
+  #
+  perl538-interpreter-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/interpreters/perl/interpreter.nix")
+    {
+      stdenv           = stdenv2nix-minimal;
+      fetchurl         = stdenv2nix-minimal.fetchurlBoot;
+      fetchFromGitHub  = null;  # only used when cross compiling, we can omit
+      lib              = nixpkgs.lib;
+      buildPackages    = stdenv2nix-minimal.buildPackages;
+
+      # these seem to be used only for inscrutable-to-me passthru stuff
+      pkgsBuildBuild   = nixpkgs;
+      pkgsBuildHost    = nixpkgs;
+      pkgsBuildTarget  = nixpkgs;
+      pkgsHostHost     = nixpkgs;
+      pkgsTargetTarget = nixpkgs;
+
+      # passthruFn (in perl/default.nix) provides perlPackagesFun that does callPackage
+      # targeting nixpkgs/pkgs/top-level/perl-packages.nix
+      # try a stub version here.
+      passthruFun      = attrs : { };
+
+      # makeWrapper appears to be needed only if cross-compiling
+      makeWrapper      = null;
+
+      enableCrypt      = false;
+
+      config           = stdenv2nix-config;
+      coreutils        = coreutils-3;
+      zlib             = zlib-nixpkgs2;
+
+      # copied from developer/interpreters/perl/default.nix;
+      self             = perl538-interpreter-nixpkgs;
+      version          = "5.38.2";
+      sha256           = "sha256-oKMVNEUet7g8fWWUpJdUOlTUiLyQygD140diV39AZV4=";
+    }).overrideAttrs(old: { });
+
+in
 let
 #  perl-nixpkgs = perl-interpreter-nixpkgs.perl538;
   bison-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/tools/parsing/bison")
     {
+      stdenv = stdenv2nix-minimal;
       fetchurl = stdenv2nix-minimal.fetchurlBoot;
-    });
-  bash-nixpkgs = (callPackage (nixpkgspath + "/pkgs/shells/bash/5.nix")
+      lib = nixpkgs.lib;
+      m4 = nixpkgs.m4;
+      perl = nixpkgs.perl;
+      help2man = nixpkgs.help2man;
+    }).overrideAttrs(
+      old: {
+        postConfigure = ''
+        patchShebangs build-aux/move-if-change
+        '';
+      });
+
+  bash-nixpkgs-0 = (callPackage (nixpkgspath + "/pkgs/shells/bash/5.nix")
     {
       fetchurl = stdenv2nix-minimal.fetchurlBoot;
-
+      bison = nixpkgs.bison;
+      texinfo = null;
     });
-  texinfo-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/tools/misc/texinfo/7.0.nix")
+
+  texinfo-nixpkgs = (nixpkgs.callPackages (nixpkgspath + "/pkgs/development/tools/misc/texinfo/packages.nix")
     {
       fetchurl = stdenv2nix-minimal.fetchurlBoot;
       lib = nixpkgs.lib;
     });
+
   cmake-minimal-nixpkgs = (callPackage (nixpkgspath + "/pkgs/by-name/cm/cmake/package.nix")
     {
       stdenv = stdenv2nix-minimal;
@@ -890,123 +1128,146 @@ let
     });
 in
 {
-  nxfs-autotools = nxfs-autotools;
+  nxfs-autotools                              = nxfs-autotools;
 
-  nixpkgs              = nixpkgs;
-  which-3              = which-3;
-  diffutils-3          = diffutils-3;
-  findutils-3          = findutils-3;
-  gnused-3             = gnused-3;
-  gnugrep-3            = gnugrep-3;
-  gnutar-3             = gnutar-3;
-  bash-3               = bash-3;
-  popen-3              = popen-3;
-  gawk-3               = gawk-3;
-  gnumake-3            = gnumake-3;
-  coreutils-3          = coreutils-3;
-  pkgconf-3            = pkgconf-3;
-  m4-3                 = m4-3;
-  file-3               = file-3;
-  zlib-3               = zlib-3;
-  patchelf-3           = patchelf-3;
-  gperf-3              = gperf-3;
-  patch-3              = patch-3;
-  gzip-3               = gzip-3;
-  libxcrypt-3          = libxcrypt-3;
-  perl-3               = perl-3;
-  binutils-3           = binutils-3;
-  autoconf-3           = autoconf-3;
-  automake-3           = automake-3;
-  flex-3               = flex-3;
-  gmp-3                = gmp-3;
-  bison-3              = bison-3;
-  texinfo-3            = texinfo-3;
-  mpfr-3               = mpfr-3;
-  mpc-3                = mpc-3;
-  python-3             = python-3;
-  gcc-x0-wrapper-3     = gcc-x0-wrapper-3;
-  binutils-x0-wrapper-3 = binutils-x0-wrapper-3;
-  gcc-x1-3             = gcc-x1-3;
-  gcc-x1-wrapper-3     = gcc-x1-wrapper-3;
-  libstdcxx-x2-3       = libstdcxx-x2-3;
-  gcc-x2-wrapper-3     = gcc-x2-wrapper-3;
-  gcc-x3-3             = gcc-x3-3;
-  gcc-wrapper-3        = gcc-wrapper-3;
-  bzip2-3              = bzip2-3;
-  xz-3                 = xz-3;
-  openssl-3            = openssl-3;
-  curl-3               = curl-3;
-
-  nxfs-bash-0           = import ./bootstrap/nxfs-bash-0;
-  nxfs-coreutils-0      = import ./bootstrap/nxfs-coreutils-0;
-  nxfs-gnumake-0        = import ./bootstrap/nxfs-gnumake-0;
-
-  nxfs-toolchain-0      = import ./bootstrap/nxfs-toolchain-0;
-  nxfs-sysroot-0        = import ./bootstrap/nxfs-sysroot-0;
+  nixpkgs                                     = nixpkgs;
+  which-3                                     = which-3;
+  diffutils-3                                 = diffutils-3;
+  findutils-3                                 = findutils-3;
+  gnused-3                                    = gnused-3;
+  gnugrep-3                                   = gnugrep-3;
+  gnutar-3                                    = gnutar-3;
+  bash-3                                      = bash-3;
+  popen-3                                     = popen-3;
+  gawk-3                                      = gawk-3;
+  gnumake-3                                   = gnumake-3;
+  coreutils-3                                 = coreutils-3;
+  pkgconf-3                                   = pkgconf-3;
+  m4-3                                        = m4-3;
+  file-3                                      = file-3;
+  zlib-3                                      = zlib-3;
+  patchelf-3                                  = patchelf-3;
+  gperf-3                                     = gperf-3;
+  patch-3                                     = patch-3;
+  gzip-3                                      = gzip-3;
+  libxcrypt-3                                 = libxcrypt-3;
+  perl-3                                      = perl-3;
+  binutils-3                                  = binutils-3;
+  autoconf-3                                  = autoconf-3;
+  automake-3                                  = automake-3;
+  flex-3                                      = flex-3;
+  gmp-3                                       = gmp-3;
+  bison-3                                     = bison-3;
+  texinfo-3                                   = texinfo-3;
+  mpfr-3                                      = mpfr-3;
+  mpc-3                                       = mpc-3;
+  python-3                                    = python-3;
   glibc-x1-3                                  = glibc-x1-3;
+  gcc-x0-wrapper-3                            = gcc-x0-wrapper-3;
+  binutils-x0-wrapper-3                       = binutils-x0-wrapper-3;
+  gcc-x1-3                                    = gcc-x1-3;
+  gcc-x1-wrapper-3                            = gcc-x1-wrapper-3;
+  libstdcxx-x2-3                              = libstdcxx-x2-3;
+  gcc-x2-wrapper-3                            = gcc-x2-wrapper-3;
+  gcc-x3-3                                    = gcc-x3-3;
+  gcc-wrapper-3                               = gcc-wrapper-3;
+  bzip2-3                                     = bzip2-3;
+  xz-3                                        = xz-3;
+  openssl-3                                   = openssl-3;
+  curl-3                                      = curl-3;
+
+  nxfs-bash-0                                 = import ./bootstrap/nxfs-bash-0;
+  nxfs-coreutils-0                            = import ./bootstrap/nxfs-coreutils-0;
+  nxfs-gnumake-0                              = import ./bootstrap/nxfs-gnumake-0;
+
+  nxfs-toolchain-0                            = import ./bootstrap/nxfs-toolchain-0;
+  nxfs-sysroot-0                              = import ./bootstrap/nxfs-sysroot-0;
 
   # pills-example-1..nxfs-bootstrap-1 :: derivation
-  pills-example-1       = import ./nix-pills/example1;
+  pills-example-1                             = import ./nix-pills/example1;
 
-  nxfs-bootstrap-1      = import ./bootstrap-1;
-  nxfs-bootstrap-1-demo = import ./bootstrap-1-demo;
+  nxfs-bootstrap-1                            = import ./bootstrap-1;
+  nxfs-bootstrap-1-demo                       = import ./bootstrap-1-demo;
 
-  nxfs-bash-1           = import ./bootstrap-1/nxfs-bash-1;
-  nxfs-toolchain-1      = import ./bootstrap-1/nxfs-toolchain-1;
-  nxfs-sysroot-1        = import ./bootstrap-1/nxfs-sysroot-1;
+  nxfs-bash-1                                 = import ./bootstrap-1/nxfs-bash-1;
+  nxfs-toolchain-1                            = import ./bootstrap-1/nxfs-toolchain-1;
+  nxfs-sysroot-1                              = import ./bootstrap-1/nxfs-sysroot-1;
 
   # nxfs-bootstrap-2-demo :: attrset
 
   # nxfs-gcc-2 :: derivation    gcc, wrapped
-  nxfs-bootstrap-2      = import ./bootstrap-2;
+  nxfs-bootstrap-2                            = import ./bootstrap-2;
 
-  nxfs-gcc-wrapper-2    = import ./bootstrap-2/nxfs-gcc-wrapper-2;
-  nxfs-gcc-stage2-2     = import ./bootstrap-2/nxfs-gcc-stage2-2;
-  nxfs-bash-2           = import ./bootstrap-2/nxfs-bash-2;
-  nxfs-binutils-2       = import ./bootstrap-2/nxfs-binutils-2;
-  nxfs-coreutils-2      = import ./bootstrap-2/nxfs-coreutils-2;
-  nxfs-bootstrap-2-demo = import ./bootstrap-2-demo;
+  nxfs-gcc-wrapper-2                          = import ./bootstrap-2/nxfs-gcc-wrapper-2;
+  nxfs-gcc-stage2-2                           = import ./bootstrap-2/nxfs-gcc-stage2-2;
   nxfs-glibc-stage1-2                         = import ./bootstrap-2/nxfs-glibc-stage1-2;
+  nxfs-bash-2                                 = import ./bootstrap-2/nxfs-bash-2;
+  nxfs-binutils-2                             = import ./bootstrap-2/nxfs-binutils-2;
+  nxfs-coreutils-2                            = import ./bootstrap-2/nxfs-coreutils-2;
+  nxfs-bootstrap-2-demo                       = import ./bootstrap-2-demo;
 
-  nxfs-defs             = import ./bootstrap-1/nxfs-defs.nix;
+  nxfs-defs                                   = import ./bootstrap-1/nxfs-defs.nix;
 
-  mkDerivation-3        = mkDerivation-3;
+  # ================================================================
+  # bridge to nixpkgs
+  # ----------------------------------------------------------------
 
-  stdenv-nxfs           = stdenv-nxfs;
-  stdenv2nix-no-cc      = stdenv2nix-no-cc;
-  stdenv2nix-minimal    = stdenv2nix-minimal;
+  mkDerivation-3                              = mkDerivation-3;
 
-  bintools-wrapper-nixpkgs = bintools-wrapper-nixpkgs;
-  gcc-wrapper-nixpkgs = gcc-wrapper-nixpkgs;
+  stdenv-stages                               = stdenv-stages;
+  stdenv-nxfs                                 = stdenv-nxfs;
+  stdenv2nix-no-cc                            = stdenv2nix-no-cc;
+  stdenv2nix-minimal                          = stdenv2nix-minimal;
+
+  bintools-wrapper-nixpkgs                    = bintools-wrapper-nixpkgs;
+  gcc-wrapper-nixpkgs                         = gcc-wrapper-nixpkgs;
 
   # fetchurl-nixpkgs :: { url :: string, urls :: list[string], ... } -> ... store-path?
-  fetchurl-nixpkgs      = fetchurl-nixpkgs;
-  gnu-config-nixpkgs    = gnu-config-nixpkgs;
-  gnu-config-nixpkgs2   = gnu-config-nixpkgs2;
-  updateAutotoolsGnuConfigScriptsHook-nixpkgs = updateAutotoolsGnuConfigScriptsHook-nixpkgs;
-  zlib-nixpkgs2          = zlib-nixpkgs2;
-  zlib-nixpkgs          = zlib-nixpkgs;
-  xz-nixpkgs2           = xz-nixpkgs2;
-  xz-nixpkgs            = xz-nixpkgs;
-  pkg-config-unwrapped-nixpkgs2 = pkg-config-unwrapped-nixpkgs2;
-  pkg-config-unwrapped-nixpkgs = pkg-config-unwrapped-nixpkgs;
-  pkg-config-nixpkgs2 = pkg-config-nixpkgs2;
-  pkg-config-nixpkgs = pkg-config-nixpkgs;
-  ncurses-nixpkgs2      = ncurses-nixpkgs2;
-  ncurses-nixpkgs       = ncurses-nixpkgs;
+  fetchurl-nixpkgs                            = fetchurl-nixpkgs;
 
-  patchelf-nixpkgs2     = patchelf-nixpkgs2;
-  patchelf-nixpkgs      = patchelf-nixpkgs;
-#  bzip2-nixpkgs2        = bzip2-nixpkgs2;
-  file-nixpkgs2         = file-nixpkgs2;
-  which-nixpkgs2        = which-nixpkgs2;
-  gzip-nixpkgs2         = gzip-nixpkgs2;
-#  texinfo-nixpkgs2      = texinfo-nixpkgs2;
-  bash-nixpkgs2         = bash-nixpkgs2;
-#  coreutils-nixpkgs2    = coreutils-nixpkgs2;
-#  perl-nixpkgs          = perl-nixpkgs;
-  bison-nixpkgs         = bison-nixpkgs;
-  bash-nixpkgs          = bash-nixpkgs;
-  texinfo-nixpkgs       = texinfo-nixpkgs;
-  cmake-minimal-nixpkgs = cmake-minimal-nixpkgs;
+  # ================================================================
+  # trying this the hard way...
+  # adopting nixpkgs packages one at a time.
+  # ----------------------------------------------------------------
+
+  dieHook-nixpkgs2                            = nixpkgs.dieHook;
+
+  gnu-config-nixpkgs                          = gnu-config-nixpkgs;
+  gnu-config-nixpkgs2                         = gnu-config-nixpkgs2;
+  updateAutotoolsGnuConfigScriptsHook-nixpkgs = updateAutotoolsGnuConfigScriptsHook-nixpkgs;
+  zlib-nixpkgs2                               = zlib-nixpkgs2;
+  zlib-nixpkgs                                = zlib-nixpkgs;
+  xz-nixpkgs2                                 = xz-nixpkgs2;
+  xz-nixpkgs                                  = xz-nixpkgs;
+  gnum4-nixpkgs2                              = nixpkgs.gnum4;
+  help2man-nixpkgs                            = help2man-nixpkgs;
+  pkg-config-unwrapped-nixpkgs2               = pkg-config-unwrapped-nixpkgs2;
+  pkg-config-unwrapped-nixpkgs                = pkg-config-unwrapped-nixpkgs;
+  pkg-config-nixpkgs2                         = pkg-config-nixpkgs2;
+  pkg-config-nixpkgs                          = pkg-config-nixpkgs;
+  gettext-nixpkgs2                            = nixpkgs.gettext;
+  gettext-nixpkgs                             = gettext-nixpkgs;
+  ncurses-nixpkgs2                            = ncurses-nixpkgs2;
+  ncurses-nixpkgs                             = ncurses-nixpkgs;
+  perl536-nixpkgs2                            = nixpkgs.perl536;
+  perl538-interpreter-nixpkgs                 = perl538-interpreter-nixpkgs;
+  perl538-nixpkgs2                            = nixpkgs.perl538;
+  perl-nixpkgs2                               = nixpkgs.perl;
+  libxcrypt-nixpkgs2                          = nixpkgs.libxcrypt;
+
+  patchelf-nixpkgs2                           = patchelf-nixpkgs2;
+  patchelf-nixpkgs                            = patchelf-nixpkgs;
+#  bzip2-nixpkgs2                             = bzip2-nixpkgs2;
+  file-nixpkgs2                               = file-nixpkgs2;
+  which-nixpkgs2                              = which-nixpkgs2;
+  gzip-nixpkgs2                               = gzip-nixpkgs2;
+  gzip-nixpkgs                                = gzip-nixpkgs;
+#  texinfo-nixpkgs2                           = texinfo-nixpkgs2;
+  texinfo-nixpkgs                             = texinfo-nixpkgs;
+  bash-nixpkgs2                               = bash-nixpkgs2;
+#  coreutils-nixpkgs2                         = coreutils-nixpkgs2;
+#  perl-nixpkgs                               = perl-nixpkgs;
+  bison-nixpkgs                               = bison-nixpkgs;
+  bash-nixpkgs                                = bash-nixpkgs;
+  cmake-minimal-nixpkgs                       = cmake-minimal-nixpkgs;
 }

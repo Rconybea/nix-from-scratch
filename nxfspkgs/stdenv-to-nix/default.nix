@@ -56,6 +56,8 @@ let
   argsStdenv = {
     inherit config;
 
+    name = "stdenv-nxfs2nix";
+
     buildPlatform  = platform;
     hostPlatform   = platform;
     targetPlatform = platform;
@@ -63,9 +65,13 @@ let
     fetchurlBoot   = import (nixpkgspath + "/pkgs/build-support/fetchurl/boot.nix") { system = builtins.currentSystem; };
 
     cc             = nxfspkgs.gcc;
+
     shell          = "${nxfspkgs.bash}/bin/bash";
 
-    # note: patch-shebangs is enabled for exactly those executables that appear in PATH, which ofc applies to bash
+    # note: audit-tmpdir (see [generic/default.nix]) assumes patchelf in PATH when run
+    extraNativeBuildInputs = [ nxfspkgs.patchelf ];
+
+    # note: patch-shebangs is enabled for exactly those executables that appear in PATH, which ofc applies to bash also
     initialPath    = [ nxfspkgs.patch
                        nxfspkgs.xz
                        nxfspkgs.gnumake
@@ -79,6 +85,13 @@ let
                        nxfspkgs.diffutils
                        nxfspkgs.findutils
                        nxfspkgs.bash ];
+
+    extraAttrs = {
+      # stdenv/linux/default.nix asserts on this:
+      #   assert isFromBootstrapFiles (prevStage).binutils.bintools
+      #
+      binutils = nxfspkgs.binutils;
+    };
   };
 
 in
