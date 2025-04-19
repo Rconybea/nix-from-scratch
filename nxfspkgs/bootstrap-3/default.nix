@@ -365,7 +365,7 @@ let
                                                    mpfr                 = bootstrap-2.nxfs-mpfr-2;
                                                    gmp                  = bootstrap-2.nxfs-gmp-2;
                                                    nixify-gcc-source    = bootstrap-2.nxfs-nixify-gcc-source;
-                                                   glibc                = glibc-stage1-3;
+                                                   glibc                = glibc-x1-3;
                                                    toolchain            = bootstrap-1.nxfs-toolchain-1;
                                                    sysroot              = bootstrap-1.nxfs-sysroot-1;
                                                  };
@@ -377,7 +377,7 @@ let
 
   # gcc-stage2-wrapper-3 :: derivation
   gcc-stage2-wrapper-3 = callPackage ./nxfs-gcc-stage2-wrapper-3 { nxfsenv-3 = nxfsenv-3-97;
-                                                                   glibc = glibc-stage1-3;
+                                                                   glibc = glibc-x1-3;
                                                                    bootstrap-1 = bootstrap-1;
                                                                  };
 in
@@ -389,7 +389,7 @@ let
   libstdcxx-stage2-3 = callPackage ./nxfs-libstdcxx-stage2-3 { nxfsenv-3            = nxfsenv-3-98;
                                                                gcc-stage2-wrapper-3 = gcc-stage2-wrapper-3;
                                                                nixify-gcc-source    = bootstrap-2.nxfs-nixify-gcc-source;
-                                                               glibc                = glibc-stage1-3;
+                                                               glibc                = glibc-x1-3;
                                                                mpc                  = bootstrap-2.nxfs-mpc-2;
                                                                mpfr                 = bootstrap-2.nxfs-mpfr-2;
                                                                gmp                  = bootstrap-2.nxfs-gmp-2;
@@ -403,7 +403,7 @@ let
   gcc-stage3-wrapper-3 = callPackage ./nxfs-gcc-stage3-wrapper-3 { nxfsenv-3     = nxfsenv-3-99;
                                                                    gcc-unwrapped = gcc-stage1-3; # was nxfsenv.gcc-stage1;
                                                                    libstdcxx     = libstdcxx-stage2-3;
-                                                                   glibc         = glibc-stage1-3;
+                                                                   glibc         = glibc-x1-3;
                                                                  };
 in
 
@@ -416,7 +416,7 @@ let
                                                    mpc               = bootstrap-2.nxfs-mpc-2;
                                                    mpfr              = bootstrap-2.nxfs-mpfr-2;
                                                    gmp               = bootstrap-2.nxfs-gmp-2;
-                                                   glibc             = glibc-stage1-3;
+                                                   glibc             = glibc-x1-3;
                                                    #toolchain         = bootstrap-1.nxfs-toolchain-1;
                                                    sysroot           = bootstrap-1.nxfs-sysroot-1;  # for linux headers
                                                  };
@@ -428,7 +428,7 @@ let
   # gcc-wrapper-3 :: derivation
   gcc-wrapper-3 = callPackage ./nxfs-gcc-wrapper-3 { nxfsenv-3 = nxfsenv-3-100;
                                                      gcc-unwrapped = gcc-stage2-3;
-                                                     glibc = glibc-stage1-3;
+                                                     glibc = glibc-x1-3;
                                                    };
 
 in
@@ -443,7 +443,7 @@ in
   gcc-stage2-wrapper-3 = gcc-stage2-wrapper-3;
   gcc-stage1-3 = gcc-stage1-3;
   gcc-stage1-wrapper-3 = gcc-stage1-wrapper-3;
-  glibc-stage1-3 = glibc-stage1-3;
+  glibc-x1-3 = glibc-x1-3;
 
 #  libstdcxx-s2-3        = libstdcxx-s2-3;
 #  gcc-s1-wrapper-3      = gcc-s1-wrapper-3;
