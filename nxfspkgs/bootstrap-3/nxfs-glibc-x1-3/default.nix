@@ -68,8 +68,9 @@ in
 #   - in this derivation building glibc from source from within nix environment
 #
 nxfsenv.mkDerivation {
-  name           = "nxfs-glibc-stage1-3";
-  version        = "2.40";
+  version        = version;
+  pname          = "nxfs-glibc";  # nixpkgs requires this
+  name           = "nxfs-glibc-x1-${version}-3";
 
   system         = builtins.currentSystem;
 
