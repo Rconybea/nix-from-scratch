@@ -466,6 +466,7 @@ let
         gcc       = null;
         #binutils  = binutils-x0-wrapper-3;  # todo: industrial-strength gcc wrapper should hold this, match nixpkgs pattern
         patch     = patch-3;
+        patchelf  = patchelf-3;
         xz        = xz-3;
         gnumake   = gnumake-3;
         gzip      = gzip-3;
@@ -567,6 +568,7 @@ let
         system    = nxfs-defs.system;
         gcc       = gcc-wrapper-nixpkgs;
         binutils  = bintools-wrapper-nixpkgs;
+        patchelf  = patchelf-3;
         patch     = patch-3;
         xz        = xz-3;
         gnumake   = gnumake-3;
