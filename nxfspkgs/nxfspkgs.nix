@@ -76,6 +76,8 @@ let
 #    mkDerivation = nxfspkgs.nxfs-autotools nxfsenv-3;
 #  };
 
+  # In nixpkgs/lib/customisation.nix, similar function is lib.callPackageWith
+  #
   # allPkgs   :: attrset
   # path      :: path         to some .nix file
   # overrides :: attrset      overrides relative to allPkgs
@@ -203,7 +205,7 @@ in
 let
   # TODO: use callPackage on these, so they're overrideable
   gcc-wrapper-3  = bootstrap-3.gcc-wrapper-3;  # can comment this out
-  glibc-stage1-3 = bootstrap-3.glibc-stage1-3;  # can comment this out
+  glibc-x1-3 = bootstrap-3.glibc-x1-3;  # can comment this out
 in
 let
   nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
@@ -262,7 +264,7 @@ let
 in
 let
   nxfsenv-3-94 = nxfsenv-3-16 // { };
-  glibc-stage1-3 = callPackage ./bootstrap-3/nxfs-glibc-stage1-3
+  glibc-x1-3 = callPackage ./bootstrap-3/nxfs-glibc-x1-3
     { nxfsenv-3           = nxfsenv-3-94;
       nixify-glibc-source = bootstrap-2.nxfs-nixify-glibc-source;
       lc-all-sort         = bootstrap-2.nxfs-lc-all-sort-2;
@@ -273,11 +275,11 @@ let
     };
 in
 let
-  nxfsenv-3-95 = nxfsenv-3-94 // { glibc-stage1 = glibc-stage1-3; };
+  nxfsenv-3-95 = nxfsenv-3-94 // { glibc-stage1 = glibc-x1-3; };
   # TODO switch to nxfsenv-3.glibc, along with libstdcxx
   gcc-x0-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-x0-wrapper-3
     { nxfsenv-3   = nxfsenv-3-95;
-      glibc       = glibc-stage1-3;
+      glibc       = glibc-x1-3;
       bootstrap-1 = bootstrap-1;
     };
 in
@@ -286,7 +288,7 @@ let
   binutils-x0-wrapper-3 = callPackage ./bootstrap-3/nxfs-binutils-xo-wrapper-3
     {
       nxfsenv-3   = nxfsenv-3-95a;
-      glibc       = glibc-stage1-3;
+      glibc       = glibc-x1-3;
     };
 in
 let
@@ -300,7 +302,7 @@ let
       mpfr                 = mpfr-3;
       gmp                  = gmp-3;
       nixify-gcc-source    = bootstrap-2.nxfs-nixify-gcc-source;
-      glibc                = glibc-stage1-3;
+      glibc                = glibc-x1-3;
       sysroot              = bootstrap-1.nxfs-sysroot-1;
     };
 in
@@ -309,7 +311,7 @@ let
   # gcc-stage2-wrapper-3 :: derivation
   gcc-x1-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-x1-wrapper-3
     { nxfsenv-3 = nxfsenv-3-97;
-      glibc = glibc-stage1-3;
+      glibc = glibc-x1-3;
       bootstrap-1 = bootstrap-1;
     };
 in
@@ -320,7 +322,7 @@ let
     { nxfsenv-3            = nxfsenv-3-98;
       gcc-x1-wrapper-3     = gcc-x1-wrapper-3;
       nixify-gcc-source    = bootstrap-2.nxfs-nixify-gcc-source;
-      glibc                = glibc-stage1-3;
+      glibc                = glibc-x1-3;
       mpc                  = mpc-3;
       mpfr                 = mpfr-3;
       gmp                  = gmp-3;
@@ -333,7 +335,7 @@ let
     { nxfsenv-3     = nxfsenv-3-99;
       gcc-unwrapped = gcc-x1-3;
       libstdcxx     = libstdcxx-x2-3;
-      glibc         = glibc-stage1-3;
+      glibc         = glibc-x1-3;
     };
 in
 let
@@ -346,7 +348,7 @@ let
       mpc               = bootstrap-2.nxfs-mpc-2;
       mpfr              = bootstrap-2.nxfs-mpfr-2;
       gmp               = bootstrap-2.nxfs-gmp-2;
-      glibc             = glibc-stage1-3;
+      glibc             = glibc-x1-3;
       sysroot           = bootstrap-1.nxfs-sysroot-1;  # for linux headers
     };
 in
@@ -357,7 +359,7 @@ let
   gcc-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-wrapper-3
     { nxfsenv-3 = nxfsenv-3-100;
       gcc-unwrapped = gcc-x3-3;
-      glibc = glibc-stage1-3;
+      glibc = glibc-x1-3;
     };
 
 in
@@ -408,7 +410,7 @@ in
 let
   # a nxfs-only "stdenv" (not using this for anything..)
   stdenv-nxfs = callPackage ./stdenv { gcc          = gcc-wrapper-3;
-                                       glibc        = glibc-stage1-3;
+                                       glibc        = glibc-x1-3;
                                        xz           = xz-3;
                                        patchelf     = patchelf-3;
                                        patch        = patch-3;
@@ -492,7 +494,7 @@ let
       bintools               = binutils-3;
       coreutils              = coreutils-3;
       gnugrep                = gnugrep-3;
-      libc                   = glibc-stage1-3;
+      libc                   = glibc-x1-3;
       nativeTools            = false;
       nativeLibc             = false;
       expand-response-params = "";
@@ -510,7 +512,7 @@ let
       stdenvNoCC             = stdenv2nix-no-cc;
       runtimeShell           = bash-3;
       cc                     = gcc-x3-3;
-      libc                   = glibc-stage1-3;
+      libc                   = glibc-x1-3;
       bintools               = bintools-wrapper-nixpkgs;
       coreutils              = coreutils-3;
       zlib                   = false; # looks like not needed for gcc
@@ -920,7 +922,6 @@ in
   mpfr-3               = mpfr-3;
   mpc-3                = mpc-3;
   python-3             = python-3;
-  glibc-stage1-3       = glibc-stage1-3;
   gcc-x0-wrapper-3     = gcc-x0-wrapper-3;
   binutils-x0-wrapper-3 = binutils-x0-wrapper-3;
   gcc-x1-3             = gcc-x1-3;
@@ -940,6 +941,7 @@ in
 
   nxfs-toolchain-0      = import ./bootstrap/nxfs-toolchain-0;
   nxfs-sysroot-0        = import ./bootstrap/nxfs-sysroot-0;
+  glibc-x1-3                                  = glibc-x1-3;
 
   # pills-example-1..nxfs-bootstrap-1 :: derivation
   pills-example-1       = import ./nix-pills/example1;
@@ -958,11 +960,11 @@ in
 
   nxfs-gcc-wrapper-2    = import ./bootstrap-2/nxfs-gcc-wrapper-2;
   nxfs-gcc-stage2-2     = import ./bootstrap-2/nxfs-gcc-stage2-2;
-  nxfs-glibc-stage1-2   = import ./bootstrap-2/nxfs-glibc-stage1-2;
   nxfs-bash-2           = import ./bootstrap-2/nxfs-bash-2;
   nxfs-binutils-2       = import ./bootstrap-2/nxfs-binutils-2;
   nxfs-coreutils-2      = import ./bootstrap-2/nxfs-coreutils-2;
   nxfs-bootstrap-2-demo = import ./bootstrap-2-demo;
+  nxfs-glibc-stage1-2                         = import ./bootstrap-2/nxfs-glibc-stage1-2;
 
   nxfs-defs             = import ./bootstrap-1/nxfs-defs.nix;
 

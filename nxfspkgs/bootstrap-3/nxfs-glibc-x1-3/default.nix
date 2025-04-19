@@ -58,6 +58,8 @@ let
     sed = gnused;
     nxfs-defs = nxfs-defs;
   };
+
+  version = "2.40";
 in
 
 # PLAN
