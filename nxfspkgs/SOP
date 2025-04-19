@@ -1,0 +1,10 @@
+1. To find [nixpkgs.foo], look in
+   [nixpkgs/top-level/all-packages.nix]
+2. add to ./TOWER
+3. add (+build) foo-nixpkgs to nxfspkgs.nix.  Proves that you know deps.  May have to skip if it's hard.
+4. add to nixpkgs overlay in nxfspkgs.nix.   This will look cleaner, but obscures deps
+   (since everything gets to pull anything it wants from nixpkgs)
+
+Hoping that at some point we get enough stuff into nixpkgs-with-overlay, that things after that work out-of-the-box.
+I think this is a matter of replacing all the entry points that cause nixpkgs to reach for stdenv/linux/default.nix,
+that somehow aren't getting replaced by our overlay.

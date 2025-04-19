@@ -1,0 +1,48 @@
+
+
+                                             +-----------+
+                                             |  perl(1)  |
+                                             +-----------+
+                                             | libxcrypt |
+                         +------------+------+-----------+
+                         | ncurses(0) | file |  perl(0)  |
+                         +============+======+===========+
+   +---------------------------------------+----------+------------------------+
+   |  updateAutotoolsGnuConfigScriptsHook  |   xz     | pkg-config             |
+   +---------------------------------------+----------+------------------------+-------+-------+---------+
+   |   gnu-config                          |   zlib   | pkg-config-unwrapped   | which | gnum4 | gettext |
+   +=======================================+==========+========================+=======+=======+=========+
+
+   +========================================================================+===============+
+   |                           stdenv2nix-minimal                           |  nixpkgs.lib
+   +------------------------------------------------------------------------+
+   |                             gcc-wrapper-nixpkgs                        |
+   +------------------------------------------------------------------------+
+   |                         bintools-wrapper-nixpkgs                       |
+   +------------------------------------------------------------------------+
+
+   +========================================================================+
+
+
+#readline              : development/libraries/readline
+
+gettext               : development/libraries/gettext       : bash, updateAuto..
+  caveat: using nxfs bash + hardwiring libiconv=libc
+
+patchutils            : tools/text/patchutils               : perl, makeWrapper
+
+libxcrypt             : development/libraries/libxcrypt
+perl                  : development/interpreters/perl
+  perl(0) without libxcrypt
+  perl(1) with libxcrypt
+
+ncurses               : development/libraries/ncurses       : pkg-config, updateAuto..
+  ncurses(0) build w/out {binlore, gpm, mouseSupport
+
+file                  : tools/misc/file
+pkg-config            : build-support/pkg-config-wrapper    : pkgs-config-unwrapped
+pkg-config-unwrapped  : development/tools/misc/pkg-config   : lib, stdenv, fetchurl
+xz                    : tools/compression/xz                : zlib, nixpkgs.lib
+zlib                  : development/libraries/zlib          : lib, stdenv, fetchurl
+which                 : tools/system/which                  : lib, stdenv, fetchurl
+gnum4                 : development/tools/misc/gnum4        : lib, stdenv, fetchurl
