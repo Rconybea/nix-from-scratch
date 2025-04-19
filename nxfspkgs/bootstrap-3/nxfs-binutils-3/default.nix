@@ -101,4 +101,33 @@ nxfsenv.mkDerivation {
                   nxfsenv-3.coreutils
                   nxfsenv-3.bash
                 ];
+} // {
+  # experiment  - for nxfs bridge-to-nixpkgs.
+  # ----------
+  # 1. Goal is to construct a stdenv that satisfies nixpkgs from within nix-from-scratch.
+  # 2. Have partial success by
+  #    a. constructing a set of packages  (see nxfs-bootstrap-pgks in [nix-from-scratch/nxfspkgs/nxfspkgs.nix])
+  #    b. invoking nixpkgs/stdenv/generic/default.nix (see [nix-from-scratch/nxfspkgs/stdenv-to-nix/default.nix])
+  #       hoping to fill in a bunch of nixpkgs-specific details.
+  #    Result:
+  #    c. allows us to build assorted nixpkgs packages, but
+  #    d. requires us to override stdenv separately for each package
+  #       e.g. overlay:
+  #         self: super: { ... foo = super.foo.override { stdenv = stdenv2nix-minimal; }; }
+  #    e. Observe that overriding stdenv this way bypasses nixpkgs stdenv tower
+  #       [nixpkgs/pkgs/stdenv/booter.nix] -> [nixpkgs/pkgs/stdenv/linux/default.nix]
+  #
+  # 3. Trying to replace nixpkgs.stdenv:
+  #      self: super: { stdenv = stdenv2nix-minimal; }
+  #    fails assert in nixpkgs/pkgs/stdenv/booter.nix -> nixpkgs/pkgs/stdenv/linux/default.nix:
+  #      assert isFromBootstrapFiles prevStage.binutils.bintools
+  #    This implies the role of nixpkgs.stdenv is not the same as stdenv given as package override,
+  #    since nixpkgs insists on 'booting it'.
+  #
+  # 4. We already introduced
+  #      passthru.isFromBootstrapFiles = true
+  #    for gcc-x3-3 (see nix-from-scratch/nxfspkgs/bootstrap-3/nxfs-gcc-x3-3/default.nix,
+  #    try the same here.
+  #
+  passthru.isFromBootstrapFiles = true;
 }
