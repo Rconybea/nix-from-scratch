@@ -333,23 +333,23 @@ in
 let
   nxfsenv-3-94 = nxfsenv-3-16 // { };
 
-  glibc-stage1-3 = callPackage ./nxfs-glibc-stage1-3 { nxfsenv-3         = nxfsenv-3-94;
-                                                       nixify-glibc-source = bootstrap-2.nxfs-nixify-glibc-source;
-                                                       lc-all-sort       = bootstrap-2.nxfs-lc-all-sort-2;
-                                                       locale-archive    = bootstrap-1.nxfs-locale-archive-1;
-                                                       toolchain-wrapper = bootstrap-1.nxfs-toolchain-wrapper-1;
-                                                       toolchain         = bootstrap-1.nxfs-toolchain-1;
-                                                       sysroot           = bootstrap-1.nxfs-sysroot-1;
-                                                     };
+  glibc-x1-3 = callPackage ./nxfs-glibc-x1-3 { nxfsenv-3         = nxfsenv-3-94;
+                                               nixify-glibc-source = bootstrap-2.nxfs-nixify-glibc-source;
+                                               lc-all-sort       = bootstrap-2.nxfs-lc-all-sort-2;
+                                               locale-archive    = bootstrap-1.nxfs-locale-archive-1;
+                                               toolchain-wrapper = bootstrap-1.nxfs-toolchain-wrapper-1;
+                                               toolchain         = bootstrap-1.nxfs-toolchain-1;
+                                               sysroot           = bootstrap-1.nxfs-sysroot-1;
+                                             };
 in
 
 let
-  nxfsenv-3-95 = nxfsenv-3-94 // { glibc-stage1 = glibc-stage1-3; };
+  nxfsenv-3-95 = nxfsenv-3-94 // { glibc-stage1 = glibc-x1-3; };
 
   # wraps bootstrap-1.nxfs-toolchain-1.gcc + bootstrap-2.glibc-stage1
   # TODO: switch glibc to nxfsenv-3.glibc-stage1, but also will need to touch libstdcxx-stage2-3 dep
   gcc-stage1-wrapper-3 = callPackage ./nxfs-gcc-stage1-wrapper-3 { nxfsenv-3 = nxfsenv-3-95;
-                                                                   glibc = glibc-stage1-3;
+                                                                   glibc = glibc-x1-3;
                                                                    bootstrap-1 = bootstrap-1;
                                                                  };
 
