@@ -699,7 +699,7 @@ let
         # builds! - with stdenvStages, don't need override
         # xz has carve-out to prevent CONFIG_SHELL pointing to bash in bootstrapTools
         # In this context that leaves CONFIG_SHELL pointing to /bin/sh, which wedges build
-        xz = (super.xz.overrideAttrs (old: { preConfigure=""; })); # .override { stdenv = stdenv2nix-minimal; };
+        #xz = (super.xz.overrideAttrs (old: { preConfigure=""; })); # .override { stdenv = stdenv2nix-minimal; };
 
         # Does not work: presumably nixpkgs patchelf derivation gets injected somewhere.
         # (1) checks patchelf.stdenv.cc.cc satisfies 'isBuiltByBootstrapFilesCompiler'
@@ -741,14 +741,13 @@ let
         # pkg-config = super.pkg-config.override { stdenvNoCC = stdenv2nix-no-cc; };
 
         # builds!
-        gettext = super.gettext.override {
-#          stdenv = stdenv2nix-minimal;
-#          fetchurl = stdenv2nix-minimal.fetchurlBoot;
-          bash = bash-3;
-        };
+#        gettext = super.gettext.override {
+##          stdenv = stdenv2nix-minimal;
+##          fetchurl = stdenv2nix-minimal.fetchurlBoot;
+#          bash = bash-3;
+#        };
 
         ncurses = (super.ncurses.overrideAttrs (old: { passthru.binlore = null; })).override {
-#          stdenv = stdenv2nix-minimal;
           mouseSupport = false; # 1. would be nice; 2. relies on pkgs/servers/gpm; 3. gpm needs a bunch of deps
           gpm = null;
           binlore = null; # some sort of dependency analyzer thing; only affects passthru.binlore. Too many deps
@@ -758,78 +757,126 @@ let
         };
 
         # builds!
-        perl536 = (super.perl536.overrideAttrs (old: {})).override {
-#          stdenv = stdenv2nix-minimal;
-#          fetchurl = stdenv2nix-minimal.fetchurlBoot;
-          fetchFromGitHub = null;
-          makeWrapper = null;
-          enableCrypt = false;
-        };
+#        perl536 = (super.perl536.overrideAttrs (old: {})).override {
+#          fetchFromGitHub = null;
+#          makeWrapper = null;
+#          enableCrypt = false;
+#        };
 
         # builds!
-        perl538 = (super.perl538.overrideAttrs (old: {})).override {
-#          stdenv = stdenv2nix-minimal;
-#          fetchurl = stdenv2nix-minimal.fetchurlBoot;
-          fetchFromGitHub = null;
-          makeWrapper = null;
-          #      enableCrypt = false;
-        };
+#        perl538 = (super.perl538.overrideAttrs (old: {})).override {
+#          fetchFromGitHub = null;
+#          makeWrapper = null;
+#          #      enableCrypt = false;
+#        };
 
-        perl = self.perl538;
+#        perl = self.perl538;
 
         # perl536, perl538, perl:
         #   This gets us working perl interpreter,
         #   but perlPackages still depends on before-override perl
-        perlPackages = super.lib.recurseIntoAttrs self.perl538.pkgs;
+#        perlPackages = super.lib.recurseIntoAttrs self.perl538.pkgs;
 
-        libxcrypt = (super.libxcrypt.overrideAttrs (old:
-          {
-            # No idea why libxcrypt builds without this in nixpkgs
-            postConfigure = ''
-              patchShebangs build-aux/scripts/move-if-change
-            '';
-          })); #.override { stdenv = stdenv2nix-minimal; fetchurl = stdenv2nix-minimal.fetchurlBoot; };
+        # builds!
+#        libxcrypt = (super.libxcrypt.overrideAttrs (old:
+#          {
+#            # No idea why libxcrypt builds without this in nixpkgs
+#            postConfigure = ''
+#              patchShebangs build-aux/scripts/move-if-change
+#            '';
+#          })); #.override { stdenv = stdenv2nix-minimal; fetchurl = stdenv2nix-minimal.fetchurlBoot; };
 
         #gnum4 = super.gnum4.override { stdenv = stdenv2nix-minimal; };
         #m4 = self.gnum4;
 
-        help2man = (super.help2man.overrideAttrs (old:
-          {
-            # no idea why we need this (given help2man works in nixpkgs)
-            postConfigure = ''
-            patchShebangs build-aux/mkinstalldirs
-            patchShebangs build-aux/find-vpath
-            '';
-          }));
+#        help2man = (super.help2man.overrideAttrs (old:
+#          {
+#            # no idea why we need this (given help2man works in nixpkgs)
+#            postConfigure = ''
+#            patchShebangs build-aux/mkinstalldirs
+#            patchShebangs build-aux/find-vpath
+#            '';
+#          }));
 
-        bison = (super.bison.overrideAttrs (old:
-          {
-            # no idea why we need this (given help2man works in nixpkgs)
-            postConfigure = ''
-            patchShebangs build-aux/move-if-change
-            '';
-          }));
+#        bison = (super.bison.overrideAttrs (old:
+#          {
+#            # no idea why we need this (given help2man works in nixpkgs)
+#            postConfigure = ''
+#            patchShebangs build-aux/move-if-change
+#            '';
+#          }));
 
-        # builds!
+        # builds! -- don't need anything
         #bash = super.bash.override { stdenv = stdenv2nix-minimal; };
 
-        gzip = (super.gzip.overrideAttrs (old:
-          {
-            # omit SHELL=/bin/sh
-            makeFlags = [
-              "GREP=grep"
-              "ZLESS_MAN=zless.1"
-              "ZLESS_PROG=zless"
-            ];
+#        gzip = (super.gzip.overrideAttrs (old:
+#          {
+#            # omit SHELL=/bin/sh
+#            makeFlags = [
+#              "GREP=grep"
+#              "ZLESS_MAN=zless.1"
+#              "ZLESS_PROG=zless"
+#            ];
+#
+#            postConfigure = ''
+#            patchShebangs build-aux/compile
+#            '';
+#          }));
 
-            postConfigure = ''
-            patchShebangs build-aux/compile
-            '';
-          }));
-
-        #gzip = super.gzip.override { stdenv = stdenv2nix-minimal; }; # NOT YET, need bash
+        # builds!
         #texinfo = super.texinfo.override { stdenv = stdenv2nix-minimal; };
-        #coreutils = super.coreutils.override { stdenv = stdenv2nix-minimal; };
+
+        # builds!
+        #autoconf
+
+        # builds!
+#        automake = (super.automake.overrideAttrs (old:
+#          {
+#            postConfigure = ''
+#            patchShebangs pre-inst-env
+#            '';
+#          }));
+
+        # builds!
+        # libtool = super.libtool;
+
+        # builds!
+        # autoreconfHook = super.autoreconfHook;
+
+        # builds!
+#        gawk = (super.gawk.overrideAttrs (old:
+#          {
+#            postConfigure = ''
+#            patchShebangs build-aux/install-sh
+#            '';
+#          }));
+
+        # builds!
+#        gmp = (super.gmp.overrideAttrs (old:
+#          {
+#            postConfigure = ''
+#            patchShebangs mpn/m4-ccas
+#            '';
+#          }));
+
+        # attr builds!
+        # acl builds!
+
+        # coreutils builds!
+        #coreutils = (super.coreutils.overrideAttrs (old:
+        #  {
+        #    # two tests fail {test-freadptr.sh, test-freadseek.sh} because of shebang stuff
+        #    doCheck = false;
+        #
+        #    # see pkgs/build-support/setup-hooks/patch-shebangs.sh
+        #    postConfigure = ''
+        #    patchShebangs gnulib-tests/*.sh
+        #    patchShebangs gnulib-tests/uniwidth/*.sh
+        #    '';
+        #  }));
+
+        # jq TBD
+
       };  # end of overlay
 
   # nixpkgs anatomy

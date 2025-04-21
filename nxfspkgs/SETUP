@@ -8,3 +8,17 @@
      $ nix repl
      > import <nxfspkgs>
      > (import <nxfspkgs>).build-support.autotools
+
+2. With also:
+
+     NIX_PATH=$HOME/proj/nix-from-scratch:nixpkgs=$HOME/proj/nixpkgs
+
+   should be able to do:
+
+     $ nix repl
+     > :l <nxfspkgs>
+
+   and
+
+     $ nix repl
+     > :l <nixpkgs>
