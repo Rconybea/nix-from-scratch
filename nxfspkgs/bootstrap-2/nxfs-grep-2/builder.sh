@@ -59,7 +59,7 @@ export CONFIG_SHELL="${bash_program}"
 # since we're using a cross compiler.
 
 # inspect shebang
-head -5 ${src}/configure
+#head -5 ${src}/configure
 
 #(cd ${builddir} && bash ${src}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,--enable-new-dtags -Wl,-rpath,${sysroot}/lib -Wl,-dynamic-linker,${sysroot}/lib/ld-linux-x86-64.so.2)")
 (cd ${builddir} && ${bash_program} ${src}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags")

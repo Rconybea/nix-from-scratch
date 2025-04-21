@@ -52,10 +52,11 @@ bash_program=${bash}/bin/bash
 
 # 2. substitute nix-store path-to-bash for /bin/sh.
 #
+# Don't need since nix compiled with --with-sandbox-shell
 #
-chmod -R +w ${src2}
-sed -i "1s:#!.*/bin/sh:#!${bash_program}:" ${src2}/build-aux/mkinstalldirs
-chmod -R -w ${src2}
+#chmod -R +w ${src2}
+#sed -i "1s:#!.*/bin/sh:#!${bash_program}:" ${src2}/build-aux/mkinstalldirs
+#chmod -R -w ${src2}
 
 # ----------------------------------------------------------------
 # NOTE: omitting coreutils unicode patch
