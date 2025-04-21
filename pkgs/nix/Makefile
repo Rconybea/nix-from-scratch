@@ -58,7 +58,13 @@ builddir:=build
 # pre_configure_hook + configure script: runs in build dir
 pre_configure_hook:=../pre-configure-hook.sh --srcdir=$(srcdir) 
 configure_script:=configure
-configure_extra_args:=--with-store-dir=$(NIX_STORE_DIR) --prefix=$(NIX_PREFIX) --sysconfdir=$(NIX_SYSCONF_DIR) --localstatedir=$(NIX_LOCALSTATE_DIR) --enable-gc --with-boost=$(PREFIX) --with-boost-libdir=$(PREFIX)/lib CXX=g++-12 LIBSECCOMP_CFLAGS=-I$(PREFIX)/include
+
+# --with-sandbox-shell:  will need this to get our self-built nix to work with nixpkgs.  
+#                        lots of packages assume /bin/sh, and nixpkgs relies
+#                        on being able to leave them unaltered.
+#
+configure_extra_args:=--with-store-dir=$(NIX_STORE_DIR) --prefix=$(NIX_PREFIX) --sysconfdir=$(NIX_SYSCONF_DIR) --localstatedir=$(NIX_LOCALSTATE_DIR) --enable-gc --with-boost=$(PREFIX) --with-boost-libdir=$(PREFIX)/lib CXX=g++-12 LIBSECCOMP_CFLAGS=-I$(PREFIX)/include --with-sandbox-shell=$(PREFIX)/bin/dash
+#--enable-embedded-sandbox-shell=$(PREFIX)/bin/bash
 post_install_hook:=
 
 all: compile
