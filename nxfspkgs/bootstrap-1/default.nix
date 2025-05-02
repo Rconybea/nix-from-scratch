@@ -58,5 +58,6 @@ derivation {
   nxfs-bash-1            = nxfs-bash-1;
   nxfs-redirect-elf-file = nxfs-redirect-elf-file;
   nxfs-sysroot-1         = nxfs-sysroot-1;
-  nxfs-defs              = nxfs-defs;
+  nxfs-defs-system       = nxfs-defs.system;
+  nxfs-defs-target_tuple = nxfs-defs.target_tuple;
 }
