@@ -17,8 +17,25 @@
 self_name=$(basename ${0})
 
 usage() {
-    echo "$self_name"
+    echo "$self_name [--verifyresult=VERIFYRESULT]"
 }
+
+verifyresult=state/verify.result
+
+while [[ $# > 0 ]]; do
+    case "$1" in
+        --verifyresult=*)
+            verifyresult="${1#*=}"
+            ;;
+        *)
+            >&2 echo -n "usage"
+            >&2 usage
+            exit 1
+            ;;
+    esac
+
+    shift
+done
 
 set -x
 rm -f state/verify.tmp state/verify.err
@@ -42,9 +59,9 @@ fi
 
 rm -f state/verify.err
 
-if [[ -f state/verify.result ]] && grep '^ok' state/verify.result; then
+if [[ -f ${verifyresult} ]] && grep '^ok' ${verifyresult}; then
     set -x
-    diff -q state/verify.tmp state/verify.result
+    diff -q state/verify.tmp ${verifyresult}
     err=$?
     set +x
 else
@@ -55,12 +72,12 @@ fi
 set -x
 
 if [[ $err -ne 0 ]]; then
-    mv -f state/verify.tmp state/verify.result
+    mv -f state/verify.tmp ${verifyresult}
 else
     rm state/verify.tmp
 fi
 
 if [[ ${verified} -eq 0 ]]; then
-    mv state/verify.result state/verify.err
+    mv ${verifyresult} state/verify.err
     exit 1
 fi

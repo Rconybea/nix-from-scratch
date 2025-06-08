@@ -1,5 +1,5 @@
 no-build (binary install)                mdbook, mdbook-linkcheck
-configure_exec override                  boost
+configure_exec override                  boost (bootstrap.sh), nlohmann_json (cmake)
 extra configure args                     python
 in-source build                          unzip, nix, zstd
 custom cppflags                          sqlite

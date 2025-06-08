@@ -12,7 +12,7 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../..)
 #
 include $(TOP_DIR)/mk/config.mk
 
-PREFIX:=$(PREFIX)/native-toolchain-experiment
+#PREFIX:=$(PREFIX)/native-toolchain-experiment
 
 version:=2.43.1
 # unique package name

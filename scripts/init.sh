@@ -17,6 +17,7 @@ while [[ $# > 0 ]]; do
             ARCHIVE_DIR=${1#*=}
             ;;
         *)
+            >&2 echo -n "usage: "
             usage
             exit 1
             ;;

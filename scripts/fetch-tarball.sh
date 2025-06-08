@@ -10,12 +10,13 @@
 self_name=$(basename ${0})
 
 usage() {
-    echo "$self_name: --archive-dir=ARCHIVE_DIR --url=URL --tarball-path=TARBALL --fetch-extra-args=FETCHARGS"
+    echo "$self_name: --archive-dir=ARCHIVE_DIR --url=URL --tarball-path=TARBALL [--fetchresult=FETCHRESULT] [--fetch-extra-args=FETCHARGS]"
 }
 
 ARCHIVE_DIR=
 url=
 tarball_path=
+fetchresult=state/fetch.result
 fetch_extra_args=
 
 while [[ $# > 0 ]]; do
@@ -29,11 +30,15 @@ while [[ $# > 0 ]]; do
         --tarball-path=*)
             tarball_path="${1#*=}"
             ;;
+        --fetchresult=*)
+            fetchresult="${1#*=}"
+            ;;
         --fetch-extra-args=*)
             fetch_extra_args="${1#*=}"
             ;;
         *)
-            usage
+            >&2 echo -n "usage"
+            >&2 usage
             exit 1
             ;;
     esac
@@ -57,18 +62,18 @@ if [[ -z ${tarball_path} ]]; then
     2>&1 echo "$self_name: expected TARBALL (use --tarball-path=TARBALL)"
 fi
 
-rm -f state/fetch.result
+rm -f ${fetchresult}
 rm -f ${tarball_path}
 
 (cd ${ARCHIVE_DIR} && wget --output-document=${tarball_path} ${fetch_extra_args} ${url}) 2>&1 | tee log/wget.log
 err=$?
 
 if [[ ${err} -eq 0 && -f ${tarball_path} && -s ${tarball_path} ]]; then
-    echo -n 'ok ' > state/fetch.result
-    echo ${tarball_path} >> state/fetch.result
+    echo -n 'ok ' > ${fetchresult}
+    echo ${tarball_path} >> ${fetchresult}
     exit 0
 else
-    echo "err: expected wget to create non-empty [${tarball_path}]" > state/fetch.result
+    echo "err: expected wget to create non-empty [${tarball_path}]" > ${fetchresult}
     exit 1
 fi
 

@@ -48,7 +48,9 @@ while [[ $# > 0 ]]; do
             fi
             ;;
         *)
-            usage
+            >&2 echo "${self_name}: error: unexpected argument [${1}]"
+            >&2 echo -n "usage: "
+            >&2 usage
             exit 1
             ;;
     esac
@@ -57,7 +59,7 @@ while [[ $# > 0 ]]; do
 done
 
 if [[ -z ${tarball_path} ]]; then
-    2>&1 echo "$self_name: expected TARBALL (use --tarball-path=TARBALL)"
+    >&2 echo "$self_name: expected TARBALL (use --tarball-path=TARBALL)"
 fi
 
 if [[ ! -f ${tarball_path} ]]; then
