@@ -3,7 +3,7 @@
 self_name=$(basename ${0})
 
 usage() {
-    echo "$self_name: [--prefix=PREFIX] [--nxfs-toolchain-prefix=NXFS_TOOLCHAIN_PREFIX"
+    echo "$self_name: [--prefix=PREFIX] [--nxfs-toolchain-prefix=NXFS_TOOLCHAIN_PREFIX]"
 }
 
 prefix=
@@ -14,10 +14,11 @@ while [[ $# > 0 ]]; do
         --prefix=*)
             prefix="${1#*=}"
             ;;
-        --nxfs-otoolchain_prefix=*)
+        --nxfs-toolchain_prefix=*)
             nxfs_toolchain_prefix="${1#*=}"
             ;;
         *)
+            echo "error: ${self_name}: unexpected argument [$1]"
             usage
             exit 1
             ;;
