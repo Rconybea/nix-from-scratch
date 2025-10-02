@@ -9,12 +9,16 @@ usage() {
 }
 
 tarball_path=
+prepend_to_path=
 build_exec=make
 build_args=
 build_dir=
 
 while [[ $# > 0 ]]; do
     case "$1" in
+        --prepend-to-path=*)
+            prepend_to_path=${1#*=}
+            ;;
         --build-exec=*)
             tmp=${1#*=}
             if [[ -n "$tmp" ]]; then
@@ -55,6 +59,11 @@ pushd ${build_dir}
 #echo build_exec=${build_exec}
 
 echo "${self_name}: BUILDEXEC=[${build_exec}] BUILDARGS=[${build_args}]"
+
+if [[ -n ${prepend_to_path} ]]; then
+    PATH=${prepend_to_path}:$PATH
+    2>&1 echo "PATH=${PATH}"
+fi
 
 ${build_exec} ${build_args} 2>&1
 
