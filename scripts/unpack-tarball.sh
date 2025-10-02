@@ -7,6 +7,8 @@
 # 2. writes [log/unpack.log]
 #
 
+set -euo pipefail
+
 self_name=$(basename ${0})
 
 usage() {
@@ -84,7 +86,7 @@ rm -rf ${src_dir}
 set -x
 ${unpack_exec} ${unpack_args} ${tarball_path} 2>&1 | tee log/tar.log
 err=$?
-set -x
+set +x
 
 if [[ ${err} -eq 0 ]]; then
     if [[ -e ${tarball_unpack_dir} ]]; then
