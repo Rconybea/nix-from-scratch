@@ -9,7 +9,9 @@ usage() {
 
 prefix=
 src_dir=
+log_dir=$(pwd)/log
 build_dir=
+prepend_to_path=
 pre_configure_hook=true
 post_configure_hook=true
 configure_exec=
@@ -29,6 +31,9 @@ while [[ $# > 0 ]]; do
             ;;
         --build-dir=*)
             build_dir=${1#*=}
+            ;;
+        --prepend-to-path=*)
+            prepend_to_path=${1#*=}
             ;;
         --pre-configure-hook=*)
             tmp=${1#*=}
@@ -110,9 +115,17 @@ echo cflags_arg=${cflags_arg}
 echo cppflags_arg=${cppflags_arg}
 echo ldflags_arg=${ldflags_arg}
 
+cmd=${log_dir}/config.command
+
 set -e
 
 pushd ${build_dir}
+
+if [[ -n ${prepend_to_path} ]]; then
+    set -x
+    export PATH=${prepend_to_path}:$PATH
+    set +x
+fi
 
 ${pre_configure_hook}
 
@@ -125,34 +138,84 @@ if [[ -n ${configure_exec} ]]; then
     # pass as regular cmake arguments
     #
     2>&1 echo ${configure_exec} ${configure_extra_args}..
+    set -x
     ${configure_exec} ${configure_extra_args}
+    set +x
 else
     if [[ -n ${cflags_arg} ]]; then
         if [[ -n ${cppflags_arg} ]]; then
             if [[ -n ${ldflags_arg} ]]; then
-                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}" "${ldflags_arg}"
+                set -x
+                (../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}" "${ldflags_arg}" 2>&1) | tee ${log_dir}/config.log
+                set +x
+                cat > ${cmd} <<EOF
+export PATH=$PATH
+../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}" "${ldflags_arg}"
+EOF
             else
-                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}"
+                set -x
+                (../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}" 2>&1) | tee ${log_dir}/config.log
+                set +x
+                cat > ${cmd} <<EOF
+export PATH=$PATH
+../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${cppflags_arg}"
+EOF
             fi
         else
             if [[ -n ${ldflags_arg} ]]; then
-                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}"
+                set -x
+                (../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}") | tee ${log_dir}/config.log
+                set +x
+                cat > ${cmd} <<EOF
+export PATH=$PATH
+../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}"
+EOF
             else
-                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}"
+                set -x
+                (../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}") | tee ${log_dir}/config.log
+                set +x
+                cat > ${cmd} <<EOF
+export PATH=$PATH
+../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cflags_arg}" "${ldflags_arg}"
+EOF
             fi
         fi
     else
         if [[ -n ${cppflags_arg} ]]; then
             if [[ -n ${ldflags_arg} ]]; then
-                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}" "${ldflags_arg}"
+                set -x
+                (../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}" "${ldflags_arg}") | tee ${log_dir}/config.log
+                set +x
+                cat > ${cmd} <<EOF
+export PATH=$PATH
+../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}" "${ldflags_arg}"
+EOF
             else
-                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}"
+                set -x
+                (../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}") | tee ${log_dir}/config.log
+                set +x
+                cat > ${cmd} <<EOF
+export PATH=$PATH
+../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${cppflags_arg}"
+EOF
             fi
         else
             if [[ -n ${ldflags_arg} ]]; then
-                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${ldflags_arg}"
+                set -x
+                (../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${ldflags_arg}") | tee ${log_dir}/config.log
+                set +x
+                cat > ${cmd} <<EOF
+export PATH=$PATH
+../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args} "${ldflags_arg}"
+EOF
             else
-                ../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args}
+                set -x
+                (../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args}) | tee ${log_dir}/config.log
+                set +x
+                cat > ${cmd} <<EOF
+export PATH=$PATH
+../${src_dir}/${configure_script} --prefix=${prefix} ${configure_extra_args}
+EOF
             fi
         fi
     fi
