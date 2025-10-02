@@ -3,6 +3,8 @@
 # creates top/archive + local {state, log} dirs
 #
 
+set -euo pipefail
+
 self_name=$(basename ${0})
 
 usage() {
@@ -34,10 +36,8 @@ if [[ ! -d ${ARCHIVE_DIR} ]]; then
     2>&1 echo "$self_name: expected directory: [${ARCHIVE_DIR}]"
 fi
 
-set -x
 mkdir -p ${ARCHIVE_DIR}
 mkdir -p state
 mkdir -p log
-set +x
 
 # end init.sh
