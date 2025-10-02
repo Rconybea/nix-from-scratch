@@ -29,3 +29,7 @@ done
 if [[ -n ${prefix} ]]; then
     sed -i -e "s|^PREFIX:=.*$|PREFIX:=${prefix}|" mk/prefix.mk
 fi
+
+if [[ -n ${nxfs_toolchain_prefix} ]]; then
+    sed -i -e "s|^NXFS_TOOLCHAIN_PREFIX:=.*$|NXFS_TOOLCHAIN_PREFIX:=${nxfs_toolchain_prefix}|" mk/prefix.mk
+fi

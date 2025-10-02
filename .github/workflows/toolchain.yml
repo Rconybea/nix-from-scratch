@@ -1,0 +1,34 @@
+name: toolchain
+
+on:
+  push:
+    branches:
+    - main
+
+    pull_request:
+      branches:
+        - main
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout self (nix-from-scratch)
+        uses: actions/checkout@v4
+
+      - name: install ubuntu dependencies
+        run: |
+          PREFIX='${{github.workspace}}/local'
+          echo PREFIX=$PREFIX
+          echo HOME=$HOME
+          echo ubuntu-dep-placeholder
+
+      - name: toplevel config
+        run: |
+          # replace PREFIX in mk/prefix.mk
+          ./scripts/bootstrap.sh --prefix='${{github.workspace}}/local' --nxfs-toolchain-prefix='${{github.workspace}}/nxfs-toolchain'
+          cat mk/prefix.mk
