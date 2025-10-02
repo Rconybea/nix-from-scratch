@@ -22,7 +22,7 @@ tarball:=$(name).tar.xz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
-url:=https://ftp.gnu.org/gnu/bison/$(tarball)
+url:=https://ftpmirror.gnu.org/gnu/bison/$(tarball)
 # verify this sha
 sha256:=9bba0214ccf7f1079c5d59210045227bcf619519840ebfa80cd3849cff5a5bf2
 # Settings CFLAGS seems to break the flex configure script;
