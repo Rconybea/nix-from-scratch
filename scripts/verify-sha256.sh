@@ -39,37 +39,32 @@ done
 
 set -x
 rm -f state/verify.tmp state/verify.err
-sha256sum --check state/expected.sha256 2> state/verify.err
-err=$?
+sha256sum --check state/expected.sha256 > state/verify.err
 set +x
+err=$?
 
 if [[ $err -eq 0 ]]; then
-    set -x
-    echo -n "ok " > state/verify.tmp
-    cat state/expected.sha256 >> state/verify.tmp
     verified=1
-    set +x
 else
-    set -x
-    echo -n "err " > state/verify.tmp
-    cat state/verify.err >> state/verify.tmp
     verified=0
-    set +x
 fi
+
+(paste -d ' ' state/expected.sha256 state/verify.err | awk '{print $4, $1, $2}') > state/verify.tmp
+
+#echo "state/verify.err:"
+#cat state/verify.err
+#echo "state/verify.tmp:"
+#cat state/verify.tmp
 
 rm -f state/verify.err
 
 if [[ -f ${verifyresult} ]] && grep '^ok' ${verifyresult}; then
-    set -x
     diff -q state/verify.tmp ${verifyresult}
     err=$?
-    set +x
 else
     # no prior result to compare,  or prior result an error
     err=1
 fi
-
-set -x
 
 if [[ $err -ne 0 ]]; then
     mv -f state/verify.tmp ${verifyresult}
