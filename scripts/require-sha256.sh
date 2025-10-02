@@ -6,6 +6,8 @@
 # 2. preserves state/expected.sha256 file modification time
 #    when contents did not change
 
+set -euo pipefail
+
 self_name=$(basename ${0})
 
 usage() {
