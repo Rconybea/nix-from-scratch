@@ -203,3 +203,10 @@ pkgs/stage1-binutils: pkgs/texinfo
 
 .PHONY: pkgs/sed
 pkgs/sed:
+
+# ----------------------------------------------------------------
+
+# builds isolated {gcc, glibc} toolchain in NXFS_TOOLCHAIN_PREFIX
+#
+.PHONY: toolchain/toolchain
+toolchain/toolchain:

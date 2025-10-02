@@ -1,0 +1,48 @@
+Overview
+
+Build here is fairly complicated, because gcc needs glibc to build, but glibc needs to be built with gcc,
+together with glibc not easily moveable.
+
+Plan
+
+Start with empty PREFIX directory (e.g $HOME/nxfs-toolchain).
+Alternate between {gcc, glibc} build directories, progressively enabling more build functionality.
+Final bootstrap builds {gcc, glibc} using itself.
+
+Build phases
+
+In first phase prepare {binutils,gcc,glibc} in bootstrap location (PREFIX/stage1),
+In second phase use bootstrap gcc to build {binutils,gcc,glibc} in final install location.
+
+There's a load-bearing finesse-by-symlink during the build
+so that the PREFIX/{include,lib} is also reachable from PREFIX/stage1/x86_64-pc-linux-gnu/{include,lib}.
+
+Build steps
+
+First phase (step 1 .. step 9)
+
+step 1. compile + install binutils
+step 2. install linux headers
+step 3. compile + install stage1 gcc
+        This is a minimal gcc, just capable enough to build a version of glibc.
+        (c-only, no libgcc, no libstdc++, no pthreads, no atomics, etc.)
+        Use binutils from step 1
+step 4. compile + install stub glibc.
+        Just enough to persuade gcc to build.  startup files crt*.o + placeholder libc.so + dummy stubs.h
+        In spite of limitations, will allow more of gcc to build
+step 5. revisit gcc; compile + install gcc library libgcc
+step 6. revisit glibc, build + install full version
+step 7. compile + install libstdc++
+step 8. revisit gcc; build + install full version
+step 9. verify gcc, g++ can compile executables.
+
+Second phase (step 10 .. step 12)
+
+Builds in this phase prepare executables that expect to find libc in PREFIX/lib/libc.so
+In bootstrap phase we put libc in PREFIX/cross/x86_64-pc-linux-gnu/lib.
+However, since we also setup symlink PREFIX/cross/x86_64-pc-linux-gnu/lib -> PREFIX/lib,
+we can still use second-phase {binutils, gcc} executables prior to providing second-phase libc
+
+step 10. build final binutils
+step 11. build final gcc
+step 12. build final glibc

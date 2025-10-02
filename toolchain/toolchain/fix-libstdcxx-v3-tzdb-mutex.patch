@@ -1,0 +1,47 @@
+From 820e015494e25187c9a5ffbd69911ec6ce612789 Mon Sep 17 00:00:00 2001
+From: Jonathan Wakely <jwakely@redhat.com>
+Date: Thu, 20 Feb 2025 14:08:11 +0000
+Subject: [PATCH] Fix 'libstdc++-v3/src/c++20/tzdb.cc' build for '__GTHREADS &&
+ !__GTHREADS_CXX0X' configurations
+
+    libstdc++-v3/
+    * src/c++20/tzdb.cc [__GTHREADS && !__GTHREADS_CXX0X]: Use
+    '__gnu_cxx::__mutex'.
+
+Co-authored-by: Thomas Schwinge <tschwinge@baylibre.com>
+---
+ libstdc++-v3/src/c++20/tzdb.cc | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/libstdc++-v3/src/c++20/tzdb.cc b/libstdc++-v3/src/c++20/tzdb.cc
+index 7e8cce7ce8c..70ba7b0ef53 100644
+--- a/libstdc++-v3/src/c++20/tzdb.cc
++++ b/libstdc++-v3/src/c++20/tzdb.cc
+@@ -35,6 +35,9 @@
+ #include <atomic>     // atomic<T*>, atomic<int>
+ #include <memory>     // atomic<shared_ptr<T>>
+ #include <mutex>      // mutex
++#if defined __GTHREADS && ! defined _GLIBCXX_HAS_GHTREADS
++# include <ext/concurrence.h> // __gnu_cxx::__mutex
++#endif
+ #include <filesystem> // filesystem::read_symlink
+
+ #ifndef _AIX
+@@ -97,11 +100,14 @@ namespace std::chrono
+ {
+   namespace
+   {
+-#if ! USE_ATOMIC_SHARED_PTR
+ #ifndef __GTHREADS
+     // Dummy no-op mutex type for single-threaded targets.
+     struct mutex { void lock() { } void unlock() { } };
++#elif ! defined _GLIBCXX_HAS_GHTREADS
++    using mutex = __gnu_cxx::__mutex;
+ #endif
++
++#if ! USE_ATOMIC_SHARED_PTR
+     inline mutex& list_mutex()
+     {
+ #ifdef __GTHREAD_MUTEX_INIT
+--
+2.34.1
