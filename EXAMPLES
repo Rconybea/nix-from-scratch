@@ -1,7 +1,8 @@
-no-build (binary install)                mdbook, mdbook-linkcheck
+no-build (binary install)                stage1-linux-headers, mdbook, mdbook-linkcheck
 configure_exec override                  boost (bootstrap.sh), nlohmann_json (cmake)
 extra configure args                     python
 in-source build                          unzip, nix, zstd
 custom cppflags                          sqlite
 non-trivial patch                        libssh2, m4, cmake
+full custom install                      stage1-linux-headers
 non-trivial post-install script          pkgconf, bzip2

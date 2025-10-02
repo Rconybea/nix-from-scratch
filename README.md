@@ -182,6 +182,7 @@ bootstrap core depenencies.
 
 ## nix install locations
 
+
 We will use the following paths:
 
 1. `PREFIX=$HOME/ext/{bin,lib,etc,share}` (instead of `/usr`).  This is where we install nix dependencies,
@@ -201,16 +202,17 @@ We need at least the following available on host platform
 
 1. `c` and `c++` compilers;  C++ compiler needs to support at least c++11
 2. adequate version of `make`.
+3. adequate version of `texinfo`
 
 On Ubuntu 22.04 can obtain these with:
 
 ```
 sudo apt-get install make
+sudo apt-get install texinfo
 sudo apt-get install gcc
-sudo apt-get install gcc-12  # needed for compiling nix
+sudo apt-get install gcc-12  # needed for compiling nix.  gcc-13 won't do
 sudo apt-get install g++
 ```
-
 
 ## (Meta)build Instructions
 
@@ -224,7 +226,7 @@ sudo apt-get install g++
 
 2. Choose nix install location
 
-Edit `nix-from-scratch-${version}/pkgs/nix/Makefile`, choose value for `NIX_PREFIX`.
+Edit `nix-from-scratch-${version}/pkgs/nix/Makefile`, choose value for `PREFIX`, `NIX_PREFIX`.
 Also adjust `NIX_STORE_DIR`, `NIX_LOCALSTATE_DIR`, `NIX_SYSCONF_DIR` if desired.
 
 3. Choose dependency install location
