@@ -5,7 +5,7 @@
 #
 
 state/compile.result: state/config.result
-	$(TOP_DIR)/scripts/compile-autotools.sh --build-exec=$(build_exec) --build-args="$(build_args)" --build-dir=$(builddir)
+	$(TOP_DIR)/scripts/compile-autotools.sh --prepend-to-path=$(prepend_to_path) --build-exec=$(build_exec) --build-args="$(build_args)" --build-dir=$(builddir)
 
 .PHONY: compile
 compile: state/compile.result $(builddir)
