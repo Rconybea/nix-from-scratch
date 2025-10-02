@@ -36,7 +36,7 @@ jobs:
       - name: build toolchain (binutils + gcc + glibc)
         run: |
           # note: prefix here used in readonly sense, to log summary of toolchain install
-          ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/nxfs-toolchain'
+          ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/nxfs-toolchain' --package=toolchain/toolchain
 
   build:
     runs-on: ubuntu-latest
@@ -59,188 +59,188 @@ jobs:
 
     - name: m4
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=m4
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/m4
 
     - name: autoconf
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=autoconf
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/autoconf
 
     - name: autoconf-archive
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=autoconf-archive
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/autoconf-archive
 
     - name: automake
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=automake
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/automake
 
     - name: pkgconf
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgconf
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/pkgconf
 
     - name: zlib
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=zlib
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/zlib
 
     - name: ncurses
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=ncurses
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/ncurses
 
     - name: patchelf
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=patchelf
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/patchelf
 
     - name: readline
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=readline
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/readline
 
     - name: flex
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=flex
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/flex
 
     - name: bison
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=bison
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/bison
 
     - name: perl
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=perl
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/perl
 
     - name: openssl
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=openssl
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/openssl
 
     - name: zstd
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=zstd
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/zstd
 
     - name: curl-stage1
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage1
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/curl-stage1
 
     - name: jq
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=jq
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/jq
 
     - name: bzip2
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=bzip2
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/bzip2
 
     - name: libarchive
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libarchive
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/libarchive
 
     - name: cmake
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=cmake
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/cmake
 
     - name: libuv
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libuv
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/libuv
 
     - name: expat
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=expat
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/expat
 
     - name: libcpuid
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libcpuid
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/libcpuid
 
     - name: editline
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=editline
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/editline
 
     - name: sqlite
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=sqlite
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/sqlite
 
     - name: python
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=python
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/python
 
     - name: libsodium
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libsodium
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/libsodium
 
     - name: libtool
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libtool
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/libtool
 
     - name: libssh2
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libssh2
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/libssh2
 
     - name: bzip2
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=bzip2
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/bzip2
 
     - name: pcre
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pcre
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/pcre
 
     - name: libgit2
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libgit2
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/libgit2
 
     - name: lowdown
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=lowdown
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/lowdown
 
     - name: brotli
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=brotli
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/brotli
 
     - name: gperf
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gperf
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/gperf
 
     - name: libseccomp
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=libseccomp
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/libseccomp
 
     - name: boost
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=boost
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/boost
 
     - name: boehm-gc
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=boehm-gc
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/boehm-gc
 
     - name: curl-stage2
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=curl-stage2
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/curl-stage2
 
     - name: nlohmann_json
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nlohmann_json
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/nlohmann_json
 
     - name: gtest
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=gtest
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/gtest
 
     - name: rapidcheck
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=rapidcheck
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/rapidcheck
 
     - name: toml11
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=toml11
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/toml11
 
     - name: unzip
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=unzip
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/unzip
 
     - name: mdbook-linkcheck
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=mdbook-linkcheck
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/mdbook-linkcheck
 
     - name: mdbook
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=mdbook
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/mdbook
 
     - name: nix
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=nix
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/nix
 
     - name: xz
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=xz
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/xz

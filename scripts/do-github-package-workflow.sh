@@ -41,23 +41,23 @@ fi
 set -e
 
 echo "::group::unpack"
-make -C pkgs/${package} unpack
+make -C ${package} unpack
 echo "::endgroup"
 
 echo "::group::patch"
-make -C pkgs/${package} patch
+make -C ${package} patch
 echo "::endgroup"
 
 echo "::group::config"
-make -C pkgs/${package} config
+make -C ${package} config
 echo "::endgroup"
 
 echo "::group::compile"
-make -C pkgs/${package} compile
+make -C ${package} compile
 echo "::endgroup"
 
 echo "::group::install"
-make -C pkgs/${package} install
+make -C ${package} install
 echo "::endgroup"
 
 echo "::group::install-tree (simplified)"
