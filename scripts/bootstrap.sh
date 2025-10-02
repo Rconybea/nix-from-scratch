@@ -14,7 +14,7 @@ while [[ $# > 0 ]]; do
         --prefix=*)
             prefix="${1#*=}"
             ;;
-        --nxfs-toolchain_prefix=*)
+        --nxfs-toolchain-prefix=*)
             nxfs_toolchain_prefix="${1#*=}"
             ;;
         *)
