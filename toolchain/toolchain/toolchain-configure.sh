@@ -442,6 +442,7 @@ ${toolchain_dir}/src/glibc/configure --prefix=${TARGET_PREFIX} \\
                                      --target=${TARGET} \\
                                      --with-headers=${TARGET_PREFIX}/include \\
                                      --disable-multilib \\
+                                     --disable-werror \\
                                      libc_cv_forced_unwind=yes
 
 make install-bootstrap-headers=yes install-headers
@@ -622,6 +623,9 @@ pushd ${toolchain_dir}/build/glibc-2
 linker=\$(find ${PREFIX}/lib -name 'ld-linux-*')
 ldflags="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -Wl,-dynamic-linker,\${linker}"
 
+# note: shouldn't need --disable-werror this time,
+#       since we know we're building with gcc 14.2.0
+#
 ${toolchain_dir}/src/glibc/configure --prefix=${PREFIX} \\
                                      --with-headers=${PREFIX}/include \\
                                      --disable-multilib
@@ -640,6 +644,10 @@ cat > tools/capturespecs.sh <<EOF
 pushd ${toolchain_dir}/build
 
 interpreter=\$(find ${PREFIX} -name "ld-linux-*")
+if [[ -z ${interpreter} ]]; then
+    echo 'error: could not find linux interpreter ld-linux-*'
+    exit 1
+fi
 filename=\$(basename \${interpreter})
 dirname=\$(dirname \${interpreter})
 
