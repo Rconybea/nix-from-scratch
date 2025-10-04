@@ -40,7 +40,7 @@ nix-deps: pkgs/nlohmann_json pkgs/libtool pkgs/automake pkgs/autoconf-archive pk
 pkgs/nix: nix-deps
 
 .PHONY: pkgs/mdbook
-pkgs/mdbook: 
+pkgs/mdbook: pkgs/rustc
 
 .PHONY: pkgs/mdbook-linkcheck
 pkgs/mdbook-linkcheck: pkgs/unzip
