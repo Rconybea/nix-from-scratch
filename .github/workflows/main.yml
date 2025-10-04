@@ -231,13 +231,21 @@ jobs:
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/unzip
 
-    - name: mdbook-linkcheck
+    - name: llvm
       run: |
-        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/mdbook-linkcheck
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/llvm
+
+    - name: rustc
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/rustc
 
     - name: mdbook
       run: |
         ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/mdbook
+
+    - name: dash
+      run: |
+        ./scripts/do-github-package-workflow.sh --prefix='${{github.workspace}}/local' --package=pkgs/dash
 
     - name: nix
       run: |
