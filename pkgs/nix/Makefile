@@ -63,7 +63,7 @@ configure_script:=configure
 #                        lots of packages assume /bin/sh, and nixpkgs relies
 #                        on being able to leave them unaltered.
 #
-configure_extra_args:=--with-store-dir=$(NIX_STORE_DIR) --prefix=$(NIX_PREFIX) --sysconfdir=$(NIX_SYSCONF_DIR) --localstatedir=$(NIX_LOCALSTATE_DIR) --enable-gc --with-boost=$(PREFIX) --with-boost-libdir=$(PREFIX)/lib CXX=g++-12 LIBSECCOMP_CFLAGS=-I$(PREFIX)/include --with-sandbox-shell=$(PREFIX)/bin/dash
+configure_extra_args:=--with-store-dir=$(NIX_STORE_DIR) --prefix=$(NIX_PREFIX) --sysconfdir=$(NIX_SYSCONF_DIR) --localstatedir=$(NIX_LOCALSTATE_DIR) --enable-gc --with-boost=$(PREFIX) --with-boost-libdir=$(PREFIX)/lib CXX=g++ LIBSECCOMP_CFLAGS=-I$(PREFIX)/include --with-sandbox-shell=$(PREFIX)/bin/dash
 #--enable-embedded-sandbox-shell=$(PREFIX)/bin/bash
 post_install_hook:=
 
