@@ -34,7 +34,7 @@ $(PHASE):
 # ----------------------------------------------------------------
 
 .PHONY: nix-deps
-nix-deps: pkgs/nlohmann_json pkgs/libtool pkgs/automake pkgs/autoconf-archive pkgs/jq pkgs/editline pkgs/libsodium pkgs/brotli pkgs/libcpuid pkgs/libseccomp pkgs/boehm-gc pkgs/gtest pkgs/rapidcheck pkgs/libgit2 pkgs/toml11 pkgs/lowdown pkgs/bison pkgs/mdbook-linkcheck pkgs/mdbook pkgs/bzip2
+nix-deps: pkgs/dash pkgs/nlohmann_json pkgs/libtool pkgs/automake pkgs/autoconf-archive pkgs/jq pkgs/editline pkgs/libsodium pkgs/brotli pkgs/libcpuid pkgs/libseccomp pkgs/boehm-gc pkgs/gtest pkgs/rapidcheck pkgs/libgit2 pkgs/toml11 pkgs/lowdown pkgs/bison pkgs/mdbook pkgs/bzip2
 
 .PHONY: pkgs/nix
 pkgs/nix: nix-deps
@@ -50,6 +50,9 @@ pkgs/rustc: pkgs/llvm pkgs/curl-stage2 pkgs/cmake pkgs/python pkgs/libssh2 pkgs/
 
 .PHONY: pkgs/llvm
 pkgs/llvm: pkgs/binutils
+
+.PHONY: pkgs/dash
+pkgs/dash:
 
 .PHONY: pkgs/unzip
 pkgs/unzip: pkgs/autoconf
