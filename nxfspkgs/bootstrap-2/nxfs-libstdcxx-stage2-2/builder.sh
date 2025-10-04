@@ -126,4 +126,5 @@ export LDFLAGS
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
 
+# populate 'source' output
 (cd ${src2} && (tar cf - . | tar xf - -C ${source}))
