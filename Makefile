@@ -54,6 +54,9 @@ pkgs/llvm: pkgs/binutils
 .PHONY: pkgs/dash
 pkgs/dash:
 
+.PHONY: pkgs/binutils
+pkgs/binutils: 
+
 .PHONY: pkgs/unzip
 pkgs/unzip: pkgs/autoconf
 
@@ -69,14 +72,14 @@ pkgs/flex: pkgs/autoconf
 .PHONY: pkgs/toml11
 pkgs/toml11: pkgs/cmake 
 
-.PHONY: pkgs/ncurses
-pkgs/ncurses: pkgs/pkgconf
+.PHONY: pkgs/pcre
+pkgs/pcre: pkgs/readline pkgs/bzip2 pkgs/zlib
 
 .PHONY: pkgs/readline
 pkgs/readline: pkgs/ncurses pkgs/patchelf
 
-.PHONY: pkgs/pcre
-pkgs/pcre: pkgs/readline pkgs/bzip2 pkgs/zlib
+.PHONY: pkgs/ncurses
+pkgs/ncurses: pkgs/pkgconf
 
 .PHONY: pkgs/libgit2
 pkgs/libgit2: pkgs/cmake pkgs/python pkgs/libssh2 pkgs/pcre
@@ -120,9 +123,6 @@ pkgs/curl-stage2: pkgs/brotli pkgs/cmake pkgs/curl-stage1
 .PHONY: pkgs/brotli
 pkgs/brotli: pkgs/cmake pkgs/curl-stage1 pkgs/patchelf
 
-.PHONY: pkgs/patchelf
-pkgs/patchelf: pkgs/autoconf
-
 .PHONY: pkgs/cmake
 pkgs/cmake: pkgs/curl-stage1 pkgs/libarchive pkgs/libuv
 
@@ -156,6 +156,7 @@ pkgs/openssl: pkgs/perl pkgs/zlib
 .PHONY: pkgs/perl
 pkgs/perl: pkgs/libxcrypt
 
+# possibly may need this in toolchain build?
 .PHONY: pkgs/libxcrypt
 pkgs/libxcrypt:
 
@@ -174,8 +175,14 @@ pkgs/libcpuid: pkgs/automake pkgs/libtool
 .PHONY: pkgs/libtool
 pkgs/libtool: pkgs/m4
 
+.PHONY: pkgs/patchelf
+pkgs/patchelf: pkgs/autoconf
+
 .PHONY: pkgs/automake
 pkgs/automake: pkgs/autoconf
+
+.PHONY: pkgs/texinfo
+pkgs/texinfo: pkgs/autoconf
 
 .PHONY: pkgs/autoconf-archive
 pkgs/autoconf-archive: pkgs/autoconf
