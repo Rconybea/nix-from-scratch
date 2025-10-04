@@ -223,7 +223,7 @@ config: state/config.result
 state/config.result reconfig $(builddir): state/patch.result
 	rm -f state/config.result
 	mkdir -p $(builddir)
-	(cd $(builddir) && ../toolchain-configure.sh --archive-dir=$(ARCHIVE_DIR) --prefix=$(NXFS_TOOLCHAIN_PREFIX) --target=$(TARGET) --binutils=$(binutils_tarball) --linux-headers=$(linux_headers_tarball) --gmp=$(gmp_tarball) --mpfr=${mpfr_tarball} --mpc=${mpc_tarball} --isl=${isl_tarball} --gettext=${gettext_tarball} --gcc=${gcc_tarball} --glibc=${glibc_tarball}) --max-jobs=$(NXFS_MAX_JOBS)
+	(cd $(builddir) && ../toolchain-configure.sh --archive-dir=$(ARCHIVE_DIR) --prefix=$(NXFS_TOOLCHAIN_PREFIX) --target=$(TARGET) --binutils=$(binutils_tarball) --linux-headers=$(linux_headers_tarball) --gmp=$(gmp_tarball) --mpfr=${mpfr_tarball} --mpc=${mpc_tarball} --isl=${isl_tarball} --gettext=${gettext_tarball} --gcc=${gcc_tarball} --glibc=${glibc_tarball} --max-jobs=$(NXFS_MAX_JOBS))
 	cp -f state/patch.result state/config.result
 
 
