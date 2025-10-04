@@ -23,7 +23,7 @@ tarball:=$(name).tar.gz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
-url:=http://ftp.gnu.org/gnu/$(stem)/$(tarball)
+url:=http://ftpmirror.gnu.org/gnu/$(stem)/$(tarball)
 # verify this sha
 sha256:=d3ef80d2b67d8cbbe4d3265c63a72c46f9b278ead6e0e06d61801b58f23f50b5
 # Settings CFLAGS seems to break the flex configure script;
