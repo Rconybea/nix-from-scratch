@@ -13,7 +13,7 @@
 # --configure-exec=EXEC -> EXEC that resides in host environment (e.g. cmake)
 state/config.result $(builddir): state/patch.result
 	mkdir -p $(builddir)
-	$(TOP_DIR)/scripts/configure-autotools.sh \
+	($(TOP_DIR)/scripts/configure-autotools.sh \
        --prepend-to-path="$(prepend_to_path)" \
        --pre-configure-hook="$(pre_configure_hook)" \
        --post-configure-hook="$(post_configure_hook)" \
@@ -21,7 +21,7 @@ state/config.result $(builddir): state/patch.result
 	   --configure-script=$(configure_script) \
        --prefix=$(PREFIX) --src-dir=$(srcdir) --build-dir=$(builddir) \
        --cflags="$(cflags)" --cppflags="$(cppflags)" --ldflags="$(ldflags)" \
-       --configure-extra-args="$(configure_extra_args)"
+       --configure-extra-args="$(configure_extra_args)") 2>&1 | tee $(THIS_DIR)/log/config.log
 
 .PHONY: config
 config: state/config.result
