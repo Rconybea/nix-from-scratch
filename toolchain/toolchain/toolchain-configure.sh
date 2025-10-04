@@ -219,11 +219,13 @@ cd ${toolchain_dir}
 ################################################################
 # step 1. build + install cross binutlis
 
+echo "::group::step1 build+install cross binutils"
 echo "### 1. build + install cross binutils"
 
 ./tools/binutils-1.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # step 2. install linux kernel headers
@@ -233,11 +235,13 @@ tree --filelimit 60 -L 4 ${PREFIX}
 #       PREFIX/cross/TARGET -symlink-> PREFIX)
 #
 
+echo "::group::step2 install linux headers
 echo "### 2. install linux headers"
 
 ./tools/linux-headers.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # step 3. build + install stage1 cross gcc
@@ -247,20 +251,24 @@ tree --filelimit 60 -L 4 ${PREFIX}
 #    - gcc in PREFIX/cross/bin
 #
 
+echo "::group::step3 build+install stage1 cross gcc"
 echo "### 3. build + install stage1 cross gcc"
 
 ./tools/gcc-1.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # step 4. build + install stage1 glibc
 
+echo "::group::step4 build+install stage1 glibc"
 echo "### 4. build + install stage1 glibc"
 
 ./tools/glibc-1.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # step 5. build stage2 cross gcc
@@ -272,90 +280,110 @@ tree --filelimit 60 -L 4 ${PREFIX}
 #    - glibc in PREFIX/lib (also spelled PREFIX/cross/TARGET/lib)
 #
 
+echo "::group::step5 build stage2 cross gcc"
 echo "### step 5. build stage2 cross gcc"
 
 ./tools/gcc-1b.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # step 6. build + install stage2 cross glibc
 #    (using same build dir as stage1 glibc)
 #
 
+echo "::group::step6 build+install stage2 cross glibc"
 echo "### step 6. build + install stage2 cross glibc"
 
 ./tools/glibc-1b.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # step 7. build + install libstdc++
 
+echo "::group::step7 build+install stage2 libstdc++"
 echo "### step 7. build + install stage2 libstdc++"
 
 ./tools/libstdcxx.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # step 8. build final cross gcc
 
+echo "::group::step8 build final cross gcc"
 echo "### step 8. build final cross gcc"
 
 ./tools/gcc-1c.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # 9. verify cross toolchain can compile
 
+echo "::group::step9 verify cross toolchain can compile"
 echo "### step 9. verify cross toolchain can compile"
 
 ./tools/verify-1.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # step 10. build native binutils
 
+echo "::group::step10 build final binutils"
 echo "### step 10. build final binutils"
 
 ./tools/binutils-2.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # step 11. build final gcc
 
+echo "::group::step11 build final gcc"
 echo "### step 11. build final gcc"
 
 ./tools/gcc-2.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # 12. build final glibc
 
+echo "::group::step12 build final glibc"
 echo "### step 12. build final glibc"
 
 ./tools/glibc-2.sh
 
 tree --filelimit 60 -L 4 ${PREFIX}
+echo "::endgroup"
 
 ################################################################
 # 13. adjust gcc specs for operation from non-standard location
 
+echo "::group::step13 capture gcc specs"
 echo "### step 13. capture gcc specs"
 
 ./tools/capturespecs.sh
+echo "::endgroup"
 
 ################################################################
 # 14. verify final toolchain can compile
 
+echo "::group::step14 verify final toolchain can compile"
 echo "### step 14. verify final toolchain can compile"
 
 ./tools/verify-2.sh
+echo "::endgroup"
 
 EOF
 chmod +x tools/build.sh
