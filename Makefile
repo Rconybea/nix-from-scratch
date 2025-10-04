@@ -193,29 +193,10 @@ pkgs/autoconf: pkgs/m4
 .PHONY: pkgs/m4
 pkg/m4:
 
-.PHONY: pkgs/texinfo
-pkgs/texinfo: pkgs/autoconf
-
 # ----------------------------------------------------------------
 
-.PHONY: pkgs/gcc
-pkgs/gcc: pkgs/mpc pkgs/gmp pkgs/mpfr
-
-# really glibc stage1
-.PHONY: pkgs/glibc
-pkgs/glibc: pkgs/bison
-
-.PHONY: pkgs/mpc
-pkgs/mpc:
-
-.PHONY: pkgs/gmp
-pkgs/gmp:
-
-.PHONY: pkgs/mpfr
-pkgs/mpfr:
-
-.PHONY: pkgs/stage1-binutils
-pkgs/stage1-binutils: pkgs/texinfo 
+.PHONY: pkgs/gawk
+pkgs/gawk:
 
 .PHONY: pkgs/sed
 pkgs/sed:
