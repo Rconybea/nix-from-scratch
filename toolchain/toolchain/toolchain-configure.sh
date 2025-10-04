@@ -12,6 +12,7 @@ $self_name: --archive-dir=ARCHIVE_DIR --prefix=PREFIX --target=TARGET
             --binutils=BINUTILS
             --linux-headers=LINUX_HEADERS
             --gmp=GMP --mpfr=MPFR --mpc=MPC --isl=ISL
+            --max-jobs=MAXJOBS
 EOF
 }
 
@@ -28,6 +29,7 @@ isl=
 gettext=
 gcc=
 glibc=
+jobs=$(nproc)
 
 while [[ $# > 0 ]]; do
     case "$1" in
@@ -66,6 +68,9 @@ while [[ $# > 0 ]]; do
             ;;
         --glibc=*)
             glibc=${1#*=}
+            ;;
+        --max-jobs=*)
+            jobs=${1#*=}
             ;;
         *)
             echo "error: ${self_name}: unexpected argument [$1]"
@@ -365,7 +370,7 @@ export PATH=${PREFIX}/bin:${CROSS_PREFIX}/bin:${PATH}
 pushd ${toolchain_dir}/build/binutils-1
 
 ${toolchain_dir}/src/binutils/configure --prefix=${CROSS_PREFIX} --target=${TARGET} --disable-multilib
-make -j $(nproc)
+make -j ${jobs}
 make install
 
 popd
@@ -416,7 +421,7 @@ ${toolchain_dir}/src/gcc/configure --prefix=${CROSS_PREFIX} \\
                                    --disable-libsanitizer \\
                                    --disable-fixincludes \\
                                    --disable-bootstrap
-make -j $(nproc) all-gcc
+make -j ${jobs} all-gcc
 make install-gcc
 
 popd
@@ -458,7 +463,7 @@ cat > tools/gcc-1b.sh <<EOF
 
 pushd ${toolchain_dir}/build/gcc-1
 
-make -j$(nproc) all-target-libgcc
+make -j${jobs} all-target-libgcc
 make install-target-libgcc
 
 popd
@@ -473,7 +478,7 @@ cat > tools/glibc-1b.sh <<EOF
 
 pushd ${toolchain_dir}/build/glibc-1
 
-make -j$(nproc)
+make -j${jobs}
 make install
 
 popd
@@ -497,7 +502,7 @@ ${toolchain_dir}/src/gcc/libstdc++-v3/configure --prefix=${CROSS_PREFIX} \\
                                                 --libexecdir=${TARGET_PREFIX}/libexec \\
                                                 --with-gxx-include-dir=${TARGET_PREFIX}/include/c++ \\
                                                 --disable-multilib
-make -j $(nproc)
+make -j ${jobs}
 make install
 
 popd
@@ -512,7 +517,7 @@ cat > tools/gcc-1c.sh <<EOF
 
 pushd ${toolchain_dir}/build/gcc-1
 
-make -j $(nproc)
+make -j ${jobs}
 make install
 
 popd
@@ -565,7 +570,7 @@ LDFLAGS="\${ldflags}" ${toolchain_dir}/src/binutils/configure \\
                          --enable-gold \\
                          --enable-plugins \\
                          --enable-multilib
-make -j $(nproc)
+make -j ${jobs}
 
 # remove old linker scripts -- about to reinstall
 rm -rf ${PREFIX}/lib/ldscripts
@@ -596,7 +601,7 @@ LDFLAGS="\${ldflags}" LDFLAGS_FOR_TARGET="\${ldflags}" ${toolchain_dir}/src/gcc/
                       --disable-multilib \\
                       --disable-fixincludes
 
-make BOOT_LDFLAGS="\${ldflags}" -j $(nproc)
+make BOOT_LDFLAGS="\${ldflags}" -j ${jobs}
 
 # remove old cross includes -- about to reinstall
 rm -rf ${PREFIX}/include/c++
@@ -620,7 +625,7 @@ ldflags="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -Wl,-dynamic-linker,\${linker}
 ${toolchain_dir}/src/glibc/configure --prefix=${PREFIX} \\
                                      --with-headers=${PREFIX}/include \\
                                      --disable-multilib
-make -j $(nproc)
+make -j ${jobs}
 make install
 
 popd

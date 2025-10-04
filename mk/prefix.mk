@@ -12,7 +12,7 @@ NIX_LOCALSTATE_DIR:=$(NIX_PREFIX)/var
 NIX_SYSCONF_DIR:=$(NIX_PREFIX)/etc
 # NOTE: /usr
 
-# install crostool-ng under this prefix
+# install toolchain under this prefix
 #
 NXFS_TOOLCHAIN_PREFIX:=$(HOME)/nxfs-toolchain
 
@@ -28,3 +28,7 @@ NXFS_HOST_TUPLE:=x86_64-pc-linux-gnu
 NXFS_BUILD_TUPLE:=x86_64-pc-linux-gnu
 
 NXFS_TOOLCHAIN_SYSROOT:=$(NXFS_TOOLCHAIN_PREFIX)/$(NXFS_HOST_TUPLE)/sysroot
+
+# max parallel jobs during build
+NXFS_MAX_JOBS:=$(shell nproc)
+

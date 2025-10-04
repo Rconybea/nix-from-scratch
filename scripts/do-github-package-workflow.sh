@@ -8,6 +8,7 @@ usage() {
 
 prefix=
 package=
+jobs=1
 
 while [[ $# > 0 ]]; do
     case "$1" in
@@ -16,6 +17,9 @@ while [[ $# > 0 ]]; do
             ;;
         --package=*)
             package="${1#*=}"
+            ;;
+        --max-jobs=*)
+            jobs="${1#*=}"
             ;;
         *)
             usage
@@ -49,11 +53,11 @@ make -C ${package} patch
 echo "::endgroup"
 
 echo "::group::config"
-make -C ${package} config
+make -C ${package} config NXFS_MAX_JOBS=${jobs}
 echo "::endgroup"
 
 echo "::group::compile"
-make -C ${package} compile
+make -C ${package} compile NXFS_MAX_JOBS=${jobs}
 echo "::endgroup"
 
 echo "::group::install"
