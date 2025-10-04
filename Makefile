@@ -45,6 +45,9 @@ pkgs/mdbook:
 .PHONY: pkgs/mdbook-linkcheck
 pkgs/mdbook-linkcheck: pkgs/unzip
 
+.PHONY: pkgs/rustc
+pkgs/rustc: pkgs/llvm pkgs/curl-stage2 pkgs/cmake pkgs/python pkgs/libssh2 pkgs/sqlite
+
 .PHONY: pkgs/llvm
 pkgs/llvm: pkgs/binutils
 
