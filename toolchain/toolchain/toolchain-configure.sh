@@ -623,12 +623,10 @@ pushd ${toolchain_dir}/build/glibc-2
 linker=\$(find ${PREFIX}/lib -name 'ld-linux-*')
 ldflags="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -Wl,-dynamic-linker,\${linker}"
 
-# note: shouldn't need --disable-werror this time,
-#       since we know we're building with gcc 14.2.0
-#
 ${toolchain_dir}/src/glibc/configure --prefix=${PREFIX} \\
                                      --with-headers=${PREFIX}/include \\
-                                     --disable-multilib
+                                     --disable-multilib \\
+                                     --disable-werror
 make -j ${jobs}
 make install
 
