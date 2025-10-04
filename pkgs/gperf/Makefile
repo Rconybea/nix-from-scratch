@@ -23,7 +23,7 @@ tarball:=$(name).tar.gz
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
 #url:=https://ftp.gnu.org/gnu/m4/$(tarball)
-url:=https://ftp.gnu.org/gnu/gperf/$(tarball)
+url:=https://ftpmirror.gnu.org/gnu/gperf/$(tarball)
 # verify this sha
 sha256:=767112a204407e62dbc3106647cf839ed544f3cf5d0f0523aaa2508623aad63e
 #
