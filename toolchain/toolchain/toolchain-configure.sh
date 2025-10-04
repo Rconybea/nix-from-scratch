@@ -644,7 +644,7 @@ cat > tools/capturespecs.sh <<EOF
 pushd ${toolchain_dir}/build
 
 interpreter=\$(find ${PREFIX} -name "ld-linux-*")
-if [[ -z ${interpreter} ]]; then
+if [[ -z \${interpreter} ]]; then
     echo 'error: could not find linux interpreter ld-linux-*'
     exit 1
 fi
