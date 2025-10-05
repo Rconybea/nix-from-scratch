@@ -216,6 +216,9 @@ export PATH=$PATH
 
 cd ${toolchain_dir}
 
+echo "detailed compile breakdown follows"
+echo "::endgroup"
+
 ################################################################
 # step 1. build + install cross binutlis
 
