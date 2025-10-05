@@ -467,7 +467,10 @@ cat > tools/glibc-1.sh <<EOF
 
 pushd ${toolchain_dir}/build/glibc-1
 
-${toolchain_dir}/src/glibc/configure --prefix=${TARGET_PREFIX} \\
+
+${toolchain_dir}/src/glibc/configure CFLAGS_FOR_BUILD="-U_FORTIFY_SOURCE -O2" \\
+                                     CFLAGS_FOR_TARGET="-U_FORTIFY_SOURCE -O2" \\
+                                     --prefix=${TARGET_PREFIX} \\
                                      --build=${MACHTYPE} \\
                                      --host=${TARGET} \\
                                      --target=${TARGET} \\
