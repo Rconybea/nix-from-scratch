@@ -238,7 +238,7 @@ echo "::endgroup"
 #       PREFIX/cross/TARGET -symlink-> PREFIX)
 #
 
-echo "::group::step2 install linux headers
+echo "::group::step2 install linux headers"
 echo "### 2. install linux headers"
 
 ./tools/linux-headers.sh
