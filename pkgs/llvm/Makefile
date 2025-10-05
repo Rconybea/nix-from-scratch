@@ -56,7 +56,7 @@ ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 patch_script:=./llvm-patch.sh
 srcdir:=src
 builddir:=build
-build_args:=-j8
+build_args:=-j$(NXFS_MAX_JOBS)
 pre_configure_hook:=
 # reminder: configure runs in build directory
 #configure_exec:=cmake
