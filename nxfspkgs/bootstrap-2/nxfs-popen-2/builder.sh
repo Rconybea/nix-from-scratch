@@ -1,12 +1,13 @@
 #!/bin/bash
 
+set -euo pipefail
+
 echo
 echo "coreutils=${coreutils}"
 echo "popen_template=${popen_template}"
 echo "sed=${sed}"
 echo "bash=${bash}"
 
-set -e
 set -x
 
 export PATH="${coreutils}/bin:${sed}/bin:${bash}/bin"
