@@ -167,8 +167,13 @@ let
 in
 let
   nxfsenv-2-6 = nxfsenv-2-5 // { ncurses = ncurses-2; };
+  bash-2 = callPackage ./nxfs-bash-2/package.nix { nxfsenv = nxfsenv-2-6; };
+in
+let
+  nxfsenv-2-7 = nxfsenv-2-6 // { bash = bash-2; };
 in
 {
+  inherit bash-2;
   inherit ncurses-2;
   inherit gnutar-2;
   inherit gnugrep-2;
