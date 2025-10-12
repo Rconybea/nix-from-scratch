@@ -40,26 +40,18 @@ nxfsenv.mkDerivation {
   buildPhase = ''
     set -e
 
-    src2=$TMPDIR/src2
     builddir=$TMPDIR/build
 
-    mkdir -p $src2
     mkdir -p $builddir
 
-    # 1. copy source tree to temporary directory,
-    #
-    (cd $src && (tar cf - . | tar xf - -C $src2))
-
     bash_program=$bash/bin/bash
-
 
     # $src/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$bash_program"
 
-    #CFLAGS="$bzip2/include"
     LDFLAGS="-Wl,-enable-new-dtags"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
+    (cd $builddir && $bash_program $src/configure --prefix=$out CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
   '';
