@@ -11,7 +11,6 @@ let
   nxfs-coreutils-1   = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
   nxfs-defs = import ../nxfs-defs.nix;
 in
@@ -22,7 +21,6 @@ derivation {
   system       = builtins.currentSystem;
 
   toolchain    = nxfs-toolchain-1;
-  sysroot      = nxfs-sysroot-1;
 
   coreutils    = nxfs-coreutils-1;
   bash         = nxfs-bash-1;
@@ -38,8 +36,6 @@ derivation {
   args         = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "findutils-4.10.0-source";
-                                         url = "https://ftp.gnu.org/gnu/findutils/findutils-4.10.0.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/findutils/findutils-4.10.0.tar.xz";
                                          sha256 = "17psmb481vpq03lmi8l4r4nm99v4yg3ri5bn4gyy0z1zzi63ywan"; };
-
-  target_tuple = nxfs-defs.target_tuple;
 }
