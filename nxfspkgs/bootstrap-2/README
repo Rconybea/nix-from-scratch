@@ -3,6 +3,16 @@ Introduction
 Order is important here.  Builders progressively replace stage-1 packages with stage-2 versions.
 Stage-2 versions are built from source within nix, using the imported+redirected stage-1 toolchain.
 
+Recap:
+- stage-0 imported external bootstrap ingredients as fixed-output derivations
+- stage-1 redirected libraries and dynamic linker to refer to their respective nix store versions.
+
+In stage-2 we progressively recompile the bootstrap tools ingredients.
+At the end of stage-2 we have a native toolchain compiled within the nix store;
+with caveat that we haven't yet used that toolchain to entirely rebuild itself,
+so some toolchain components (for example binutils, glibc) were prepared using all or part of the
+stage1 imported toolhcain
+
 ----------------------------------------------------------------
 Dependency Tower
 
