@@ -58,13 +58,27 @@ nxfsenv.mkDerivation {
 
   patchFile1 = ./bzip2-${version}-install-docs-1.patch;
 
-  buildPhase = ''
+  patchPhase = ''
+    echo "welcome to bzip2 custom patch phase"
+    echo src=$src
+
     builddir=$TMPDIR
-    bash_program=$bash/bin/bash
 
     # have to build in source directory..
     (cd $src && (tar cf - . | tar xf - -C $builddir))
     chmod -R +w $builddir
+
+    pushd $builddir
+    sed -i -e '/cat words/d' Makefile
+
+    popd
+  '';
+
+  buildPhase = ''
+    set -x
+
+    builddir=$TMPDIR
+    bash_program=$bash/bin/bash
 
     pushd $builddir
 
@@ -82,16 +96,21 @@ nxfsenv.mkDerivation {
 
     make -f Makefile-libbz2_so "LDFLAGS=$LDFLAGS"
     make clean "LDFLAGS=$LDFLAGS"
-    make "LDFLAGS=$LDFLAGS"
 
-    make PREFIX=$out "LDFLAGS=$LDFLAGS" install
+    make "LDFLAGS=$LDFLAGS"
+    make -v PREFIX=$out "LDFLAGS=$LDFLAGS" install >&2
+
+    mkdir -p $out/bin $out/lib
 
     # for some reason LDFLAGS isn't effective on bzip2-shared..
     patchelf --add-rpath $out/lib bzip2-shared
+
     cp -v bzip2-shared $out/bin/bzip2
 
     cp -av libbz2.so* $out/lib
     ln -sv libbz2.so.1.0 $out/lib/libbz2.so
+
+    popd
   '';
 
   buildInputs = [

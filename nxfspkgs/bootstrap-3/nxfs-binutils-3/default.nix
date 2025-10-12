@@ -29,8 +29,6 @@
   #                diffutils   :: derivation
   #              }
   nxfsenv-3,
-  # libxcrypt :: derivation
-  libxcrypt
 } :
 
 let
@@ -86,7 +84,7 @@ nxfsenv.mkDerivation {
     (cd $builddir && make install SHELL=$CONFIG_SHELL MAKEINFO=true)
     '';
 
-  buildInputs = [ libxcrypt
+  buildInputs = [ nxfsenv-3.libxcrypt
                   nxfsenv.gcc_wrapper
                   nxfsenv.binutils
                   nxfsenv-3.perl
