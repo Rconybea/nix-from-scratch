@@ -11,7 +11,6 @@ let
   nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
   nxfs-defs = import ../nxfs-defs.nix;
 in
@@ -34,7 +33,6 @@ derivation {
   gcc_wrapper  = nxfs-toolchain-wrapper-1;
 
   toolchain    = nxfs-toolchain-1;
-  sysroot      = nxfs-sysroot-1;
 
   builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];
