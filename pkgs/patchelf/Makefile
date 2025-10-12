@@ -21,11 +21,16 @@ unpackdir:=$(name)
 tarball:=$(name).tar.gz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
+
+# NOTE: same url/sha256 combination appears
+#       in nxfspkgs/bootstrap/nxfs-patchelf-0/stage0/Makefile
+#
 # obtain tarball by fetching from this url
-#url:=https://ftp.gnu.org/gnu/automake/$(tarball)
 url:=https://github.com/NixOS/patchelf/releases/download/$(version)/$(tarball)
 # verify this sha
 sha256:=64de10e4c6b8b8379db7e87f58030f336ea747c0515f381132e810dbf84a86e7
+
+
 cflags:=-I$(PREFIX)/include
 ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 #
