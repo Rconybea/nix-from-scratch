@@ -37,7 +37,7 @@ nxfsenv.mkDerivation {
   version      = version;
 
   src          = builtins.fetchTarball { name = "gzip-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/gzip/gzip-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/gzip/gzip-${version}.tar.xz";
                                          sha256 = "093w3a12220gzy00qi9zy52mhjlgyyh7kiimsz5xa00fgf81rbp9"; };
 
   outputs      = [ "out" "source" ];

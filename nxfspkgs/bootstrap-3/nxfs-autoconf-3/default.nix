@@ -39,7 +39,7 @@ nxfsenv.mkDerivation {
   name         = "nxfs-autoconf-3";
 
   src          = builtins.fetchTarball { name = "autoconf-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/autoconf/autoconf-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/autoconf/autoconf-${version}.tar.xz";
                                          sha256 = "1r3922ja9g5ziinpqxgfcc51jhrxvjqnrmc5054jgskylflxc1fp"; };
 
   buildPhase = ''

@@ -41,7 +41,7 @@ nxfsenv.mkDerivation {
   version      = version;
 
   src          = builtins.fetchTarball { name = "texinfo-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/texinfo/texinfo-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/texinfo/texinfo-${version}.tar.xz";
                                          sha256 = "0bgzsh574c3qh0s5mbq7iyrd5zfh3x431719yzch7jjg28kidm6r"; };
 
   buildPhase = ''

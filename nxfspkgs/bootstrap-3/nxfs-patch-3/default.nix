@@ -37,7 +37,7 @@ nxfsenv.mkDerivation {
   version      = version;
 
   src          = builtins.fetchTarball { name = "patch-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/patch/patch-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/patch/patch-${version}.tar.xz";
                                          sha256 = "1yiy0xq1ha193yga0canc9ijw4hbd92c93l7ksqlhmzsn2yph39n"; };
 
   buildPhase = ''

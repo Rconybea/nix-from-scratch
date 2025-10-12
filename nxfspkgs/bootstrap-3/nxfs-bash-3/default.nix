@@ -32,7 +32,7 @@ nxfsenv.mkDerivation {
   name         = "nxfs-bash-3";
 
   src          = builtins.fetchTarball { name = "bash-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/bash/bash-${version}.tar.gz";
+                                         url = "https://ftpmirror.gnu.org/gnu/bash/bash-${version}.tar.gz";
                                          sha256 = "1bhqakwia1zpnq9kgpn7kxsgvgh5b8nysanki0j2m7v7im4yjcvp"; };
 
   # for example: nixpkgs bintools-wrapper relies on this

@@ -34,7 +34,7 @@ nxfsenv.mkDerivation {
   name         = "nxfs-gawk-3";
 
   src          = builtins.fetchTarball { name = "gawk-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/gawk/gawk-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/gawk/gawk-${version}.tar.xz";
                                          sha256 = "03fsh86d3jbafmbhm1n0rx8wzsbvlfmpdscfx85dqx6isyk35sd9"; };
 
   outputs      = [ "out" "source" ];

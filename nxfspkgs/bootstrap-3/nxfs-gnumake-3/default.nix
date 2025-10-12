@@ -33,7 +33,7 @@ nxfsenv.mkDerivation {
   name         = "nxfs-gnumake-3";
 
   src          = builtins.fetchTarball { name = "make-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/make/make-${version}.tar.gz";
+                                         url = "https://ftpmirror.gnu.org/gnu/make/make-${version}.tar.gz";
                                          sha256 = "141z25axp7iz11sqci8c312zlmcmfy8bpyjpf0b0gfi8ri3kna7q";
                                        };
 

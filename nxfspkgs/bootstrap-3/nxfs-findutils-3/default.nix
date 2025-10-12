@@ -14,7 +14,7 @@ nxfsenv.mkDerivation {
   version      = version;
 
   src          = builtins.fetchTarball { name = "findutils-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/findutils/findutils-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/findutils/findutils-${version}.tar.xz";
                                          sha256 = "17psmb481vpq03lmi8l4r4nm99v4yg3ri5bn4gyy0z1zzi63ywan"; };
 
   buildPhase = ''

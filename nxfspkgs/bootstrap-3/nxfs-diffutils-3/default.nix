@@ -25,7 +25,7 @@ nxfsenv.mkDerivation {
   version      = version;
 
   src          = builtins.fetchTarball { name = "diffutils-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/diffutils/diffutils-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/diffutils/diffutils-${version}.tar.xz";
                                          sha256 = "13cxlscmjns6dk4yp0nmmyp1ldjkbag68lmgrizcd5dzz00xi8j7"; };
 
   buildPhase = ''

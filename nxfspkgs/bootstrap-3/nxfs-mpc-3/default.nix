@@ -47,7 +47,7 @@ nxfsenv.mkDerivation {
   gmp          = gmp;
 
   src          = builtins.fetchTarball { name = "mpc-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/mpc/mpc-${version}.tar.gz";
+                                         url = "https://ftpmirror.gnu.org/gnu/mpc/mpc-${version}.tar.gz";
                                          sha256 = "1b6layaybj039fajx8dpy2zvcfy7s02y3y4lficz16vac0fsd0jk";
                                        };
 

@@ -41,7 +41,7 @@ nxfsenv.mkDerivation {
   version      = version;
 
   src          = builtins.fetchTarball { name = "bison-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/bison/bison-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/bison/bison-${version}.tar.xz";
                                          sha256 = "0w18vf97c1kddc52ljb2x82rsn9k3mffz3acqybhcjfl2l6apn59"; };
   buildPhase = ''
     set -e

@@ -37,7 +37,7 @@ nxfsenv.mkDerivation {
   version      = version;
 
   src          = builtins.fetchTarball { name = "gperf-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/gperf/gperf-${version}.tar.gz";
+                                         url = "https://ftpmirror.gnu.org/gnu/gperf/gperf-${version}.tar.gz";
                                          sha256 = "12pqgvxmyckqv1b5qhi80qmwkvpvr604w7qckbn1dfkykl96rdgb"; };
 
   buildPhase = ''

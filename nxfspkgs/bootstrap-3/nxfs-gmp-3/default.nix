@@ -40,7 +40,7 @@ nxfsenv.mkDerivation {
   version      = version;
 
   src          = builtins.fetchTarball { name = "gmp-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/gmp/gmp-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/gmp/gmp-${version}.tar.xz";
                                          sha256 = "1kc3dy4jxand0y118yb9715g9xy1fnzqgkwxy02vd57y2fhg2pcw"; };
 
   buildPhase = ''

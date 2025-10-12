@@ -30,7 +30,7 @@ nxfsenv.mkDerivation {
   version      = version;
 
   src          = builtins.fetchTarball { name = "grep-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/grep/grep-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/grep/grep-${version}.tar.xz";
                                          sha256 = "0pm0zpzmmy6lq5ii03y1nqr1sdjalnwp69i5c926c9dm03v7v0bv"; };
 
   buildPhase=''

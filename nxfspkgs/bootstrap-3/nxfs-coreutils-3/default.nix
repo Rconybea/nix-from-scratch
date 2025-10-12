@@ -34,7 +34,7 @@ nxfsenv.mkDerivation {
   name         = "nxfs-coreutils-3";
 
   src          = builtins.fetchTarball { name = "coreutils-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/coreutils/coreutils-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/coreutils/coreutils-${version}.tar.xz";
                                          sha256 = "0250l3qc7w4l2lx2ws4wqsd2g2g2q0g6w32d9r7d9pgwqmrj2nkh"; };
 
   buildPhase = ''

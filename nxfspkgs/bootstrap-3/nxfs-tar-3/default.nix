@@ -32,7 +32,7 @@ nxfsenv.mkDerivation {
   version      = version;
 
   src          = builtins.fetchTarball { name = "tar-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/tar/tar-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/tar/tar-${version}.tar.xz";
                                          sha256 = "0cmdg6gq9v04631lfb98xg45la1b0y9r5wyspn97ri11krdlyfqz"; };
 
   bzip2 = nxfsenv-3.bzip2;
