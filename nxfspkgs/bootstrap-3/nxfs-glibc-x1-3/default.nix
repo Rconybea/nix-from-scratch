@@ -18,32 +18,31 @@
   toolchain-wrapper,
   # toolchain :: derivation  (unwrapped version)
   toolchain,
-  # sysroot :: derivation
-  sysroot,
 } :
 
 let
-  bison     = nxfsenv-3.bison;
-  texinfo   = nxfsenv-3.texinfo;
-  m4        = nxfsenv.m4;
-  python    = nxfsenv-3.python;
-  patchelf  = nxfsenv-3.patchelf;
-  gzip      = nxfsenv-3.gzip;
-  patch     = nxfsenv-3.patch;
-  gperf     = nxfsenv-3.gperf;
-  coreutils = nxfsenv.coreutils;
-  bash      = nxfsenv.bash;
-  gnutar    = nxfsenv.gnutar;
-  gnumake   = nxfsenv.gnumake;
-  gawk      = nxfsenv.gawk;
-  gnused    = nxfsenv.gnused;
-  gnugrep   = nxfsenv.gnugrep;
-  binutils  = nxfsenv.binutils;
-  diffutils = nxfsenv-3.diffutils;
-  findutils = nxfsenv.findutils;
-  which     = nxfsenv-3.which;
+  gcc_wrapper = nxfsenv.gcc_wrapper;
+  bison       = nxfsenv-3.bison;
+  texinfo     = nxfsenv-3.texinfo;
+  m4          = nxfsenv-3.m4;  # new
+  python      = nxfsenv-3.python;
+  patchelf    = nxfsenv-3.patchelf;
+  gzip        = nxfsenv-3.gzip;
+  patch       = nxfsenv-3.patch;
+  gperf       = nxfsenv-3.gperf;
+  coreutils   = nxfsenv-3.coreutils;
+  bash        = nxfsenv-3.bash;
+  gnutar      = nxfsenv-3.gnutar;
+  gnumake     = nxfsenv-3.gnumake;
+  gawk        = nxfsenv-3.gawk;   # new
+  gnused      = nxfsenv-3.gnused;  # new
+  gnugrep     = nxfsenv-3.gnugrep;  # new
+  binutils    = nxfsenv-3.binutils;
+  diffutils   = nxfsenv-3.diffutils;
+  findutils   = nxfsenv-3.findutils;
+  which       = nxfsenv-3.which;
 
-  nxfs-defs = nxfsenv-3.nxfs-defs;
+  nxfs-defs   = nxfsenv-3.nxfs-defs;
 in
 
 let
@@ -76,7 +75,6 @@ nxfsenv.mkDerivation {
 
   locale_archive = locale-archive;
   toolchain      = toolchain;
-  sysroot        = sysroot;
 
   patchfile      = ./glibc-2.40-fhs-1.patch;
 
@@ -88,8 +86,9 @@ nxfsenv.mkDerivation {
     # See also
     #  https://www.linuxfromscratch.org/lfs/view/12.2/chapter05/glibc.html
 
-    set -e
+    set -euo pipefail
 
+    # (note: toolchain for linux headers)
     export PATH=$PATH:$toolchain/x86_64-pc-linux-gnu/bin
 
     mkdir -p $out
@@ -121,7 +120,7 @@ nxfsenv.mkDerivation {
     # We need something that comes from the nix store so that basic locale queries
     # work from within isolated nix builds
     #
-    bash $src2/configure --prefix=$out --enable-kernel=4.19 --with-headers=$sysroot/usr/include --disable-nscd libc_cv_complocaledir=$locale_archive/lib/locale libc_cv_slibdir=$out/lib CC=nxfs-gcc CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+    bash $src2/configure --prefix=$out --enable-kernel=4.19 --with-headers=$toolchain/include --disable-nscd libc_cv_complocaledir=$locale_archive/lib/locale libc_cv_slibdir=$out/lib CC=nxfs-gcc CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 
     # looks like
     #   make Versions.v.i
@@ -134,7 +133,7 @@ nxfsenv.mkDerivation {
     # automatically makes two link-time changes when it builds a library/executable
     # 1. sets ELF interpreter to specific dynamic linker
     # 2. sets RPATH/RUNPATH to pickup libc
-    # both coming from nix-from-scratch/nxfspkgs/bootstrap-1/nxfs-sysroot-1.
+    # both coming from nix-from-scratch/nxfspkgs/bootstrap-2/nxfs-glibc-stage1-2
     #
     # We need that behavior above, to convince configure that compiler builds working executables.
     # However its counterproductive when we build libc, and hence also on executables that depend on it}.
@@ -144,9 +143,10 @@ nxfsenv.mkDerivation {
     #
     export NXFS_SYSROOT_DIR=$out
 
+    export SHELL=$CONFIG_SHELL
+
     #(cd $builddir && make help SHELL=$CONFIG_SHELL)
     #/usr/bin/strace -f -e trace=openat make all SHELL=$CONFIG_SHELL
-    export SHELL=$CONFIG_SHELL
 
     # Some things that can make build fail in chrooted build:
     # 1. gnumake $(shell ...) invoking /bin/sh
@@ -176,7 +176,9 @@ nxfsenv.mkDerivation {
     (cd $src2 && (tar cf - . | tar xf - -C $source))
   '';
 
-  buildInputs = [ lc-all-sort
+  buildInputs = [ gcc_wrapper
+                  binutils
+                  lc-all-sort
                   patchelf
                   gperf
                   python
@@ -184,7 +186,6 @@ nxfsenv.mkDerivation {
                   bison
                   toolchain-wrapper
                   toolchain
-                  sysroot
                   gzip
                   diffutils
                   findutils
