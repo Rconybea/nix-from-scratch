@@ -197,12 +197,15 @@ let
 in
 let
   nxfsenv-2-10 = nxfsenv-2-9 // { coreutils = coreutils-2; };
-  zlib-2 = callPackage ./nxfs-zlib-2/package.nix { nxfsenv = nxfsenv-2-10; };
+
+  file-2     = callPackage ./nxfs-file-2/package.nix { nxfsenv = nxfsenv-2-10; };
+  zlib-2     = callPackage ./nxfs-zlib-2/package.nix { nxfsenv = nxfsenv-2-10; };
   patchelf-2 = callPackage ./nxfs-patchelf-2/package.nix { nxfsenv = nxfsenv-2-10; };
 in
 let
 in
 {
+  inherit file-2;
   inherit patchelf-2;
   inherit zlib-2;
   inherit coreutils-2;
