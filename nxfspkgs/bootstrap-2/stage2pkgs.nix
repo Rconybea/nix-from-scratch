@@ -188,7 +188,12 @@ let
                                                  };
   nxfsenv-2-8 = nxfsenv-2-7 // { gawk = gawk-2; };
 in
+let
+  gnumake-2 = callPackage ./nxfs-gnumake-2/package.nix { nxfsenv = nxfsenv-2-8; };
+  nxfsenv-2-9 = nxfsenv-2-8 // { gnumake = gnumake-2; };
+in
 {
+  inherit gnumake-2;
   inherit gawk-2;
   inherit popen-2;
   inherit popen-template-2;
