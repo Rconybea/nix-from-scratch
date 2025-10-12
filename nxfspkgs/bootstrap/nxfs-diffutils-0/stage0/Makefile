@@ -32,7 +32,7 @@ tarball:=$(name).tar.xz
 # full path to local tarball
 tarball_path:=$(ARCHIVE_DIR)/$(tarball)
 # obtain tarball by fetching from this url
-url:=https://ftp.gnu.org/gnu/$(stem)/$(tarball)
+url:=https://ftpmirror.gnu.org/gnu/$(stem)/$(tarball)
 # verify this sha
 sha256:=90e5e93cc724e4ebe12ede80df1634063c7a855692685919bfe60b556c9bd09e
 #
