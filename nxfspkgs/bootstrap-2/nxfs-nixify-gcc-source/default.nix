@@ -29,7 +29,7 @@ derivation {
   args = [ ./builder.sh ];
 
   src = builtins.fetchTarball { name = "gcc-${version}-source";
-                                url = "https://ftp.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz";
+                                url = "https://ftpmirror.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz";
                                 sha256 = "1bdp6l9732316ylpzxnamwpn08kpk91h7cmr3h1rgm3wnkfgxzh9";
                               };
 

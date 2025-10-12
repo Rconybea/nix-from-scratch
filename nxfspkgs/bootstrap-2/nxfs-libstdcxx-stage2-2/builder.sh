@@ -3,6 +3,8 @@
 # See also
 #   https://gcc.gnu.org/install/configure.html
 
+set -euo pipefail
+
 echo "src=${src}"
 echo "mpc=${mpc}"
 echo "mpfr=${mpfr}"
@@ -20,12 +22,10 @@ echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
 echo "glibc=${glibc}"
-echo "sysroot=${sysroot}"
 echo "bash=${bash}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
-set -e
 set -x
 
 # 1. ${coreutils}/bin provides mkdir,cat,ls etc.
@@ -121,7 +121,7 @@ export LDFLAGS
 #
 #
 # this builds:
-(cd ${builddir} && ${bash_program} ${src2}/libstdc++-v3/configure --prefix=${out} --with-gxx-include-dir=${out}/${target_tuple}/include/c++/${version} --host=${target_tuple} --build=${target_tuple} --disable-nls --disable-multilib --enable-libstdcxx-pch CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+(cd ${builddir} && ${bash_program} ${src2}/libstdc++-v3/configure --prefix=${out} --with-gxx-include-dir=${out}/${target_tuple}/include/c++/${version} --disable-nls --disable-multilib --enable-libstdcxx-pch CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
