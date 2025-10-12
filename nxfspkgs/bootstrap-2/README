@@ -99,3 +99,8 @@ nxfs_system() is similar to glibc system(), except that it invokes nix-store-own
 from nxfs-bash-2, instead of /bin/sh.  nxfs-gawk-2 splices in this function to implement
 the gawk system() builtin.  This is necessary for said builtin to work when invoked
 in a chrooted nix-build,  in particular for building glibc.
+
+4. We're using builtins.fetchTarball here. This is not optional, since we don't have nixpkgs.fetchTarball
+yet.  One (tragic) consequence of using the builtin version is: since it runs at evaluation time
+(before nix decides which derivations to build) it cannot run in parallel with other nix expressions
+or builds.
