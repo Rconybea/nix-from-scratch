@@ -16,7 +16,7 @@ Build nix package manager (aka nixcpp) and dependencies:
 version=nix-from-scratch-0.44.0
 curl -L https://github.com/Rconybea/nix-from-scratch/archive/refs/tags/${version}.tar.gz
 tar xf ${version}.tar.gz
-(cd ${version} && make)   # builds + installs to $HOME/ext, $HOME/nixroot
+(cd ${version} && ./configure && make)   # builds + installs to $HOME/ext, $HOME/nixroot
 ```
 
 After successful install:
