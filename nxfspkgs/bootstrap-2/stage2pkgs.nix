@@ -106,6 +106,7 @@ let
   #
   nxfsenv-1 = {
     toolchain = import ../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
+    gzip      = import ../bootstrap-1/nxfs-gzip-1/default.nix;
     coreutils = import ../bootstrap-1/nxfs-coreutils-1/default.nix;
     gnumake   = import ../bootstrap-1/nxfs-gnumake-1/default.nix;
     gawk      = import ../bootstrap-1/nxfs-gawk-1/default.nix;
@@ -156,7 +157,20 @@ let
   nxfsenv-2-3 = nxfsenv-2-2 // { gnused = gnused-2; };
   gnugrep-2 = callPackage ./nxfs-grep-2/package.nix { nxfsenv = nxfsenv-2-3; };
 in
+let
+  nxfsenv-2-4 = nxfsenv-2-3 // { gnugrep = gnugrep-2; };
+  gnutar-2 = callPackage ./nxfs-tar-2/package.nix { nxfsenv = nxfsenv-2-4; };
+in
+let
+  nxfsenv-2-5 = nxfsenv-2-4 // { gnutar = gnutar-2; };
+  ncurses-2 = callPackage ./nxfs-ncurses-2/package.nix { nxfsenv = nxfsenv-2-5; };
+in
+let
+  nxfsenv-2-6 = nxfsenv-2-5 // { ncurses = ncurses-2; };
+in
 {
+  inherit ncurses-2;
+  inherit gnutar-2;
   inherit gnugrep-2;
   inherit gnused-2;
   inherit findutils-2;

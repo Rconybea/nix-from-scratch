@@ -6,7 +6,7 @@ let
   version = "3.11";
 in
 
-derivation {
+nxfsenv.mkDerivation {
   name         = "nxfs-grep-2";
   system       = builtins.currentSystem;
 
