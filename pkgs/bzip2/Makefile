@@ -31,10 +31,9 @@ cflags:=
 #cflags:=-I$(PREFIX)/include
 ldflags:=
 #ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
-#
-#
 srcdir:=src
 patch_script:=patch-bzip2.sh
+#
 pre_configure_hook:=
 # custom 'configure' step
 configure_exec:=true
