@@ -8,8 +8,6 @@
   gcc-x1-wrapper-3,
   # nixify-gcc-source :: derivation
   nixify-gcc-source,
-  # glibc-stage1-2 :: derivation
-  glibc,
   # mpc :: derivation
   mpc,
   # mpfr :: derivation
@@ -20,6 +18,8 @@
 
 let
   gcc_wrapper = gcc-x1-wrapper-3;
+  gcc         = nxfsenv-3.gcc;
+  glibc       = nxfsenv-3.glibc;
 
   binutils    = nxfsenv-3.binutils;
   bison       = nxfsenv-3.bison;
@@ -87,9 +87,7 @@ nxfsenv.mkDerivation {
 
     bash_program=$(which bash)
 
-    src2=$src
-
-    # $src2/configure honors CONFIG_SHELL
+    # $src/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$bash_program"
 
     # --disable-nls:                    no internationalization.  don't need during bootstrap
@@ -120,8 +118,6 @@ nxfsenv.mkDerivation {
     # TODO: -O2
 
     LDFLAGS="-B$glibc/lib"
-    LDFLAGS="$LDFLAGS -L$flex/lib -L$mpc/lib -L$mpfr/lib -L$gmp/lib"
-    LDFLAGS="$LDFLAGS -Wl,-rpath,$mpc/lib -Wl,-rpath,$mpfr/lib -Wl,-rpath,$gmp/lib"
     LDFLAGS="$LDFLAGS -Wl,-rpath,$glibc/lib"
     export LDFLAGS
 
@@ -132,15 +128,15 @@ nxfsenv.mkDerivation {
     #
     #
     # this builds:
-    (cd $builddir && $bash_program $src2/libstdc++-v3/configure --prefix=$out --with-gxx-include-dir=$out/$target_tuple/include/c++/$version --host=$target_tuple --build=$target_tuple --disable-nls --disable-multilib --enable-libstdcxx-pch CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
+    (cd $builddir && $bash_program $src/libstdc++-v3/configure --prefix=$out --with-gxx-include-dir=$out/$target_tuple/include/c++/$version --host=$target_tuple --build=$target_tuple --disable-nls --disable-multilib --enable-libstdcxx-pch CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
 
-    (cd $src2 && (tar cf - . | tar xf - -C $source))
+    (cd $src && (tar cf - . | tar xf - -C $source))
     '';
 
-  buildInputs = [ gcc_wrapper
+  buildInputs = [ gcc
                   binutils
                   bison
                   flex
