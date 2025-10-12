@@ -37,7 +37,10 @@ let
   # TODO: need to callPackage on all these, once they're upgraded for it.
   bootstrap-1 = import ./bootstrap-1;
   bootstrap-2 = import ./bootstrap-2;
-  bootstrap-3 = import ./bootstrap-3;
+  #bootstrap-3 = import ./bootstrap-3;  # superseded
+
+  # new version of stage2 bootstrap.  intend to replace bootstrap-2
+  stage2pkgs = (import ./bootstrap-2/stage2pkgs.nix) args;
 in
 
 let
@@ -1176,6 +1179,8 @@ let
     });
 in
 {
+  stage2pkgs                                  = stage2pkgs;
+
   nxfs-autotools                              = nxfs-autotools;
 
   nixpkgs                                     = nixpkgs;
