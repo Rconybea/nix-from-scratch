@@ -12,7 +12,6 @@ let
   nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
   nxfs-defs = import ../nxfs-defs.nix;
 in
@@ -23,7 +22,6 @@ derivation {
   system       = builtins.currentSystem;
 
   toolchain    = nxfs-toolchain-1;
-  sysroot      = nxfs-sysroot-1;
   coreutils    = nxfs-coreutils-1;
 
   gnumake      = nxfs-gnumake-2;
@@ -40,7 +38,7 @@ derivation {
   args         = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "coreutils-9.5-source";
-                                         url = "https://ftp.gnu.org/gnu/coreutils/coreutils-9.5.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/coreutils/coreutils-9.5.tar.xz";
                                          sha256 = "0250l3qc7w4l2lx2ws4wqsd2g2g2q0g6w32d9r7d9pgwqmrj2nkh"; };
 
   target_tuple = nxfs-defs.target_tuple;

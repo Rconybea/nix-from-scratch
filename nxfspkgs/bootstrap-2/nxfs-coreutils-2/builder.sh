@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 set -x
 
 echo "gcc_wrapper=${gcc_wrapper}"
@@ -13,12 +13,10 @@ echo "tar=${tar}"
 echo "coreutils=${coreutils}"
 echo "findutils=${findutils}"
 echo "diffutils=${diffutils}"
-echo "sysroot=${sysroot}"
 #echo "mkdir=${mkdir}"
 #echo "head=${head}"
 echo "bash=${bash}"
 echo "src=${src}"
-echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
 # 1. ${gcc_wrapper}/bin/x86_64-pc-linux-gnu-{gcc,g++} builds viable executables.
@@ -69,8 +67,13 @@ export CONFIG_SHELL="${bash_program}"
 # do need to give --host and --build arguments to configure,
 # since we're using a cross compiler.
 
-(cd ${builddir} && bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-install-program=hostname --enable-no-install-program=kill,uptime CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags")
+(cd ${builddir} && bash ${src2}/configure --prefix=${out} --enable-install-program=hostname --enable-no-install-program=kill,uptime CPP=cpp CPPFLAGS="-I${toolchain}/include" CFLAGS="-I${toolchain}/include" LDFLAGS="-Wl,-enable-new-dtags")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
+
+# ----------------------------------------------------------------
+# verify something runs
+
+${out}/bin/cat --version
