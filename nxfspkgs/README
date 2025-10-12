@@ -10,7 +10,7 @@ it to be clear that that bootstrap doesn't depend on nixpkgs.
 
 ----------------------------------------------------------------
 Prerequisites
-1. dependencies for local {nix, crosstools} installed.
+1. dependencies for local {nix, toolchain} installed.
    See nix-from-scratch/Makefile.  Individual packages in nix-from-scratch/pkgs/.
 
    This guide prepared with build-time deps installed to ${HOME}/ext
@@ -22,13 +22,11 @@ Prerequisites
    with nix store in ${HOME}/nixroot/nix/store.
    NIX_PREFIX, NIX_STORE_DIR in nix-from-scratch/mk/prefix.mk
 
-3. crosstools-ng (along with needed deps).  See nix-from-scratch/pkgs/crosstools-ng.
+3. native toolchain (gcc, libc etc.) prepared
 
-4. native toolchain (gcc, libc etc.) built using crosstools-ng.
+   See nix-from-scratch/toolchain/toolchain
 
-   See nix-from-scratch/crosstool/.config.
-
-   This guide prepared with crosstools installed to ${HOME}/nxfs-toolchain
+   This guide prepared with toolchain installed to ${HOME}/nxfs-toolchain
    (see NXFS_TOOLCHAIN_PREFIX in nix-from-scratch/mk/prefix.mk)
 
 ----------------------------------------------------------------

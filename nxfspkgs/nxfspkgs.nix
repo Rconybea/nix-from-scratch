@@ -1,9 +1,12 @@
 # similar in spirit to nixpkgs/top-level/default.nix
 #
 {
+  # will be the contents of *this file* after composing with config choices + overlays
+  # see nix-from-scratch/nxfspkgs/impure.nix
+  #
   nxfspkgs ? import <nxfspkgs> {}
 
-,  # allow configuration attributes (if we ever have them) to be passed in as argument.
+,  # allow configuration attributes (if we ever have them) to be passed in as arguments.
   config ? {}
 
 , # overlays for extension
@@ -123,7 +126,7 @@ let
   nxfsenv-3-3b = nxfsenv-3-3 // { gnugrep = gnugrep-3; };
   # bzip2-3     :: derivation
   bzip2-3 = callPackage ./bootstrap-3/nxfs-bzip2-3 { nxfsenv-3 = nxfsenv-3-3b;
-                                                     patchelf     = import ./bootstrap-2/nxfs-patchelf-2; };
+                                                     patchelf  = import ./bootstrap-2/nxfs-patchelf-2; };
 in
 let
   nxfsenv-3-4 = nxfsenv-3-3b // { bzip2 = bzip2-3; };
@@ -190,22 +193,20 @@ let
 in
 let
   nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
-                                     perl = perl-3; };
+                                     perl = perl-3;
+                                     libxcrypt = libxcrypt-3;
+                                   };
   # binutils-3 :: derivation
-  binutils-3 = callPackage ./bootstrap-3/nxfs-binutils-3 { nxfsenv-3 = nxfsenv-3-b13;
-                                                           libxcrypt = libxcrypt-3; };
+  binutils-3 = callPackage ./bootstrap-3/nxfs-binutils-3 { nxfsenv-3 = nxfsenv-3-b13; };
+
   # autoconf-3 :: derivation
   autoconf-3 = callPackage ./bootstrap-3/nxfs-autoconf-3 { nxfsenv-3 = nxfsenv-3-b13; };
 in
 let
   nxfsenv-3-b14 = nxfsenv-3-b13 // { autoconf = autoconf-3; };
+
   # automake-3 :: derivation
   automake-3 = callPackage ./bootstrap-3/nxfs-automake-3 { nxfsenv-3 = nxfsenv-3-b14; };
-in
-let
-  # TODO: use callPackage on these, so they're overrideable
-  gcc-wrapper-3  = bootstrap-3.gcc-wrapper-3;  # can comment this out
-  glibc-x1-3 = bootstrap-3.glibc-x1-3;  # can comment this out
 in
 let
   nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
@@ -246,7 +247,8 @@ let
                                                      };
 in
 let
-  nxfsenv-3-16 = nxfsenv-3-10 // { perl     = perl-3;
+  nxfsenv-3-16 = nxfsenv-3-10 // { binutils = binutils-3;
+                                   perl     = perl-3;
                                    texinfo  = texinfo-3;
                                    bison    = bison-3;
                                    flex     = flex-3;
@@ -264,6 +266,7 @@ let
 in
 let
   nxfsenv-3-94 = nxfsenv-3-16 // { };
+  # TODO: do we still need toolchain?  should use nxfs-gcc-wrapper-2
   glibc-x1-3 = callPackage ./bootstrap-3/nxfs-glibc-x1-3
     { nxfsenv-3           = nxfsenv-3-94;
       nixify-glibc-source = bootstrap-2.nxfs-nixify-glibc-source;
@@ -271,17 +274,13 @@ let
       locale-archive      = bootstrap-1.nxfs-locale-archive-1;
       toolchain-wrapper   = bootstrap-1.nxfs-toolchain-wrapper-1;
       toolchain           = bootstrap-1.nxfs-toolchain-1;
-      sysroot             = bootstrap-1.nxfs-sysroot-1;
     };
 in
 let
-  nxfsenv-3-95 = nxfsenv-3-94 // { glibc-stage1 = glibc-x1-3; };
-  # TODO switch to nxfsenv-3.glibc, along with libstdcxx
+  nxfsenv-3-95 = nxfsenv-3-94 // { glibc = glibc-x1-3; };
+
   gcc-x0-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-x0-wrapper-3
-    { nxfsenv-3   = nxfsenv-3-95;
-      glibc       = glibc-x1-3;
-      bootstrap-1 = bootstrap-1;
-    };
+    { nxfsenv-3   = nxfsenv-3-95; };
 in
 let
   nxfsenv-3-95a = nxfsenv-3-95 // { binutils = binutils-3; };
@@ -292,37 +291,31 @@ let
     };
 in
 let
-  nxfsenv-3-96 = nxfsenv-3-95a // { };
+  nxfsenv-3-96 = nxfsenv-3-95a // { gcc = gcc-x0-wrapper-3; };
+
   # gcc-x1-3 :: derivation
   gcc-x1-3 = callPackage ./bootstrap-3/nxfs-gcc-x1-3
     { nxfsenv-3            = nxfsenv-3-96;
-      gcc-stage1-wrapper-3 = gcc-x0-wrapper-3;
-      binutils-wrapper     = binutils-x0-wrapper-3; #bootstrap-2.nxfs-binutils-stage1-wrapper-2;  # but try nxfsenv-3 version
+      binutils-wrapper     = binutils-x0-wrapper-3;
       mpc                  = mpc-3;
       mpfr                 = mpfr-3;
       gmp                  = gmp-3;
       nixify-gcc-source    = bootstrap-2.nxfs-nixify-gcc-source;
-      glibc                = glibc-x1-3;
-      sysroot              = bootstrap-1.nxfs-sysroot-1;
+      toolchain            = bootstrap-1.nxfs-toolchain-1; # for linux headers
     };
 in
 let
   nxfsenv-3-97 = nxfsenv-3-96 // { gcc-stage1 = gcc-x1-3; };
   # gcc-stage2-wrapper-3 :: derivation
   gcc-x1-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-x1-wrapper-3
-    { nxfsenv-3 = nxfsenv-3-97;
-      glibc = glibc-x1-3;
-      bootstrap-1 = bootstrap-1;
-    };
+    { nxfsenv-3 = nxfsenv-3-97; };
 in
 let
-  nxfsenv-3-98 = nxfsenv-3-97 // { };
+  nxfsenv-3-98 = nxfsenv-3-97 // { gcc = gcc-x1-wrapper-3; };
   # libstdcxx-stage2-3 :: derivation
   libstdcxx-x2-3 = callPackage ./bootstrap-3/nxfs-libstdcxx-x2-3
     { nxfsenv-3            = nxfsenv-3-98;
-      gcc-x1-wrapper-3     = gcc-x1-wrapper-3;
       nixify-gcc-source    = bootstrap-2.nxfs-nixify-gcc-source;
-      glibc                = glibc-x1-3;
       mpc                  = mpc-3;
       mpfr                 = mpfr-3;
       gmp                  = gmp-3;
@@ -335,38 +328,34 @@ let
     { nxfsenv-3     = nxfsenv-3-99;
       gcc-unwrapped = gcc-x1-3;
       libstdcxx     = libstdcxx-x2-3;
-      glibc         = glibc-x1-3;
     };
 in
 let
+  nxfsenv-3-99a = nxfsenv-3-99 // { gcc = gcc-x2-wrapper-3; };
+
   # gcc-x3-3 :: derivation
   gcc-x3-3 = callPackage ./bootstrap-3/nxfs-gcc-x3-3
-    { nxfsenv-3         = nxfsenv-3-99;
+    { nxfsenv-3         = nxfsenv-3-99a;
       nixify-gcc-source = bootstrap-2.nxfs-nixify-gcc-source;
-      gcc-x2-wrapper-3  = gcc-x2-wrapper-3;
-      binutils-wrapper  = bootstrap-2.nxfs-binutils-stage1-wrapper-2;
-      mpc               = bootstrap-2.nxfs-mpc-2;
-      mpfr              = bootstrap-2.nxfs-mpfr-2;
-      gmp               = bootstrap-2.nxfs-gmp-2;
-      glibc             = glibc-x1-3;
-      sysroot           = bootstrap-1.nxfs-sysroot-1;  # for linux headers
+      binutils-wrapper  = binutils-x0-wrapper-3;
+      mpc               = mpc-3;
+      mpfr              = mpfr-3;
+      gmp               = gmp-3;
+      toolchain         = bootstrap-1.nxfs-toolchain-1;  # for linux headers
     };
 in
 let
-  nxfsenv-3-100 = nxfsenv-3-99 // { gcc-x3-3 = gcc-x3-3; };
+  nxfsenv-3-100 = nxfsenv-3-99 // { gcc-unwrapped = gcc-x3-3; };
 
   # gcc-wrapper-3 :: derivation
   gcc-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-wrapper-3
-    { nxfsenv-3 = nxfsenv-3-100;
-      gcc-unwrapped = gcc-x3-3;
-      glibc = glibc-x1-3;
-    };
+    { nxfsenv-3 = nxfsenv-3-100; };
 
 in
 let
-  nxfsenv-3-101 = nxfsenv-3-100 // { gcc = gcc-wrapper-3;
-                                     gcc-unwrapped = gcc-x3-3;
-                                   };
+  nxfsenv-3-101 = nxfsenv-3-100 // { gcc = gcc-wrapper-3; };
+
+  # mkDerivation-3 :: attrs -> derivation
   mkDerivation-3 = (nxfs-autotools nxfsenv-3-101);
 in
 let
@@ -378,12 +367,6 @@ in
 let
   nxfsenv-3-103 = nxfsenv-3-102 // { openssl = openssl-3; };
 
-# moved to before gnutar-3
-#  bzip2-3 = callPackage ./bootstrap-3/nxfs-bzip2-3
-#    { nxfsenv-3 = nxfsenv-3-103;
-#      patchelf = patchelf-3;
-#    };
-
   xz-3 = callPackage ./bootstrap-3/nxfs-xz-3
     { nxfsenv-3 = nxfsenv-3-103; };
 
@@ -391,13 +374,31 @@ let
     { nxfsenv-3 = nxfsenv-3-103; };
 in
 let
+  nxfsenv-3-103a = nxfsenv-3-102 // { xz = xz-3; curl = curl-3; };
+
+  # TODO: promote this as far upstream as we can go.
+  #
+  # Ultimately: get nix fetchurl working in bootstrap-2 (or maybe bootstrap-1)
+  #
+  cacert-3 = callPackage ./bootstrap-3/nxfs-cacert-3 { nxfsenv-3 = nxfsenv-3-103a; };
+in
+let
   nxfsenv-3-104 = nxfsenv-3-103 // { bzip2 = bzip2-3;
                                      xz = xz-3;
                                      curl = curl-3;
-                                     cacert = nxfs-cacert; };
+                                     cacert = cacert-3; };
 
   # want a usable derivation using curl, that also has SSL certificates
-  fetchurl-3 = callPackage ./bootstrap-3/nxfs-fetchurl-3 { nxfsenv-3 = nxfsenv-3-104; };
+  fetchurl-3 = (import ./bootstrap-3/nxfs-fetchurl-3) { nxfsenv-3 = nxfsenv-3-104;
+                                                        curl = curl-3;
+                                                        cacert = cacert-3;
+                                                      };
+  # will be the tarball itself.
+  test-fetch-3 = fetchurl-3 {
+    name = "test-fetch-3-zlib-v1.3.1.tar.gz";
+    url = "https://github.com/madler/zlib/archive/v1.3.1.tar.gz";
+    sha256 = "sha256-F+iIY/NgBnKrSRgvIXKBtvxNPHYr3jYZNeQ2qVIU0Fw=";
+  };
 in
 let
   nixpkgspath = <nixpkgs>;
@@ -1222,6 +1223,8 @@ in
   xz-3                                        = xz-3;
   openssl-3                                   = openssl-3;
   curl-3                                      = curl-3;
+  cacert-3                                    = cacert-3;
+  test-fetch-3                                = test-fetch-3;
 
   nxfs-bash-0                                 = import ./bootstrap/nxfs-bash-0;
   nxfs-coreutils-0                            = import ./bootstrap/nxfs-coreutils-0;
