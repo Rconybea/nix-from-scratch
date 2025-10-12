@@ -8,7 +8,7 @@ let
 
 in
 
-derivation {
+nxfsenv.mkDerivation {
   name         = "nxfs-m4-2";
 
   system       = builtins.currentSystem;
