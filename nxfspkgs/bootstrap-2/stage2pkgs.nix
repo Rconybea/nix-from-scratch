@@ -152,7 +152,12 @@ let
   nxfsenv-2-2 = nxfsenv-2-1 // { findutils = findutils-2; };
   gnused-2 = callPackage ./nxfs-sed-2/package.nix { nxfsenv = nxfsenv-2-2; };
 in
+let
+  nxfsenv-2-3 = nxfsenv-2-2 // { gnused = gnused-2; };
+  gnugrep-2 = callPackage ./nxfs-grep-2/package.nix { nxfsenv = nxfsenv-2-3; };
+in
 {
+  inherit gnugrep-2;
   inherit gnused-2;
   inherit findutils-2;
   inherit diffutils-2;
