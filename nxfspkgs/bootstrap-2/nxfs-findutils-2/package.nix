@@ -1,11 +1,3 @@
-# GOAL: incrementally migrate to look more like bootstrap-3/nxfs-diffutils-3/default.nix
-#       (Don't expect to merge them, will still need different configure arguments)
-#
-# PLAN:
-# 1. progressively replace direct imports with attributes of nxfsenv.
-#    import ../../bootstrap-1/foo/default.nix -> nxfsenv.foo
-# 2. provide+use nxfsenv.mkDerivation
-# 3. use nix-only fetchurl instead of builtins.fetchTarball
 {
   nxfsenv
 } :
