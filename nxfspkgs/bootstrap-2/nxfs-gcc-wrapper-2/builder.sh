@@ -2,6 +2,8 @@
 # and inject additional arguments
 #
 
+set -euo pipefail
+
 echo "sed=${sed}"
 echo "coreutils=${coreutils}"
 echo "glibc=${glibc}"
@@ -11,6 +13,8 @@ echo "gcc_wrapper_script=${gcc_wrapper_script}"
 echo "gxx_wrapper_script=${gxx_wrapper_script}"
 
 echo "gcc=${gcc}";
+
+set -e
 
 builddir=${TMPDIR}
 
@@ -54,7 +58,6 @@ sed -i -e s:@bash@:${bash}/bin/bash: ${tmp}
 sed -i -e s:@unwrapped_gxx@:${unwrapped_gxx}: ${tmp}
 sed -i -e s:@gcc@:${gcc}: ${tmp}
 sed -i -e s:@glibc@:${glibc}: ${tmp}
-#sed -i -e s:@libstdcxx@:${libstdcxx}: ${tmp}
 sed -i -e s:@target_tuple@:${target_tuple}: ${tmp}
 sed -i -e s:@cxx_version@:${cxx_version}: ${tmp}
 chmod +x ${tmp}
