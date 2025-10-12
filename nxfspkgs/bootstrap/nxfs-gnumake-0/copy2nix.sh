@@ -9,12 +9,10 @@
 
 set -e
 
-name=make
+name=gnumake
 uploaddir=./${name}
 
 nixroot=${HOME}/nixroot
-#nxfs_toolchain=${HOME}/nxfs-toolchain
-#nxfs_sysroot=${nxfs_toolchain}/x86_64-pc-linux-gnu/sysroot
 nxfs_bootstrap=${nixroot}/bootstrap
 
 # establish output hash for target dir tree

@@ -2,8 +2,8 @@
 TL;DR
 
 Prerequisites:
-1. {nix, crosstools-ng} built from source.
-   See nix-from-scratch/pkgs/nix, nix-from-scratch/pkgs/crosstools-ng
+1. {nix, toolchain} built from source.
+   See nix-from-scratch/pkgs/nix, nix-from-scratch/toolchain/toolchain
 2. SSL certificates in known location.
    On ubuntu these are in /etc/ssl/certs.
    If they're in a nonstandard location, may already have SSL_CERT_DIR pointing to them.
@@ -44,32 +44,32 @@ store. In this phase we just import them as-is.
 ----------------------------------------------------------------
 Install order
 
-0.  deps for {nix, crosstools-ng}.  See nix-from-scratch/Makefile.
-                       build + install to PREFIX=$(HOME)/ext
-1.  nix.               built from source.  see nix-from-scratch/pkgs.
+0.  toolchain.         See nix-from-scratch/toolchain/toolchain
+                       build + isntall to NXFS_TOOLCHAIN_PREFIX [$(HOME)/nxfs-toolchain]
+1.  nix deps.          See nix-from-scratch/{Makefile,pkgs}
+                       build + install to PREFIX [$(HOME)/ext]
+2.  nix.               built from source.  see nix-from-scratch/pkgs/nix
                        Install to NIX_PREFIX=$(HOME)/nixroot
-2.  crosstools-ng.     see nix-from-scratch/pkgs/crosstools-ng.
-3.  crosstools.        see nix-from-scratch/crosstool.  Directory for configure+install toolchain,
-                       install to NXFS_TOOLCHAIN=$(HOME)/nxfs-toolchain
-
-4.  nxfs-toolchain-0.  crosstools toolchain in NIXROOT/nix/store     (copied from NXFS_TOOLCHAIN)
-5.  nxfs-sysroot-0.    crosstools ld-linux,libc in NIXROOT/nix/store (copied from NXFS_TOOLCHAIN)
+3.  nxfs-toolchain-0.  import toolchain into NIXROOT/nix/store     (copied from NXFS_TOOLCHAIN)
+                       This include gcc, glibc, ld-linux-x86-64, ..
 
 remaining stage0 steps can be done in any order (see following section 'Procedure for each package' for details)
+In each step we recompile with linker flags that point to the nix store toolchain,
+established in nxfs-toolchain-0
 
-6.  nxfs-patchelf-0.   patchelf 0.18.0  build in stage0, install (to ./patchelf/),  then run ./copy2nix.sh
-7.  nxfs-gnumake-0.    gnumake 4.4.1.   build in stage0, install (to ./gnumake/),   then run ./copy2nix.sh
-8.  nxfs-coreutils-0.  coreutils 9.5.   build in stage0, install (to ./coreutils/), then run ./copy2nix.sh
-9.  nxfs-bash-0.       bash 5.2.32.     build in stage0, install (to ./bash/),      then run ./copy2nix.sh
-10. nxfs-tar-0.        tar 1.35         build in stage0, install (to ./tar/),       then run ./copy2nix.sh
-11. nxfs-sed-0.        sed 4.9          build in stage0, install (to ./sed/),       then run ./copy2nix.sh
-12. nxfs-grep-0.       grep 3.11        build in stage0, install (to ./grep/),      then run ./copy2nix.sh
-13. nxfs-gawk-0.       gawk 5.3.0       build in stage0, install (to ./gawk/),      then run ./copy2nix.sh
-14. nxfs-libxcrypt-0.  libxcrypt        build in stage0, install (to ./libxcrypt),  then run ./copy2nix.sh
-15. nxfs-findutils-0.  findutils 4.10.0 build in stage0, install (to ./findutils),  then run ./copy2nix.sh
-16. nxfs-diffutils-0.  diffutils 3.10   build in stage0, install (to ./diffutils),  then run ./copy2nix.sh
-17. nxfs-gzip-0.       gzip 1.13        build in stage0, install (to ./gzip),       then run ./copy2nix.sh
-18. nxfs-cacert-0.     n/a              copy from host                              just run ./copy2nix.sh
+4.  nxfs-patchelf-0.   patchelf 0.18.0  build in stage0, install (to ./patchelf/),  then run ./copy2nix.sh
+5.  nxfs-gnumake-0.    gnumake 4.4.1.   build in stage0, install (to ./gnumake/),   then run ./copy2nix.sh
+6.  nxfs-coreutils-0.  coreutils 9.5.   build in stage0, install (to ./coreutils/), then run ./copy2nix.sh
+7.  nxfs-bash-0.       bash 5.2.32.     build in stage0, install (to ./bash/),      then run ./copy2nix.sh
+8.  nxfs-tar-0.        tar 1.35         build in stage0, install (to ./tar/),       then run ./copy2nix.sh
+9.  nxfs-sed-0.        sed 4.9          build in stage0, install (to ./sed/),       then run ./copy2nix.sh
+10. nxfs-grep-0.       grep 3.11        build in stage0, install (to ./grep/),      then run ./copy2nix.sh
+11. nxfs-gawk-0.       gawk 5.3.0       build in stage0, install (to ./gawk/),      then run ./copy2nix.sh
+12. nxfs-libxcrypt-0.  libxcrypt        build in stage0, install (to ./libxcrypt),  then run ./copy2nix.sh
+13. nxfs-findutils-0.  findutils 4.10.0 build in stage0, install (to ./findutils),  then run ./copy2nix.sh
+14. nxfs-diffutils-0.  diffutils 3.10   build in stage0, install (to ./diffutils),  then run ./copy2nix.sh
+15. nxfs-gzip-0.       gzip 1.13        build in stage0, install (to ./gzip),       then run ./copy2nix.sh
+16. nxfs-cacert-0.     n/a              copy from host                              just run ./copy2nix.sh
 
 perl,m4 likely not needed in stage0 (as of 4jan2025),  keeping around in case need them later
 (19). nxfs-perl-0.       perl 5.40.0     build in stage0, install (to ./perl/),      then run ./copy2nix.sh
@@ -78,7 +78,7 @@ perl,m4 likely not needed in stage0 (as of 4jan2025),  keeping around in case ne
 Then continue in ../bootstrap-1
 
 ----------------------------------------------------------------
-Procedure for each package foo (excepting nxfs-toolchain-0, nxfs-sysroot-0)
+Procedure for each package foo (excepting nxfs-toolchain-0, nxfs-cacert-0)
 
 1.
   $ cd nix-from-scratch/nxfspkgs/bootstrap/nxfs-foo-0
@@ -93,7 +93,7 @@ Can create destination directory ./foo manually, if it was inadvertently omitted
   $ mkdir ./foo
 
 2.
-Except for nxfs-toolchain-0, nxfs-sysroot-0:
+Except for nxfs-toolchain-0, nxfs-cacert-0:
   $ make -C stage0 install
 or spelled-out:
   $ (cd stage0 && make fetch && make config && make compile && make install)
@@ -128,9 +128,6 @@ Typical Problems
      | derivation       | (hash) + (derivation name)  |
 
    This constraint only applies to fixed-output derivations
-
-   In particular for sysroot, since we're picking up subdir from inside crosstools-ng toolchain,
-   name will be 'sysroot'
 
 design notes
 
