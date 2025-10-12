@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 #set -x
 
 echo "gcc_wrapaper=${gcc_wrapper}"
@@ -13,20 +13,12 @@ echo "tar=${tar}"
 echo "coreutils=${coreutils}"
 echo "findutils=${findutils}";
 echo "diffutils=${diffutils}";
-echo "sysroot=${sysroot}"
 echo "bash=${bash}"
 echo "src=${src}"
 echo "popen=${popen}";
-echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
-# 1. ${gcc_wrapper}/bin/x86_64-pc-linux-gnu-{gcc,g++} builds viable executables.
-# 2. ${toolchain}/bin/x86_64-pc-linux-gnu-gcc can build executables,
-#    but they won't run unless we pass special linker flags
-# 3. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
-# 4. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
-#
-export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
+export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
 
 #ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
 
@@ -48,8 +40,8 @@ chmod -R +w ${src2}
 #
 #
 bash_program=${bash}/bin/bash
-# skipping:
-#   .m4 and .in files (assume they trigger re-running autoconf)
+# here we are skipping:
+#   .m4 and .in files (touching them would trigger re-running autoconf)
 #   test/ files
 #
 sed -i -e "s:/bin/sh:${bash_program}:g" ${src2}/configure ${src2}/build-aux/*
@@ -114,18 +106,10 @@ cat ${nxfs_popen_src} >> ${src2}/io.c
 # ${src}/configure honors CONFIG_SHELL
 export CONFIG_SHELL="${bash_program}"
 
-# 1.
-# we shouldn't need special compiler/linker instructions,
-# since stage-1 toolchain "knows where it lives"
-#
-# 2.
-# do need to give --host and --build arguments to configure,
-# since we're using a cross compiler.
-
 # inspect shebang
 head -5 ${src2}/configure
 
-(cd ${builddir} && ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags" SHELL=${CONFIG_SHELL})
+(cd ${builddir} && ${src2}/configure --prefix=${out} CC="nxfs-gcc" CPP=cpp CPPFLAGS="-I${toolchain}/include" CFLAGS="-I${toolchain}/include" LDFLAGS="-Wl,-enable-new-dtags" SHELL=${CONFIG_SHELL})
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 
@@ -133,3 +117,5 @@ head -5 ${src2}/configure
 
 # save edited source
 (cd ${src2} && (tar cvf - . | tar xf - -C ${source}))
+
+${out}/bin/gawk --version
