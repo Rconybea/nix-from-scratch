@@ -3,7 +3,21 @@ Introduction
 Order is important here.  Builders progressively replace stage-2 packages with stage-3 versions.
 Stage-3 versions are built from source within nix, using gcc+glibc also built from source within nix.
 
-For packages in this directory, use bootstrap-3/default.nix
+Recap:
+- stage-0 imported external bootstrap ingredients into nix store as fixed-output derivations
+- stage-1 prepared imported toolchain so that it's usable from withinc nix-build:
+  it will have redirected stage-0 components so that libraries and dynamic linker
+  refer to nix store versions. stage-1 uses vanilla nix derivations, relies entirely on patchelf.
+- stage-2 compiled nix-native toolchain from stage-1 components.
+  By the end of stage-2 all stage-1 executables have been superseded by nix-native versions;
+  however stage-2 toolchain will in some places use at runtime stage-1 libraries.
+
+In stage-3 we rebuild nix-native toolchain using stage-2 components.
+Since everything is rebuilt with nix-native toolchain, we expect to arrive at a fixpoint.
+Some stage-3 outputs still refer to stage-2 libraries. Binaries built by stage-3 toolchain will
+refer only to stage-3
+
+For packages in this directory, use nxfspkgs/default.nix
 
 e.g.
   $ nix-build path/to/nix-from-scratch/nxfspkgs -A which-3
