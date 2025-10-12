@@ -11,13 +11,12 @@ let
   nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
   nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
-  name         = "nxfs-patch-2";
+  name         = "nxfs-patchelf-2";
 
   system       = builtins.currentSystem;
 
@@ -34,7 +33,6 @@ derivation {
   gcc_wrapper  = nxfs-toolchain-wrapper-1;
 
   toolchain    = nxfs-toolchain-1;
-  sysroot      = nxfs-sysroot-1;
 
   builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];
@@ -42,6 +40,4 @@ derivation {
   src          = builtins.fetchTarball { name = "patchelf-0.18.0-source";
                                          url = "https://github.com/NixOS/patchelf/releases/download/0.18.0/patchelf-0.18.0.tar.gz";
                                          sha256 = "0s328cmgrbhsc344q323dhg70h8lf8532ywjf8jwjirxq6a5h06w"; };
-
-  target_tuple = nxfs-defs.target_tuple;
 }
