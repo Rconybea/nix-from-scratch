@@ -14,17 +14,11 @@ let
   nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
   nxfs-defs = import ../nxfs-defs.nix;
 in
 
 derivation {
-  # builds successfully with __noChroot=true.
-  # problem with ./pre-inst-env when __noChroot=false
-  #
-  #__noChroot = true;
-
   name         = "nxfs-automake-2";
 
   system       = builtins.currentSystem;
@@ -45,18 +39,15 @@ derivation {
   gcc_wrapper  = nxfs-toolchain-wrapper-1;
 
   toolchain    = nxfs-toolchain-1;
-  sysroot      = nxfs-sysroot-1;
 
   builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "automake-1.16.5-source";
-                                         url = "https://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/automake/automake-1.16.5.tar.xz";
                                          sha256 = "0pac10hgw6r4kbafdbxg7gpb503fq9a9a31r5hvdh95nd2pcngv0"; };
 
 #  src          = builtins.fetchTarball { name = "automake-1.17-source";
 #                                         url = "https://ftp.gnu.org/gnu/automake/automake-1.17.tar.xz";
 #                                         sha256 = "1nwgz937zikw5avzhvvzf57i917pq0q05s73wqr28abwqxa3bll8"; };
-
-  target_tuple = nxfs-defs.target_tuple;
 }
