@@ -182,7 +182,14 @@ let
                                                      popen-template = popen-template-2;
                                                    };
 in
+let
+  gawk-2 = callPackage ./nxfs-gawk-2/package.nix { nxfsenv = nxfsenv-2-7;
+                                                   popen = popen-2;
+                                                 };
+  nxfsenv-2-8 = nxfsenv-2-7 // { gawk = gawk-2; };
+in
 {
+  inherit gawk-2;
   inherit popen-2;
   inherit popen-template-2;
   inherit bash-2;
