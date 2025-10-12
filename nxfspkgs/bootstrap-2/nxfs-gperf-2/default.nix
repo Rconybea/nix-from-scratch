@@ -11,7 +11,6 @@ let
   nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
   nxfs-defs = import ../nxfs-defs.nix;
 in
@@ -22,7 +21,6 @@ derivation {
   system       = builtins.currentSystem;
 
   toolchain    = nxfs-toolchain-1;
-  sysroot      = nxfs-sysroot-1;
 
   coreutils    = nxfs-coreutils-2;
   gnumake      = nxfs-gnumake-2;
@@ -39,8 +37,6 @@ derivation {
   args         = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "gperf-3.0.4-source";
-                                         url = "https://ftp.gnu.org/gnu/gperf/gperf-3.0.4.tar.gz";
+                                         url = "https://ftpmirror.gnu.org/gnu/gperf/gperf-3.0.4.tar.gz";
                                          sha256 = "12pqgvxmyckqv1b5qhi80qmwkvpvr604w7qckbn1dfkykl96rdgb"; };
-
-  target_tuple = nxfs-defs.target_tuple;
 }
