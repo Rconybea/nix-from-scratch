@@ -2,6 +2,8 @@
 # and inject additional arguments
 #
 
+set -euo pipefail
+
 echo "sed=${sed}"
 echo "coreutils=${coreutils}"
 echo "glibc=${glibc}"
@@ -12,9 +14,9 @@ echo "gxx_wrapper_script=${gxx_wrapper_script}"
 
 echo "gcc=${gcc}";
 
-builddir=${TMPDIR}
-
 export PATH="${gcc}/bin:${glibc}/bin:${sed}/bin:${coreutils}/bin:${bash}/bin"
+
+builddir=${TMPDIR}
 
 unwrapped_gcc=${gcc}/bin/gcc
 unwrapped_gxx=${gcc}/bin/g++
