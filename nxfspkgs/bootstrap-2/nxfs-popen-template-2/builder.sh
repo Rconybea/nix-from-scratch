@@ -1,11 +1,12 @@
 #!/bin/bash
 
+set -euo pipefail
+
 echo
 echo "coreutils=${coreutils}"
 echo "bash=${bash}"
 echo "nxfs_system_src=${nxfs_system_src}"
 
-set -e
 set -x
 
 export PATH="${coreutils}/bin:${bash}/bin"
