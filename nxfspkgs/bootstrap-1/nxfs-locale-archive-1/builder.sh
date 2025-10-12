@@ -1,55 +1,55 @@
 #! /bin/bash
 
-set -e
+set -euo pipefail
 
+echo "nxfs_vars_file=${nxfs_vars_file}"
+echo "toolchain=${toolchain}"
+echo "findutils=${findutils}"
 echo "gzip=${gzip}"
 echo "tar=${tar}"
 echo "coreutils=${coreutils}"
 echo "bash=${bash}"
-echo "sysroot=${sysroot}"
 echo "TMP=${TMP}"
 
-export PATH=${gzip}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin:${sysroot}/usr/bin
+set -x
 
-# will be copying stuff from ${sysroot}/usr/share/i18n
-mkdir -p ${TMP}/locales
-mkdir -p ${TMP}/charmaps
+# provides:
+#   NIX_PREFIX
+#   NXFS_TOOLCHAIN_PREFIX   (e.g. $HOME/nxfs-toolchain)
+#   NXFS_HOST_TUPLE
+#   NXFS_MAX_JOBS
+# we need just NXFS_TOOLCHAIN_PREFIX here
+#
+source ${nxfs_vars_file}
 
-cp ${sysroot}/usr/share/i18n/charmaps/UTF-8.gz ${TMP}/charmaps/
-(cd ${TMP}/charmaps && gunzip ./UTF-8.gz)
+export PATH=${findutils}/bin:${toolchain}/bin:${gzip}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin
 
-(cd ${sysroot}/usr/share/i18n/locales && (tar cf - . | tar xf - -C ${TMP}/locales))
+mkdir -p ${TMP}/i18n/charmaps
+gunzip -c ${toolchain}/share/i18n/charmaps/UTF-8.gz > ${TMP}/i18n/charmaps/UTF-8
+
+mkdir -p ${TMP}/out/${NXFS_TOOLCHAIN_PREFIX}/lib/locale
+mkdir -p ${out}/lib/locale
+
+export I18NPATH=${toolchain}/share/i18n:${TMP}/i18n
+
+pushd ${TMP}/out
+
+localedef --prefix=${TMP}/out -i C -f UTF-8 C.UTF-8
+localedef --prefix=${TMP}/out -i en_US -f UTF-8 en_US.UTF-8
+localedef --prefix=${TMP}/out -i en_AU -f UTF-8 en_AU.UTF-8
+
+localedef --no-archive --prefix=${TMP}/out -i C -f UTF-8 C.UTF-8
+localedef --no-archive --prefix=${TMP}/out -i en_US -f UTF-8 en_US.UTF-8
+localedef --no-archive --prefix=${TMP}/out -i en_AU -f UTF-8 en_AU.UTF-8
+
+popd
 
 mkdir -p ${out}
-mkdir -p ${out}/lib/locale
-mkdir -p ${out}/lib/locale/C.utf8
-
-#export LOCALE_ARCHIVE=${out}/lib/locale/locale-archive
-
-#(cd ${TMP}/locales && localedef --no-archive -i C     -c -f ../charmaps/UTF-8 ${out}/lib/locale/C.utf8)
-mkdir -p ${TMP}/usr/lib/locale
-(cd ${TMP}/locales && localedef --no-archive --prefix=${TMP} -i C     -c -f ../charmaps/UTF-8 C.utf8)
-(cd ${TMP}/locales && localedef --no-archive --prefix=${TMP} -i en_US -c -f ../charmaps/UTF-8 en_US.utf8)
-(cd ${TMP}/locales && localedef --no-archive --prefix=${TMP} -i en_AU -c -f ../charmaps/UTF-8 en_AU.utf8)
-
-# try to setup locale-archive.
-# Looks like "usr/lib/locale/" part of ${TMP}/usr/lib/locale/ is forced
-
-#(cd ${TMP}/locales && localedef --prefix=${TMP} -i C     -c -f ./charmaps/UTF-8 --add-to-archive)
-(cd ${TMP}/locales && localedef --add-to-archive --prefix=${TMP} -i C     -f ./charmaps/UTF-8)
-(cd ${TMP}/locales && localedef --add-to-archive --prefix=${TMP} -i en_US -f ./charmaps/UTF-8)
-(cd ${TMP}/locales && localedef --add-to-archive --prefix=${TMP} -i en_AU -f ./charmaps/UTF-8)
-
-#localedef -i ./en_US -f ./UTF-8 --prefix=${TMP} --add-to-archive
-
-#mkdir -p ${out}/lib/locale
-mkdir -p ${out}/lib/locale
-(cd ${TMP}/usr/lib/locale && (tar cf - . | tar xf - -C ${out}/lib/locale))
+cp -r ${TMP}/out/${NXFS_TOOLCHAIN_PREFIX}/lib ${out}
 
 # demo
 export LOCPATH=${out}/lib/locale
+# or if you build a locale-archive:
+export LOCALE_ARCHIVE=${out}/lib/locale/locale-archive
 
-# wow.  turns out the locale program ignores LOCPATH,
-# and only looks in compiled-in location
-#
-locale -a
+localedef --list-archive ${out}/lib/locale/locale-archive

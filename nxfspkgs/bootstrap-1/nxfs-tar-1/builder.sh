@@ -1,30 +1,74 @@
 #!/bin/bash
+#
+# BOOTSTRAP REMARKS:
+# At this point in bootstrap, we have
+# - nix store containing result of essential fixed-output derivations.
+#   these derivations were built outside the nix store and refer to paths
+#   that aren't accessible during nix-build.
+# - patched toolchain {libc, gcc, binutils}
+#   Not directly useful, but this is the destination we want to patch-in
+#   to other imported packages, such as this one.
+# - patched bash interpreter (running this script)
+# - patched patchelf program
+# - patched coreutils
+#
+# For SANDBOX builds, remarks from nxfs-toolchain-0 apply,
+# but only to unpatched executables.
+#
+# In this builder we can usefully set PATH for example.
+# We still need to ues the invoke0 crutch for tar
+#
+# - whenever we refer to a stage-0 executable, we will need to
+#   R1. explicitly invoke the dynamic loader ${toolchain}/bin/ld.so
+#   R2. explicitly supply toolchain library path ${toolchain}/lib
+# - the bash instance running this script is also in an impaired state:
+#   searching PATH for executables doesn't work
+#   (possibly because requires R1 and R2 prevent bash recognizing
+#    executables).  Instead have to:
+#   R3. give full path to an executable
+# - as we progressively introduce patched stage-1 packages,
+#   we can retire the explicit invocation
+#
+#
 
-set -e
+set -euo pipefail
 
 echo
-echo "tar=${tar}"
+echo "gnutar=${gnutar}"
 echo "coreutils=${coreutils}"
 echo "bash=${bash}"
 echo "patchelf=${patchelf}"
-echo "nxfs_sysroot_1=${nxfs_sysroot_1}"
-echo "redirect_elf_file=${redirect_elf_file}"
-echo "target_interpreter=${target_interpreter}"
-echo "target_runpath=${target_runpath}"
+echo "toolchain=${toolchain}"
+echo "redirect_elf_file_0=${redirect_elf_file_0}"
 echo "TMP=${TMP}"
 echo
 
-export PATH=${tar}/bin:${coreutils}/bin:${patchelf}/bin
+export PATH=${coreutils}/bin:${patchelf}/bin
 
-mkdir ${out}
-
-# libc: only as smoke test for valid sysroot
-libc=${nxfs_sysroot_1}/lib/libc.so.6
+# see R3 above
+#
+tar=${gnutar}/bin/tar
 
 # ----------------------------------------------------------------
-# helper bash script
+# defines bash functions
+#   invoke0()
+#   redirect_elf_file_0()
+#
+# NOTE: We would be able to use redirect_elf_file() at this point,
+# but we need invoke0() for tar
+#
+source ${redirect_elf_file_0}
 
-source "${redirect_elf_file}"
+# ----------------------------------------------------------------
+# local variables
+
+# libc: smoke test for valid sysroot
+libc=${toolchain}/lib/libc.so.6
+
+target_interpreter=$(readlink -f ${toolchain}/bin/ld.so)
+target_runpath="${toolchain}/lib"
+
+mkdir ${out}
 
 # ----------------------------------------------------------------
 # verify initial paths
@@ -46,7 +90,7 @@ staging=${TMP}
 
 mkdir -p ${staging}
 
-(cd ${tar} && (tar cf - . | tar xf - -C ${staging}))
+(cd ${gnutar} && (invoke0 ${tar} cf - . | invoke0 ${tar} xf - -C ${staging}))
 
 chmod u+w ${staging}
 chmod u+w ${staging}/bin
@@ -56,7 +100,7 @@ for dir in ${staging}/bin; do
         echo "consider [${file}]"
 
         if [[ -f ${file} ]]; then
-            redirect_elf_file ${file} ${target_interpreter} ${target_runpath}
+            redirect_elf_file_0 ${file} ${target_interpreter} ${target_runpath}
         else
             echo "skip non-regular-file [${file}]"
         fi
@@ -70,4 +114,9 @@ chmod u-w ${staging}/bin
 #
 final=${out}
 
-(cd ${staging} && (tar cf - . | tar xf - -C ${final}))
+(cd ${staging} && (invoke0 ${tar} cf - . | invoke0 ${tar} xf - -C ${final}))
+
+# ----------------------------------------------------------------
+# verify executable runs without invoke0 crutch
+
+${out}/bin/tar --version

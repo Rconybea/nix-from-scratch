@@ -1,41 +1,36 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 echo
 echo "coreutils=${coreutils}"
 echo "patchelf=${patchelf}"
 echo "tar=${tar}"
 echo "bash=${bash}"
-
-echo "nxfs_sysroot=${nxfs_sysroot}";
+echo "toolchain=${toolchain}";
 echo "redirect_elf_file=${redirect_elf_file}";
-echo "target_interpreter=${target_interpreter}";
-echo "target_runpath=${target_runpath}";
 
 echo "nxfs_findutils_0=${nxfs_findutils_0}"
 
 echo "TMP=${TMP}"
 
-
-# libc: only as smoke test for valid sysroot
-libc=${nxfs_sysroot}/lib/libc.so.6
-
-PATH=${bash}/bin:${patchelf}/bin:${coreutils}/bin
-
-mkdir ${out}
+PATH=${tar}/bin:${bash}/bin:${patchelf}/bin:${coreutils}/bin
 
 # ----------------------------------------------------------------
 # helper bash script
 
-chmod=${coreutils}/bin/chmod
-basename=${coreutils}/bin/basename
-head=${coreutils}/bin/head
-mkdir=${coreutils}/bin/mkdir
-patchelf=${patchelf}/bin/patchelf
-tar=${tar}/bin/tar
-
 source "${redirect_elf_file}/bootstrap-scripts/redirect-elf-file.sh"
+
+# ----------------------------------------------------------------
+# local variables
+
+mkdir ${out}
+
+# libc: only as smoke test for valid sysroot
+libc=${toolchain}/lib/libc.so.6
+
+target_interpreter=$(readlink -f ${toolchain}/bin/ld.so)
+target_runpath="${toolchain}/lib"
 
 # ----------------------------------------------------------------
 # verify initial paths
@@ -55,13 +50,13 @@ echo "stage1 libc:          ${libc}"
 #
 staging=${TMP}
 
-${mkdir} -p ${staging}
+mkdir -p ${staging}
 
-(cd ${nxfs_findutils_0} && (${tar} cf - . | ${tar} xf - -C ${staging}))
+(cd ${nxfs_findutils_0} && (tar cf - . | tar xf - -C ${staging}))
 
-${chmod} u+w ${staging}
-${chmod} u+w ${staging}/bin
-#${chmod} u+w ${staging}/libexec/coreutils
+chmod u+w ${staging}
+chmod u+w ${staging}/bin
+#chmod u+w ${staging}/libexec/coreutils
 
 for dir in ${staging}/bin; do
     for file in ${dir}/*; do
@@ -75,12 +70,17 @@ for dir in ${staging}/bin; do
     done
 done
 
-#${chmod} u-w ${staging}/libexec/coreutils
-${chmod} u-w ${staging}/bin
+#chmod u-w ${staging}/libexec/coreutils
+chmod u-w ${staging}/bin
 
 # ----------------------------------------------------------------
 # copy to final destination
 #
 final=${out}
 
-(cd ${staging} && (${tar} cf - . | ${tar} xf - -C ${final}))
+(cd ${staging} && (tar cf - . | tar xf - -C ${final}))
+
+# ----------------------------------------------------------------
+# verify runnable executable
+
+${out}/bin/find --version

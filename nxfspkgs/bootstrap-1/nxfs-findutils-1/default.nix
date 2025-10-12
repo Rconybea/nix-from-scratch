@@ -4,7 +4,7 @@ let
   nxfs-patchelf-1 = import ../nxfs-patchelf-1/default.nix;
   nxfs-tar-1 = import ../../bootstrap-1/nxfs-tar-1/default.nix;
   nxfs-bash-1 = import ../nxfs-bash-1/default.nix;
-  nxfs-sysroot-1 = import ../nxfs-sysroot-1/default.nix;
+  nxfs-toolchain-1 = import ../nxfs-toolchain-1/default.nix;
   nxfs-redirect-elf-file = import ../nxfs-redirect-elf-file/default.nix;
 
   bash = "${nxfs-bash-1}/bin/bash";
@@ -22,15 +22,12 @@ derivation {
   tar = nxfs-tar-1;
   bash = nxfs-bash-1;
 
-  nxfs_sysroot = nxfs-sysroot-1;
+  toolchain = nxfs-toolchain-1;
   redirect_elf_file = nxfs-redirect-elf-file;
 
   nxfs_findutils_0 = nxfs-findutils-0;
 
   args = [./builder.sh];
-
-  target_interpreter = "${nxfs-sysroot-1}/lib64/ld-linux-x86-64.so.2";
-  target_runpath = "${nxfs-sysroot-1}/usr/lib:${nxfs-sysroot-1}/lib";
 
   buildInputs = [];
 }

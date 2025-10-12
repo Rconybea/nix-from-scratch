@@ -1,26 +1,27 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 echo
-echo "nxfs_sed_0=${nxfs_sed_0}"
+echo "nxfs_gnused_0=${nxfs_gnused_0}"
 echo "bash=${bash}"
-echo "basename=${basename}"
 echo "tar=${tar}"
 echo "patchelf=${patchelf}"
-echo "sysroot=${sysroot}"
+echo "toolchain=${toolchain}"
 echo "redirect_elf_file=${redirect_elf_file}"
-echo "target_interpreter=${target_interpreter}"
-echo "target_runpath=${target_runpath}"
 echo "TMP=${TMP}"
 echo
 
 export PATH="${tar}/bin:${coreutils}/bin:${patchelf}/bin"
 
-mkdir ${out}
+# ----------------------------------------------------------------
+# local variables
 
 # libc: only as smoke test for valid sysroot
-libc=${sysroot}/lib/libc.so.6
+libc=${toolchain}/lib/libc.so.6
+
+target_interpreter=$(readlink -f ${toolchain}/bin/ld.so)
+target_runpath="${toolchain}/lib"
 
 # ----------------------------------------------------------------
 # helper bash script
@@ -37,8 +38,12 @@ if [[ ! -f ${libc} ]]; then
     ok=0
 fi
 
-echo "stage0 sed dir:       ${nxfs_sed_0}"
+echo "stage0 sed dir:       ${nxfs_gnused_0}"
 echo "stage1 libc:          ${libc}"
+
+# ----------------------------------------------------------------
+
+mkdir ${out}
 
 # ----------------------------------------------------------------
 # copy to temporary staging dir
@@ -47,7 +52,7 @@ staging=${TMP}
 
 mkdir -p ${staging}
 
-(cd ${nxfs_sed_0} && (tar cf - . | tar xf - -C ${staging}))
+(cd ${nxfs_gnused_0} && (tar cf - . | tar xf - -C ${staging}))
 
 chmod u+w ${staging}
 chmod u+w ${staging}/bin
@@ -72,3 +77,8 @@ chmod u-w ${staging}/bin
 final=${out}
 
 (cd ${staging} && (tar cf - . | tar xf - -C ${final}))
+
+# ----------------------------------------------------------------
+# verify patched executable runs
+
+${out}/bin/sed --version

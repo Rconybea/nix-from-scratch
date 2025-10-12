@@ -1,18 +1,15 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 echo
 echo "nxfs_gawk_0=${nxfs_gawk_0}"
-echo "chmod=${chmod}"
 echo "tar=${tar}"
 echo "coreutils=${coreutils}"
 echo "patchelf=${patchelf}"
 echo "bash=${bash}"
 echo "redirect_elf_file=${redirect_elf_file}"
-echo "sysroot=${sysroot}"
-echo "target_interpreter=${target_interpreter}"
-echo "target_runpath=${target_runpath}"
+echo "toolchain=${toolchain}"
 echo "TMP=${TMP}"
 echo
 
@@ -21,7 +18,10 @@ export PATH=${tar}/bin:${coreutils}/bin:${patchelf}/bin
 mkdir ${out}
 
 # libc: only as smoke test for valid sysroot
-libc=${sysroot}/lib/libc.so.6
+libc=${toolchain}/lib/libc.so.6
+
+target_interpreter=$(readlink -f ${toolchain}/bin/ld.so)
+target_runpath="${toolchain}/lib"
 
 # ----------------------------------------------------------------
 # helper bash script
@@ -77,3 +77,8 @@ chmod u-w ${staging}/bin
 final=${out}
 
 (cd ${staging} && (tar cf - . | tar xf - -C ${final}))
+
+# ----------------------------------------------------------------
+# verify patched executable runs
+
+${out}/bin/gawk --version

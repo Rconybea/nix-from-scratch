@@ -6,7 +6,7 @@ let
     nxfs-bash-0 = import ../../bootstrap/nxfs-bash-0/default.nix;
 
     bash = "${nxfs-bash-0}/bin/bash";
-    builder = "${nxfs-sysroot-0}/lib/ld-linux-x86-64.so.2";
+    builder = "${nxfs-toolchain-0}/lib/ld-linux-x86-64.so.2";
 in
 
 derivation {

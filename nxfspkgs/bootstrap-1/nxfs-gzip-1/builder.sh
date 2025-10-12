@@ -9,24 +9,27 @@ echo "tar=${tar}"
 echo "coreutils=${coreutils}"
 echo "patchelf=${patchelf}"
 echo "bash=${bash}"
-echo "sysroot=${sysroot}"
+echo "toolchain=${toolchain}"
 echo "redirect_elf_file=${redirect_elf_file}"
-echo "target_interpreter=${target_interpreter}"
-echo "target_runpath=${target_runpath}"
 echo "TMP=${TMP}"
 echo
 
 export PATH=${sed}/bin:${tar}/bin:${coreutils}/bin:${patchelf}/bin
 
-mkdir ${out}
-
-# libc: only as smoke test for valid sysroot
-libc=${sysroot}/lib/libc.so.6
-
 # ----------------------------------------------------------------
 # helper bash script
 
 source "${redirect_elf_file}"
+
+# ----------------------------------------------------------------
+
+mkdir ${out}
+
+# libc: only as smoke test for valid sysroot
+libc=${toolchain}/lib/libc.so.6
+
+target_interpreter=$(readlink -f ${toolchain}/bin/ld.so)
+target_runpath="${toolchain}/lib"
 
 # ----------------------------------------------------------------
 # verify initial paths
@@ -69,8 +72,6 @@ for dir in ${staging}/bin; do
         else
             sed -i -e '1s:#! */bin/bash:#!'${bash}':' ${file}
         fi
-
-        #sed -i -e '1s:#!/bin/bash:#!${bash}:' ${file}
     done
 done
 
@@ -82,3 +83,8 @@ chmod u-w ${staging}/bin
 final=${out}
 
 (cd ${staging} && (tar cf - . | tar xf - -C ${final}))
+
+# ----------------------------------------------------------------
+# verify patched executable runs
+
+${out}/bin/gzip --version

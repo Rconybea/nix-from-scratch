@@ -1,16 +1,14 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 echo
 echo "tar=${tar}"
 echo "coreutils=${coreutils}"
 echo "patchelf=${patchelf}"
 echo "bash=${bash}"
-echo "nxfs_sysroot_1=${nxfs_sysroot_1}"
+echo "toolchain=${toolchain}"
 echo "redirect_elf_file=${redirect_elf_file}"
-echo "target_interpreter=${target_interpreter}"
-echo "target_runpath=${target_runpath}"
 echo "TMP=${TMP}"
 echo
 
@@ -19,7 +17,10 @@ export PATH=${tar}/bin:${coreutils}/bin:${patchelf}/bin
 mkdir ${out}
 
 # libc: only as smoke test for valid sysroot
-libc=${nxfs_sysroot_1}/lib/libc.so.6
+libc=${toolchain}/lib/libc.so.6
+
+target_interpreter=$(readlink -f ${toolchain}/bin/ld.so)
+target_runpath="${toolchain}/lib"
 
 # ----------------------------------------------------------------
 # helper bash script
@@ -36,7 +37,7 @@ if [[ ! -f ${libc} ]]; then
     ok=0
 fi
 
-echo "stage0 grep dir:      ${nxfs_grep_0}"
+echo "stage0 grep dir:      ${nxfs_gnugrep_0}"
 echo "stage1 libc:          ${libc}"
 
 # ----------------------------------------------------------------
@@ -46,7 +47,7 @@ staging=${TMP}
 
 mkdir -p ${staging}
 
-(cd ${nxfs_grep_0} && (tar cf - . | tar xf - -C ${staging}))
+(cd ${nxfs_gnugrep_0} && (tar cf - . | tar xf - -C ${staging}))
 
 chmod u+w ${staging}
 chmod u+w ${staging}/bin
@@ -71,3 +72,8 @@ chmod u-w ${staging}/bin
 final=${out}
 
 (cd ${staging} && (tar cf - . | tar xf - -C ${final}))
+
+# ----------------------------------------------------------------
+# verify patched executable runs
+
+${out}/bin/grep --version

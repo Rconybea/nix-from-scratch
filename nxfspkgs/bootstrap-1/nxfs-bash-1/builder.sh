@@ -1,32 +1,67 @@
 #!/bin/bash
+#
+# BOOTSTRAP REMARKS:
+# At this point in bootstrap, we have
+# - nix store containing result of essential fixed-output derivations.
+#   these derivations were built outside the nix store and refer to paths
+#   that aren't accessible during nix-build.
+# - patched toolchain {libc, gcc, binutils}
+#   Not directly useful, but this is the destination we want to patch-in
+#   to other imported packages, such as this one.
+#
+# For SANDBOX builds, remarks from nxfs-toolchain-0 still apply:
+# - whenever we refer to a stage-0 executable, we will need to
+#   R1. explicitly invoke the dynamic loader ${toolchain}/bin/ld.so
+#   R2. explicitly supply toolchain library path ${toolchain}/lib
+# - the bash instance running this script is also in an impaired state:
+#   searching PATH for executables doesn't work
+#   (possibly because requires R1 and R2 prevent bash recognizing
+#    executables).  Instead have to:
+#   R3. give full path to an executable
+# - as we progressively introduce patched stage-1 packages,
+#   we can retire the explicit invocation
 
-set -e
+
+set -euo pipefail
 
 echo
-echo "tar=${tar}";
+echo "gnutar=${gnutar}";
 echo "coreutils=${coreutils}";
 echo "bash=${bash}";
-echo "nxfs_sysroot_1=${nxfs_sysroot_1}";
+echo "nxfs_toolchain_1=${nxfs_toolchain_1}";
 echo "nxfs_bash_0=${nxfs_bash_0}";
-echo "redirect_elf_file=${redirect_elf_file}";
-echo "target_interpreter=${target_interpreter}";
-echo "target_runpath=${target_runpath}";
+echo "redirect_elf_file_0=${redirect_elf_file_0}";
 echo "TMP=${TMP}"
 echo
 
-set -e
+# not feasible, see R3 above
+#export PATH=${tar}/bin:${patchelf}/bin:${coreutils}/bin
 
-export PATH=${tar}/bin:${patchelf}/bin:${coreutils}/bin
-
-mkdir ${out}
-
-libc=${nxfs_sysroot_1}/lib/libc.so.6
+# see R3 above
+#
+mkdir=${coreutils}/bin/mkdir
+readlink=${coreutils}/bin/readlink
+chmod=${coreutils}/bin/chmod
+tar=${gnutar}/bin/tar
+patchelf=${patchelf}/bin/patchelf
 
 # ----------------------------------------------------------------
-# helper bash function
+# defines bash functions
+#   invoke0()
+#   redirect_elf_file_0()
+#
+source ${redirect_elf_file_0}
 
-# defines bash function redirect_elf_file()
-source ${redirect_elf_file}
+# ----------------------------------------------------------------
+# local variables
+
+# smoke test -- just verifying it exists
+libc=${nxfs_toolchain_1}/lib/libc.so.6
+
+target_interpreter=$(invoke0 ${readlink} -f ${nxfs_toolchain_1}/bin/ld.so)
+target_runpath="${nxfs_toolchain_1}/lib"
+
+invoke0 ${mkdir} ${out}
 
 # ----------------------------------------------------------------
 # verify initial paths
@@ -46,38 +81,36 @@ echo "stage1 libc:     ${libc}"
 #
 staging=${TMP}
 
-mkdir -p ${staging}
+invoke0 ${mkdir} -p ${staging}
 
-(cd ${nxfs_bash_0} && (tar cf - . | tar xf - -C ${staging}))
+(cd ${nxfs_bash_0} && (invoke0 ${tar} cf - . | invoke0 ${tar} xf - -C ${staging}))
 
 bash_staging=${staging}/bin/bash
 
 echo "staging bash: ${bash_staging}"
 
-old_runpath=$(patchelf --print-rpath ${bash_staging})
+old_runpath=$(invoke0 ${patchelf} --print-rpath ${bash_staging})
 
 echo "bash runpath (before redirecting): ${old_runpath}"
 
-chmod u+w ${staging}
-chmod u+w ${staging}/bin
-chmod u+w ${bash_staging}
+invoke0 ${chmod} u+w ${staging}
+invoke0 ${chmod} u+w ${staging}/bin
+invoke0 ${chmod} u+w ${bash_staging}
 
-redirect_elf_file ${bash_staging} ${target_interpreter} ${target_runpath}
+redirect_elf_file_0 ${bash_staging} ${target_interpreter} ${target_runpath}
 
-#patchelf --set-interpreter ${nxfs_sysroot_1}/lib64/ld-linux-x86-64.so.2 ${bash_staging}
-#patchelf --set-rpath ${nxfs_sysroot_1}/usr/lib:${nxfs_sysroot_1}/lib ${bash_staging}
-
-chmod u-w ${bash_staging}
-chmod u-w ${staging}/bin
-chmod u-w ${staging}
-
-#new_runpath=$(patchelf --print-rpath ${bash_staging})
-
-#echo "bash runpath (after redirecting): ${new_runpath}"
+invoke0 ${chmod} u-w ${bash_staging}
+invoke0 ${chmod} u-w ${staging}/bin
+invoke0 ${chmod} u-w ${staging}
 
 # ----------------------------------------------------------------
 # copy to final destination
 #
 final=${out}
 
-(cd ${staging} && (tar cf - . | tar xf - -C ${final}))
+(cd ${staging} && (invoke0 ${tar} cf - . | invoke0 ${tar} xf - -C ${final}))
+
+# ----------------------------------------------------------------
+# verify bash runs without invoke0 crutch
+
+${out}/bin/bash --version

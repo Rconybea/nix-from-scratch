@@ -1,17 +1,17 @@
 let
-  nxfs-sysroot-0 = import ../../bootstrap/nxfs-sysroot-0/default.nix;
-  nxfs-sysroot-1 = import ../nxfs-sysroot-1/default.nix;
+  nxfs-redirect-elf-file = import ../nxfs-redirect-elf-file/default.nix;
+  nxfs-toolchain-1 = import ../nxfs-toolchain-1/default.nix;
   nxfs-coreutils-0 = import ../../bootstrap/nxfs-coreutils-0/default.nix;
   nxfs-patchelf-0 = import ../../bootstrap/nxfs-patchelf-0/default.nix;
-  nxfs-tar-0 = import ../../bootstrap/nxfs-tar-0/default.nix;
+  nxfs-gnutar-0 = import ../../bootstrap/nxfs-tar-0/default.nix;
+
+  # source: will be copying patched version of nxfs-bash-0 -> ${out}
   nxfs-bash-0 = import ../../bootstrap/nxfs-bash-0/default.nix;
-  nxfs-redirect-elf-file = import ../nxfs-redirect-elf-file/default.nix;
 
   bash = "${nxfs-bash-0}/bin/bash";
-  # need to use nxfs-sysroot-0 linker with nxfs-bash-0 bash
-  builder = "${nxfs-sysroot-0}/lib/ld-linux-x86-64.so.2";
-#  builder = "${nxfs-sysroot-1}/lib64/ld-linux-x86-64.so.2";
-  redirect_elf_file = "${nxfs-redirect-elf-file}/bootstrap-scripts/redirect-elf-file.sh";
+  builder = "${nxfs-toolchain-1}/bin/ld.so";
+
+  redirect_elf_file_0 = "${nxfs-redirect-elf-file}/bootstrap-scripts/redirect-elf-file-0.sh";
 in
 
 derivation {
@@ -21,21 +21,22 @@ derivation {
   bash = bash;
   builder = builder;
 
-  tar = nxfs-tar-0;
+  gnutar = nxfs-gnutar-0;
   patchelf = nxfs-patchelf-0;
   coreutils = nxfs-coreutils-0;
 
-  redirect_elf_file = redirect_elf_file;
+  redirect_elf_file_0 = redirect_elf_file_0;
 
-  nxfs_sysroot_1 = nxfs-sysroot-1;
+  nxfs_toolchain_1 = nxfs-toolchain-1;
   nxfs_bash_0 = nxfs-bash-0;
 
   bash_builder = "./builder.sh";
 
-  args = [bash ./builder.sh];
-
-  target_interpreter = "${nxfs-sysroot-1}/lib64/ld-linux-x86-64.so.2";
-  target_runpath = "${nxfs-sysroot-1}/usr/lib:${nxfs-sysroot-1}/lib";
+  args = [
+    "--library-path" "${nxfs-toolchain-1}/lib"
+    bash
+    ./builder.sh
+  ];
 
   buildInputs = [];
 }

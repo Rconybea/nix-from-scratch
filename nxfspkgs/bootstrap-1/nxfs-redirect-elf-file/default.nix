@@ -1,35 +1,40 @@
 let
-  nxfs-sysroot-0 = import ../../bootstrap/nxfs-sysroot-0/default.nix;
-  nxfs-sysroot-1 = import ../nxfs-sysroot-1/default.nix;
+  nxfs-toolchain-0 = import ../../bootstrap/nxfs-toolchain-0/default.nix;
   nxfs-coreutils-0 = import ../../bootstrap/nxfs-coreutils-0/default.nix;
   nxfs-patchelf-0 = import ../../bootstrap/nxfs-patchelf-0/default.nix;
   nxfs-bash-0 = import ../../bootstrap/nxfs-bash-0/default.nix;
+  nxfs-gnused-0 = import ../../bootstrap/nxfs-sed-0/default.nix;
 
+  patchelf = "${nxfs-patchelf-0}/bin/patchelf";
   bash = "${nxfs-bash-0}/bin/bash";
   cp = "${nxfs-coreutils-0}/bin/cp";
+  head = "${nxfs-coreutils-0}/bin/head";
+  basename = "${nxfs-coreutils-0}/bin/basename";
   mkdir = "${nxfs-coreutils-0}/bin/mkdir";
-  patchelf = "${nxfs-patchelf-0}/bin/patchelf";
-  ld-linux = "${nxfs-sysroot-0}/lib/ld-linux-x86-64.so.2";
+  chmod = "${nxfs-coreutils-0}/bin/chmod";
+  sed = "${nxfs-gnused-0}/bin/sed";
+  ldso = "${nxfs-toolchain-0}/bin/ld.so";
 in
 
 derivation {
   name = "nxfs-redirect-elf-file";
   system = builtins.currentSystem;
 
-  bash = bash;
-  cp = cp;
-  mkdir = mkdir;
-  builder = ld-linux;
-  patchelf = patchelf;
+  inherit bash patchelf cp mkdir head basename sed chmod;
 
-  nxfs_sysroot_1 = nxfs-sysroot-1;
-  nxfs_bash_0 = nxfs-bash-0;
+  toolchain = nxfs-toolchain-0;
+  builder = ldso;
 
   bash_builder = "./builder.sh";
 
   redirect_elf_file = ./redirect-elf-file.sh;
+  redirect_elf_file_0 = ./redirect-elf-file-0.in;
 
-  args = [bash ./builder.sh];
+  args = [
+    "--library-path" "${nxfs-toolchain-0}/lib"
+    bash
+    ./builder.sh
+  ];
 
   buildInputs = [];
 }

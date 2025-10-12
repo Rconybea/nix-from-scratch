@@ -1,12 +1,11 @@
+# versions here assume {bash, coreutils} in patched state
+# Otehrwise must use redirect_elf_file_0 instead.
 
-# caller must also provide global variables:
-#   nxfs_sysroot_1
-#
 # Use
 #   if [[ is_elf_file path/to/foo ]]; then
 #      echo 'elf!'
 #   else
-#      ehoc 'not elf'
+#      echo 'not elf'
 #   fi
 #
 is_elf_file() {
@@ -22,9 +21,6 @@ is_elf_file() {
     fi
 }
 
-# caller must als provide global variabels:
-#   nxfs_sysroot_1
-#
 # Use
 #   redirect_elf_file ${file} ${new_interpreter} ${new_runpath}
 #
@@ -46,7 +42,6 @@ redirect_elf_file() {
 
         chmod u+w ${file}
 
-        #${patchelf} --set-rpath ${nxfs_sysroot_1}/usr/lib:${nxfs_sysroot_1}/lib ${file}
         patchelf --set-rpath ${target_runpath} ${file}
 
         new_runpath=$(patchelf --print-rpath ${file})
@@ -61,7 +56,6 @@ redirect_elf_file() {
             if [[ $err -eq 0 ]]; then
                 echo "[$(basename $file)] interp (before redirecting): ${old_interp}"
 
-                #${patchelf} --set-interpreter ${nxfs_sysroot_1}/lib64/ld-linux-x86-64.so.2 ${file}
                 patchelf --set-interpreter ${target_interpreter} ${file}
 
                 new_interp=$(patchelf --print-interpreter ${file})

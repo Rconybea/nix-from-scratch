@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 echo
 echo "nxfs_gnumake_0=${nxfs_gnumake_0}"
@@ -8,10 +8,8 @@ echo "tar=${tar}"
 echo "coreutils=${coreutils}"
 echo "patchelf=${patchelf}"
 echo "bash=${bash}"
-echo "nxfs_sysroot_1=${nxfs_sysroot_1}"
+echo "nxfs_toolchain_1=${nxfs_toolchain_1}"
 echo "redirect_elf_file=${redirect_elf_file}"
-echo "target_interpreter=${target_interpreter}"
-echo "target_runpath=${target_runpath}"
 echo "TMP=${TMP}"
 echo
 
@@ -20,7 +18,10 @@ export PATH=${tar}/bin:${coreutils}/bin:${patchelf}/bin
 mkdir ${out}
 
 # libc: only as smoke test for valid sysroot
-libc=${nxfs_sysroot_1}/lib/libc.so.6
+libc=${nxfs_toolchain_1}/lib/libc.so.6
+
+target_interpreter=$(readlink -f ${nxfs_toolchain_1}/bin/ld.so)
+target_runpath="${nxfs_toolchain_1}/lib"
 
 # ----------------------------------------------------------------
 # helper bash script

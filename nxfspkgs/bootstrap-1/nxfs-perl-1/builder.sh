@@ -7,7 +7,7 @@ echo "chmod=${chmod}"
 echo "bash=${bash}"
 echo "mkdir=${mkdir}"
 echo "tar=${tar}"
-echo "nxfs_sysroot_1=${nxfs_sysroot_1}"
+echo "nxfs_toolchain_1=${nxfs_toolchain_1}"
 echo "nxfs_perl_0=${nxfs_perl_0}"
 echo "redirect_elf_file=${redirect_elf_file}"
 echo "target_interpreter=${target_interpreter}"
@@ -18,7 +18,7 @@ echo
 ${mkdir} ${out}
 
 # libc: only as smoke test for valid sysroot
-libc=${nxfs_sysroot_1}/lib/libc.so.6
+libc=${nxfs_toolchain_1}/lib/libc.so.6
 
 target_runpath="${out}/lib/perl5/5.40/core_perl/CORE:${target_runpath}"
 

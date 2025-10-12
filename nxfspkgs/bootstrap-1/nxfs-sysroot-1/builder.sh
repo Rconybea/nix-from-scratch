@@ -81,7 +81,7 @@ patchelf --set-interpreter ${ld_final} ${libc_staging}
 new_interp=$(patchelf --print-interpreter ${libc_staging})
 echo "libc interpreter (after redirecting): ${new_interp}"
 
-# also want to make some programss in ${staging}/usr/bin usable
+# also want to make some programs in ${staging}/usr/bin usable
 
 redirect_elf_file() {
     local file=$1

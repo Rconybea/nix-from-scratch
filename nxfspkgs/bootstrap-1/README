@@ -19,8 +19,8 @@ Then:
 ----------------------------------------------------------------
 Or, to build stage1 versions individually:
 
-  $ nix-build -A nxfs-sysroot-1
   $ nix-build -A nxfs-redirect-elf-file
+  $ nix-build -A nxfs-toolchain-1
   $ nix-build -A nxfs-bash-1
   $ nix-build -A nxfs-patchelf-1
   $ nix-build -A nxfs-coreutils-1
@@ -32,17 +32,18 @@ Or, to build stage1 versions individually:
   $ nix-build -A nxfs-gawk-1
   $ nix-build -A nxfs-gnumake-1
   $ nix-build -A nxfs-sed-1
+  $ nix-build -A nxfs-toolchain-wrapper-1
 
 ----------------------------------------------------------------
 Dependency Tower
 
 
    +--------------------------+--------------------+------------------+
-   | nxfs-toolchain-wrapper-1 |    nxfs-perl-1     | nxfs-grep-1      |
+   |                          |    nxfs-perl-1     | nxfs-grep-1      |
    |                          |                    | nxfs-gnumake-1   |
-   +--------------------------+--------------------+ nxfs-gawk-1      |
-   |                          |  nxfs-libxcyrpt-1  | nxfs-gzip-1      |
-   | nxfs-toolchain-1         |                    +------------------+
+   |                          +--------------------+ nxfs-gawk-1      |
+   | nxfs-locale-archive-1    |  nxfs-libxcyrpt-1  | nxfs-gzip-1      |
+   | nxfs-toolchain-wrapper-1 |                    +------------------+
    |                          |                    | nxfs-sed-1       |
    +--------------------------+--------------------+------------------+
    |                           nxfs-findutils-1                       |
@@ -57,9 +58,9 @@ Dependency Tower
    +------------------------------------------------------------------+
    |                           nxfs-bash-1                            |
    +------------------------------------------------------------------+
-   |                           nxfs-redirect-elf-file                 |
+   |                           nxfs-toolchain-1                       |
    +------------------------------------------------------------------+
-   |                           nxfs-sysroot-1                         |
+   |                           nxfs-redirect-elf-file                 |
    +------------------------------------------------------------------+
    |                           bootstrap-0                            |
    +------------------------------------------------------------------+
@@ -81,13 +82,13 @@ When invoking gcc, need additional arguments:
 
 2. Runpath includes directory containing libc.so:
 
-   -Wl,--rpath=${sysroot}/lib
+   -Wl,--rpath=${toolchain}/lib
 
 (see 'readelf -d path/to/executable')
 
 3. Also use in-store ELF interpreter:
 
-   -Wl,--dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2
+   -Wl,--dynamic-linker=${toolchain}/lib/ld-linux-x86-64.so.2
 
 (see 'readelf -l path/to/executable')
 

@@ -7,7 +7,7 @@ let
   nxfs-coreutils-1       = import ../nxfs-coreutils-1/default.nix;
   nxfs-patchelf-1        = import ../nxfs-patchelf-1/default.nix;
   nxfs-bash-1            = import ../nxfs-bash-1/default.nix;
-  nxfs-sysroot-1         = import ../nxfs-sysroot-1/default.nix;
+  nxfs-toolchain-1       = import ../nxfs-toolchain-1/default.nix;
   nxfs-redirect-elf-file = import ../nxfs-redirect-elf-file/default.nix;
 
 #  gnumake           = "${nxfs-gnumake-1}/bin/make";
@@ -39,12 +39,12 @@ derivation {
 
   nxfs_perl_0        = nxfs-perl-0;
   nxfs_libxcrypt_1   = nxfs-libxcrypt-1;
-  nxfs_sysroot_1     = nxfs-sysroot-1;
+  nxfs_toolchain_1   = nxfs-toolchain-1;
 
   args               = [./builder.sh];
 
-  target_interpreter = "${nxfs-sysroot-1}/lib64/ld-linux-x86-64.so.2";
-  target_runpath     = "${nxfs-libxcrypt-1}/lib:${nxfs-sysroot-1}/usr/lib:${nxfs-sysroot-1}/lib";
+  target_interpreter = "${nxfs-toolchain-1}/lib64/ld-linux-x86-64.so.2";
+  target_runpath     = "${nxfs-libxcrypt-1}/lib:${nxfs-toolchain-1}/lib";
 
   buildInputs        = [];
 }
