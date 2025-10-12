@@ -1,0 +1,100 @@
+
+
+# Invoke an executable with explicit dynamic loader and library paths.
+# Intended for use with an unpatched executable imported into nix store
+# as a fixed-output derivation
+#
+# Use
+#   invoke0 path/to/executables args..
+#
+invoke0() {
+    set -euo pipefail
+
+    toolchain=@toolchain@
+
+    $toolchain/bin/ld.so --library-path $toolchain/lib "${@}"
+}
+
+
+# Use
+#   if [[ is_elf_file path/to/foo ]]; then
+#      echo 'elf!'
+#   else
+#      echo 'not elf'
+#   fi
+#
+is_elf_file_0() {
+    set -euo pipefail
+
+    local head=@head@
+
+    local elf_magic=$'\x7fELF'
+    local file=$1
+
+    header=$(invoke0 ${head} -c 4 "${file}")
+
+    if [[ ${header} == ${elf_magic} ]]; then
+        true
+    else
+        false
+    fi
+}
+
+# Use
+#   redirect_elf_file ${file} ${new_interpreter} ${new_runpath}
+#
+redirect_elf_file_0() {
+    set -euo pipefail
+
+    local elf_magic=$'\x7fELF'
+    local file=$1
+    local target_interpreter=$2
+    local target_runpath=$3
+
+    local head=@head@
+    local basename=@basename@
+    local patchelf=@patchelf@
+    local chmod=@chmod@
+
+    # read first 4 bytes for ELF magic
+    header=$(invoke0 ${head} -c 4 "${file}")
+
+    if [[ "${header}" == "${elf_magic}" ]]; then
+        echo "accept elf file [${file}]"
+
+        old_runpath=$(invoke0 ${patchelf} --print-rpath ${file})
+
+        echo "[$(invoke0 ${basename} ${file})] runpath (before redirecting): ${old_runpath}"
+
+        invoke0 ${chmod} u+w ${file}
+
+        invoke0 ${patchelf} --set-rpath ${target_runpath} ${file}
+
+        new_runpath=$(invoke0 ${patchelf} --print-rpath ${file})
+        echo "[$(invoke0 ${basename} ${file})] runpath (after redirecting): ${new_runpath}"
+
+        if [[ -x ${file} ]]; then
+            set +e
+            old_interp=$(invoke0 ${patchelf} --print-interpreter ${file})
+            err=$?
+            set -e
+
+            if [[ $err -eq 0 ]]; then
+                echo "[$(invoke0 ${basename} $file)] interp (before redirecting): ${old_interp}"
+
+                invoke0 ${patchelf} --set-interpreter ${target_interpreter} ${file}
+
+                new_interp=$(invoke0 ${patchelf} --print-interpreter ${file})
+
+                echo "[$(invoke0 ${basename} $file)] interp (after redirecting): ${new_interp}"
+            else
+                echo "skip executable [$file] - no ELF interpreter to redirect"
+            fi
+        fi
+
+        invoke0 ${chmod} u-w ${file}
+
+    else
+        echo "skip non-elf file [${file}] (doesn't begin with ELF magic)"
+    fi
+}
