@@ -195,7 +195,12 @@ let
   nxfsenv-2-9 = nxfsenv-2-8 // { gnumake = gnumake-2; };
   coreutils-2 = callPackage ./nxfs-coreutils-2/package.nix { nxfsenv = nxfsenv-2-9; };
 in
+let
+  nxfsenv-2-10 = nxfsenv-2-9 // { coreutils = coreutils-2; };
+  zlib-2 = callPackage ./nxfs-zlib-2/package.nix { nxfsenv = nxfsenv-2-10; };
+in
 {
+  inherit zlib-2;
   inherit coreutils-2;
   inherit gnumake-2;
   inherit gawk-2;
