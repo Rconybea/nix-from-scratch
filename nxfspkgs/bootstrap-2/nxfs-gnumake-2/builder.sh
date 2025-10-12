@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 set -x
 
 echo "gcc_wrapper=${gcc_wrapper}"
@@ -13,19 +13,11 @@ echo "tar=${tar}"
 echo "coreutils=${coreutils}"
 echo "findutils=${findutils}"
 echo "diffutils=${diffutils}"
-echo "sysroot=${sysroot}"
 echo "bash=${bash}"
 echo "src=${src}"
-echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
-# 1. ${gcc_wrapper}/bin/x86_64-pc-linux-gnu-{gcc,g++} builds viable executables.
-# 2. ${toolchain}/bin/x86_64-pc-linux-gnu-gcc can build executables,
-#    but they won't run unless we pass special linker flags
-# 3. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
-# 4. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
-#
-export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/${target_tuple}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
+export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
 
 src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
@@ -45,11 +37,6 @@ mkdir ${out}
 chmod -R +w ${src2}
 
 bash_program=${bash}/bin/bash
-# Must skip:
-#   .m4 and .in files (assume they trigger re-running autoconf)
-#   test/ files
-#
-#sed -i -e "s:/bin/sh:${bash_program}:g" ${src2}/configure #${src2}/build-aux/*
 
 # 1. Replace
 #     const char *default_shell = "/bin/sh";
@@ -64,16 +51,13 @@ bash_program=${bash}/bin/bash
 # ${src}/configure honors CONFIG_SHELL
 export CONFIG_SHELL="${bash_program}"
 
-# 1.
-# we shouldn't need special compiler/linker instructions,
-# since stage-1 toolchain "knows where it lives"
-#
-# 2.
-# do need to give --host and --build arguments to configure,
-# since we're using a cross compiler.
 
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --without-guile CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags")
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --without-guile CPP=cpp CPPFLAGS="-I${toolchain}/include" CC="nxfs-gcc" CFLAGS="-I${toolchain}/include" LDFLAGS="-Wl,-enable-new-dtags")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
+
+# verify executable runs
+
+${out}/bin/make --version

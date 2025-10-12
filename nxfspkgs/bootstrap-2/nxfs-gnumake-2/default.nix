@@ -4,7 +4,6 @@ let
   nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
   nxfs-coreutils-1   = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
 
   nxfs-gawk-2        = import ../nxfs-gawk-2/default.nix;
@@ -25,7 +24,6 @@ derivation {
 
   gnumake      = nxfs-gnumake-1;
   toolchain    = nxfs-toolchain-1;
-  sysroot      = nxfs-sysroot-1;
   coreutils    = nxfs-coreutils-1;
 
   gawk         = nxfs-gawk-2;
@@ -41,9 +39,9 @@ derivation {
   args         = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "make-4.4.1-source";
-                                         url = "https://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz";
+                                         url = "https://ftpmirror.gnu.org/gnu/make/make-4.4.1.tar.gz";
                                          sha256 = "141z25axp7iz11sqci8c312zlmcmfy8bpyjpf0b0gfi8ri3kna7q";
                                        };
 
-  target_tuple = nxfs-defs.target_tuple;
+#  target_tuple = nxfs-defs.target_tuple;
 }
