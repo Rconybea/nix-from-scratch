@@ -11,13 +11,11 @@ nxfsenv.mkDerivation {
 
   system       = builtins.currentSystem;
 
-  inherit (nxfsenv) gzip coreutils gnumake gawk;
+  inherit (nxfsenv) gzip coreutils gnumake gawk findutils diffutils;
   bash         = nxfsenv.shell;
   tar          = nxfsenv.gnutar;
   grep         = nxfsenv.gnugrep;
   sed          = nxfsenv.gnused;
-  findutils    = nxfsenv.findutils;
-  diffutils    = nxfsenv.diffutils;
   gcc_wrapper  = nxfsenv.toolchain;
   toolchain    = nxfsenv.toolchain.toolchain;
 
