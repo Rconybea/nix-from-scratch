@@ -7,7 +7,6 @@
 # and by defult produces executables that assume /lib64
 
 unwrapped_gcc=@unwrapped_gcc@
-sysroot=@sysroot@
 
 #2> echo "nxfs: gcc-wrapper calling:"
 #2> echo "nxfs:   ${unwrapped_gcc} -Wl,--rpath=${sysroot}/lib -Wl,--dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2" "${@}"
@@ -23,7 +22,7 @@ sysroot=@sysroot@
 # Workaround is in glibc build to call configure with NXFS_SYSROOT_DIR empty,  then compile with NXFS_SYSROOT set to ${output}
 #
 if [[ -z "${NXFS_SYSROOT_DIR}" ]]; then
-    NXFS_SYSROOT_DIR=${sysroot}
+    NXFS_SYSROOT_DIR=@sysroot@
 fi
 
 if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
@@ -34,5 +33,5 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gcc} -v
 else
-    ${unwrapped_gcc} -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2 "${@}"
+    ${unwrapped_gcc} -specs @gcc_specs@ -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=@dynamic_linker@ "${@}"
 fi

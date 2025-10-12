@@ -7,7 +7,6 @@
 # and by defult produces executables that assume /lib64
 
 unwrapped_gxx=@unwrapped_gxx@
-sysroot=@sysroot@
 
 if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     # gcc has carveout when given '-v' with no other arguments:
@@ -17,5 +16,5 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gxx} -v
 else
-    ${unwrapped_gxx} -Wl,-rpath=${sysroot}/lib -Wl,-dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2 "${@}"
+    ${unwrapped_gxx} -specs @gcc_specs@ -Wl,-rpath=@sysroot@/lib -Wl,-dynamic-linker=@dynamic_linker@ "${@}"
 fi
