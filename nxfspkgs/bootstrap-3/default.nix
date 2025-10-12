@@ -39,7 +39,7 @@
 #   file
 #   pkgconf
 let
-  # nxfspkgs :: attrset (kitchen ink, mostly derivations)
+  # nxfspkgs :: attrset (kitchen sink, mostly derivations)
   nxfspkgs = import <nxfspkgs> {};
 
   bootstrap-1 = nxfspkgs.nxfs-bootstrap-1;

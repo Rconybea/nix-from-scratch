@@ -3,6 +3,14 @@ Introduction
 Order is important here.  Builders progressively replace stage-2 packages with stage-3 versions.
 Stage-3 versions are built from source within nix, using gcc+glibc also built from source within nix.
 
+For packages in this directory, use bootstrap-3/default.nix
+
+e.g.
+  $ nix-build path/to/nix-from-scratch/nxfspkgs -A which-3
+or
+  $ export NIX_PATH=path/to/nix-from-scratch:${NIX_PATH}
+  $ nix-build '<nxfspkgs>' -A which-3
+
 ----------------------------------------------------------------
 Dependency Tower
 
@@ -11,72 +19,70 @@ Dependencies somewhat overspecified for the sake of simplicity.
 
 WWe need nxfs-xz-3, nxfs-bzip-3, nxfs-curl-3 for a stdenv.
 
- +------------------+
- |   nxfs-curl-3    |
- +------------------+----------------+
- |  nxfs-openssl-3  |    nxfx-xz-3   |
- +------------------+----------------+----------------------------------------------------------------+
- +--------------------------------------------------------+
- |                     nxfs-fetchurl-3                    |
- +----------------------+-------------------+-------------+
- |     nxfs-xz-3        |    nxfs-curl-3    |             |
- +----------------------+-------------------+ nxfs-cacert |
- |               nxfs-openssl-3             |             |
- +------------------------------------------+-------------+-------------------------------------------+
- |                                            nxfs-gcc-x3-wrapper-3                                   |
+ +---------------------------------------------------------------+
+ |                        nxfs-fetchurl-3                        |
+ +-------------------------+-----------------------+-------------+
+ | -A xz-3   nxfs-xz-3     | -A curl-3 nxfs-curl-3 | -A cacert-3 |
+ +-------------------------+-----------------------+             |
+ | -A openssl-3       nxfs-openssl-3               | nxfs-cacert |
+ +-------------------------------------------------+-------------+------------------------------------+
+ | -A gcc-x3-wrapper-3                        nxfs-gcc-x3-wrapper-3                                   |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-gcc-x3-3                                           |
+ | -A gcc-x3-3                                nxfs-gcc-x3-3                                           |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-gcc-x2-wrapper-3                                   |
+ | -A gcc-x2-wrapper-3                        nxfs-gcc-x2-wrapper-3                                   |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-libstdcxx-x2-3                                     |
+ | -A libstdcxx-x2-3                          nxfs-libstdcxx-x2-3                                     |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-gcc-x1-wrapper-3                                   |
+ | -A gcc-x1-wrapper-3                        nxfs-gcc-x1-wrapper-3                                   |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-gcc-x1-3                                           |
+ | -A gcc-x1-3                                nxfs-gcc-x1-3                                           |
  +---------------------------------------------------+------------------------------------------------+
- |             nxfs-binutils-xo-wrapper-3            |           nxfs-gcc-x1-wrapper-3                |
+ | -A binutils-x0-wrapper3 nxfs-binutils-x0-wrapper-3| -A gcc-x0-wrapper-3    nxfs-gcc-x1-wrapper-3   |
  +---------------------------------------------------+------------------------------------------------+
- |                                            nxfs-glibc-stage1-3                                     |
+ | -A glibc-x1-3                              nxfs-glibc-x1-3                                         |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-gcc-x0-wrapper-3                                   |
+ | -A gcc-x0-wrapper-3                        nxfs-gcc-x0-wrapper-3                                   |
  +-----------------+--------------------------------+---------------+---------------+-----------------+
- | nxfs-binutils-3 |         nxfs-texinfo-3         | nxfs-mpc-3    | nxfs-python-3 | nxfs-gzip-3     |
- |                 +----------------b15-------------+------d15------+               | nxfs-patch-3    |
- |                 | nxfs-automake-3 | nxfs-bison-3 | nxfs-mpfr-3   |               | nxfs-gperf-3    |
- |                 +--------b14------+------c14-----+------d14------+               | nxfs-patchelf-3 |
- |                 | nxfs-autoconf-3 | nxfs-flex-3  | nxfs-gmp-3    |               |                 |
+ | -A binutils-3   | -A texinfo-3                   | -A mpc-3      | -A python-3   | -A gzip-3       |
+ |                 |         nxfs-texinfo-3         | nxfs-mpc-3    |               | nxfs-gzip-3     |
+ |                 +----------------b15-------------+------d15------+               |                 |
+ |                 | -A automake-3   | -A bison3    | -A mpfr-3     |               | -A patch-3      |
+ | nxfs-binutils-3 | nxfs-automake-3 | nxfs-bison-3 | nxfs-mpfr-3   | nxfs-python-3 | nxfs-patch-3    |
+ |                 +--------b14------+------c14-----+------d14------+               |                 |
+ |                 | -A autoconf-3   | -A flex-3    | -A gmp-3      |               | -A gperf-3      |
+ |                 | nxfs-autoconf-3 | nxfs-flex-3  | nxfs-gmp-3    |               | nxfs-gperf-3    |
  +-----------------+-----------------+-----------+--+------c13------+------d13------+                 |
- +--------------------------b13------+-----------|  nxfs-file-3     | nxfs-zlib-3   |                 |
- |            nxfs-perl-3            | nxfs-m4-3 |                  |               |                 |
+ +--------------------------b13------+-----------|  -A file-3       | -A zlib-3     | -A patchelf-3   |
+ | -A perl-3       nxfs-perl-3       | -A m4-3   |                  |               | nxfs-patchelf-3 |
  +-----------------------------------+           |                  |               |                 |
- |            nxfs-libxcrypt-3       |           |                  |               |                 |
+ | -A libxcrypt-3  nxfs-libxcrypt-3  | nxfs-m4-3 |  nxfs-file-3     | nxfs-zlib-3   |                 |
  +-----------------------------------+           |                  |               |                 |
- |            nxfs-pkgconf-3         |           |                  |               |                 |
+ | -A pkgconf-3    nxfs-pkgconf-3    |           |                  |               |                 |
  +-----------------------------------+-----------+------------------+---------------+-----------------+
- |                                            nxfs-coreutils-3                                        |
+ | -A coreutils-3                             nxfs-coreutils-3                                        |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-gnumake-3                                          |
+ | -A gnumake-3                               nxfs-gnumake-3                                          |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-gawk-3                                             |
+ | -A gawk-3                                  nxfs-gawk-3                                             |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-popen-3                                            |
+ | -A popen-3                                 nxfs-popen-3                                            |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-bash-3                                             |
+ | -A bash-3                                  nxfs-bash-3                                             |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-tar-3                                              |
+ | -A gnutar-3                                nxfs-tar-3                                              |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-bzip2-3                                            |
+ | -A bzip2-3                                 nxfs-bzip2-3                                            |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-grep-3                                             |
+ | -A gnugrep-3                               nxfs-grep-3                                             |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-sed-3                                              |
+ | -A gnused-3                                nxfs-sed-3                                              |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-findutils-3                                        |
+ | -A findutils-3                             nxfs-findutils-3                                        |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-diffutils-3                                        |
+ | -A diffutils-3                             nxfs-diffutils-3                                        |
  +----------------------------------------------------------------------------------------------------+
- |                                            nxfs-which-3                                            |
+ | -A which-3                                 nxfs-which-3                                            |
  +----------------------------------------------------------------------------------------------------+
  |                                            bootstrap-2                                             |
  +----------------------------------------------------------------------------------------------------+
@@ -84,22 +90,47 @@ WWe need nxfs-xz-3, nxfs-bzip-3, nxfs-curl-3 for a stdenv.
 nxfs-gcc-wrapper-2 gcc/g++ wrapper scripts to inject nix-store paths
 
 NOTE:
-1. Dependency nxfs-gnumake-2 <- nxfs-bash-2 is load-bearing.
+
+1. nxfs-fetchurl-3 is a function, not a derivation; so can't be built directly.
+
+2. Dependency nxfs-gnumake-2 <- nxfs-bash-2 is load-bearing.
 The builtin $(shell ..) feature of gnumake would by default invoke /bin/sh.
 That's true of the gnumake adopted into nix store from bootstrap/nxfs-gnumake-1.
 We need to build a gnumake for which $(shell ..) invokes a nix-store-owned shell,
 such as the one prepared by nxfs-bash-2.
 ls
 
-2. Dependency nxfs-gawk-3 <- nxfs-bash-3 is load-bearing.
+3. Dependency nxfs-gawk-3 <- nxfs-bash-3 is load-bearing.
 The gawk i/o builtings are implemented by hardwiring calls like
   execl("/bin/sh", "sh", "-c", ...)
 We need these to refer to nix-store-owned bash instead, for this to work from within
 nix-build; at this point in bootstrap, substitute bash from nxfs-bash-3.
 
-3. Dependency nxfs-gawk-3 <- nxfs-system-2 is vital.
+4. Dependency nxfs-gawk-3 <- nxfs-system-2 is vital.
 nxfs-system-2 is source-only.  It contains a single function nxfs_system().
 nxfs_system() is similar to glibc system(), except that it invokes nix-store-owned bash
 from nxfs-bash-2, instead of /bin/sh.  nxfs-gawk-2 splices in this function to implement
 the gawk system() builtin.  This is necessary for said builtin to work when invoked
 in a chrooted nix-build,  in particular for building glibc.
+
+DEBUGGING
+
+see [nxfspkgs/build-support/autotools/default.nix]
+for default derivation template.
+template runs default-builder.sh (see below), which imports setup.sh (see below)
+
+see [nxfspkgs/build-support/default-builder.sh]
+for default builder.
+
+see [nxfspkgs/build-support/autotools/setup.sh]
+for default versions of bash functions used in default-builder:
+  unpackPhase
+  patchPhase
+  configurePhase
+  bulidPhase
+  checkPhase
+  installPhase
+  fixupPhase
+  installCheckPhase
+  distPhase
+  genericBuild
