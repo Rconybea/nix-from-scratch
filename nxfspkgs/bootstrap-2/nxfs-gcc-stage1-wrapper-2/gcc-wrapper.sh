@@ -31,5 +31,5 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gcc} -v
 else
-    ${unwrapped_gcc} -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2 "${@}"
+    ${unwrapped_gcc} -specs @gcc_specs@ -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2 "${@}"
 fi

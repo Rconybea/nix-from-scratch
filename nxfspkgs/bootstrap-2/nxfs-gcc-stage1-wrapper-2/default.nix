@@ -12,7 +12,7 @@ let
 in
 
 derivation {
-  name               = "gcc-stage1-wrapper";
+  name               = "gcc-stage1-wrapper-2";
   system             = builtins.currentSystem;
 
   glibc              = nxfs-glibc-stage1-2;
@@ -31,6 +31,7 @@ derivation {
 
   gcc                = "${nxfs-toolchain-1}/bin/${target_tuple}-gcc";
   gxx                = "${nxfs-toolchain-1}/bin/${target_tuple}-g++";
+  gcc_specs          = "${nxfs-toolchain-1}/nix-support/gcc-specs";
 
-  target_tuple       = target_tuple;
+  inherit target_tuple;
 }

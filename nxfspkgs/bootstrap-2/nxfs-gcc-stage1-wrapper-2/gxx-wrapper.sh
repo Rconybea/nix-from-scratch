@@ -4,7 +4,7 @@
 # that build executables that use nix-store-locaated libc + ELF interpreter.
 #
 # Need this to adopt a gcc that was originally compiled outside nix store,
-# and by defult produces executables that assume /lib64
+# which by default produces executables that assume non-reproducible paths like /lib
 
 unwrapped_gxx=@unwrapped_gxx@
 glibc=@glibc@
@@ -17,5 +17,5 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gxx} -v
 else
-    ${unwrapped_gxx} -Wl,-rpath=${glibc}/lib -Wl,-dynamic-linker=${glibc}/lib/ld-linux-x86-64.so.2 "${@}"
+    ${unwrapped_gxx} -specs @gcc_specs@ -Wl,-rpath=${glibc}/lib -Wl,-dynamic-linker=${glibc}/lib/ld-linux-x86-64.so.2 "${@}"
 fi

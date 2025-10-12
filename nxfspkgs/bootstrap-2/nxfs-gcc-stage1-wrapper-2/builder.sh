@@ -1,6 +1,8 @@
-# script to intercept calls to ${gcc},
+# create scripts to intercept calls to ${gcc},
 # and inject additional arguments
 #
+
+set -euo pipefail
 
 echo "toolchain=${toolchain}"
 echo "sed=${sed}"
@@ -10,6 +12,7 @@ echo "bash=${bash}"
 
 echo "gcc_wrapper_script=${gcc_wrapper_script}"
 echo "gxx_wrapper_script=${gxx_wrapper_script}"
+echo "gcc_specs=${gcc_specs}";
 
 echo "gcc=${gcc}";
 echo "gxx=${gxx}";
@@ -25,9 +28,9 @@ unwrapped_gxx=${gxx}
 
 mkdir -p ${builddir}/bin
 
-# x86_64-pc-linux-gnu-gcc
+# i.e. gcc
 gcc_basename=$(basename ${gcc})
-# x86_64-pc-linux-gnu-gxx
+# i.e. g++
 gxx_basename=$(basename ${gxx})
 
 mkdir -p ${out}/bin
@@ -46,6 +49,7 @@ cp ${gcc_wrapper_script} ${tmp}
 sed -i -e s:@bash@:${bash}/bin/bash: ${tmp}
 sed -i -e s:@unwrapped_gcc@:${unwrapped_gcc}: ${tmp}
 sed -i -e s:@glibc@:${glibc}: ${tmp}
+sed -i -e s:@gcc_specs@:${gcc_specs}: ${tmp}
 chmod +x ${tmp}
 cp ${tmp} ${out}/bin
 cp ${tmp} ${out}/bin/nxfs-gcc
@@ -56,6 +60,7 @@ cp ${gxx_wrapper_script} ${tmp}
 sed -i -e s:@bash@:${bash}/bin/bash: ${tmp}
 sed -i -e s:@unwrapped_gxx@:${unwrapped_gxx}: ${tmp}
 sed -i -e s:@glibc@:${glibc}: ${tmp}
+sed -i -e s:@gcc_specs@:${gcc_specs}: ${tmp}
 chmod +x ${tmp}
 cp ${tmp} ${out}/bin
 cp ${tmp} ${out}/bin/nxfs-g++
