@@ -171,8 +171,16 @@ let
 in
 let
   nxfsenv-2-7 = nxfsenv-2-6 // { bash = bash-2; };
+  # TODO: bootstrap-3 to use this form for popen-template.
+  #       else must preserve nxfs-popen-template-2/default.nix
+  popen-template-2 = callPackage ./nxfs-popen-template-2/package.nix { nxfsenv = nxfsenv-2-7; };
+in
+let
+  # don't need nxfsenv with popen-template member
+  #nxfsenv-2-8 = nxfsenv-2-7 // { popen-template = popen-template-2; };
 in
 {
+  inherit popen-template-2;
   inherit bash-2;
   inherit ncurses-2;
   inherit gnutar-2;
