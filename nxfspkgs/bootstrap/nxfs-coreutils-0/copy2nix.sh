@@ -22,8 +22,9 @@ nxfs_bootstrap=${nixroot}/bootstrap
 target_sha256=$(nix-hash --type sha256 --base32 ${uploaddir})
 
 # add target dir tree to nix store
+# (this form works with both nix 2.16 and nix 2.24)
 #
-nix store add --hash-algo sha256 ${uploaddir}
+nix-store --add ${uploaddir}
 
 # create fixed-output derivation (FOD) using the obtained hash
 #
