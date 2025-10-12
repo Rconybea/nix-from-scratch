@@ -15,6 +15,7 @@
   #              }
   nxfsenv,
   # nxfsenv-3 :: {
+  #                binutils    :: derivation
   #                autoconf    :: derivation
   #                perl        :: derivation
   #                m4          :: derivation
