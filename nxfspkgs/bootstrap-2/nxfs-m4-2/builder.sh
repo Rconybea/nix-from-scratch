@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -euo pipefail
-set -x
 
 echo "toolchain=${toolchain}"
 echo "gnumake=${gnumake}"
@@ -15,8 +14,9 @@ echo "findutils=${findutils}"
 echo "diffutils=${diffutils}"
 echo "gcc_wrapper=${gcc_wrapper}"
 echo "src=${src}"
-echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
+
+set -x
 
 export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
 
