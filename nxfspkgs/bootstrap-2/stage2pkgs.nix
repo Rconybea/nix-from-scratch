@@ -7,7 +7,10 @@
 # 2. stage0 packages built + imported. See nix-from-scratch/nxfspkgs/bootstrap/README
 #
 # Use:
-#   $ cd ~/proj/nix-from-scratch
+#   $ nix-build path/to/nix-from/scratch/nxfspkgs -A stage2pkgs.diffutils-2
+# or
+#   $ export NIX_PATH=path/to/nix-from-scratch:${NIX_PATH}
+#   $ nix-build '<nxfspkgs>' -A stage2pkgs.diffutils-2
 #
 # Major difference from nixpkgs.nix: w'ere carefully nesting
 # nxfsenv attribute sets so that bootstrap process is more spelled out.
@@ -145,7 +148,12 @@ let
   nxfsenv-2-1 = nxfsenv-2-0 // { diffutils = diffutils-2; };
   findutils-2 = callPackage ./nxfs-findutils-2/package.nix { nxfsenv = nxfsenv-2-1; };
 in
+let
+  nxfsenv-2-2 = nxfsenv-2-1 // { findutils = findutils-2; };
+  gnused-2 = callPackage ./nxfs-sed-2/package.nix { nxfsenv = nxfsenv-2-2; };
+in
 {
+  inherit gnused-2;
   inherit findutils-2;
   inherit diffutils-2;
 }
