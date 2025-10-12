@@ -6,7 +6,7 @@ derivation {
   builder = ./builder.sh;
   buildInputs = [ ];
   outputHashAlgo = "sha256";
-  outputHash = "0hflvjkw5232h83abn1940fz8ilxyn5n2gvzm441cqy78pk65fxm";
+  outputHash = "16w399i2280hm65r2ak0nw8m0klhwh8hnn8mbnhd9iabjf47i436";
   outputHashMode = "recursive";
 }
 
