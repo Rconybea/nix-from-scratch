@@ -1,7 +1,6 @@
 #!/bin/bash
 
-set -e
-set -x
+set -euo pipefail
 
 echo "m4=${m4}"
 echo "file=${file}"
@@ -16,20 +15,12 @@ echo "findutils=${findutils}"
 echo "diffutils=${diffutils}"
 echo "gcc_wrapper=${gcc_wrapper}"
 echo "toolchain=${toolchain}"
-echo "sysroot=${sysroot}"
 echo "src=${src}"
-echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
-# 1. ${gcc_wrapper}/bin/x86_64-pc-linux-gnu-{gcc,g++} builds viable executables.
-# 2. ${toolchain}/bin/x86_64-pc-linux-gnu-gcc can build executables,
-#    but they won't run unless we pass special linker flags
-# 3. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
-# 4. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
-#
-export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${m4}/bin:${file}/bin:${coreutils}/bin:${bash}/bin:${tar}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${findutils}/bin:${diffutils}/bin"
+set -x
 
-ls -l ${toolchain}/x86_64-pc-linux-gnu/bin
+export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${m4}/bin:${file}/bin:${coreutils}/bin:${bash}/bin:${tar}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${findutils}/bin:${diffutils}/bin"
 
 src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
@@ -55,18 +46,7 @@ chmod -R -w ${src2}
 # ${src}/configure honors CONFIG_SHELL
 export CONFIG_SHELL="${bash_program}"
 
-# 1.
-# we shouldn't need special compiler/linker instructions,
-# since stage-1 toolchain "knows where it lives"
-#
-# 2.
-# do need to give --host and --build arguments to configure,
-# since we're invoking a cross compiler.
-#
-# 3.
-# nxfs-gcc inserts sysroot runpath and ELF interpreter
-
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} CC=nxfs-gcc CFLAGS="-I${sysroot}/usr/include" LDFLAGS="-Wl,-enable-new-dtags")
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} CC=nxfs-gcc LDFLAGS="-Wl,-enable-new-dtags")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 
