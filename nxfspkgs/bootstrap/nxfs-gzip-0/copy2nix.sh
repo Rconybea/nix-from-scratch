@@ -8,7 +8,7 @@
 #   $ cd nxfspkgs/bootstrap/nxfs-gnutar-0 && make compile && make install
 #   $ cd nxfspkgs/bootstrap/nxfs-gnutar-0 && ./copy2nix.sh
 
-set -e
+set -euo pipefail
 
 name=gzip
 uploaddir=./${name}

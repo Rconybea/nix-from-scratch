@@ -8,7 +8,7 @@
 #   $ cd nxfspkgs/bootstrap/nxfs-findutils-0 && make compile && make install
 #   $ cd nxfspkgs/bootstrap/nxfs-findutils-0 && ./copy2nix.sh
 
-set -e
+set -euo pipefail
 
 # must match basename of PREFIX directory in stage0/ build
 stem=findutils

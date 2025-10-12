@@ -7,7 +7,8 @@
 #   $ cd nxfspkgs/bootstrap/nxfs-sysroot-0
 #   $ ./coppy2nix.sh
 
-set -e
+set -euo pipefail
+
 declare nxfs_toolchain_prefix
 nxfs_toolchain_prefix=${NXFS_TOOLCHAIN_PREFIX:-${HOME}/nxfs-toolchain}
 

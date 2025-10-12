@@ -13,7 +13,7 @@
 #   (if nix tries to build, something wrong).
 #   $ nix-build
 
-set -e
+set -euo pipefail
 
 name=patchelf
 uploaddir=./${name}
