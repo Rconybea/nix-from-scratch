@@ -37,10 +37,10 @@ patch_script:=
 #
 srcdir:=src
 builddir:=build
-# 1. PREFIX has been repointed to package-specific bootstrap dir, do not use
+# 1. PREFIX has been repointed to package-specific bootstrap dir, do not use here
 # 2. dynamic linker ld-linux-x86-64.so.2 and libc.so.6 *must* go together
 #
-ldflags:=-Wl,-rpath,$(sysroot_storepath)/usr/lib -Wl,-rpath,$(sysroot_storepath)/lib -Wl,--dynamic-linker,$(sysroot_storepath)/lib/ld-linux-x86-64.so.2
+ldflags:=-Wl,-enable-new-dtags -Wl,-rpath,$(sysroot_storepath)/lib -Wl,--dynamic-linker,$(sysroot_storepath)/lib/ld-linux-x86-64.so.2
 #
 configure_extra_args:=--host=$(NXFS_HOST_TUPLE) --build=$(NXFS_BUILD_TUPLE) --without-guile 
 
