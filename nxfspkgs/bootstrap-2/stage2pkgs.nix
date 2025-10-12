@@ -206,8 +206,13 @@ let
   patchelf-2 = callPackage ./nxfs-patchelf-2/package.nix { nxfsenv = nxfsenv-2-10; };
 in
 let
+  nxfsenv-2-a11 = nxfsenv-2-10 // { m4 = m4-2;
+                                    perl = perl-2; };
+
+  binutils-2 = callPackage ./nxfs-binutils-2/package.nix { nxfsenv = nxfsenv-2-a11; };
 in
 {
+  inherit binutils-2;
   inherit perl-2;
   inherit m4-2;
   inherit file-2;
