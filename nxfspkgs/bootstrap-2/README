@@ -45,9 +45,9 @@ Dependencies somewhat overspecified for the sake of simplicity.
  |                 | nxfs-autoconf-2 | nxfs-flex-2  | nxfs-gmp-2    |               |                 |
  +-----------------------------------+------+-------+---------------+---------------+                 |
  |                  nxfs-perl-2,            |       nxfs-file-2     | -A stage2pkgs |                 |
- |                  nxfs-m4-2               |                       |    .zlib-2    |                 |
- |                                          |                       |               |                 |
- |                                          |                       |  nxfs-zlib-2  |                 |
+ |                  nxfs-m4-2               |                       |    .zlib-2    | -A stage2pkgs   |
+ |                                          |                       |               |    .patchelf-2  |
+ |                                          |                       |  nxfs-zlib-2  | nxfs-patchelf-2 |
  +------------------------------------------+-----------------------+---------------+-----------------+
  | -A stage2pkgs.coreutils-2                  nxfs-coreutils-2                                        |
  +----------------------------------------------------------------------------------------------------+
