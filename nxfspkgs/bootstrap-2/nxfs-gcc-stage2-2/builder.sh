@@ -3,43 +3,21 @@
 # See also
 #   https://gcc.gnu.org/install/configure.html
 
+set -euo pipefail
+
 echo "src=${src}"
 echo "buildInputs=${buildInputs}"
 echo "mpc=${mpc}"
 echo "mpfr=${mpfr}"
 echo "gmp=${gmp}"
-#echo "gcc_wrapper=${gcc_wrapper}"
-#echo "toolchain=${toolchain}"
-#echo "bison=${bison}";
 echo "flex=${flex}";
-#echo "diffutils=${diffutils}"
-#echo "findutils=${findutils}"
-#echo "coreutils=${coreutils}"
-#echo "gnumake=${gnumake}"
-#echo "gawk=${gawk}"
-#echo "grep=${grep}"
-#echo "sed=${sed}"
-#echo "tar=${tar}"
-#echo "texinfo=${texinfo}";
 echo "glibc=${glibc}"
-echo "sysroot=${sysroot}"
-#echo "mkdir=${mkdir}"
-#echo "head=${head}"
+echo "toolchain=${toolchain}"
 echo "bash=${bash}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
-set -e
 set -x
-
-# 1. ${coreutils}/bin provides mkdir,cat,ls etc.
-#    Shadows external-to-nix versions adopted via crosstool-ng
-# 2. ${gcc_wrapper}/bin/x86_64-pc-linux-gnu-{gcc,g++} builds viable executables.
-# 3. ${toolchain}/bin/x86_64-pc-linux-gnu-gcc can build executables,
-#    but they won't run unless we pass special linker flags
-# 4. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
-# 5. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
-#
 
 export PATH=
 for pkg in ${buildInputs}; do
@@ -56,18 +34,14 @@ echo "PATH=${PATH}"
 echo "src=${src}"
 
 src2=${src}
-#src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
 
-#mkdir -p ${src2}
 mkdir -p ${builddir}
 
 mkdir ${out}
 mkdir -p ${out}/${target_tuple}/lib
 
 bash_program=${bash}/bin/bash
-
-#(cd ${src}  && (tar cf - . | tar xf - -C ${src2}))
 
 # ${src2}/configure honors CONFIG_SHELL
 export CONFIG_SHELL="${bash_program}"
@@ -99,10 +73,10 @@ export CONFIG_SHELL="${bash_program}"
 export CFLAGS="-idirafter ${glibc}/include"
 # TODO: -O2
 
-LDFLAGS="-B${glibc}/lib -B${sysroot}/lib"
+LDFLAGS="-B${glibc}/lib -B${toolchain}/lib"
 LDFLAGS="${LDFLAGS} -L${flex}/lib -L${mpc}/lib -L${mpfr}/lib -L${gmp}/lib"
 LDFLAGS="${LDFLAGS} -Wl,-rpath,${mpc}/lib -Wl,-rpath,${mpfr}/lib -Wl,-rpath,${gmp}/lib"
-LDFLAGS="${LDFLAGS} -Wl,-rpath,${glibc}/lib -Wl,-rpath,${sysroot}/lib"
+LDFLAGS="${LDFLAGS} -Wl,-rpath,${glibc}/lib -Wl,-rpath,${toolchain}/lib"
 export LDFLAGS
 
 # The wrapper (nxfs-gcc) injects compiler- and linker- flags to pull in toolchain glibc.
@@ -142,7 +116,7 @@ ln -s ${glibc}/lib/Scrt1.o ${out}/${target_tuple}/lib/Scrt1.o
 #          -Wl,--rpath=${NXFS_SYSROOT_DIR}/lib -Wl,--dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 #       We still need them explictly here
 #
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --disable-bootstrap --with-native-system-header-dir=${sysroot}/usr/include --enable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --enable-threads --enable-libatomic --enable-libgomp --enable-libquadmath --enable-libssp --enable-libvtv --enable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --disable-bootstrap --with-native-system-header-dir=${toolchain}/include --enable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --enable-threads --enable-libatomic --enable-libgomp --enable-libquadmath --enable-libssp --enable-libvtv --enable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})

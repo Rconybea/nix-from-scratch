@@ -2,6 +2,8 @@
 # and inject additional arguments
 #
 
+set -euo pipefail
+
 echo "sed=${sed}"
 echo "coreutils=${coreutils}"
 echo "glibc=${glibc}"

@@ -1,5 +1,5 @@
 let
-  # {nxfs-binutils-2 .. nxfs-sysroot-1} :: derivation
+  # {nxfs-binutils-2 .. nxfs-toolchain-1} :: derivation
   nxfs-binutils-2                = import ../nxfs-binutils-2;
   nxfs-mpc-2                     = import ../nxfs-mpc-2;
   nxfs-mpfr-2                    = import ../nxfs-mpfr-2;
@@ -24,7 +24,6 @@ let
   nxfs-glibc-stage1-2            = import ../nxfs-glibc-stage1-2;
 
   nxfs-toolchain-1               = import ../../bootstrap-1/nxfs-toolchain-1;
-  nxfs-sysroot-1                 = import ../../bootstrap-1/nxfs-sysroot-1;
 
   # nxfs-defs :: attrset
   nxfs-defs                      = import ../nxfs-defs.nix;
@@ -78,8 +77,6 @@ derivation {
 
   glibc        = nxfs-glibc-stage1-2;
 
-  sysroot      = nxfs-sysroot-1;
-
   mpc          = nxfs-mpc-2;   # mpc:  need this explicitly
   mpfr         = nxfs-mpfr-2;  # mpfr: need this explicitly
   gmp          = nxfs-gmp-2;   # gmp:  need this explicitly
@@ -87,6 +84,7 @@ derivation {
   #binutils     = nxfs-binutils-2;
   #binutils_stage1_wrapper_2 = nxfs-binutils-stage1-wrapper-2;
   bash         = nxfs-bash-2;  # bash: need this explicitly
+  toolchain    = nxfs-toolchain-1;
 
   builder      = "${nxfs-bash-2}/bin/bash";
   args         = [ ./builder.sh ];
