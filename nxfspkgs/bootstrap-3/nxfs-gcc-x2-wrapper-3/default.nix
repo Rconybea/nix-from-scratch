@@ -8,11 +8,10 @@
   gcc-unwrapped,
   # libstdcxx :: bootstrap
   libstdcxx,
-  # glibc :: bootstrap
-  glibc,
 } :
 
 let
+  glibc     = nxfsenv-3.glibc;
   gnused    = nxfsenv-3.gnused;
   coreutils = nxfsenv-3.coreutils;
   bash      = nxfsenv-3.bash;

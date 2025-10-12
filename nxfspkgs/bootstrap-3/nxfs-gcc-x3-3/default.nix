@@ -4,8 +4,6 @@
   nxfsenv,
   #  nxfsenv-3 :: { coreutils, ... }
   nxfsenv-3,
-  # gcc-wrapper :: derivation
-  gcc-x2-wrapper-3,
   # binutils-stage1-wrapper-2 :: derivation
   binutils-wrapper,
   # nixify-gcc-source :: attrset -> derivation
@@ -16,14 +14,15 @@
   mpfr,
   # gmp :: derivation
   gmp,
-  # glibc :: derivation
-  glibc,
-  # sysroot :: derivation
-  sysroot
+#  # glibc :: derivation
+#  glibc,
+  # toolchain :: derivation
+  toolchain
 } :
 
 let
-  gcc-wrapper = gcc-x2-wrapper-3;
+  gcc         = nxfsenv-3.gcc;
+  glibc       = nxfsenv-3.glibc;
 
   binutils    = nxfsenv-3.binutils;
   bison       = nxfsenv-3.bison;
@@ -65,14 +64,12 @@ nxfsenv.mkDerivation {
   version      = nxfs-nixified-gcc-source.version;
   system       = builtins.currentSystem;
 
-  glibc        = glibc;
+  inherit glibc;
 
-  sysroot      = sysroot;
+  toolchain    = toolchain;
 
-  mpc          = mpc;
-  mpfr         = mpfr;
-  gmp          = gmp;
-  flex         = flex;
+  inherit mpc mpfr gmp flex;
+
   bash         = bash;
 
   src          = nxfs-nixified-gcc-source;
@@ -123,10 +120,10 @@ nxfsenv.mkDerivation {
     export CFLAGS="-idirafter $glibc/include"
     # TODO: -O2
 
-    LDFLAGS="-B$glibc/lib -B$sysroot/lib"
+    LDFLAGS="-B$glibc/lib -B$toolchain/lib"
     LDFLAGS="$LDFLAGS -L$flex/lib -L$mpc/lib -L$mpfr/lib -L$gmp/lib"
     LDFLAGS="$LDFLAGS -Wl,-rpath,$mpc/lib -Wl,-rpath,$mpfr/lib -Wl,-rpath,$gmp/lib"
-    LDFLAGS="$LDFLAGS -Wl,-rpath,$glibc/lib -Wl,-rpath,$sysroot/lib"
+    LDFLAGS="$LDFLAGS -Wl,-rpath,$glibc/lib -Wl,-rpath,$toolchain/lib"
     export LDFLAGS
 
     # The wrapper (nxfs-gcc) injects compiler- and linker- flags to pull in glibc.
@@ -159,12 +156,12 @@ nxfsenv.mkDerivation {
     #          -Wl,--rpath=$NXFS_SYSROOT_DIR/lib -Wl,--dynamic-linker=$NXFS_SYSROOT_DIR/lib/ld-linux-x86-64.so.2
     #       We still need them explictly here
     #
-    (cd $builddir && $bash_program $src2/configure --prefix=$out --disable-bootstrap --with-native-system-header-dir=$sysroot/usr/include --enable-lto --disable-nls --with-mpc=$mpc --with-mpfr=$mpfr --with-gmp=$gmp --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --enable-threads --enable-libatomic --enable-libgomp --enable-libquadmath --enable-libssp --enable-libvtv --enable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib -B$sysroot/lib -Wl,-rpath,$sysroot/lib" --with-boot-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib -B$sysroot/lib -Wl,-rpath,$sysroot/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
+    (cd $builddir && $bash_program $src2/configure --prefix=$out --disable-bootstrap --with-native-system-header-dir=$toolchain/include --enable-lto --disable-nls --with-mpc=$mpc --with-mpfr=$mpfr --with-gmp=$gmp --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --enable-threads --enable-libatomic --enable-libgomp --enable-libquadmath --enable-libssp --enable-libvtv --enable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib -B$toolchain/lib -Wl,-rpath,$toolchain/lib" --with-boot-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib -B$toolchain/lib -Wl,-rpath,$toolchain/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
 
-    # can now remove the sysroot debris we temporarily put into $out/$target_tuple
+    # can now remove the toolchain(sysroot) debris we temporarily put into $out/$target_tuple
     rm $out/$target_tuple/lib/crt1.o
     rm $out/$target_tuple/lib/crti.o
     rm $out/$target_tuple/lib/crtn.o
@@ -182,7 +179,7 @@ nxfsenv.mkDerivation {
                    findutils
                    binutils-wrapper
                    binutils
-                   gcc-wrapper
+                   gcc
                    gnumake
                    gawk
                    gnugrep

@@ -4,17 +4,12 @@
   nxfsenv,
   #  nxfsenv-3 :: { coreutils, ... }
   nxfsenv-3,
-  # glibc :: derivation
-  glibc,
-  # bootstrap-1 :: { ... }
-  bootstrap-1
 } :
 
 let
-  nxfs-glibc-stage1-2 = nxfsenv.glibc-stage1;
+  glibc               = nxfsenv-3.glibc;
   gnused              = nxfsenv-3.gnused;
-  nxfs-toolchain-1    = bootstrap-1.nxfs-toolchain-1;
-  nxfs-coreutils-1    = bootstrap-1.nxfs-coreutils-1;
+  coreutils           = nxfsenv-3.coreutils;
   bash                = nxfsenv-3.bash;
   nxfs-defs           = nxfsenv-3.nxfs-defs;
 in
@@ -28,20 +23,13 @@ nxfsenv.mkDerivation {
   version            = nxfsenv.gcc_wrapper.gcc.version;
   system             = builtins.currentSystem;
 
-  glibc              = glibc;
+  inherit glibc bash;
 
-  bash               = bash;
   gnused             = gnused;
-  toolchain          = bootstrap-1.nxfs-toolchain-1;
-  coreutils          = bootstrap-1.nxfs-coreutils-1;
+  coreutils          = coreutils;
 
   gcc_wrapper_script = ./gcc-wrapper.sh;
   gxx_wrapper_script = ./gxx-wrapper.sh;
-
-  # works with toolchain gcc,
-  # but we want to use stage2 wrapper
-  #   gcc = "${bootstrap-1.nxfs-toolchain-1}/bin/${target_tuple}-gcc";
-  #   gxx = "${bootstrap-1.nxfs-toolchain-1}/bin/${target_tuple}-g++";
 
   # unwrapped gcc,gxx
   gcc                = "${nxfsenv.gcc_wrapper.gcc}/bin/gcc";
@@ -56,7 +44,7 @@ nxfsenv.mkDerivation {
 
     builddir=$TMPDIR
 
-    export PATH="$toolchain/bin:$gnused/bin:$coreutils/bin:$bash/bin"
+    export PATH="$gnused/bin:$coreutils/bin:$bash/bin"
 
     unwrapped_gcc=$gcc
     unwrapped_gxx=$gxx

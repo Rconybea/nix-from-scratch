@@ -4,16 +4,13 @@
   nxfsenv,
   #  nxfsenv-3 :: { coreutils, ... }
   nxfsenv-3,
-  # glibc :: derivation
-  glibc,
-  # bootstrap-1 :: { ... }
-  bootstrap-1
 } :
 
 let
   gcc = nxfsenv-3.gcc-stage1;
+  glibc = nxfsenv-3.glibc;
 
-  nxfs-glibc-stage1-2 = nxfsenv.glibc-stage1;
+#  nxfs-glibc-stage1-2 = nxfsenv.glibc-stage1;
   gnused              = nxfsenv-3.gnused;
   coreutils           = nxfsenv-3.coreutils;
   bash                = nxfsenv-3.bash;
@@ -28,9 +25,6 @@ nxfsenv.mkDerivation {
   glibc = glibc;
 
   bash = bash;
-#  sed = nxfs-sed-1;
-#  coreutils = coreutils;
-#  gnused = nxfs-sed-1;
 
   gcc_wrapper_script = ./gcc-wrapper.sh;
   gxx_wrapper_script = ./gxx-wrapper.sh;

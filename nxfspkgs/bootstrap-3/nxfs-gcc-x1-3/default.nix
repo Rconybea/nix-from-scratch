@@ -5,9 +5,6 @@
   #  nxfsenv-3 :: { coreutils, ... }
   nxfsenv-3,
 
-  # gcc-stage1-wrapper-2 :: derivation
-  gcc-stage1-wrapper-3,
-
   # binutils-wrapper :: derivation
   binutils-wrapper,
 
@@ -21,11 +18,8 @@
   # gmp :: derivation
   gmp,
 
-  # glibc :: derivation
-  glibc,
-
   # sysroot :: derivation   --  for linux headers
-  sysroot,
+  toolchain,
 } :
 
 let
@@ -45,6 +39,7 @@ let
 in
 
 let
+  gcc          = nxfsenv-3.gcc;
   bison        = nxfsenv-3.bison;
   flex         = nxfsenv-3.flex;
   texinfo      = nxfsenv-3.texinfo;
@@ -60,6 +55,7 @@ let
   coreutils    = nxfsenv-3.coreutils;
   bash         = nxfsenv-3.bash;
   which        = nxfsenv-3.which;
+  glibc        = nxfsenv-3.glibc;
 
   version = nxfs-nixified-gcc-source.version;
 in
@@ -70,14 +66,8 @@ nxfsenv.mkDerivation {
 
   system       = builtins.currentSystem;
 
-  glibc        = glibc;
-
-  sysroot      = sysroot;    # for system headers
-
-  mpc          = mpc;
-  mpfr         = mpfr;
-  gmp          = gmp;
-  flex         = flex;
+  inherit mpc mpfr gmp flex glibc;
+  inherit toolchain;  # for system headers
 
   src          = nxfs-nixified-gcc-source;
 
@@ -89,7 +79,7 @@ nxfsenv.mkDerivation {
     # See also
     #   https://gcc.gnu.org/install/configure.html
 
-    set -e
+    set -euo pipefail
 
     src2=$src
     builddir=$TMPDIR/build
@@ -132,10 +122,11 @@ nxfsenv.mkDerivation {
     export CFLAGS="-idirafter $glibc/include"
     # TODO: -O2
 
-    LDFLAGS="-B$glibc/lib -B$sysroot/lib"
+    # do we need $toolchain/lib ?
+    LDFLAGS="-B$glibc/lib -B$toolchain/lib"
     LDFLAGS="$LDFLAGS -L$flex/lib -L$mpc/lib -L$mpfr/lib -L$gmp/lib"
     LDFLAGS="$LDFLAGS -Wl,-rpath,$mpc/lib -Wl,-rpath,$mpfr/lib -Wl,-rpath,$gmp/lib"
-    LDFLAGS="$LDFLAGS -Wl,-rpath,$glibc/lib -Wl,-rpath,$sysroot/lib"
+    LDFLAGS="$LDFLAGS -Wl,-rpath,$glibc/lib -Wl,-rpath,$toolchain/lib"
     export LDFLAGS
 
     # The wrapper (nxfs-gcc) injects compiler- and linker- flags to pull in glibc.
@@ -173,7 +164,7 @@ nxfsenv.mkDerivation {
     #          -Wl,--rpath=$NXFS_SYSROOT_DIR/lib -Wl,--dynamic-linker=$NXFS_SYSROOT_DIR/lib/ld-linux-x86-64.so.2
     #       We still need them explictly here
     #
-    (cd $builddir && $bash_program $src2/configure --prefix=$out --host=$target_tuple --build=$target_tuple --disable-bootstrap --with-native-system-header-dir=$sysroot/usr/include --enable-lto --disable-nls --with-mpc=$mpc --with-mpfr=$mpfr --with-gmp=$gmp --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib -B$sysroot/lib -Wl,-rpath,$sysroot/lib" --with-boot-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib -B$sysroot/lib -Wl,-rpath,$sysroot/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
+    (cd $builddir && $bash_program $src2/configure --prefix=$out --host=$target_tuple --build=$target_tuple --disable-bootstrap --with-native-system-header-dir=$toolchain/include --enable-lto --disable-nls --with-mpc=$mpc --with-mpfr=$mpfr --with-gmp=$gmp --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib -B$toolchain/lib -Wl,-rpath,$toolchain/lib" --with-boot-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib -B$toolchain/lib -Wl,-rpath,$toolchain/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
@@ -189,7 +180,7 @@ nxfsenv.mkDerivation {
     (cd $src2 && (tar cf - . | tar xf - -C $source))
   '';
 
-  buildInputs = [ gcc-stage1-wrapper-3
+  buildInputs = [ gcc
                   bison
                   flex
                   texinfo

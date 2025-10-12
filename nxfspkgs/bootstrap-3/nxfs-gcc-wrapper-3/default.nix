@@ -1,16 +1,14 @@
 {
-  # everything in nxfsenv is from bootstrap-2/
   #  nxfsenv :: { mkDerivation, ... }
   nxfsenv,
   #  nxfsenv-3 :: { coreutils, ... }
   nxfsenv-3,
-  # gcc-unwrapped :: derivation
-  gcc-unwrapped,
-  # glibc :: derivation
-  glibc
 } :
 
 let
+  gcc-unwrapped       = nxfsenv-3.gcc-unwrapped;
+  glibc               = nxfsenv-3.glibc;
+
   gnused              = nxfsenv-3.gnused;
   coreutils           = nxfsenv-3.coreutils;
   bash                = nxfsenv-3.bash;
