@@ -1,7 +1,5 @@
 let
-
   nxfs-flex-2        = import ../nxfs-flex-2/default.nix;
-#  nxfs-texinfo-2     = import ../nxfs-texinfo-2/default.nix;
   nxfs-m4-2          = import ../nxfs-m4-2/default.nix;
   nxfs-coreutils-2   = import ../nxfs-coreutils-2/default.nix;
   nxfs-bash-2        = import ../nxfs-bash-2/default.nix;
@@ -15,7 +13,6 @@ let
   nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
   nxfs-defs = import ../nxfs-defs.nix;
 in
@@ -26,10 +23,8 @@ derivation {
   system       = builtins.currentSystem;
 
   toolchain    = nxfs-toolchain-1;
-  sysroot      = nxfs-sysroot-1;
 
   flex         = nxfs-flex-2;
-#  texinfo      = nxfs-texinfo-2;
   m4           = nxfs-m4-2;
   coreutils    = nxfs-coreutils-2;
   bash         = nxfs-bash-2;
@@ -46,8 +41,6 @@ derivation {
   args         = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "bison-3.8.2-source";
-                                         url = "https://ftp.gnu.org/gnu/bison/bison-3.8.2.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/bison/bison-3.8.2.tar.xz";
                                          sha256 = "0w18vf97c1kddc52ljb2x82rsn9k3mffz3acqybhcjfl2l6apn59"; };
-
-  target_tuple = nxfs-defs.target_tuple;
 }
