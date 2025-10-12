@@ -28,7 +28,7 @@ let
 in
 
 nxfsenv.mkDerivation {
-  name         = "nxfs-tar-3";
+  name         = "nxfs-gnutar-3";
   version      = version;
 
   src          = builtins.fetchTarball { name = "tar-${version}-source";
