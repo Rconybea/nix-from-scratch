@@ -3,6 +3,8 @@
 # See also
 #  https://www.linuxfromscratch.org/lfs/view/12.2/chapter05/glibc.html
 
+set -euo pipefail
+
 echo "src=${src}"
 echo "patchelf=${patchelf}"
 echo "python=${python}"
@@ -21,16 +23,13 @@ echo "sed=${sed}"
 echo "tar=${tar}"
 echo "texinfo=${texinfo}";
 echo "coreutils=${coreutils}"
-echo "sysroot=${sysroot}"
 echo "bash=${bash}"
 echo "lc_all_sort=${lc_all_sort}"
+echo "locale_archive=${locale_archive}"
 
-echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
-set -e
 set -x
-
 
 export PATH=${bash}/bin:${PATH}
 export PATH=${patch}/bin:${PATH}
@@ -43,9 +42,9 @@ export PATH=${gnumake}/bin:${PATH}
 export PATH=${findutils}/bin:${PATH}
 export PATH=${diffutils}/bin:${PATH}
 export PATH=${gzip}/bin:${PATH}
-export PATH=${sysroot}/sbin:${PATH}
-export PATH=${toolchain}/x86_64-pc-linux-gnu/debug-root/usr/bin:${PATH}
-export PATH=${toolchain}/x86_64-pc-linux-gnu/bin:${PATH}
+#export PATH=${toolchain}/x86_64-pc-linux-gnu/debug-root/usr/bin:${PATH}
+#export PATH=${toolchain}/x86_64-pc-linux-gnu/bin:${PATH}
+export PATH=${toolchain}/sbin:${PATH}
 export PATH=${toolchain}/bin:${PATH}
 export PATH=${gcc_wrapper}/bin:${PATH}
 export PATH=${bison}/bin:${PATH}
@@ -125,6 +124,7 @@ popd
 export LOCPATH=${locale_archive}/lib/locale
 export CONFIG_SHELL="${bash_program}"
 export CFLAGS=${CFLAGS:-}
+export LDFLAGS=${LDFLAGS:-}
 
 pushd ${builddir}
 
@@ -141,7 +141,9 @@ find ${src2} -name '*.awk' | xargs --replace={} sed -i -e 's:sort -t:'${sort_pro
 # We need something that comes from the nix store so that basic locale queries
 # work from within isolated nix builds
 #
-bash ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-kernel=4.19 --with-headers=${sysroot}/usr/include --disable-nscd libc_cv_complocaledir=${locale_archive}/lib/locale libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+# --with-headers: was ${sysroot}/usr/include, when we used crosstool-ng
+#
+bash ${src2}/configure --prefix=${out} --enable-kernel=4.19 --with-headers=${toolchain}/include --disable-nscd libc_cv_complocaledir=${locale_archive}/lib/locale libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 
 # looks like
 #   make Versions.v.i
@@ -194,3 +196,6 @@ make install SHELL=${CONFIG_SHELL}
 patchelf --remove-rpath ${out}/lib/libc.so.6
 
 (cd ${src2} && (tar cf - . | tar xf - -C ${source}))
+
+# verify something runs
+${out}/bin/zdump --version

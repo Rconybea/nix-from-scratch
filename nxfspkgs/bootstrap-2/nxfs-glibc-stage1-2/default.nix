@@ -23,7 +23,6 @@ let
 
   nxfs-locale-archive-1    = import ../../bootstrap-1/nxfs-locale-archive-1/default.nix; # yes
   nxfs-toolchain-1         = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;   # yes
-  nxfs-sysroot-1           = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;     # yes
 
   nxfs-defs                = import ../nxfs-defs.nix;
 in
@@ -49,7 +48,6 @@ derivation {
 
   locale_archive = nxfs-locale-archive-1;
   toolchain      = nxfs-toolchain-1;
-  sysroot        = nxfs-sysroot-1;
 
   patchelf     = nxfs-patchelf-2;
   python       = nxfs-python-2;
@@ -79,7 +77,7 @@ derivation {
   args         = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "glibc-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/glibc/glibc-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/glibc/glibc-${version}.tar.xz";
                                          sha256 = "0ncvsz2r8py3z0v52fqniz5lq5jy30h0m0xx41ah19nl1rznflkh";
                                        };
 

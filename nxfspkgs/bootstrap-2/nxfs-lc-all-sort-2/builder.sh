@@ -2,6 +2,8 @@
 # and inject additional arguments
 #
 
+set -euo pipefail
+
 echo "sed=${sed}"
 echo "coreutils=${coreutils}"
 echo "bash=${bash}"
@@ -10,7 +12,6 @@ echo "lc_all_sort_script=${lc_all_sort_script}"
 
 builddir=${TMPDIR}
 
-set -e
 set -x
 
 export PATH="${sed}/bin:${coreutils}/bin:${bash}/bin"
@@ -28,4 +29,3 @@ sed -i -e s:@coreutils@:${coreutils}: ${tmp}
 sed -i -e s:@sort_program@:${sort_program}: ${tmp}
 chmod +x ${tmp}
 cp ${tmp} ${out}/bin
-
