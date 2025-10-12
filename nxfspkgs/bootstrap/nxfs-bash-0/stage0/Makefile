@@ -19,7 +19,8 @@ PREFIX:=$(shell realpath ../$(stem))
 # REQUIRE:
 #  - sysroot available in nix store
 #
-sysroot_storepath:=$(shell nix-build ../../nxfs-sysroot-0)
+sysroot_storepath:=$(shell nix-build ../../nxfs-toolchain-0)
+dynamic_linker:=$(sysroot_storepath)/lib/ld-linux-x86-64.so.2
 
 version:=5.2.32
 # unique package name

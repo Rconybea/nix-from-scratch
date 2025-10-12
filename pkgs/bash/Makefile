@@ -34,8 +34,7 @@ ldflags:=-L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib
 patch_script:=
 srcdir:=src
 builddir:=build
-# --enable-static-link: plan to use as root shell for nix
-configure_extra_args:=--enable-static-link
+configure_extra_args:=
 post_install_hook:=
 
 all: compile

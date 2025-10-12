@@ -7,8 +7,9 @@ set -euo pipefail
 
 # ugh this is messy for ubuntu.
 # cacerts in /etc/ssl/cert,  but contain symlinks to multiple
-# locations in /usr/share
-#
+# locations in /usr/share.
+# Copy /etc/ssl/cert/* to PREFIX/etc/ssl/certs/ (PREFIX in nix-from-scratch/mk/prefix.mk)
+# then this script finds them, given openssl -> PREFIX/bin/openssl
 
 declare sslrootdir=${SSL_ROOT_DIR:-}
 declare sslcertdir=${SSL_CERT_DIR:-}

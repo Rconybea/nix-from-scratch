@@ -1,8 +1,11 @@
 # To build:
-#   will be using toolchain built by crosstool-ng.
+#   will be using toolchain built from source.
+#   (assumed here to be in [~/nxfs-toolchain]
 #
 #   Preparation
-#   - supporting deps for {nix, crosstool-ng} built locally,
+#   - toolchain in ~/nxfs-toolchain
+#
+#   - supporting deps for {toolchain, nix} built locally,
 #     using https://github.com/rconybea/nix-from-scratch
 #     See nix-from-scratch/.github/workflows/main.yml for possible build sequence
 #
@@ -10,13 +13,6 @@
 #     Assuming nix installed to ~/nixroot:
 #     1. nix binariess in ~/nixroot/bin
 #     2. nix store     in ~/nixroot/nix/store
-#
-#   - crosstool-ng in nix-from-scratch/pkgs/crosstool-ng
-#   - configuration for crosstool-ng nix-from-scratch/crosstool/.config
-#
-#   - build toolchain
-#     $ cd nix-from-scratch/crosstool
-#     $ ct-ng build
 #
 #   Intended use case is in stdenv-bootstrap from empty nix store,
 #   For example to use nix on a host where none of the official
@@ -27,27 +23,31 @@
 #   Adopt cross-toolchain into nix store directly.
 #   Assuming cross toolchain installed to ~/nxfs-toolchain:
 #
-#   1. establish hash
-#       $ nix-hash --type sha256 --base32 ~/nxfs-toolchain
-#       0ikk2kh429gfjm8cb17hjqj19zsjjr8fn29gjls9mrjpk92z8wsx  # (roly-chicago2-24)
+#   0. enable nix experimental features
 #
-#     (expect hash results to differ depending on exact contents of /lib etc)
+#       # .config/nix/nix.conf:
+#       experimental-features = nix-command
 #
-#   2. adopt toolchain into nix store
-#       $ nix store add --hash-algo sha256 ~/nxfs-toolchain
+#   1. set NXFS_TOOLCHAIN_PREFIX to location of installed toolchain
 #
-#     Substitute hash from step 1 in outputHash = "<hash>" below
-#       $ ls -d ~/nixroot/nix/store/*nxfs-toolchain
-#       /home/roland/nixroot/nix/store/hpbqm9jq3r620ql61myn26w549xp7gm1-nxfs-toolchain
+#   2. copy into nix store:
 #
-#   3. 'build' it
+#       $ ./copy2nix.sh
 #
-#       $ cd nix-from-scratch/nix-experiments/ex3
-#       $ nix-build default.nix
-#       $ ls result
-#       bin  build.log.bz2  etc  include  lib  libexec  share  x86_64-pc-linux-gnu
-#       $ ls l ~/nixroot/nix/store/*nxfs-toolchain.drv
+#       - establishes sha256 hash for installed toolchain
+#       - copies toolchain into local nix store
+#       - generates fixed output derivation ./default.nix
+#
+#   3. verify derivation:
+#
+#      This should succeed immediately:
+#
+#       $ nix-build ./default.nix
 #       /home/roland/nixroot/nix/store/5wh5s3abc7v2zh7fp4961f40hbv89ni6-nxfs-toolchain.drv
 #
-#     Can pretty-print the store derivation, will see a few details attached
+#       $ ls result
+#       bin  cross  etc  include  lib  lib64  libexec  sbin  share  var  x86_64-pc-linux-gnu
+#       $ ls l ~/nixroot/nix/store/*nxfs-toolchain.drv
+#
+#      Can also pretty-print the store derivation, will see a few details attached
 #       $ nix derivation show $(ls -d ~/nixroot/nix/store/*nxfs-toolchain.drv)

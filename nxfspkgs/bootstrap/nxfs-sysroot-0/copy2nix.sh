@@ -8,13 +8,17 @@
 #   $ ./coppy2nix.sh
 
 set -e
+declare nxfs_toolchain_prefix
+nxfs_toolchain_prefix=${NXFS_TOOLCHAIN_PREFIX:-${HOME}/nxfs-toolchain}
 
 # must match the directory name we're picking up.
-# onless want to copy it first
-sysroot_name=sysroot
+# (unless want to copy it first)
+# path ${nxfs_toolchain_prefix}/${sysroot_name}/
+declare sysroot_name
+sysroot_name=x86_64-pc-linux-gnu
 
-nxfs_toolchain=${HOME}/nxfs-toolchain
-nxfs_sysroot=${nxfs_toolchain}/x86_64-pc-linux-gnu/${sysroot_name}
+declare nxfs_sysroot
+nxfs_sysroot=${nxfs_toolchain_prefix}/${sysroot_name}
 
 # establish output hash for target dir tree
 #

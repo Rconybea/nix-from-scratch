@@ -20,7 +20,8 @@ PREFIX:=$(shell realpath ../$(stem))
 # REQUIRE:
 #  - sysroot available in nix store
 #
-sysroot_storepath:=$(shell nix-build ../../nxfs-sysroot-0)
+sysroot_storepath:=$(shell nix-build ../../nxfs-toolchain-0)
+dynamic_linker:=$(sysroot_storepath)/lib/ld-linux-x86-64.so.2
 
 version:=4.4.36
 # unique package name
@@ -42,7 +43,7 @@ builddir:=build
 #
 # don't do this -- interferes with compiler's patched system includes
 #cflags:=-I$(sysroot_storepath)/usr/include
-ldflags:=-Wl,-enable-new-dtags -Wl,-rpath,$(sysroot_storepath)/usr/lib -Wl,-rpath,$(sysroot_storepath)/lib -Wl,-dynamic-linker,$(sysroot_storepath)/lib/ld-linux-x86-64.so.2
+ldflags:=-Wl,-enable-new-dtags -Wl,-rpath,$(sysroot_storepath)/lib -Wl,-dynamic-linker,$(dynamic_linker)
 #
 patch_script:=
 configure_extra_args:=--host=$(NXFS_HOST_TUPLE) --build=$(NXFS_BUILD_TUPLE) --enable-hashes=strong,glibc --enable-obsolete-api=no --disable-static --disable-failure-tokens

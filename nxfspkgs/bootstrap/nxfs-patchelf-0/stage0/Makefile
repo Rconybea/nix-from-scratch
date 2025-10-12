@@ -18,9 +18,11 @@ PREFIX:=$(shell realpath ../$(stem))
 # Get unique nix location where nxfs-sysroot-0 installed
 #
 # REQUIRE:
-#  - sysroot available in nix store
+#  - toolchain available in nix store
 #
-sysroot_storepath:=$(shell nix-build ../../nxfs-sysroot-0)
+sysroot_storepath:=$(shell nix-build ../../nxfs-toolchain-0)
+dynamic_linker:=$(sysroot_storepath)/lib/$(shell cat $(sysroot_storepath)/nix-support/dynamic-linker-name)
+gcc_specs:=$(sysroot_storepath)/nix-support/gcc-specs
 
 version:=0.18.0
 # unique package name
@@ -37,8 +39,11 @@ url:=https://github.com/NixOS/patchelf/releases/download/$(version)/$(tarball)
 # verify this sha
 sha256:=64de10e4c6b8b8379db7e87f58030f336ea747c0515f381132e810dbf84a86e7
 #
-cflags:=-I$(sysroot_storepath)/usr/include
-ldflags:=-Wl,-enable-new-dtags -Wl,-rpath,$(sysroot_storepath)/usr/lib -Wl,-rpath,$(sysroot_storepath)/lib -Wl,-dynamic-linker,$(sysroot_storepath)/lib/ld-linux-x86-64.so.2
+cppflags:=
+# 1. PREFIX has been repointed to package-specific bootstrap dir, do not use here
+# 2. dynamic linker ld-linux-x86-64.so.2 and libc.so.6 *must* go together
+#
+ldflags:=-Wl,-enable-new-dtags -Wl,-rpath,$(sysroot_storepath)/lib -Wl,-dynamic-linker,$(dynamic_linker)
 #
 patch_script:=
 srcdir:=src
