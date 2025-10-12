@@ -13,7 +13,6 @@ let
   nxfs-toolchain-wrapper-1 = import ../../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
   nxfs-defs = import ../nxfs-defs.nix;
 in
@@ -24,11 +23,7 @@ derivation {
   system       = builtins.currentSystem;
 
   toolchain    = nxfs-toolchain-1;
-  sysroot      = nxfs-sysroot-1;
 
-#  texinfo      = nxfs-texinfo-2;
-#  automake     = nxfs-automake-2;
-#  autoconf     = nxfs-autoconf-2;
   m4           = nxfs-m4-2;
 
   file         = nxfs-file-2;
@@ -49,6 +44,4 @@ derivation {
   src          = builtins.fetchTarball { name = "flex-2.6.4-source";
                                          url = "https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz";
                                          sha256 = "05gbq5hklzdfvjjc3hyr98hrm8wkr20ds0y3l7c825va798c04qw"; };
-
-  target_tuple = nxfs-defs.target_tuple;
 }
