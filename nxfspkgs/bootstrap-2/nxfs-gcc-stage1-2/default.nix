@@ -21,7 +21,6 @@ let
   nxfs-glibc-stage1-2 = import ../nxfs-glibc-stage1-2/default.nix;
 
   nxfs-toolchain-1   = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-sysroot-1     = import ../../bootstrap-1/nxfs-sysroot-1/default.nix;
 
   nxfs-defs = import ../nxfs-defs.nix;
 
@@ -29,8 +28,8 @@ let
 in
 
 # PLAN
-#   - building with nxfs-toolchain-1 (redirected crosstool-ng toolchain):
-#     compiler expects to use binutils from the crosstool-ng toolchain
+#   - building with nxfs-toolchain-1 (redirected external toolchain):
+#     compiler uses binutils from that toolchain.
 #   - in this derivation preparing a compiler that, *when run*,
 #     will use binutils from nxfs-binutils-2
 #
@@ -43,7 +42,6 @@ derivation {
   glibc        = nxfs-glibc-stage1-2;
 
   toolchain    = nxfs-toolchain-1;
-  sysroot      = nxfs-sysroot-1;
 
   binutils     = nxfs-binutils-2;
   mpc          = nxfs-mpc-2;
@@ -68,7 +66,7 @@ derivation {
   args         = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "gcc-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz";
                                          sha256 = "1bdp6l9732316ylpzxnamwpn08kpk91h7cmr3h1rgm3wnkfgxzh9";
                                        };
 

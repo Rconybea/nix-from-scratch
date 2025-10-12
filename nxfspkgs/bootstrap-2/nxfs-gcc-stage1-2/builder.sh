@@ -3,6 +3,8 @@
 # See also
 #   https://gcc.gnu.org/install/configure.html
 
+set -euo pipefail
+
 echo "src=${src}"
 echo "mpc=${mpc}"
 echo "mpfr=${mpfr}"
@@ -19,16 +21,11 @@ echo "gawk=${gawk}"
 echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
-#echo "texinfo=${texinfo}";
 echo "glibc=${glibc}"
-echo "sysroot=${sysroot}"
-#echo "mkdir=${mkdir}"
-#echo "head=${head}"
 echo "bash=${bash}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
-set -e
 set -x
 
 # 1. ${coreutils}/bin provides mkdir,cat,ls etc.
@@ -119,10 +116,10 @@ export CONFIG_SHELL="${bash_program}"
 export CFLAGS="-idirafter ${glibc}/include"
 # TODO: -O2
 
-LDFLAGS="-B${glibc}/lib -B${sysroot}/lib"
+LDFLAGS="-B${glibc}/lib -B${toolchain}/lib"
 LDFLAGS="${LDFLAGS} -L${flex}/lib -L${mpc}/lib -L${mpfr}/lib -L${gmp}/lib"
 LDFLAGS="${LDFLAGS} -Wl,-rpath,${mpc}/lib -Wl,-rpath,${mpfr}/lib -Wl,-rpath,${gmp}/lib"
-LDFLAGS="${LDFLAGS} -Wl,-rpath,${glibc}/lib -Wl,-rpath,${sysroot}/lib"
+LDFLAGS="${LDFLAGS} -Wl,-rpath,${glibc}/lib -Wl,-rpath,${toolchain}/lib"
 export LDFLAGS
 
 # The wrapper (nxfs-gcc) injects compiler- and linker- flags to pull in toolchain glibc.
@@ -149,7 +146,7 @@ ln -s ${glibc}/lib/libc.so.6 ${out}/${target_tuple}/lib/libc.so.6
 #           libanl.so libanl.so.1 etc.
 
 # glibc:
-#  - built by crosstools-ng gcc (adopted into nix store)
+#  - built by us outside nix, (then adopted into nix store)
 #  - entirely from within nix, see nxfs-glibc-stage1-2
 # here we tell nxfs-gcc to use this glibc instead of crosstools-ng glibc
 #
@@ -160,7 +157,7 @@ ln -s ${glibc}/lib/libc.so.6 ${out}/${target_tuple}/lib/libc.so.6
 #          -Wl,--rpath=${NXFS_SYSROOT_DIR}/lib -Wl,--dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 #       We still need them explictly here
 #
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --disable-bootstrap --with-native-system-header-dir=${sysroot}/usr/include --enable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${sysroot}/lib -Wl,-rpath,${sysroot}/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --disable-bootstrap --with-native-system-header-dir=${toolchain}/include --enable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
