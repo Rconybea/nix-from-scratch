@@ -10,7 +10,7 @@
 
 set -e
 
-name=tar
+name=gnutar
 uploaddir=./${name}
 
 # establish output hash for target dir tree
@@ -27,7 +27,7 @@ nix-store --add ${uploaddir}
 # create fixed-output derivation (FOD) using the obtained hash
 #
 cat <<EOF > default.nix
-# automatically created by nxfspkgs/bootstrap/nxfs-tar-0/copy2nix.sh -- DO NOT EDIT
+# automatically created by nix-from-scratch/nxfspkgs/bootstrap/nxfs-tar-0/copy2nix.sh -- DO NOT EDIT
 
 derivation {
   name = "${name}";

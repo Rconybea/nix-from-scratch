@@ -11,7 +11,7 @@
 set -e
 
 # must match basename of PREFIX directory in stage0/ build
-name=grep
+name=gnugrep
 uploaddir=./${name}
 
 # establish output hash for target dir tree

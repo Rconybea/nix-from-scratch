@@ -12,7 +12,7 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../../../..)
 include $(TOP_DIR)/mk/config.mk
 
 stem:=sed
-PREFIX:=$(shell realpath ../$(stem))  
+PREFIX:=$(shell realpath ../gnused)  
 
 # Get unique nix location where nxfs-sysroot-0 installed
 #

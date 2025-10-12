@@ -12,7 +12,7 @@ TOP_DIR:=$(realpath $(THIS_DIR)/../../../..)
 include $(TOP_DIR)/mk/config.mk
 
 stem:=tar
-PREFIX:=$(shell realpath ../$(stem))  
+PREFIX:=$(shell realpath ../gnutar)  
 
 # Get unique nix location where nxfs-sysroot-0 installed
 #
