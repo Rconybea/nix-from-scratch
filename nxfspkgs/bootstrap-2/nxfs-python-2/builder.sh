@@ -17,16 +17,10 @@ echo "src=${src}"
 echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
-set -e
+set -euo pipefail
 set -x
 
-# 1. ${gcc_wrapper}/bin/x86_64-pc-linux-gnu-{gcc,g++} builds viable executables.
-# 2. ${toolchain}/bin/x86_64-pc-linux-gnu-gcc can build executables,
-#    but they won't run unless we pass special linker flags
-# 3. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
-# 4. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
-#
-export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${toolchain}/x86_64-pc-linux-gnu/bin:${findutils}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
+export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${findutils}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
 
 src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
@@ -90,21 +84,13 @@ popd
 # ${src}/configure honors CONFIG_SHELL
 export CONFIG_SHELL="${bash_program}"
 
-CFLAGS="-I${zlib}/include -I${sysroot}/usr/include"
+CFLAGS="-I${zlib}/include"
 LDFLAGS="-Wl,-rpath=${out}/lib -L${zlib}/lib -Wl,-rpath=${zlib}/lib"
 
 # 1.
-# we shouldn't need special compiler/linker instructions,
-# since stage-1 toolchain "knows where it lives"
-#
-# 2.
-# do need to give --host and --build arguments to configure,
-# since we're using a cross compiler.
-#
-# 3.
 # we don't have expat in nix store, at this point in bootstrap -> no --with-system-expat
 #
-# 4.
+# 2.
 # not building these optional modules
 #   _bz2
 #   _ctypes_test
@@ -123,9 +109,12 @@ LDFLAGS="-Wl,-rpath=${out}/lib -L${zlib}/lib -Wl,-rpath=${zlib}/lib"
 #   _tkinter
 #   readline
 #
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --host=${target_tuple} --build=${target_tuple} --enable-shared --enable-optimizations CC="nxfs-gcc" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --enable-shared --enable-optimizations CC="nxfs-gcc" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})
 
 (cd ${src2} && (tar cf - . | tar xf - -C ${source}))
+
+# verify python runs
+${out}/bin/python3 --version
