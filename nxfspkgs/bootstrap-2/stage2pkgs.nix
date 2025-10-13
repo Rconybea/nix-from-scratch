@@ -200,13 +200,21 @@ let
 
   nxfsenv-2-10 = nxfsenv-2-9 // { coreutils = coreutils-2; };
 
+  # m4-2 :: derivation
   m4-2       = callPackage ./nxfs-m4-2/package.nix { nxfsenv = nxfsenv-2-10; };
   # NOTE: stage3 perl gets pkgconf, libxcrypt
+  # perl-2 :: derivation
   perl-2     = callPackage ./nxfs-perl-2/package.nix { nxfsenv = nxfsenv-2-10; };
+  # file-2 :: derivation
   file-2     = callPackage ./nxfs-file-2/package.nix { nxfsenv = nxfsenv-2-10; };
+  # zlib-2 :: derivation
   zlib-2     = callPackage ./nxfs-zlib-2/package.nix { nxfsenv = nxfsenv-2-10; };
+  # patchelf-2 :: derivation
   patchelf-2 = callPackage ./nxfs-patchelf-2/package.nix { nxfsenv = nxfsenv-2-10; };
+  # gperf-2 :: derivation
   gperf-2    = callPackage ./nxfs-gperf-2/package.nix { nxfsenv = nxfsenv-2-10; };
+  # patch-2 :: derivation
+  patch-2    = callPackage ./nxfs-patch-2/package.nix { nxfsenv = nxfsenv-2-10; };
 in
 let
   nxfsenv-2-b13 = nxfsenv-2-10 // { m4 = m4-2;
@@ -249,6 +257,7 @@ in
   inherit perl-2;
   inherit m4-2;
   inherit file-2;
+  inherit patch-2;
   inherit gperf-2;
   inherit patchelf-2;
   inherit zlib-2;
