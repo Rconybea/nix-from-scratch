@@ -333,18 +333,27 @@ let
                                                          };
 in
 let
+  # TODO: name = gcc-unwrapped instead of gcc-x1
   nxfsenv-2-97 = nxfsenv-2-96 // { gcc-x1 = gcc-x1-2; };
   gcc-x1-wrapper-2 = callPackage ./nxfs-gcc-stage2-wrapper-2/package.nix { nxfsenv = nxfsenv-2-97; };
 in
 let
   nxfsenv-2-98 = nxfsenv-2-97 // { gcc = gcc-x1-wrapper-2; };
-  libstdcxx-x1-2 = callPackage ./nxfs-libstdcxx-stage2-2/package.nix { nxfsenv = nxfsenv-2-98;
+  libstdcxx-x2-2 = callPackage ./nxfs-libstdcxx-stage2-2/package.nix { nxfsenv = nxfsenv-2-98;
                                                                        mpc = mpc-2;
                                                                        mpfr = mpfr-2;
                                                                        gmp = gmp-2; };
 in
+let
+  gcc-x2-wrapper-2 = callPackage ./nxfs-gcc-stage3-wrapper-2/package.nix { nxfsenv = nxfsenv-2-98;
+                                                                           # TODO: as gcc-unwrapped
+                                                                           gcc-unwrapped = gcc-x1-2;
+                                                                           libstdcxx = libstdcxx-x2-2;
+                                                                         };
+in
 {
-  inherit libstdcxx-x1-2;
+  inherit gcc-x2-wrapper-2;
+  inherit libstdcxx-x2-2;
   inherit gcc-x1-wrapper-2;
   inherit gcc-x1-2;
   inherit gcc-x0-wrapper-2;
