@@ -265,7 +265,19 @@ let
                                                   mpfr = mpfr-2;
                                                 };
 in
+let
+  # TODO: pkgconf, for consistency with stage3
+  nxfsenv-2-d13 = nxfsenv-2-10 // { #pkgconf = pkgconf-2
+    zlib = zlib-2;
+  };
+
+  # python-2 :: derivation
+  python-2 = callPackage ./nxfs-python-2/package.nix { nxfsenv = nxfsenv-2-d13;
+                                                       popen = popen-2;
+                                                     };
+in
 {
+  inherit python-2;
   inherit mpc-2;
   inherit mpfr-2;
   inherit gmp-2;

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 echo "gcc_wrapper=${gcc_wrapper}"
 echo "toolchain=${toolchain}"
 echo "findutils=${findutils}"
@@ -10,14 +12,11 @@ echo "grep=${grep}"
 echo "sed=${sed}"
 echo "tar=${tar}"
 echo "coreutils=${coreutils}"
-echo "sysroot=${sysroot}"
 echo "zlib=${zlib}"
 echo "bash=${bash}"
 echo "src=${src}"
-echo "target_tuple=${target_tuple}"
 echo "TMPDIR=${TMPDIR}"
 
-set -euo pipefail
 set -x
 
 export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${findutils}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${bash}/bin"
