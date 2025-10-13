@@ -196,6 +196,8 @@ let
   coreutils-2 = callPackage ./nxfs-coreutils-2/package.nix { nxfsenv = nxfsenv-2-9; };
 in
 let
+  # switching here to stage3 numbering for nxfsenv's
+
   nxfsenv-2-10 = nxfsenv-2-9 // { coreutils = coreutils-2; };
 
   m4-2       = callPackage ./nxfs-m4-2/package.nix { nxfsenv = nxfsenv-2-10; };
@@ -204,10 +206,9 @@ let
   file-2     = callPackage ./nxfs-file-2/package.nix { nxfsenv = nxfsenv-2-10; };
   zlib-2     = callPackage ./nxfs-zlib-2/package.nix { nxfsenv = nxfsenv-2-10; };
   patchelf-2 = callPackage ./nxfs-patchelf-2/package.nix { nxfsenv = nxfsenv-2-10; };
+  gperf-2    = callPackage ./nxfs-gperf-2/package.nix { nxfsenv = nxfsenv-2-10; };
 in
 let
-  # switching here to stage3 numbering for nxfsenv's
-
   nxfsenv-2-b13 = nxfsenv-2-10 // { m4 = m4-2;
                                     perl = perl-2; };
 
@@ -248,6 +249,7 @@ in
   inherit perl-2;
   inherit m4-2;
   inherit file-2;
+  inherit gperf-2;
   inherit patchelf-2;
   inherit zlib-2;
   inherit coreutils-2;

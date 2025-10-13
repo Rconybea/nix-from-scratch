@@ -43,13 +43,13 @@ Dependencies somewhat overspecified for the sake of simplicity.
  |                 | -A stage2pkgs   |-A stage2pkgs |               |               |                 |
  |                 |    .automake-2  |   .bison-2   |               |               |                 |
  |                 |                 |              |               |               |                 |
- | nxfs-binutils-2 | nxfs-automake-2 | nxfs-bison-2 | nxfs-mpfr-2   | nxfs-python-2 | nxfs-gperf-2    |
+ | nxfs-binutils-2 | nxfs-automake-2 | nxfs-bison-2 | nxfs-mpfr-2   | nxfs-python-2 |                 |
  |                 +-----------------+--------------+---------------+               |                 |
  |                 | -A stage2pkgs   |-A stage2pkgs | -A stage2pkgs |               |                 |
  |                 |    .autoconf-2  |   .flex-2    |    .gmp-2     |               |                 |
- |                 |                 |              |               |               |                 |
- |                 | nxfs-autoconf-2 | nxfs-flex-2  | nxfs-gmp-2    |               |                 |
- +-----------------------------------+------+-------+---------------+---------------+                 |
+ |                 |                 |              |               |               | -A stage2pkgs   |
+ |                 | nxfs-autoconf-2 | nxfs-flex-2  | nxfs-gmp-2    |               |    .gperf-2     |
+ +-----------------------------------+------+-------+---------------+---------------+ nxfs-gperf-2    |
  | -A stage2pkgs.perl-2   nxfs-perl-2       | -A stagepkgs.file-2   | -A stage2pkgs |                 |
  |                                          |                       |    .zlib-2    | -A stage2pkgs   |
  | -A stage2pkgs.m4-2     nxfs-m4-2         |                       |               |    .patchelf-2  |
