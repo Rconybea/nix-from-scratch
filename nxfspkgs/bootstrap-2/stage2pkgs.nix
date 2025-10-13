@@ -270,8 +270,8 @@ in
 let
   # mpc-2 :: derivation
   mpc-2  = callPackage ./nxfs-mpc-2/package.nix { nxfsenv = nxfsenv-2-c13;
-                                                  gmp = gmp-2;
                                                   mpfr = mpfr-2;
+                                                  gmp = gmp-2;
                                                 };
 in
 let
@@ -320,7 +320,20 @@ let
 
   gcc-x0-wrapper-2 = callPackage ./nxfs-gcc-stage1-wrapper-2/package.nix { nxfsenv = nxfsenv-2-95; };
 in
+let
+  nxfsenv-2-96 = nxfsenv-2-95 // { gcc = gcc-x0-wrapper-2; };  # or 2-95a
+  # TODO: binutils-x0-wrapper-2 = ...  for symmetry with stage3
+
+  # TODO: rename subdir to follow nxfs-gcc-x1-3 in stage3
+  gcc-x1-2 = callPackage ./nxfs-gcc-stage1-2/package.nix { nxfsenv = nxfsenv-2-96;
+                                                           mpc = mpc-2;
+                                                           mpfr = mpfr-2;
+                                                           gmp = gmp-2;
+                                                           # nixify-gcc-source = nxfs-nixify-gcc-source
+                                                         };
+in
 {
+  inherit gcc-x1-2;
   inherit gcc-x0-wrapper-2;
   inherit glibc-2;
   inherit python-2;
