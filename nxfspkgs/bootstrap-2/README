@@ -38,22 +38,25 @@ Dependencies somewhat overspecified for the sake of simplicity.
  +----------------------------------------------------------------------------------------------------+
  |                                            nxfs-glibc-stage1-2                                     |
  +-----------------+--------------------------------+---------------+---------------+-----------------+
- | -A stage2pkgs   |         nxfs-texinfo-2         | nxfs-mpc-2    |               | -A stage2pkgs   |
- |    .binutils-2  +-----------------+--------------+---------------+               |    .gzip-2      |
- |                 | -A stage2pkgs   |-A stage2pkgs | -A stage2pkgs |               | nxfs-gzip-2     |
- |                 |    .automake-2  |   .bison-2   |    .mpfr-2    |               |                 |
+ | -A stage2pkgs   |                                | -A stage2pkgs |               | -A stage2pkgs   |
+ |    .binutils-2  |                                |    .mpc-2     |               |    .gzip-2      |
+ |                 |                                |               |               | nxfs-gzip-2     |
+ |                 |         nxfs-texinfo-2         | nxfs-mpc-2    |               |                 |
+ |                 +-----------------+--------------+---------------+               | -A stage2pkgs   |
+ |                 | -A stage2pkgs   |-A stage2pkgs | -A stage2pkgs |               |    .patch-2     |
+ | nxfs-binutils-2 |    .automake-2  |   .bison-2   |    .mpfr-2    |               | nxfs-patch-2    |
  |                 |                 |              |               |               |                 |
- | nxfs-binutils-2 | nxfs-automake-2 | nxfs-bison-2 | nxfs-mpfr-2   | nxfs-python-2 | -A stage2pkgs   |
- |                 +-----------------+--------------+---------------+               |    .patch-2     |
- |                 | -A stage2pkgs   |-A stage2pkgs | -A stage2pkgs |               | nxfs-patch-2    |
+ |                 | nxfs-automake-2 | nxfs-bison-2 | nxfs-mpfr-2   | nxfs-python-2 | -A stage2pkgs   |
+ |                 +-----------------+--------------+---------------+               |    .gperf-2     |
+ |                 | -A stage2pkgs   |-A stage2pkgs | -A stage2pkgs |               | nxfs-gperf-2    |
  |                 |    .autoconf-2  |   .flex-2    |    .gmp-2     |               |                 |
  |                 |                 |              |               |               | -A stage2pkgs   |
- |                 | nxfs-autoconf-2 | nxfs-flex-2  | nxfs-gmp-2    |               |    .gperf-2     |
- +-----------------------------------+------+-------+---------------+---------------+ nxfs-gperf-2    |
+ |                 | nxfs-autoconf-2 | nxfs-flex-2  | nxfs-gmp-2    |               |    .patchelf-2  |
+ +-----------------------------------+------+-------+---------------+---------------+ nxfs-patchelf-2 |
  | -A stage2pkgs.perl-2   nxfs-perl-2       | -A stagepkgs.file-2   | -A stage2pkgs |                 |
- |                                          |                       |    .zlib-2    | -A stage2pkgs   |
- | -A stage2pkgs.m4-2     nxfs-m4-2         |                       |               |    .patchelf-2  |
- |                                          |      nxfs-file-2      |  nxfs-zlib-2  | nxfs-patchelf-2 |
+ |                                          |                       |    .zlib-2    |                 |
+ | -A stage2pkgs.m4-2     nxfs-m4-2         |                       |               |                 |
+ |                                          |      nxfs-file-2      |  nxfs-zlib-2  |                 |
  +------------------------------------------+-----------------------+---------------+-----------------+
  | -A stage2pkgs.coreutils-2                  nxfs-coreutils-2                                        |
  +----------------------------------------------------------------------------------------------------+
