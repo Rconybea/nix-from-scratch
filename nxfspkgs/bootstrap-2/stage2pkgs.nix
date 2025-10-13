@@ -228,6 +228,9 @@ let
 
   # flex-2 :: derivation
   flex-2 = callPackage ./nxfs-flex-2/package.nix { nxfsenv = nxfsenv-2-c13; };
+
+  # gmp-2 :: derivation
+  gmp-2 = callPackage ./nxfs-gmp-2/package.nix { nxfsenv = nxfsenv-2-c13; };
 in
 let
   nxfsenv-2-c14 = nxfsenv-2-c13 // { flex = flex-2; };
@@ -236,6 +239,7 @@ let
   bison-2 = callPackage ./nxfs-bison-2/package.nix { nxfsenv = nxfsenv-2-c14; };
 in
 {
+  inherit gmp-2;
   inherit bison-2;
   inherit flex-2;
   inherit automake-2;
