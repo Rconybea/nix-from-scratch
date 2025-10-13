@@ -215,6 +215,8 @@ let
   gperf-2    = callPackage ./nxfs-gperf-2/package.nix { nxfsenv = nxfsenv-2-10; };
   # patch-2 :: derivation
   patch-2    = callPackage ./nxfs-patch-2/package.nix { nxfsenv = nxfsenv-2-10; };
+  # gzip-2 :: derivation
+  gzip-2     = callPackage ./nxfs-gzip-2/package.nix { nxfsenv = nxfsenv-2-10; };
 in
 let
   nxfsenv-2-b13 = nxfsenv-2-10 // { m4 = m4-2;
@@ -257,6 +259,7 @@ in
   inherit perl-2;
   inherit m4-2;
   inherit file-2;
+  inherit gzip-2;
   inherit patch-2;
   inherit gperf-2;
   inherit patchelf-2;
