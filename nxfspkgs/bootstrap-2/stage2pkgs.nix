@@ -217,7 +217,14 @@ let
   # autoconf-2 :: derivation
   autoconf-2 = callPackage ./nxfs-autoconf-2/package.nix { nxfsenv = nxfsenv-2-b13; };
 in
+let
+  nxfsenv-2-b14 = nxfsenv-2-b13 // { autoconf = autoconf-2; };
+
+  # automake-2 :: derivation
+  automake-2 = callPackage ./nxfs-automake-2/package.nix { nxfsenv = nxfsenv-2-b14; };
+in
 {
+  inherit automake-2;
   inherit autoconf-2;
   inherit binutils-2;
   inherit perl-2;

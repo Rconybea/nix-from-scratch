@@ -1,4 +1,6 @@
 let
+  # note: version 1.17 available, but causes problems
+
   nxfs-perl-2        = import ../nxfs-perl-2/default.nix;
   nxfs-autoconf-2    = import ../nxfs-autoconf-2/default.nix;
   nxfs-m4-2          = import ../nxfs-m4-2/default.nix;
@@ -46,8 +48,4 @@ derivation {
   src          = builtins.fetchTarball { name = "automake-1.16.5-source";
                                          url = "https://ftpmirror.gnu.org/gnu/automake/automake-1.16.5.tar.xz";
                                          sha256 = "0pac10hgw6r4kbafdbxg7gpb503fq9a9a31r5hvdh95nd2pcngv0"; };
-
-#  src          = builtins.fetchTarball { name = "automake-1.17-source";
-#                                         url = "https://ftp.gnu.org/gnu/automake/automake-1.17.tar.xz";
-#                                         sha256 = "1nwgz937zikw5avzhvvzf57i917pq0q05s73wqr28abwqxa3bll8"; };
 }
