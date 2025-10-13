@@ -71,6 +71,7 @@ let
   allPkgs = nxfspkgs.stage2pkgs;
 
   bash-1 = import ../bootstrap-1/nxfs-bash-1/default.nix;
+  locale-archive-1 = import ../bootstrap-1/nxfs-locale-archive-1/default.nix;
 
   # initial bootstrap stdenv for stage-2.
   #
@@ -174,7 +175,9 @@ let
   bash-2 = callPackage ./nxfs-bash-2/package.nix { nxfsenv = nxfsenv-2-6; };
 in
 let
-  nxfsenv-2-7 = nxfsenv-2-6 // { bash = bash-2; };
+  nxfsenv-2-7 = nxfsenv-2-6 // { bash = bash-2;
+                                 shell = bash-2;
+                               };
   # TODO: bootstrap-3 to use this form for popen-template.
   #       else must preserve nxfs-popen-template-2/default.nix
   popen-template-2 = callPackage ./nxfs-popen-template-2/package.nix { nxfsenv = nxfsenv-2-7; };
@@ -283,24 +286,37 @@ let
                                                      };
 in
 let
-#  nxfsenv-2-16 = nxfsenv-2-10 // { binutils = binutils-2;
-#                                   perl     = perl-2;
-#                                   texinfo  = texinfo-2;
-#                                   bison    = bison-2;
-#                                   flex     = flex-2;
-#                                   file     = file-2;
-#                                   pkgconf  = pkgconf-2;
-#                                   m4       = m4-2;
-#                                   python   = python-2;
-#                                   zlib     = zlib-2;
-#                                   gperf    = gperf-2;
-#                                   patch    = patch-2;
-#                                   gzip     = gzip-2;
-#                                   patchelf = patchelf-2;
-#                                   which    = which-2;
-#                                 };
+  # wrapper for sort -- invokes coreutils.sort with LC_ALL env var set to C
+  lc-all-sort-2 = callPackage ./nxfs-lc-all-sort-2/package.nix { nxfsenv = nxfsenv-2-10; };
+
+  nxfsenv-2-16 = nxfsenv-2-10 // { binutils = binutils-2;
+                                   perl     = perl-2;
+                                   texinfo  = texinfo-2;
+                                   bison    = bison-2;
+                                   flex     = flex-2;
+                                   file     = file-2;
+                                   pkgconf  = pkgconf-2;
+                                   m4       = m4-2;
+                                   python   = python-2;
+                                   zlib     = zlib-2;
+                                   gperf    = gperf-2;
+                                   patch    = patch-2;
+                                   gzip     = gzip-2;
+                                   patchelf = patchelf-2;
+                                   which    = which-2;
+                                 };
+in
+let
+  nxfsenv-2-94 = nxfsenv-2-16 // { texinfo = texinfo-2; };
+
+  # glibc-2 :: derivation
+  glibc-2 = callPackage ./nxfs-glibc-stage1-2/package.nix { nxfsenv = nxfsenv-2-94;
+                                                            lc-all-sort = lc-all-sort-2;
+                                                            locale-archive = locale-archive-1;
+                                                          };
 in
 {
+  inherit glibc-2;
   inherit python-2;
   inherit mpc-2;
   inherit mpfr-2;
