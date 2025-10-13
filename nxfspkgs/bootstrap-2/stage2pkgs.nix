@@ -309,13 +309,19 @@ in
 let
   nxfsenv-2-94 = nxfsenv-2-16 // { texinfo = texinfo-2; };
 
-  # glibc-2 :: derivation
+  # glibc-2 :: derivation   # glibc-x1-3 in stage3
   glibc-2 = callPackage ./nxfs-glibc-stage1-2/package.nix { nxfsenv = nxfsenv-2-94;
                                                             lc-all-sort = lc-all-sort-2;
                                                             locale-archive = locale-archive-1;
                                                           };
 in
+let
+  nxfsenv-2-95 = nxfsenv-2-94 // { glibc = glibc-2; };
+
+  gcc-x0-wrapper-2 = callPackage ./nxfs-gcc-stage1-wrapper-2/package.nix { nxfsenv = nxfsenv-2-95; };
+in
 {
+  inherit gcc-x0-wrapper-2;
   inherit glibc-2;
   inherit python-2;
   inherit mpc-2;
