@@ -42,6 +42,9 @@ Dependencies somewhat overspecified for the sake of simplicity.
  |                 +-----------------+--------------+---------------+               | nxfs-patch-2    |
  | nxfs-binutils-2 | nxfs-automake-2 | nxfs-bison-2 | nxfs-mpfr-2   | nxfs-python-2 | nxfs-gperf-2    |
  |                 +-----------------+--------------+---------------+               |                 |
+ |                 | -A stage2pkgs   |              |               |               |                 |
+ |                 |    .autoconf-2  |              |               |               |                 |
+ |                 |                 |              |               |               |                 |
  |                 | nxfs-autoconf-2 | nxfs-flex-2  | nxfs-gmp-2    |               |                 |
  +-----------------------------------+------+-------+---------------+---------------+                 |
  | -A stage2pkgs.perl-2   nxfs-perl-2       | -A stagepkgs.file-2   | -A stage2pkgs |                 |

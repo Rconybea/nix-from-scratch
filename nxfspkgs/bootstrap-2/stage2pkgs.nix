@@ -206,12 +206,19 @@ let
   patchelf-2 = callPackage ./nxfs-patchelf-2/package.nix { nxfsenv = nxfsenv-2-10; };
 in
 let
-  nxfsenv-2-a11 = nxfsenv-2-10 // { m4 = m4-2;
+  # switching here to stage3 numbering for nxfsenv's
+
+  nxfsenv-2-b13 = nxfsenv-2-10 // { m4 = m4-2;
                                     perl = perl-2; };
 
-  binutils-2 = callPackage ./nxfs-binutils-2/package.nix { nxfsenv = nxfsenv-2-a11; };
+  # binutils-2 :: derivation
+  binutils-2 = callPackage ./nxfs-binutils-2/package.nix { nxfsenv = nxfsenv-2-b13; };
+
+  # autoconf-2 :: derivation
+  autoconf-2 = callPackage ./nxfs-autoconf-2/package.nix { nxfsenv = nxfsenv-2-b13; };
 in
 {
+  inherit autoconf-2;
   inherit binutils-2;
   inherit perl-2;
   inherit m4-2;
