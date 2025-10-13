@@ -223,7 +223,14 @@ let
   # automake-2 :: derivation
   automake-2 = callPackage ./nxfs-automake-2/package.nix { nxfsenv = nxfsenv-2-b14; };
 in
+let
+  nxfenv-2-c13 = nxfsenv-2-b13 // { file = file-2; };
+
+  # flex-2 :: derivation
+  flex-2 = callPackage ./nxfs-flex-2/package.nix { nxfsenv = nxfenv-2-c13; };
+in
 {
+  inherit flex-2;
   inherit automake-2;
   inherit autoconf-2;
   inherit binutils-2;
