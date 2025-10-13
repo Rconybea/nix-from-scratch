@@ -224,12 +224,19 @@ let
   automake-2 = callPackage ./nxfs-automake-2/package.nix { nxfsenv = nxfsenv-2-b14; };
 in
 let
-  nxfenv-2-c13 = nxfsenv-2-b13 // { file = file-2; };
+  nxfsenv-2-c13 = nxfsenv-2-b13 // { file = file-2; };
 
   # flex-2 :: derivation
-  flex-2 = callPackage ./nxfs-flex-2/package.nix { nxfsenv = nxfenv-2-c13; };
+  flex-2 = callPackage ./nxfs-flex-2/package.nix { nxfsenv = nxfsenv-2-c13; };
+in
+let
+  nxfsenv-2-c14 = nxfsenv-2-c13 // { flex = flex-2; };
+
+  # bison-2 :: derivation
+  bison-2 = callPackage ./nxfs-bison-2/package.nix { nxfsenv = nxfsenv-2-c14; };
 in
 {
+  inherit bison-2;
   inherit flex-2;
   inherit automake-2;
   inherit autoconf-2;
