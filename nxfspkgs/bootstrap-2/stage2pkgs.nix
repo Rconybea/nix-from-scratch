@@ -244,6 +244,16 @@ let
   gmp-2 = callPackage ./nxfs-gmp-2/package.nix { nxfsenv = nxfsenv-2-c13; };
 in
 let
+  nxfsenv-2-c14 = nxfsenv-2-c13 // { flex = flex-2; };
+  # bison-2 :: derivation
+  bison-2 = callPackage ./nxfs-bison-2/package.nix { nxfsenv = nxfsenv-2-c14; };
+in
+let
+  nxfsenv-2-b15 = nxfsenv-2-b14 // nxfsenv-2-c14 // { bison = bison-2; };
+  # texinfo-2 :: derivation
+  texinfo-2 = callPackage ./nxfs-texinfo-2/package.nix { nxfsenv = nxfsenv-2-b15; };
+in
+let
   # mpr-2 :: derivation
   mpfr-2 = callPackage ./nxfs-mpfr-2/package.nix { nxfsenv = nxfsenv-2-c13;
                                                    gmp = gmp-2; };
@@ -255,16 +265,11 @@ let
                                                   mpfr = mpfr-2;
                                                 };
 in
-let
-  nxfsenv-2-c14 = nxfsenv-2-c13 // { flex = flex-2; };
-
-  # bison-2 :: derivation
-  bison-2 = callPackage ./nxfs-bison-2/package.nix { nxfsenv = nxfsenv-2-c14; };
-in
 {
   inherit mpc-2;
   inherit mpfr-2;
   inherit gmp-2;
+  inherit texinfo-2;
   inherit bison-2;
   inherit flex-2;
   inherit automake-2;

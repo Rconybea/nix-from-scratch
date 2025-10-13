@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-echo "automake=${automake}"
+#echo "automake=${automake}"
 echo "autoconf=${autoconf}"
 echo "m4=${m4}"
 echo "perl=${perl}"
@@ -20,7 +20,7 @@ echo "toolchain=${toolchain}"
 echo "TMPDIR=${TMPDIR}"
 
 set -x
-export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${automake}/bin:${autoconf}/bin:${m4}/bin:${perl}/bin:${file}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
+export PATH="${gcc_wrapper}/bin:${toolchain}/bin:${autoconf}/bin:${m4}/bin:${perl}/bin:${file}/bin:${gnumake}/bin:${gawk}/bin:${grep}/bin:${sed}/bin:${tar}/bin:${coreutils}/bin:${findutils}/bin:${diffutils}/bin:${bash}/bin"
 
 src2=${TMPDIR}/src2
 builddir=${TMPDIR}/build
