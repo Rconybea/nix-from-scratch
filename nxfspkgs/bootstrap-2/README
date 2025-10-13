@@ -40,8 +40,8 @@ Dependencies somewhat overspecified for the sake of simplicity.
  +-----------------+--------------------------------+---------------+---------------+-----------------+
  | -A stage2pkgs   |         nxfs-texinfo-2         | nxfs-mpc-2    |               | -A stage2pkgs   |
  |    .binutils-2  +-----------------+--------------+---------------+               |    .gzip-2      |
- |                 | -A stage2pkgs   |-A stage2pkgs |               |               | nxfs-gzip-2     |
- |                 |    .automake-2  |   .bison-2   |               |               |                 |
+ |                 | -A stage2pkgs   |-A stage2pkgs | -A stage2pkgs |               | nxfs-gzip-2     |
+ |                 |    .automake-2  |   .bison-2   |    .mpfr-2    |               |                 |
  |                 |                 |              |               |               |                 |
  | nxfs-binutils-2 | nxfs-automake-2 | nxfs-bison-2 | nxfs-mpfr-2   | nxfs-python-2 | -A stage2pkgs   |
  |                 +-----------------+--------------+---------------+               |    .patch-2     |

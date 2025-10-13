@@ -244,12 +244,18 @@ let
   gmp-2 = callPackage ./nxfs-gmp-2/package.nix { nxfsenv = nxfsenv-2-c13; };
 in
 let
+  # mpr-2 :: derivation
+  mpfr-2 = callPackage ./nxfs-mpfr-2/package.nix { nxfsenv = nxfsenv-2-b13;
+                                                   gmp = gmp-2; };
+in
+let
   nxfsenv-2-c14 = nxfsenv-2-c13 // { flex = flex-2; };
 
   # bison-2 :: derivation
   bison-2 = callPackage ./nxfs-bison-2/package.nix { nxfsenv = nxfsenv-2-c14; };
 in
 {
+  inherit mpfr-2;
   inherit gmp-2;
   inherit bison-2;
   inherit flex-2;
