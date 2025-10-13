@@ -10,7 +10,7 @@ echo "mpc=${mpc}"
 echo "mpfr=${mpfr}"
 echo "gmp=${gmp}"
 echo "gcc_wrapper=${gcc_wrapper}"
-echo "toolchain=${toolchain}"
+#echo "toolchain=${toolchain}"
 echo "bison=${bison}";
 echo "flex=${flex}";
 echo "diffutils=${diffutils}"
@@ -104,7 +104,6 @@ export CONFIG_SHELL="${bash_program}"
 #   ${sysroot}/usr/include                                         [~/nixroot/nix/store/4ban...]
 # provide obstack.h which shadows the one in ${src}
 #
-#export CFLAGS="-I${coreutils}/include -I${sysroot}/usr/include -I${toolchain}/include"
 export CFLAGS="-idirafter ${glibc}/include"
 # TODO: -O2
 

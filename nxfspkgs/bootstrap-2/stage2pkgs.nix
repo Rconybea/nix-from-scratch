@@ -332,7 +332,20 @@ let
                                                            # nixify-gcc-source = nxfs-nixify-gcc-source
                                                          };
 in
+let
+  nxfsenv-2-97 = nxfsenv-2-96 // { gcc-x1 = gcc-x1-2; };
+  gcc-x1-wrapper-2 = callPackage ./nxfs-gcc-stage2-wrapper-2/package.nix { nxfsenv = nxfsenv-2-97; };
+in
+let
+  nxfsenv-2-98 = nxfsenv-2-97 // { gcc = gcc-x1-wrapper-2; };
+  libstdcxx-x1-2 = callPackage ./nxfs-libstdcxx-stage2-2/package.nix { nxfsenv = nxfsenv-2-98;
+                                                                       mpc = mpc-2;
+                                                                       mpfr = mpfr-2;
+                                                                       gmp = gmp-2; };
+in
 {
+  inherit libstdcxx-x1-2;
+  inherit gcc-x1-wrapper-2;
   inherit gcc-x1-2;
   inherit gcc-x0-wrapper-2;
   inherit glibc-2;
