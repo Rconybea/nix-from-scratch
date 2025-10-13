@@ -11,6 +11,8 @@
 
 set -euo pipefail
 
+echo "BEFORE: PATH=$PATH"
+
 PATH=
 for pkg in ${buildInputs}; do
     if [[ -d ${pkg} ]]; then
@@ -21,7 +23,7 @@ for pkg in ${buildInputs}; do
     fi
 done
 
-echo "PATH=$PATH"
+echo "AFTER: PATH=$PATH"
 
 bash_program=${bash}/bin/bash
 

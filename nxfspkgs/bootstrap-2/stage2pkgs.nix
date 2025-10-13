@@ -318,11 +318,13 @@ in
 let
   nxfsenv-2-95 = nxfsenv-2-94 // { glibc = glibc-2; };
 
+  binutils-x0-wrapper-2 = callPackage ./nxfs-binutils-stage1-wrapper-2/package.nix { nxfsenv = nxfsenv-2-95;
+                                                                                   };
+
   gcc-x0-wrapper-2 = callPackage ./nxfs-gcc-stage1-wrapper-2/package.nix { nxfsenv = nxfsenv-2-95; };
 in
 let
   nxfsenv-2-96 = nxfsenv-2-95 // { gcc = gcc-x0-wrapper-2; };  # or 2-95a
-  # TODO: binutils-x0-wrapper-2 = ...  for symmetry with stage3
 
   # TODO: rename subdir to follow nxfs-gcc-x1-3 in stage3
   gcc-x1-2 = callPackage ./nxfs-gcc-stage1-2/package.nix { nxfsenv = nxfsenv-2-96;
@@ -351,11 +353,35 @@ let
                                                                            libstdcxx = libstdcxx-x2-2;
                                                                          };
 in
+let
+  # TODO: omitting nxfsenv.libstdcxx (maybe rename to nxfsenv.cc.libstdcxx ?)
+  nxfsenv-2-99a = nxfsenv-2-98 // { gcc = gcc-x2-wrapper-2; };
+
+  nixified-gcc-source-2 = callPackage ./nxfs-nixify-gcc-source { bash = nxfsenv-2-99a.shell;
+                                                                 file = nxfsenv-2-99a.file;
+                                                                 coreutils = nxfsenv-2-99a.coreutils;
+                                                                 findutils = nxfsenv-2-99a.findutils;
+                                                                 grep = nxfsenv-2-99a.gnugrep;
+                                                                 tar = nxfsenv-2-99a.gnutar;
+                                                                 sed = nxfsenv-2-99a.gnused;
+                                                                 nxfs-defs = nxfsenv-2-99a.nxfs-defs;
+                                                               };
+
+  gcc-x3-2 = callPackage ./nxfs-gcc-stage2-2/package.nix  { nxfsenv = nxfsenv-2-99a;
+                                                            nixified-gcc-source = nixified-gcc-source-2;
+                                                            mpc = mpc-2;
+                                                            mpfr = mpfr-2;
+                                                            gmp = gmp-2;
+                                                            binutils-wrapper = binutils-x0-wrapper-2;
+                                                          };
+in
 {
+  inherit gcc-x3-2;
   inherit gcc-x2-wrapper-2;
   inherit libstdcxx-x2-2;
   inherit gcc-x1-wrapper-2;
   inherit gcc-x1-2;
+  inherit binutils-x0-wrapper-2;
   inherit gcc-x0-wrapper-2;
   inherit glibc-2;
   inherit python-2;
