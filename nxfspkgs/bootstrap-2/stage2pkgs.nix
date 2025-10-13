@@ -142,7 +142,11 @@ let
   callPackage = makeCallPackage allPkgs;
 in
 let
-  nxfsenv-2-0 = nxfsenv-1;
+  nxfsenv-2-00 = nxfsenv-1;
+  which-2 = callPackage ./nxfs-which-2/package.nix { nxfsenv = nxfsenv-2-00; };
+in
+let
+  nxfsenv-2-0 = nxfsenv-2-00 // { which = which-2; };
   diffutils-2 = callPackage ./nxfs-diffutils-2/package.nix { nxfsenv = nxfsenv-2-0; };
 in
 let
@@ -307,4 +311,5 @@ in
   inherit gnused-2;
   inherit findutils-2;
   inherit diffutils-2;
+  inherit which-2;
 }
