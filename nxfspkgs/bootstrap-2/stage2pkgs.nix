@@ -204,6 +204,8 @@ let
 
   nxfsenv-2-10 = nxfsenv-2-9 // { coreutils = coreutils-2; };
 
+  # pkgconf-2 :: derivation
+  pkgconf-2  = callPackage ./nxfs-pkgconf-2/package.nix { nxfsenv = nxfsenv-2-10; };
   # m4-2 :: derivation
   m4-2       = callPackage ./nxfs-m4-2/package.nix { nxfsenv = nxfsenv-2-10; };
   # NOTE: stage3 perl gets pkgconf, libxcrypt
@@ -271,14 +273,32 @@ let
 in
 let
   # TODO: pkgconf, for consistency with stage3
-  nxfsenv-2-d13 = nxfsenv-2-10 // { #pkgconf = pkgconf-2
-    zlib = zlib-2;
-  };
+  nxfsenv-2-d13 = nxfsenv-2-10 // { pkgconf = pkgconf-2;
+                                    zlib = zlib-2;
+                                  };
 
   # python-2 :: derivation
   python-2 = callPackage ./nxfs-python-2/package.nix { nxfsenv = nxfsenv-2-d13;
                                                        popen = popen-2;
                                                      };
+in
+let
+#  nxfsenv-2-16 = nxfsenv-2-10 // { binutils = binutils-2;
+#                                   perl     = perl-2;
+#                                   texinfo  = texinfo-2;
+#                                   bison    = bison-2;
+#                                   flex     = flex-2;
+#                                   file     = file-2;
+#                                   pkgconf  = pkgconf-2;
+#                                   m4       = m4-2;
+#                                   python   = python-2;
+#                                   zlib     = zlib-2;
+#                                   gperf    = gperf-2;
+#                                   patch    = patch-2;
+#                                   gzip     = gzip-2;
+#                                   patchelf = patchelf-2;
+#                                   which    = which-2;
+#                                 };
 in
 {
   inherit python-2;
@@ -293,6 +313,7 @@ in
   inherit binutils-2;
   inherit perl-2;
   inherit m4-2;
+  inherit pkgconf-2;
   inherit file-2;
   inherit gzip-2;
   inherit patch-2;
