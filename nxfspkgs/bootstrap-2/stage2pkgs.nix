@@ -44,7 +44,8 @@
   args :
 
 let
-  # nxfs-defs :: { system :: string, target_tuple :: string }
+  # nxfs-defs :: { system       :: string,
+  #                target_tuple :: string }
   # e.g.
   #   nxfs-defs.system = "x86_64-linux"
   #   nxfs-defs.target_tuple = "x86_64-pc-linux-gnu"
@@ -64,12 +65,6 @@ let
 in
 
 let
-  # allPkgs :: attrset
-  #
-  # provides all packages up to stage-2
-  #
-  allPkgs = nxfspkgs.stage2pkgs;
-
   bash-1 = import ../bootstrap-1/nxfs-bash-1/default.nix;
   locale-archive-1 = import ../bootstrap-1/nxfs-locale-archive-1/default.nix;
 
@@ -124,22 +119,19 @@ let
 
   # in nixpkgs/lib/customisation.nix, similar function is lib.callPackageWith
   #
-  # allPkgs   :: attrset
-  # path      :: path        to some .nix file
-  # overrides :: attrset   overrides; apply on top of allPkgs
+  # makeCallPackage :: allpkgs -> path -> overrides -> result
   #
-  makeCallPackage = allpkgs: path: overrides:
-    let
-      # fn :: attrset -> derivation
-      fn = import path;
-    in
-      # builtins.functionArgs()    = formal parameters to fn
-      # builtins.insertsectAttrs() = take from allPkgs just fn's arguments
-      #
-      fn ((builtins.intersectAttrs (builtins.functionArgs fn) allpkgs) // overrides);
+  # where:
+  # - 'import path' evaluates to a function ... -> result
+  # - allpkgs   :: attrset
+  # - path      :: path        to some .nix file
+  # - overrides :: attrset   overrides; apply on top of allpkgs
+  #
+  makeCallPackage = import ../lib/makeCallPackage.nix;
+
 in
 let
-  callPackage = makeCallPackage allPkgs;
+  callPackage = makeCallPackage nxfspkgs.stage2pkgs;
 in
 let
   nxfsenv-2-00 = nxfsenv-1;

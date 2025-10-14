@@ -1,0 +1,110 @@
+# Similar in spirit to nixpkgs/top-level/default.nix
+# Intended to be composable and overrideable.
+# See nxfspkgs/{default.nix, impure.nix, nxfspkgs.nix}
+#
+# Requires:
+# 1. nixcpp built + installed. See nix-from-scratch/README)
+# 2. stage0 packages built + imported. See nix-from-scratch/nxfspkgs/bootstrap/README
+#
+# Use:
+#   $ nix-build path/to/nix-from/scratch/nxfspkgs -A stage3pkgs.diffutils-3
+# or
+#   $ export NIX_PATH=path/to/nix-from-scratch:${NIX_PATH}
+#   $ nix-build '<nxfspkgs>' -A stage3pkgs.diffutils-3
+#
+# Major difference from nixpkgs.nix: w'ere carefully nesting
+# nxfsenv attribute sets so that bootstrap process is more spelled out.
+# See nxfsenv-2-0...
+{
+  # nxfspkgs: will be the contents of nxfspkgs/nxfspkgs.nix after composing
+  # with config choices + overlays.
+  # See nix-from-scratch/nxfspkgs/impure.nix
+  #
+  # The sole reason for pulling in <nxfspkgs> here is for nxfspkgs.stage3pkgs.
+  # That refers to this nix function, after applying nxfspkgs configs + overlays.
+  #
+  # This choice allows user to customize/override stage3pkgs without (for example) cluttering NIX_PATH
+  #
+  nxfspkgs ? import <nxfspkgs> {}
+
+,  # allow nxfspkgs configuration attributes (if we ever have them) to be passed in as arguments.
+  config ? {}
+
+, # overlays for extension
+  overlays ? []
+
+, # accumulate unexpected args
+  ...
+} @
+  # args :: attrset
+  #
+  # alternative way to access all the arguments to this function, e.g:
+  # args.nxfspkgs, args.config, args.overlays
+  #
+  args :
+
+let
+  stage2pkgs = nxfspkgs.stage2pkgs;
+
+  # nxfs-defs :: { target_tuple :: string }
+  #   expect nxfs-defs.target_tuple="x86_64-pc-linux-gnu"
+  #
+  nxfs-defs = import ./bootstrap-1/nxfs-defs.nix;
+
+  # autotools eventually evaluates to derivation with defaults for:
+  #   .builder .args .baseInputs .buildInputs .system
+  # default builder requires pkgs.bash
+  #
+  # nxfs-autotools :: pkgs -> attrs -> derivation
+  nxfs-autotools = import ../build-support/autotools;
+
+  # bootstrap stdenv for stage-2
+  nxfsenv-2 = {
+    # coreutils,gnused,bash :: derivation
+    gcc_wrapper  = stage2pkgs.gcc-wrapper-2;
+    glibc        = stage2pkgs.glibc-2;
+    perl         = stage2pkgs.perl-2;
+    patch        = stage2pkgs.patch-2;
+    findutils    = stage2pkgs.findutils-2;
+    binutils     = stage2pkgs.binutils-2;
+    coreutils    = stage2pkgs.coreutils-2;
+    gawk         = stage2pkgs.gawk-2;
+    gnumake      = stage2pkgs.gnumake-2;
+    gnutar       = stage2pkgs.gnutar-2;
+    gnugrep      = stage2pkgs.gnugrep-2;
+    gnused       = stage2pkgs.gnused-2;
+    # want this to be shell
+    bash         = stage2pkgs.bash-2;
+    shell        = stage2pkgs.bash-2;
+    # mkDerivation :: attrs -> derivation
+    mkDerivation = nxfs-autotools nxfsenv-2;
+
+    #  expand with stuff from bootstrap-3/default.nix.nxfsenv { .. }
+  };
+
+  # in nixpkgs/lib/customisation.nix, similar function is lib.callPackageWith
+  #
+  # makeCallPackage :: allpkgs -> path -> overrides -> result
+  #
+  # where:
+  # - 'import path' evaluates to a function ... -> result
+  # - allpkgs   :: attrset
+  # - path      :: path        to some .nix file
+  # - overrides :: attrset   overrides; apply on top of allpkgs
+  #
+  makeCallPackage = import ../lib/makeCallPackage.nix;
+in
+let
+  callPackage = makeCallPackage nxfspkgs.stage3pkgs;
+in
+let
+  nxfsenv-3-00 = nxfsenv-2;
+  # which-3 :: derivation
+  which-3 = callPackage ./nxfs-which-3/package.nix { nxfsenv = nxfsenv-3-00; };
+  # diffutils-3 :: derivation
+  diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { nxfsenv = nxfsenv-3-00; };
+in
+{
+  inherit diffutils-3;
+  inherit which-3;
+}

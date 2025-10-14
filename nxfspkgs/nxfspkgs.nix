@@ -45,6 +45,7 @@ let
 
   # new version of stage2 bootstrap.  intend to replace bootstrap-2
   stage2pkgs = (import ./bootstrap-2/stage2pkgs.nix) args;
+  stage3pkgs = (import ./bootstrap-3/stage3pkgs.nix) args;
 in
 
 let
@@ -61,52 +62,40 @@ let
   # bootstrap stdenv for stage-2
   nxfsenv-2 = {
     # coreutils,gnused,bash :: derivation
-    gcc_wrapper  = import ./bootstrap-2/nxfs-gcc-wrapper-2;
-    glibc        = import ./bootstrap-2/nxfs-glibc-stage1-2;
-    perl         = import ./bootstrap-2/nxfs-perl-2;
-    patch        = import ./bootstrap-2/nxfs-patch-2;
-    findutils    = import ./bootstrap-2/nxfs-findutils-2;
-    binutils     = import ./bootstrap-2/nxfs-binutils-2;
-    coreutils    = import ./bootstrap-2/nxfs-coreutils-2;
-    gawk         = import ./bootstrap-2/nxfs-gawk-2;
-    gnumake      = import ./bootstrap-2/nxfs-gnumake-2;
-    gnutar       = import ./bootstrap-2/nxfs-tar-2;
-    gnugrep      = import ./bootstrap-2/nxfs-grep-2;
-    gnused       = import ./bootstrap-2/nxfs-sed-2;
-    bash         = import ./bootstrap-2/nxfs-bash-2;
+    gcc_wrapper  = stage2pkgs.gcc-wrapper-2;
+    glibc        = stage2pkgs.glibc-2;
+    perl         = stage2pkgs.perl-2;
+    patch        = stage2pkgs.patch-2;
+    findutils    = stage2pkgs.findutils-2;
+    binutils     = stage2pkgs.binutils-2;
+    coreutils    = stage2pkgs.coreutils-2;
+    gawk         = stage2pkgs.gawk-2;
+    gnumake      = stage2pkgs.gnumake-2;
+    gnutar       = stage2pkgs.gnutar-2;
+    gnugrep      = stage2pkgs.gnugrep-2;
+    gnused       = stage2pkgs.gnused-2;
+    # want this to be shell
+    bash         = stage2pkgs.bash-2;
+    shell        = stage2pkgs.bash-2;
     # mkDerivation :: attrs -> derivation
     mkDerivation = nxfs-autotools nxfsenv-2;
 
     #  expand with stuff from bootstrap-3/default.nix.nxfsenv { .. }
   };
 
-  # In nixpkgs/lib/customisation.nix, similar function is lib.callPackageWith
-  #
-  # allPkgs   :: attrset
-  # path      :: path         to some .nix file
-  # overrides :: attrset      overrides relative to allPkgs
-  makeCallPackage = allPkgs: path: overrides:
-    let
-      # fn :: attrset -> derivation
-      fn = import path;
-    in
-      # builtins.functionArgs()    = formal parameters to fn
-      # builtins.insertsectAttrs() = take from allPkgs just fn's arguments
-      #
-      fn ((builtins.intersectAttrs (builtins.functionArgs fn) allPkgs) // overrides);
-in
-let
-  callPackage = makeCallPackage allPkgs;
 in
 let
   popen-template = bootstrap-2.nxfs-popen-template-2;
 in
 let
+  # which-3, diffutils-3 :: derivation
+  which-3 = stage3pkgs.which-3;
+  diffutils-3 = stage3pkgs.diffutils-3;
+
   nxfsenv-3-0 = { nxfs-defs = nxfs-defs; };
-  # which-3 :: derivation
-  which-3     = callPackage ./bootstrap-3/nxfs-which-3 {};
-  # diffutils-3 :: derivation
-  diffutils-3 = callPackage ./bootstrap-3/nxfs-diffutils-3 {};
+in
+let
+  callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
 in
 let
   nxfsenv-3-1 = nxfsenv-3-0 // { diffutils = diffutils-3; };
@@ -140,7 +129,7 @@ let
   bash-3 = callPackage ./bootstrap-3/nxfs-bash-3 { nxfsenv-3 = nxfsenv-3-5; };
 in
 let
-  nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; };
+  nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; shell = bash-3; };
   # popen-3     :: derivation
   popen-3 = callPackage ./bootstrap-3/nxfs-popen-3 { nxfsenv-3 = nxfsenv-3-6;
                                                      popen-template = popen-template; };
@@ -1177,6 +1166,7 @@ let
 in
 {
   stage2pkgs                                  = stage2pkgs;
+  stage3pkgs                                  = stage3pkgs;
 
   nxfs-autotools                              = nxfs-autotools;
 
