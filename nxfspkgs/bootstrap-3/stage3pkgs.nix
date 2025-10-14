@@ -188,9 +188,16 @@ let
   gperf-3      = callPackage ./nxfs-gperf-3/package.nix    { nxfsenv = nxfsenv-3-10; };
   # patchelf-3 :: derivation
   patchelf-3   = callPackage ./nxfs-patchelf-3/package.nix { nxfsenv = nxfsenv-3-10; };
+in
+let
+  # nxfsenv-3-a11 :: attrset
+  nxfsenv-3-a11 = nxfsenv-3-10 // { pkgconf = pkgconf-3; };
 
+  # libxcrypt-3 :: derivation
+  libxcrypt-3  = callPackage ./nxfs-libxcrypt-3/package.nix { nxfsenv = nxfsenv-3-a11; };
 in
 {
+  inherit libxcrypt-3;
   inherit patchelf-3;
   inherit gperf-3;
   inherit patch-3;
