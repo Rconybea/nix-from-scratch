@@ -180,9 +180,12 @@ let
   file-3       = callPackage ./nxfs-file-3/package.nix { nxfsenv = nxfsenv-3-10; };
   # zlib-3 :: derivation
   zlib-3       = callPackage ./nxfs-zlib-3/package.nix { nxfsenv = nxfsenv-3-10; };
+  # patchelf-3 :: derivation
+  patchelf-3   = callPackage ./nxfs-patchelf-3/package.nix { nxfsenv = nxfsenv-3-10; };
 
 in
 {
+  inherit patchelf-3;
   inherit zlib-3;
   inherit file-3;
   inherit m4-3;
