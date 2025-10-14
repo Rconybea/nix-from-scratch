@@ -1,8 +1,6 @@
 {
   # expect this to be final env from bootstrap-2
   nxfsenv,
-  # packages from bootstrap stage 3
-  nxfsenv-3,
 } :
 
 let
@@ -56,7 +54,7 @@ nxfsenv.mkDerivation {
   '';
 
   buildInputs = [
-    nxfsenv-3.diffutils
+    nxfsenv.diffutils
     nxfsenv.gcc_wrapper
     nxfsenv.binutils
     nxfsenv.gnumake

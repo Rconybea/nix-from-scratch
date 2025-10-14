@@ -91,6 +91,7 @@ let
   # which-3, diffutils-3 :: derivation
   which-3 = stage3pkgs.which-3;
   diffutils-3 = stage3pkgs.diffutils-3;
+  findutils-3 = stage3pkgs.findutils-3;
 
   nxfsenv-3-0 = { nxfs-defs = nxfs-defs; };
 in
@@ -100,7 +101,7 @@ in
 let
   nxfsenv-3-1 = nxfsenv-3-0 // { diffutils = diffutils-3; };
   # findutils-3 :: derivation
-  findutils-3 = callPackage ./bootstrap-3/nxfs-findutils-3 { nxfsenv-3 = nxfsenv-3-1; };
+  #findutils-3 = callPackage ./bootstrap-3/nxfs-findutils-3 { nxfsenv-3 = nxfsenv-3-1; };
 in
 let
   nxfsenv-3-2 = nxfsenv-3-1 // { findutils = findutils-3; };

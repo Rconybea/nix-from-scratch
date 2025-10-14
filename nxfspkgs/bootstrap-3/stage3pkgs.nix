@@ -80,6 +80,8 @@ let
     mkDerivation = nxfs-autotools nxfsenv-2;
 
     #  expand with stuff from bootstrap-3/default.nix.nxfsenv { .. }
+
+    nxfs-defs = nxfs-defs;
   };
 
   # in nixpkgs/lib/customisation.nix, similar function is lib.callPackageWith
@@ -104,7 +106,14 @@ let
   # diffutils-3 :: derivation
   diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { nxfsenv = nxfsenv-3-00; };
 in
+let
+  # nxfsenv-3-1 :: attrset
+  nxfsenv-3-1 = nxfsenv-3-00 // { diffutils = diffutils-3; };
+  # findutils-3 :: derivation
+  findutils-3 = callPackage ./nxfs-findutils-3/package.nix { nxfsenv = nxfsenv-3-1; };
+in
 {
+  inherit findutils-3;
   inherit diffutils-3;
   inherit which-3;
 }
