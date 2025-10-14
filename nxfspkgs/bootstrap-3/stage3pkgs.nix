@@ -237,11 +237,19 @@ let
                                                  mpfr = mpfr-3; };
 in
 let
+  # nxfsenv-3-c14 :: attrset
   nxfsenv-3-c14 = nxfsenv-3-c13 // { flex = flex-3; };
   # bison-3 :: derivation
   bison-3 = callPackage ./nxfs-bison-3/package.nix { nxfsenv = nxfsenv-3-c14; };
 in
+let
+  # nxfsenv-3-b15 :: attrset
+  nxfsenv-3-b15 = nxfsenv-3-b14 // nxfsenv-3-c14 // { bison = bison-3; };
+  # texinfo-3 :: derivation
+  texinfo-3 = callPackage ./nxfs-texinfo-3/package.nix { nxfsenv = nxfsenv-3-b15; };
+in
 {
+  inherit texinfo-3;
   inherit mpc-3;
   inherit mpfr-3;
   inherit gmp-3;
