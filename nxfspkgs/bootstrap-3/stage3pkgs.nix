@@ -215,8 +215,13 @@ let
   autoconf-3 = callPackage ./nxfs-autoconf-3/package.nix { nxfsenv = nxfsenv-3-b13; };
 in
 let
+  # nxfsenv-b14 :: attrset
+  nxfsenv-3-b14 = nxfsenv-3-b13 // { autoconf = autoconf-3; };
+  # autoconf-3 :: derivation
+  automake-3 = callPackage ./nxfs-automake-3/package.nix { nxfsenv = nxfsenv-3-b14; };
 in
 {
+  inherit automake-3;
   inherit autoconf-3;
   inherit binutils-3;
   inherit perl-3;
