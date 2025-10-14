@@ -92,7 +92,7 @@ let
   inherit (stage3pkgs)
     which-3 diffutils-3 findutils-3 gnused-3 gnugrep-3 bzip2-3 gnutar-3
     bash-3 popen-3 gawk-3 gnumake-3 coreutils-3 pkgconf-3 m4-3 file-3
-    zlib-3 gzip-3 patch-3 gperf-3 patchelf-3 libxcrypt-3;
+    zlib-3 gzip-3 patch-3 gperf-3 patchelf-3 libxcrypt-3 perl-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -121,14 +121,7 @@ let
                   nxfs-defs = nxfs-defs;
                 };
 
-  nxfsenv-3-xx = nxfsenv-3-10 // { libxcrypt = libxcrypt-3; };
-  nxfsenv-3-a11 = nxfsenv-3-xx;
-in
-let
-  nxfsenv-3-a12 = nxfsenv-3-a11;
-  # perl-3 :: derivation
-  perl-3 = callPackage ./bootstrap-3/nxfs-perl-3 { nxfsenv-3 = nxfsenv-3-a12;
-                                                   libxcrypt = libxcrypt-3; };
+  nxfsenv-3-a12 = nxfsenv-3-10 // { libxcrypt = libxcrypt-3; };
 in
 let
   nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
