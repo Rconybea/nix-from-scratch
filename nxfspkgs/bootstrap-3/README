@@ -58,27 +58,27 @@ WWe need nxfs-xz-3, nxfs-bzip-3, nxfs-curl-3 for a stdenv.
  +------------------------------------------------------+-------------------------------------------------+
  | -A glibc-x1-3                              nxfs-glibc-x1-3                                             |
  +-----------------+------------------------------------+---------------+---------------+-----------------+
- | -A stage3pkgs   | -A stage3pkgs                      | -A stage3pkgs | -A python-3   | -A stage3pkgs   |
- |    .binutils-3  |    .texinfo-3                      |    .mpc-3     |               |    .gzip-3      |
+ | -A stage3pkgs   | -A stage3pkgs                      | -A stage3pkgs | -A stage3pkgs | -A stage3pkgs   |
+ |    .binutils-3  |    .texinfo-3                      |    .mpc-3     |    .python-3  |    .gzip-3      |
  |                 |         nxfs-texinfo-3             | nxfs-mpc-3    |               | nxfs-gzip-3     |
  |                 +----------------b15-----------------+------d15------+               |                 |
  |                 | -A stage3pkgs   | -A stage3pkgs    | -A stage3pkgs |               |                 |
- | nxfs-binutils-3 |    .automake-3  |    .bison-3      |    .mpfr-3    | nxfs-python-3 |                 |
- |                 | nxfs-automake-3 | nxfs-bison-3     | nxfs-mpfr-3   |               |                 |
- |                 +--------b14------+------c14---------+------d14------+               |                 |
- |                 | -A stage3pkgs   | -A stage3pkgs    | -A stage3pkgs |               | -A stage3pkgs   |
- |                 |    .autoconf-3  |    .flex-3       |    .gmp-3     |               |    .patch-3     |
- |                 | nxfs-autoconf-3 | nxfs-flex-3      | nxfs-gmp-3    |               | nxfs-patch-3    |
- +-----------------+-----------------+---------------+--+------c13------+------d13------+                 |
- +--------------------------b13------+---------------|  -A stage3pkgs   | -A stage3pkgs |                 |
- | -A stage3pkgs   nxfs-perl-3       | -A stage3pkgs |     .file-3      |    .zlib-3    | -A stage3pkgs   |
- |    .perl-3                        |    .m4-3      |                  |               |    .gperf-3     |
- +-----------------------------------+               |                  |               | nxfs-gperf-3    |
- | -A stage3pkgs   nxfs-libxcrypt-3  |               |                  |               |                 |
- |    .libxcrypt-3                   | nxfs-m4-3     |  nxfs-file-3     | nxfs-zlib-3   |                 |
+ | nxfs-binutils-3 |    .automake-3  |    .bison-3      |    .mpfr-3    | nxfs-python-3 | -A stage3pkgs   |
+ |                 | nxfs-automake-3 | nxfs-bison-3     | nxfs-mpfr-3   |               |    .patch-3     |
+ |                 +--------b14------+------c14---------+------d14------+               | nxfs-patch-3    |
+ |                 | -A stage3pkgs   | -A stage3pkgs    | -A stage3pkgs |               |                 |
+ |                 |    .autoconf-3  |    .flex-3       |    .gmp-3     |               |                 |
+ |                 | nxfs-autoconf-3 | nxfs-flex-3      | nxfs-gmp-3    |               | -A stage3pkgs   |
+ +-----------------+-----------------+---------------+--+------c13------+------d13------+    .gperf-3     |
+ +--------------------------b13------+---------------|  -A stage3pkgs   | -A stage3pkgs | nxfs-gperf-3    |
+ | -A stage3pkgs   nxfs-perl-3       | -A stage3pkgs |     .file-3      |    .zlib-3    |                 |
+ |    .perl-3                        |    .m4-3      |                  |               |                 |
  +-----------------------------------+               |                  |               | -A stage3pkgs   |
- | -A stage3pkgs   nxfs-pkgconf-3    |               |                  |               |    .patchelf-3  |
- |    .pkgconf-3                     |               |                  |               | nxfs-patchelf-3 |
+ | -A stage3pkgs   nxfs-libxcrypt-3  |               |                  |               |    .patchelf-3  |
+ |    .libxcrypt-3                   | nxfs-m4-3     |  nxfs-file-3     | nxfs-zlib-3   | nxfs-patchelf-3 |
+ +-----------------------------------+               |                  |               |                 |
+ | -A stage3pkgs   nxfs-pkgconf-3    |               |                  |               |                 |
+ |    .pkgconf-3                     |               |                  |               |                 |
  +-----------------------------------+---------------+------------------+---------------+-----------------+
  | -A stage3pkgs.coreutils-3                  nxfs-coreutils-3                                            |
  +--------------------------------------------------------------------------------------------------------+

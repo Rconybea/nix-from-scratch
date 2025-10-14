@@ -93,7 +93,8 @@ let
     which-3 diffutils-3 findutils-3 gnused-3 gnugrep-3 bzip2-3 gnutar-3
     bash-3 popen-3 gawk-3 gnumake-3 coreutils-3 pkgconf-3 m4-3 file-3
     zlib-3 gzip-3 patch-3 gperf-3 patchelf-3 libxcrypt-3 perl-3 binutils-3
-    autoconf-3 automake-3 flex-3 bison-3 gmp-3 mpfr-3 mpc-3 texinfo-3;
+    autoconf-3 automake-3 flex-3 bison-3 gmp-3 mpfr-3 mpc-3 texinfo-3
+    python-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -101,7 +102,8 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-10 = { mpc = mpc-3;
+  nxfsenv-3-10 = { python = python-3;
+                   mpc = mpc-3;
                    mpfr = mpfr-3;
                    gmp = gmp-3;
                    bison = bison-3;
@@ -139,15 +141,7 @@ let
   nxfsenv-3-c14 = nxfsenv-3-10;
   nxfsenv-3-d13 = nxfsenv-3-10;
   nxfsenv-3-b15 = nxfsenv-3-10;
-in
-let
-  # editor bait: pkg-config
-  nxfsenv-3-d13 = nxfsenv-3-10 // { pkgconf = pkgconf-3;
-                                    zlib = zlib-3; };
-  # python-3 :: derivation
-  python-3 = callPackage ./bootstrap-3/nxfs-python-3 { nxfsenv-3 = nxfsenv-3-d13;
-                                                       popen = popen-3;
-                                                     };
+  nxfsenv-3-16  = nxfsenv-3-10;
 in
 let
   nxfsenv-3-16 = nxfsenv-3-10 // { binutils = binutils-3;

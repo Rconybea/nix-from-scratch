@@ -248,7 +248,17 @@ let
   # texinfo-3 :: derivation
   texinfo-3 = callPackage ./nxfs-texinfo-3/package.nix { nxfsenv = nxfsenv-3-b15; };
 in
+let
+  # editor bait: pkg-config
+  nxfsenv-3-d13 = nxfsenv-3-10 // { pkgconf = pkgconf-3;
+                                    zlib = zlib-3; };
+  # python-3 :: derivation
+  python-3 = callPackage ./nxfs-python-3/package.nix { nxfsenv = nxfsenv-3-d13;
+                                                       popen = popen-3;
+                                                     };
+in
 {
+  inherit python-3;
   inherit texinfo-3;
   inherit mpc-3;
   inherit mpfr-3;
