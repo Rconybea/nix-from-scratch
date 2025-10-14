@@ -65,6 +65,7 @@ let
     glibc        = stage2pkgs.glibc-2;
     perl         = stage2pkgs.perl-2;
     patch        = stage2pkgs.patch-2;
+    patchelf     = stage2pkgs.patchelf-2;
     findutils    = stage2pkgs.findutils-2;
     binutils     = stage2pkgs.binutils-2;
     coreutils    = stage2pkgs.coreutils-2;
@@ -124,7 +125,14 @@ let
   # gnugrep-3 :: derivation
   gnugrep-3 = callPackage ./nxfs-grep-3/package.nix { nxfsenv = nxfsenv-3-3; };
 in
+let
+  # nxfsenv-3-3b :: attrset
+  nxfsenv-3-3b = nxfsenv-3-3 // { gnugrep = gnugrep-3; };
+  # bzip2-3 :: derivation
+  bzip2-3 = callPackage ./nxfs-bzip2-3/package.nix { nxfsenv = nxfsenv-3-3b; };
+in
 {
+  inherit bzip2-3;
   inherit gnugrep-3;
   inherit gnused-3;
   inherit findutils-3;
