@@ -100,37 +100,36 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-10 = { patchelf = patchelf-3;
-                  gperf = gperf-3;
-                  patch = patch-3;
-                  gzip = gzip-3;
-                  zlib = zlib-3;
-                  file = file-3;
-                  m4 = m4-3;
-                  pkgconf = pkgconf-3;
-                  coreutils = coreutils-3;
-                  gnumake = gnumake-3;
-                  gawk = gawk-3;
-                  shell = bash-3; bash = bash-3;
-                  gnutar = gnutar-3;
-                  bzip2 = bzip2-3;
-                  gnugrep = gnugrep-3;
-                  gnused = gnused-3;
-                  diffutils = diffutils-3;
-                  findutils = findutils-3;
-                  nxfs-defs = nxfs-defs;
-                };
+  nxfsenv-3-10 = { binutils = binutiles-3;
+                   patchelf = patchelf-3;
+                   gperf = gperf-3;
+                   patch = patch-3;
+                   gzip = gzip-3;
+                   zlib = zlib-3;
+                   file = file-3;
+                   m4 = m4-3;
+                   libxcrypt = libxcrypt-3;
+                   pkgconf = pkgconf-3;
+                   coreutils = coreutils-3;
+                   gnumake = gnumake-3;
+                   gawk = gawk-3;
+                   shell = bash-3; bash = bash-3;
+                   gnutar = gnutar-3;
+                   bzip2 = bzip2-3;
+                   gnugrep = gnugrep-3;
+                   gnused = gnused-3;
+                   diffutils = diffutils-3;
+                   findutils = findutils-3;
+                   nxfs-defs = nxfs-defs;
+                 };
 
-  nxfsenv-3-a12 = nxfsenv-3-10 // { libxcrypt = libxcrypt-3; };
+  nxfsenv-3-a12 = nxfsenv-3-10;
 in
 let
   nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
                                      perl = perl-3;
                                      libxcrypt = libxcrypt-3;
                                    };
-  # binutils-3 :: derivation
-  binutils-3 = callPackage ./bootstrap-3/nxfs-binutils-3 { nxfsenv-3 = nxfsenv-3-b13; };
-
   # autoconf-3 :: derivation
   autoconf-3 = callPackage ./bootstrap-3/nxfs-autoconf-3 { nxfsenv-3 = nxfsenv-3-b13; };
 in

@@ -197,11 +197,22 @@ let
   libxcrypt-3  = callPackage ./nxfs-libxcrypt-3/package.nix { nxfsenv = nxfsenv-3-a11; };
 in
 let
+  # nxfsenv-3-a12 :: attrset
   nxfsenv-3-a12 = nxfsenv-3-a11 // { libxcrypt = libxcrypt-3; };
   # perl-3 :: derivation
   perl-3 = callPackage ./nxfs-perl-3/package.nix { nxfsenv = nxfsenv-3-a12; };
 in
+let
+  # nxfsenv-3-b13 :: attrset
+  nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
+                                     perl = perl-3;
+                                     libxcrypt = libxcrypt-3;
+                                   };
+  # binutils-3 :: derivation
+  binutils-3 = callPackage ./nxfs-binutils-3/package.nix { nxfsenv = nxfsenv-3-b13; };
+in
 {
+  inherit binutils-3;
   inherit perl-3;
   inherit libxcrypt-3;
   inherit patchelf-3;
