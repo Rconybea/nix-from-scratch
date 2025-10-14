@@ -176,8 +176,15 @@ let
   pkgconf-3    = callPackage ./nxfs-pkgconf-3/package.nix  { nxfsenv = nxfsenv-3-10; };
   # m4-3 :: derivation
   m4-3         = callPackage ./nxfs-m4-3/package.nix { nxfsenv = nxfsenv-3-10; };
+  # file-3 :: derivation
+  file-3       = callPackage ./nxfs-file-3/package.nix { nxfsenv = nxfsenv-3-10; };
+  # zlib-3 :: derivation
+  zlib-3       = callPackage ./nxfs-zlib-3/package.nix { nxfsenv = nxfsenv-3-10; };
+
 in
 {
+  inherit zlib-3;
+  inherit file-3;
   inherit m4-3;
   inherit pkgconf-3;
   inherit coreutils-3;

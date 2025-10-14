@@ -1,0 +1,51 @@
+{
+  # nxfsenv :: derivation
+  nxfsenv,
+} :
+
+let
+  version = "5.44";
+in
+
+nxfsenv.mkDerivation {
+  name         = "nxfs-file-3";
+  version      = version;
+
+  src          = builtins.fetchTarball { name = "file-${version}-source";
+                                         url = "https://astron.com/pub/file/file-${version}.tar.gz";
+                                         sha256 = "1zzm575fk4lsg8h0jk6jhcyk13w1qxm3ykssyqrmzq7wiginj9a3"; };
+
+  buildPhase = ''
+    set -e
+
+    src2=$src
+    #src2=$TMPDIR/src2
+    builddir=$TMPDIR/build
+
+    mkdir -p $src2
+    mkdir -p $builddir
+
+    bash_program=$bash/bin/bash
+
+    # $src/configure honors CONFIG_SHELL
+    export CONFIG_SHELL="$bash_program"
+
+    (cd $builddir && bash $src2/configure --prefix=$out --enable-install-program=hostname --enable-no-install-program=kill,uptime CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+
+    (cd $builddir && make SHELL=$CONFIG_SHELL)
+
+    (cd $builddir && make install SHELL=$CONFIG_SHELL)
+  '';
+
+  buildInputs = [ nxfsenv.gcc_wrapper
+                  nxfsenv.binutils
+                  nxfsenv.gnumake
+                  nxfsenv.gawk
+                  nxfsenv.gnutar
+                  nxfsenv.gnugrep
+                  nxfsenv.gnused
+                  nxfsenv.findutils
+                  nxfsenv.diffutils
+                  nxfsenv.coreutils
+                  nxfsenv.shell ];
+}

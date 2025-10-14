@@ -91,7 +91,8 @@ let
   # which-3, diffutils-3 :: derivation
   inherit (stage3pkgs)
     which-3 diffutils-3 findutils-3 gnused-3 gnugrep-3 bzip2-3 gnutar-3
-    bash-3 popen-3 gawk-3 gnumake-3 coreutils-3 pkgconf-3 m4-3;
+    bash-3 popen-3 gawk-3 gnumake-3 coreutils-3 pkgconf-3 m4-3 file-3
+    zlib-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -99,7 +100,9 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-9 = { m4 = m4-3;
+  nxfsenv-3-9 = { zlib = zlib-3;
+                  file = file-3;
+                  m4 = m4-3;
                   pkgconf = pkgconf-3;
                   coreutils = coreutils-3;
                   gnumake = gnumake-3;
@@ -116,10 +119,6 @@ let
 in
 let
   nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
-  # file-3 :: derivation
-  file-3       = callPackage ./bootstrap-3/nxfs-file-3     { nxfsenv-3 = nxfsenv-3-10; };
-  # zlib-3 :: derivation
-  zlib-3       = callPackage ./bootstrap-3/nxfs-zlib-3     { nxfsenv-3 = nxfsenv-3-10; };
   # patchelf-3 :: derivation
   patchelf-3   = callPackage ./bootstrap-3/nxfs-patchelf-3 { nxfsenv-3 = nxfsenv-3-10; };
   # gperf-3 :: derivation
