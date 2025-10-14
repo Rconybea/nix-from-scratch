@@ -112,7 +112,14 @@ let
   # findutils-3 :: derivation
   findutils-3 = callPackage ./nxfs-findutils-3/package.nix { nxfsenv = nxfsenv-3-1; };
 in
+let
+  # nxfsenv-3-2 :: attrset
+  nxfsenv-3-2 = nxfsenv-3-1 // { findutils = findutils-3; };
+  # gnused-3 :: derivation
+  gnused-3 = callPackage ./nxfs-sed-3/package.nix { nxfsenv = nxfsenv-3-2; };
+in
 {
+  inherit gnused-3;
   inherit findutils-3;
   inherit diffutils-3;
   inherit which-3;

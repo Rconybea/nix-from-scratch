@@ -92,6 +92,7 @@ let
   which-3 = stage3pkgs.which-3;
   diffutils-3 = stage3pkgs.diffutils-3;
   findutils-3 = stage3pkgs.findutils-3;
+  gnused-3 = stage3pkgs.gnused-3;
 
   nxfsenv-3-0 = { nxfs-defs = nxfs-defs; };
 in
@@ -99,17 +100,11 @@ let
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
 in
 let
-  nxfsenv-3-1 = nxfsenv-3-0 // { diffutils = diffutils-3; };
-  # findutils-3 :: derivation
-  #findutils-3 = callPackage ./bootstrap-3/nxfs-findutils-3 { nxfsenv-3 = nxfsenv-3-1; };
+  nxfsenv-3-3 = nxfsenv-3-0 // { gnused = gnused-3;
+                                 diffutils = diffutils-3;
+                                 findutils = findutils-3; };
 in
 let
-  nxfsenv-3-2 = nxfsenv-3-1 // { findutils = findutils-3; };
-  # gnused-3    :: derivation
-  gnused-3 = callPackage ./bootstrap-3/nxfs-sed-3 { nxfsenv-3 = nxfsenv-3-2; };
-in
-let
-  nxfsenv-3-3 = nxfsenv-3-2 // { gnused = gnused-3; };
   # gnugrep-3   :: derivation
   gnugrep-3 = callPackage ./bootstrap-3/nxfs-grep-3 { nxfsenv-3 = nxfsenv-3-3; };
 in
