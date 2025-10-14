@@ -146,14 +146,26 @@ in
 let
   # nxfsenv-3-6 :: attrset
   nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; shell = bash-3; };
+  # (text-only -> natural to use stage2 derivation)
   # popen-3     :: derivation
   popen-3 = callPackage ../bootstrap-2/nxfs-popen-2/package.nix { nxfsenv = nxfsenv-3-6;
                                                                   popen-template = stage2pkgs.popen-template-2; };
 in
 let
+  nxfsenv-3-7 = nxfsenv-3-6;
+  gawk-3 = callPackage ./nxfs-gawk-3/package.nix { nxfsenv = nxfsenv-3-6;
+                                                   popen = popen-3;
+                                                 };
+in
+let
+  nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
+  # gnumake-3   :: derivation
+  gnumake-3 = callPackage ./nxfs-gnumake-3/package.nix { nxfsenv = nxfsenv-3-8; };
 
 in
 {
+  inherit gnumake-3;
+  inherit gawk-3;
   inherit popen-3;
   inherit bash-3;
   inherit gnutar-3;

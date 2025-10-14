@@ -98,6 +98,7 @@ let
   gnutar-3 = stage3pkgs.gnutar-3;
   bash-3 = stage3pkgs.bash-3;
   popen-3 = stage3pkgs.popen-3;
+  gawk-3 = stage3pkgs.gawk-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -105,7 +106,8 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-5 = { shell = bash-3;
+  nxfsenv-3-5 = { gawk = gawk-3;
+                  shell = bash-3;
                   gnutar = gnutar-3;
                    bzip2 = bzip2-3;
                    gnugrep = gnugrep-3;
@@ -121,9 +123,6 @@ in
 let
   # (reminder: popen doesn't belong in stdenv)
   nxfsenv-3-7 = nxfsenv-3-6;
-  # gawk-3      :: derivation
-  gawk-3 = callPackage ./bootstrap-3/nxfs-gawk-3 { nxfsenv-3 = nxfsenv-3-6;
-                                                   popen = popen-3; };
 in
 let
   nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
