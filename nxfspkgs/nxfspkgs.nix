@@ -92,7 +92,8 @@ let
   inherit (stage3pkgs)
     which-3 diffutils-3 findutils-3 gnused-3 gnugrep-3 bzip2-3 gnutar-3
     bash-3 popen-3 gawk-3 gnumake-3 coreutils-3 pkgconf-3 m4-3 file-3
-    zlib-3 gzip-3 patch-3 gperf-3 patchelf-3 libxcrypt-3 perl-3 binutils-3;
+    zlib-3 gzip-3 patch-3 gperf-3 patchelf-3 libxcrypt-3 perl-3 binutils-3
+    autoconf-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -100,7 +101,8 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-10 = { binutils = binutils-3;
+  nxfsenv-3-10 = { autoconf = autoconf-3;
+                   binutils = binutils-3;
                    patchelf = patchelf-3;
                    gperf = gperf-3;
                    patch = patch-3;
@@ -130,10 +132,6 @@ let
                                      perl = perl-3;
                                      libxcrypt = libxcrypt-3;
                                    };
-  # autoconf-3 :: derivation
-  autoconf-3 = callPackage ./bootstrap-3/nxfs-autoconf-3 { nxfsenv-3 = nxfsenv-3-b13; };
-in
-let
   nxfsenv-3-b14 = nxfsenv-3-b13 // { autoconf = autoconf-3; };
 
   # automake-3 :: derivation

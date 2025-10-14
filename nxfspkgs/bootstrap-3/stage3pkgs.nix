@@ -210,8 +210,14 @@ let
                                    };
   # binutils-3 :: derivation
   binutils-3 = callPackage ./nxfs-binutils-3/package.nix { nxfsenv = nxfsenv-3-b13; };
+
+  # autoconf-3 :: derivation
+  autoconf-3 = callPackage ./nxfs-autoconf-3/package.nix { nxfsenv = nxfsenv-3-b13; };
+in
+let
 in
 {
+  inherit autoconf-3;
   inherit binutils-3;
   inherit perl-3;
   inherit libxcrypt-3;
