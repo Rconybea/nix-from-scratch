@@ -228,9 +228,13 @@ let
   # gmp-3 :: derivation
   gmp-3 = callPackage ./nxfs-gmp-3/package.nix { nxfsenv = nxfsenv-3-c13; };
   # mpfr-3 :: derivation
-  mpfr-3 = callPackage ./nxfs-mpfr-3/package.nix { nxfsenv = nxfsenv-3-b13;
+  mpfr-3 = callPackage ./nxfs-mpfr-3/package.nix { nxfsenv = nxfsenv-3-c13;
                                                    gmp = gmp-3;
                                                  };
+  # mpc-3 :: derivation
+  mpc-3 = callPackage ./nxfs-mpc-3/package.nix { nxfsenv = nxfsenv-3-c13;
+                                                 gmp = gmp-3;
+                                                 mpfr = mpfr-3; };
 in
 let
   nxfsenv-3-c14 = nxfsenv-3-c13 // { flex = flex-3; };
@@ -238,6 +242,7 @@ let
   bison-3 = callPackage ./nxfs-bison-3/package.nix { nxfsenv = nxfsenv-3-c14; };
 in
 {
+  inherit mpc-3;
   inherit mpfr-3;
   inherit gmp-3;
   inherit bison-3;
