@@ -59,30 +59,30 @@ let
   nxfs-autotools = import ../build-support/autotools;
 
   # bootstrap stdenv for stage-2
-  nxfsenv-2 = {
+  nxfsenv-2        = {
     # coreutils,gnused,bash :: derivation
-    gcc_wrapper  = stage2pkgs.gcc-wrapper-2;
-    glibc        = stage2pkgs.glibc-2;
-    perl         = stage2pkgs.perl-2;
-    patch        = stage2pkgs.patch-2;
-    patchelf     = stage2pkgs.patchelf-2;
-    findutils    = stage2pkgs.findutils-2;
-    binutils     = stage2pkgs.binutils-2;
-    coreutils    = stage2pkgs.coreutils-2;
-    gawk         = stage2pkgs.gawk-2;
-    gnumake      = stage2pkgs.gnumake-2;
-    gnutar       = stage2pkgs.gnutar-2;
-    gnugrep      = stage2pkgs.gnugrep-2;
-    gnused       = stage2pkgs.gnused-2;
+    gcc_wrapper    = stage2pkgs.gcc-wrapper-2;
+    glibc          = stage2pkgs.glibc-2;
+    perl           = stage2pkgs.perl-2;
+    patch          = stage2pkgs.patch-2;
+    patchelf       = stage2pkgs.patchelf-2;
+    findutils      = stage2pkgs.findutils-2;
+    binutils       = stage2pkgs.binutils-2;
+    coreutils      = stage2pkgs.coreutils-2;
+    gawk           = stage2pkgs.gawk-2;
+    gnumake        = stage2pkgs.gnumake-2;
+    gnutar         = stage2pkgs.gnutar-2;
+    gnugrep        = stage2pkgs.gnugrep-2;
+    gnused         = stage2pkgs.gnused-2;
     # want this to be shell
-    bash         = stage2pkgs.bash-2;
-    shell        = stage2pkgs.bash-2;
+    bash           = stage2pkgs.bash-2;
+    shell          = stage2pkgs.bash-2;
     # mkDerivation :: attrs -> derivation
-    mkDerivation = nxfs-autotools nxfsenv-2;
+    mkDerivation   = nxfs-autotools nxfsenv-2;
 
     #  expand with stuff from bootstrap-3/default.nix.nxfsenv { .. }
 
-    nxfs-defs = nxfs-defs;
+    nxfs-defs      = nxfs-defs;
   };
 
   # in nixpkgs/lib/customisation.nix, similar function is lib.callPackageWith
@@ -143,7 +143,18 @@ let
   # bash-3 :: derivation
   bash-3 = callPackage ./nxfs-bash-3/package.nix { nxfsenv = nxfsenv-3-5; };
 in
+let
+  # nxfsenv-3-6 :: attrset
+  nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; shell = bash-3; };
+  # popen-3     :: derivation
+  popen-3 = callPackage ../bootstrap-2/nxfs-popen-2/package.nix { nxfsenv = nxfsenv-3-6;
+                                                                  popen-template = stage2pkgs.popen-template-2; };
+in
+let
+
+in
 {
+  inherit popen-3;
   inherit bash-3;
   inherit gnutar-3;
   inherit bzip2-3;
