@@ -96,6 +96,7 @@ let
   gnugrep-3 = stage3pkgs.gnugrep-3;
   bzip2-3 = stage3pkgs.bzip2-3;
   gnutar-3 = stage3pkgs.gnutar-3;
+  bash-3 = stage3pkgs.bash-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -103,7 +104,8 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-5 = { gnutar = gnutar-3;
+  nxfsenv-3-5 = { shell = bash-3;
+                  gnutar = gnutar-3;
                    bzip2 = bzip2-3;
                    gnugrep = gnugrep-3;
                    gnused = gnused-3;
@@ -111,15 +113,9 @@ let
                    findutils = findutils-3;
                    nxfs-defs = nxfs-defs;
                  };
-  # gnutar-3    :: derivation
-  #gnutar-3 = callPackage ./bootstrap-3/nxfs-tar-3 { nxfsenv-3 = nxfsenv-3-4; };
 in
 let
-  # gnubash-3   :: derivation
-  bash-3 = callPackage ./bootstrap-3/nxfs-bash-3 { nxfsenv-3 = nxfsenv-3-5; };
-in
-let
-  nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; shell = bash-3; };
+  nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; };
   # popen-3     :: derivation
   popen-3 = callPackage ./bootstrap-3/nxfs-popen-3 { nxfsenv-3 = nxfsenv-3-6;
                                                      popen-template = popen-template; };
