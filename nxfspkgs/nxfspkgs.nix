@@ -100,7 +100,7 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-10 = { binutils = binutiles-3;
+  nxfsenv-3-10 = { binutils = binutils-3;
                    patchelf = patchelf-3;
                    gperf = gperf-3;
                    patch = patch-3;
