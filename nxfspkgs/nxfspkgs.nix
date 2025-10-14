@@ -97,6 +97,7 @@ let
   bzip2-3 = stage3pkgs.bzip2-3;
   gnutar-3 = stage3pkgs.gnutar-3;
   bash-3 = stage3pkgs.bash-3;
+  popen-3 = stage3pkgs.popen-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -116,9 +117,6 @@ let
 in
 let
   nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; };
-  # popen-3     :: derivation
-  popen-3 = callPackage ./bootstrap-3/nxfs-popen-3 { nxfsenv-3 = nxfsenv-3-6;
-                                                     popen-template = popen-template; };
 in
 let
   # (reminder: popen doesn't belong in stdenv)
