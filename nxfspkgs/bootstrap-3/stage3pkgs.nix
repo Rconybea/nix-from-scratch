@@ -180,6 +180,8 @@ let
   file-3       = callPackage ./nxfs-file-3/package.nix { nxfsenv = nxfsenv-3-10; };
   # zlib-3 :: derivation
   zlib-3       = callPackage ./nxfs-zlib-3/package.nix { nxfsenv = nxfsenv-3-10; };
+  # gzip-3 :: derivation
+  gzip-3       = callPackage ./nxfs-gzip-3/package.nix     { nxfsenv = nxfsenv-3-10; };
   # patch-3 :: derivation
   patch-3      = callPackage ./nxfs-patch-3/package.nix    { nxfsenv = nxfsenv-3-10; };
   # gperf-3 :: derivation
@@ -192,6 +194,7 @@ in
   inherit patchelf-3;
   inherit gperf-3;
   inherit patch-3;
+  inherit gzip-3;
   inherit zlib-3;
   inherit file-3;
   inherit m4-3;
