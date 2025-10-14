@@ -226,7 +226,13 @@ let
   # flex-3 :: derivation
   flex-3 = callPackage ./nxfs-flex-3/package.nix { nxfsenv = nxfsenv-3-c13; };
 in
+let
+  nxfsenv-3-c14 = nxfsenv-3-c13 // { flex = flex-3; };
+  # bison-3 :: derivation
+  bison-3 = callPackage ./nxfs-bison-3/package.nix { nxfsenv = nxfsenv-3-c14; };
+in
 {
+  inherit bison-3;
   inherit flex-3;
   inherit automake-3;
   inherit autoconf-3;
