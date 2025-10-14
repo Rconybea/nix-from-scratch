@@ -131,7 +131,14 @@ let
   # bzip2-3 :: derivation
   bzip2-3 = callPackage ./nxfs-bzip2-3/package.nix { nxfsenv = nxfsenv-3-3b; };
 in
+let
+  # nxfsenv-3-4 :: attrset
+  nxfsenv-3-4 = nxfsenv-3-3b // { bzip2 = bzip2-3; };
+  # gnutar-3    :: derivation
+  gnutar-3 = callPackage ./nxfs-tar-3/package.nix { nxfsenv = nxfsenv-3-4; };
+in
 {
+  inherit gnutar-3;
   inherit bzip2-3;
   inherit gnugrep-3;
   inherit gnused-3;
