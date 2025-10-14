@@ -169,7 +169,17 @@ let
   # coreutils-3 :: derivation
   coreutils-3 = callPackage ./nxfs-coreutils-3/package.nix { nxfsenv = nxfsenv-3-9; };
 in
+let
+  # nxfsenv-3-10 :: attrset
+  nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
+  # pkgconf-3 :: derivation
+  pkgconf-3    = callPackage ./nxfs-pkgconf-3/package.nix  { nxfsenv = nxfsenv-3-10; };
+  # m4-3 :: derivation
+  m4-3         = callPackage ./nxfs-m4-3/package.nix { nxfsenv = nxfsenv-3-10; };
+in
 {
+  inherit m4-3;
+  inherit pkgconf-3;
   inherit coreutils-3;
   inherit gnumake-3;
   inherit gawk-3;

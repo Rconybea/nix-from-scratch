@@ -89,18 +89,9 @@ let
 in
 let
   # which-3, diffutils-3 :: derivation
-  which-3 = stage3pkgs.which-3;
-  diffutils-3 = stage3pkgs.diffutils-3;
-  findutils-3 = stage3pkgs.findutils-3;
-  gnused-3 = stage3pkgs.gnused-3;
-  gnugrep-3 = stage3pkgs.gnugrep-3;
-  bzip2-3 = stage3pkgs.bzip2-3;
-  gnutar-3 = stage3pkgs.gnutar-3;
-  bash-3 = stage3pkgs.bash-3;
-  popen-3 = stage3pkgs.popen-3;
-  gawk-3 = stage3pkgs.gawk-3;
-  gnumake-3 = stage3pkgs.gnumake-3;
-  coreutils-3 = stage3pkgs.coreutils-3;
+  inherit (stage3pkgs)
+    which-3 diffutils-3 findutils-3 gnused-3 gnugrep-3 bzip2-3 gnutar-3
+    bash-3 popen-3 gawk-3 gnumake-3 coreutils-3 pkgconf-3 m4-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -108,25 +99,23 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-9 = { coreutils = coreutils-3;
+  nxfsenv-3-9 = { m4 = m4-3;
+                  pkgconf = pkgconf-3;
+                  coreutils = coreutils-3;
                   gnumake = gnumake-3;
                   gawk = gawk-3;
                   shell = bash-3; bash = bash-3;
                   gnutar = gnutar-3;
-                   bzip2 = bzip2-3;
-                   gnugrep = gnugrep-3;
-                   gnused = gnused-3;
-                   diffutils = diffutils-3;
-                   findutils = findutils-3;
-                   nxfs-defs = nxfs-defs;
-                 };
+                  bzip2 = bzip2-3;
+                  gnugrep = gnugrep-3;
+                  gnused = gnused-3;
+                  diffutils = diffutils-3;
+                  findutils = findutils-3;
+                  nxfs-defs = nxfs-defs;
+                };
 in
 let
   nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
-  # pkgconf-3 :: derivation
-  pkgconf-3    = callPackage ./bootstrap-3/nxfs-pkgconf-3  { nxfsenv-3 = nxfsenv-3-10; };
-  # m4-3 :: derivation
-  m4-3         = callPackage ./bootstrap-3/nxfs-m4-3       { nxfsenv-3 = nxfsenv-3-10; };
   # file-3 :: derivation
   file-3       = callPackage ./bootstrap-3/nxfs-file-3     { nxfsenv-3 = nxfsenv-3-10; };
   # zlib-3 :: derivation
