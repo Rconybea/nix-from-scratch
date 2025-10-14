@@ -118,7 +118,14 @@ let
   # gnused-3 :: derivation
   gnused-3 = callPackage ./nxfs-sed-3/package.nix { nxfsenv = nxfsenv-3-2; };
 in
+let
+  # nxfsenv-3-3 :: attrset
+  nxfsenv-3-3 = nxfsenv-3-2 // { gnused = gnused-3; };
+  # gnugrep-3 :: derivation
+  gnugrep-3 = callPackage ./nxfs-grep-3/package.nix { nxfsenv = nxfsenv-3-3; };
+in
 {
+  inherit gnugrep-3;
   inherit gnused-3;
   inherit findutils-3;
   inherit diffutils-3;

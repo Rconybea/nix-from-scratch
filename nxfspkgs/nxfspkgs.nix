@@ -93,23 +93,22 @@ let
   diffutils-3 = stage3pkgs.diffutils-3;
   findutils-3 = stage3pkgs.findutils-3;
   gnused-3 = stage3pkgs.gnused-3;
-
-  nxfsenv-3-0 = { nxfs-defs = nxfs-defs; };
+  gnugrep-3 = stage3pkgs.gnugrep-3;
 in
 let
+  # callPackage :: path -> attrset -> result,
+  # where path is a nix expression that evalutes to :: result
+  #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
+  #
+  nxfsenv-3-3b = { gnugrep = gnugrep-3;
+                   gnused = gnused-3;
+                   diffutils = diffutils-3;
+                   findutils = findutils-3;
+                   nxfs-defs = nxfs-defs;
+                 };
 in
 let
-  nxfsenv-3-3 = nxfsenv-3-0 // { gnused = gnused-3;
-                                 diffutils = diffutils-3;
-                                 findutils = findutils-3; };
-in
-let
-  # gnugrep-3   :: derivation
-  gnugrep-3 = callPackage ./bootstrap-3/nxfs-grep-3 { nxfsenv-3 = nxfsenv-3-3; };
-in
-let
-  nxfsenv-3-3b = nxfsenv-3-3 // { gnugrep = gnugrep-3; };
   # bzip2-3     :: derivation
   bzip2-3 = callPackage ./bootstrap-3/nxfs-bzip2-3 { nxfsenv-3 = nxfsenv-3-3b;
                                                      patchelf  = import ./bootstrap-2/nxfs-patchelf-2; };

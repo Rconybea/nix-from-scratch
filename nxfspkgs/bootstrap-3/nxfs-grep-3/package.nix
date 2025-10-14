@@ -1,22 +1,21 @@
 {
-  # nxfsenv :: attrset
+  # nxfsenv   :: attrset
   nxfsenv,
 } :
 
 let
-  version = "4.9";
+  version = "3.11";
 in
 
 nxfsenv.mkDerivation {
-  name         = "nxfs-gnused-3";
+  name         = "nxfs-gnugrep-3";
   version      = version;
-  system       = builtins.currentSystem;
 
-  src          = builtins.fetchTarball { name = "sed-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/sed/sed-${version}.tar.xz";
-                                         sha256 = "170m9hyxnhnxisvmii5z7m8i446ab97kam10rqjylj70dk8wh169"; };
+  src          = builtins.fetchTarball { name = "grep-${version}-source";
+                                         url = "https://ftpmirror.gnu.org/gnu/grep/grep-${version}.tar.xz";
+                                         sha256 = "0pm0zpzmmy6lq5ii03y1nqr1sdjalnwp69i5c926c9dm03v7v0bv"; };
 
-  buildPhase = ''
+  buildPhase=''
     set -e
 
     builddir=$TMPDIR
@@ -26,18 +25,13 @@ nxfsenv.mkDerivation {
     # $src/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$bash_program"
 
-    # 1.
-    # we shouldn't need special compiler/linker instructions,
-    # since stage-1 toolchain "knows where it lives"
-
     (cd $builddir && $bash_program $src/configure --prefix=$out CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
   '';
 
   buildInputs = [
-    nxfsenv.findutils
-    nxfsenv.diffutils
     nxfsenv.gcc_wrapper
     nxfsenv.binutils
     nxfsenv.gawk
@@ -45,6 +39,8 @@ nxfsenv.mkDerivation {
     nxfsenv.gnugrep
     nxfsenv.gnutar
     nxfsenv.gnused
+    nxfsenv.findutils
+    nxfsenv.diffutils
     nxfsenv.coreutils
     nxfsenv.shell
     nxfsenv.glibc
