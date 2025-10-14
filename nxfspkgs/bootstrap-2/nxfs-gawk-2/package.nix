@@ -23,7 +23,7 @@ derivation {
   gcc_wrapper  = nxfsenv.toolchain;
   toolchain    = nxfsenv.toolchain.toolchain;
 
-  builder      = "${nxfsenv.bash}/bin/bash";
+  builder      = "${nxfsenv.shell}/bin/bash";
   args         = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "gawk-${version}-source";

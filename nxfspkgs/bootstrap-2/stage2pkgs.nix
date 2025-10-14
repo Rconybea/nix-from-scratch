@@ -111,7 +111,6 @@ let
     coreutils = import ../bootstrap-1/nxfs-coreutils-1/default.nix;
     gnumake   = import ../bootstrap-1/nxfs-gnumake-1/default.nix;
     gawk      = import ../bootstrap-1/nxfs-gawk-1/default.nix;
-    bash      = bash-1;
     shell     = bash-1;
     gnutar    = import ../bootstrap-1/nxfs-tar-1/default.nix;
     gnugrep   = import ../bootstrap-1/nxfs-grep-1/default.nix;
@@ -175,8 +174,7 @@ let
   bash-2 = callPackage ./nxfs-bash-2/package.nix { nxfsenv = nxfsenv-2-6; };
 in
 let
-  nxfsenv-2-7 = nxfsenv-2-6 // { bash = bash-2;
-                                 shell = bash-2;
+  nxfsenv-2-7 = nxfsenv-2-6 // { shell = bash-2;
                                };
   # TODO: bootstrap-3 to use this form for popen-template.
   #       else must preserve nxfs-popen-template-2/default.nix

@@ -56,7 +56,7 @@ nxfsenv.mkDerivation {
                   nxfsenv.gnused
                   nxfsenv.findutils
                   nxfsenv.diffutils
-                  nxfsenv.bash
+                  nxfsenv.shell
                   #nxfsenv.glibc   # not present in stage2
                 ];
 }
