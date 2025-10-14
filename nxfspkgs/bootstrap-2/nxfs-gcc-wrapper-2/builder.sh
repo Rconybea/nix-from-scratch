@@ -14,9 +14,9 @@ echo "gxx_wrapper_script=${gxx_wrapper_script}"
 
 echo "gcc=${gcc}";
 
-set -e
-
 builddir=${TMPDIR}
+
+set -x
 
 export PATH="${gcc}/bin:${glibc}/bin:${sed}/bin:${coreutils}/bin:${bash}/bin"
 
