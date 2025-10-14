@@ -206,13 +206,13 @@ let
   # nxfsenv-3-b13 :: attrset
   nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
                                      perl = perl-3;
-                                     libxcrypt = libxcrypt-3;
                                    };
   # binutils-3 :: derivation
   binutils-3 = callPackage ./nxfs-binutils-3/package.nix { nxfsenv = nxfsenv-3-b13; };
 
   # autoconf-3 :: derivation
   autoconf-3 = callPackage ./nxfs-autoconf-3/package.nix { nxfsenv = nxfsenv-3-b13; };
+
 in
 let
   # nxfsenv-b14 :: attrset
@@ -227,6 +227,10 @@ let
   flex-3 = callPackage ./nxfs-flex-3/package.nix { nxfsenv = nxfsenv-3-c13; };
   # gmp-3 :: derivation
   gmp-3 = callPackage ./nxfs-gmp-3/package.nix { nxfsenv = nxfsenv-3-c13; };
+  # mpfr-3 :: derivation
+  mpfr-3 = callPackage ./nxfs-mpfr-3/package.nix { nxfsenv = nxfsenv-3-b13;
+                                                   gmp = gmp-3;
+                                                 };
 in
 let
   nxfsenv-3-c14 = nxfsenv-3-c13 // { flex = flex-3; };
@@ -234,6 +238,7 @@ let
   bison-3 = callPackage ./nxfs-bison-3/package.nix { nxfsenv = nxfsenv-3-c14; };
 in
 {
+  inherit mpfr-3;
   inherit gmp-3;
   inherit bison-3;
   inherit flex-3;
