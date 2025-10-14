@@ -80,12 +80,6 @@ let
     #  expand with stuff from bootstrap-3/default.nix.nxfsenv { .. }
   };
 
-   # bootstrap stdenv for stage-3 -- not used yet
-#  nxfsenv-3 = {
-#    # mkDerivation :: attrs -> derivation
-#    mkDerivation = nxfspkgs.nxfs-autotools nxfsenv-3;
-#  };
-
   # In nixpkgs/lib/customisation.nix, similar function is lib.callPackageWith
   #
   # allPkgs   :: attrset
