@@ -225,6 +225,8 @@ let
   nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
   # flex-3 :: derivation
   flex-3 = callPackage ./nxfs-flex-3/package.nix { nxfsenv = nxfsenv-3-c13; };
+  # gmp-3 :: derivation
+  gmp-3 = callPackage ./nxfs-gmp-3/package.nix { nxfsenv = nxfsenv-3-c13; };
 in
 let
   nxfsenv-3-c14 = nxfsenv-3-c13 // { flex = flex-3; };
@@ -232,6 +234,7 @@ let
   bison-3 = callPackage ./nxfs-bison-3/package.nix { nxfsenv = nxfsenv-3-c14; };
 in
 {
+  inherit gmp-3;
   inherit bison-3;
   inherit flex-3;
   inherit automake-3;
