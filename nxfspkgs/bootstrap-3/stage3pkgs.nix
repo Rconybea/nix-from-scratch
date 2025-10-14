@@ -158,12 +158,19 @@ let
                                                  };
 in
 let
+  # nxfsenv-3-9 :: attrset
   nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
   # gnumake-3   :: derivation
   gnumake-3 = callPackage ./nxfs-gnumake-3/package.nix { nxfsenv = nxfsenv-3-8; };
-
+in
+let
+  # nxfsenv-3-9 :: attrset
+  nxfsenv-3-9 = nxfsenv-3-6 // { gnumake = gnumake-3; };
+  # coreutils-3 :: derivation
+  coreutils-3 = callPackage ./nxfs-coreutils-3/package.nix { nxfsenv = nxfsenv-3-9; };
 in
 {
+  inherit coreutils-3;
   inherit gnumake-3;
   inherit gawk-3;
   inherit popen-3;

@@ -99,6 +99,8 @@ let
   bash-3 = stage3pkgs.bash-3;
   popen-3 = stage3pkgs.popen-3;
   gawk-3 = stage3pkgs.gawk-3;
+  gnumake-3 = stage3pkgs.gnumake-3;
+  coreutils-3 = stage3pkgs.coreutils-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -106,8 +108,10 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-5 = { gawk = gawk-3;
-                  shell = bash-3;
+  nxfsenv-3-9 = { coreutils = coreutils-3;
+                  gnumake = gnumake-3;
+                  gawk = gawk-3;
+                  shell = bash-3; bash = bash-3;
                   gnutar = gnutar-3;
                    bzip2 = bzip2-3;
                    gnugrep = gnugrep-3;
@@ -116,23 +120,6 @@ let
                    findutils = findutils-3;
                    nxfs-defs = nxfs-defs;
                  };
-in
-let
-  nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; };
-in
-let
-  # (reminder: popen doesn't belong in stdenv)
-  nxfsenv-3-7 = nxfsenv-3-6;
-in
-let
-  nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
-  # gnumake-3   :: derivation
-  gnumake-3 = callPackage ./bootstrap-3/nxfs-gnumake-3 { nxfsenv-3 = nxfsenv-3-8; };
-in
-let
-  nxfsenv-3-9 = nxfsenv-3-8 // { gnumake = gnumake-3; };
-  # coreutils-3 :: derivation
-  coreutils-3 = callPackage ./bootstrap-3/nxfs-coreutils-3 { nxfsenv-3 = nxfsenv-3-9; };
 in
 let
   nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
