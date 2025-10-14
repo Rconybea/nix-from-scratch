@@ -220,7 +220,14 @@ let
   # autoconf-3 :: derivation
   automake-3 = callPackage ./nxfs-automake-3/package.nix { nxfsenv = nxfsenv-3-b14; };
 in
+let
+  # nxfsenv-3-c13 :: attrset
+  nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
+  # flex-3 :: derivation
+  flex-3 = callPackage ./nxfs-flex-3/package.nix { nxfsenv = nxfsenv-3-c13; };
+in
 {
+  inherit flex-3;
   inherit automake-3;
   inherit autoconf-3;
   inherit binutils-3;
