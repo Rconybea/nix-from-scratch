@@ -52,7 +52,7 @@ WWe need nxfs-xz-3, nxfs-bzip-3, nxfs-curl-3 for a stdenv.
  +--------------------------------------------------------------------------------------------------------+
  | -A gcc-x1-3                                nxfs-gcc-x1-3                                               |
  +------------------------------------------------------+-------------------------------------------------+
- | -A binutils-x0-wrapper-3                             | -A stage3pkgs.gcc-x0-wrapper-3                  |
+ | -A stage3pkgs.binutils-x0-wrapper-3                  | -A stage3pkgs.gcc-x0-wrapper-3                  |
  |                nxfs-binutils-x0-wrapper-3            |              nxfs-gcc-x0-wrapper-3              |
  +------------------------------------------------------+-------------------------------------------------+
  | -A stage3pkgs.glibc-x1-3                   nxfs-glibc-x1-3                                             |

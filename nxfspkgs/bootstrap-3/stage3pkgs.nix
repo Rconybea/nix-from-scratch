@@ -283,6 +283,7 @@ let
                                  };
 in
 let
+  # nxfsenv-3-95 :: attrset
   nxfsenv-3-94 = nxfsenv-3-16 // { };
 
   # TODO: nxfs-nixify-glibc-source/package.nix
@@ -291,12 +292,12 @@ let
   nixify-glibc-source-3 = (callPackage ../bootstrap-2/nxfs-nixify-glibc-source/default.nix);
 
   # wrapper for sort -- invokes coreutils.sort with LC_ALL env var set to C
+  # lc-all-sort-3 :: derivation
   lc-all-sort-3 = callPackage ../bootstrap-2/nxfs-lc-all-sort-2/package.nix { nxfsenv = nxfsenv-3-94; };
 
   # TODO: sub actual linux-headers derivation for toolchain.
   #
   # glibc-x1-3 :: derivation
-  #
   glibc-x1-3 = callPackage ./nxfs-glibc-x1-3/package.nix { nxfsenv             = nxfsenv-3-94;
                                                            nixify-glibc-source = nixify-glibc-source-3;
                                                            lc-all-sort         = lc-all-sort-3;
@@ -305,11 +306,17 @@ let
                                                          };
 in
 let
+  # nxfsenv-3-95 :: attrset
   nxfsenv-3-95 = nxfsenv-3-94 // { glibc = glibc-x1-3; };
 
+  # gcc-x0-wrapper-3 :: derivation
   gcc-x0-wrapper-3 = callPackage ./nxfs-gcc-x0-wrapper-3/package.nix { nxfsenv = nxfsenv-3-95; };
+
+  # binutils-x0-wrapper-3 :: derivation
+  binutils-x0-wrapper-3 = callPackage ./nxfs-binutils-x0-wrapper-3/package.nix { nxfsenv = nxfsenv-3-95; };
 in
 {
+  inherit binutils-x0-wrapper-3;
   inherit gcc-x0-wrapper-3;
   inherit glibc-x1-3;
   inherit lc-all-sort-3;
