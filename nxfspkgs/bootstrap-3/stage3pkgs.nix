@@ -304,7 +304,13 @@ let
                                                            toolchain           = linux-headers-1;
                                                          };
 in
+let
+  nxfsenv-3-95 = nxfsenv-3-94 // { glibc = glibc-x1-3; };
+
+  gcc-x0-wrapper-3 = callPackage ./nxfs-gcc-x0-wrapper-3/package.nix { nxfsenv = nxfsenv-3-95; };
+in
 {
+  inherit gcc-x0-wrapper-3;
   inherit glibc-x1-3;
   inherit lc-all-sort-3;
   inherit python-3;

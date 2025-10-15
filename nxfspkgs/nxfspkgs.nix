@@ -94,7 +94,7 @@ let
     bash-3 popen-3 gawk-3 gnumake-3 coreutils-3 pkgconf-3 m4-3 file-3
     zlib-3 gzip-3 patch-3 gperf-3 patchelf-3 libxcrypt-3 perl-3 binutils-3
     autoconf-3 automake-3 flex-3 bison-3 gmp-3 mpfr-3 mpc-3 texinfo-3
-    python-3 lc-all-sort-3 glibc-x1-3;
+    python-3 lc-all-sort-3 glibc-x1-3 gcc-x0-wrapper-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -102,38 +102,39 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-10 = { glibc-x1 = glibc-x1-3;
-                   lc-all-sort = lc-all-sort-3;
-                   python = python-3;
-                   mpc = mpc-3;
-                   mpfr = mpfr-3;
-                   gmp = gmp-3;
-                   bison = bison-3;
-                   flex = flex-3;
-                   automake = automake-3;
-                   autoconf = autoconf-3;
-                   binutils = binutils-3;
-                   perl = perl-3;
-                   patchelf = patchelf-3;
-                   gperf = gperf-3;
-                   patch = patch-3;
-                   gzip = gzip-3;
-                   zlib = zlib-3;
-                   file = file-3;
-                   m4 = m4-3;
-                   libxcrypt = libxcrypt-3;
-                   pkgconf = pkgconf-3;
-                   coreutils = coreutils-3;
-                   gnumake = gnumake-3;
-                   gawk = gawk-3;
-                   shell = bash-3; bash = bash-3;
-                   gnutar = gnutar-3;
-                   bzip2 = bzip2-3;
-                   gnugrep = gnugrep-3;
-                   gnused = gnused-3;
-                   diffutils = diffutils-3;
-                   findutils = findutils-3;
-                   nxfs-defs = nxfs-defs;
+  nxfsenv-3-10 = { gcc-x0-wrapper = gcc-x0-wrapper-3;
+                   glibc-x1       = glibc-x1-3;
+                   lc-all-sort    = lc-all-sort-3;
+                   python         = python-3;
+                   mpc            = mpc-3;
+                   mpfr           = mpfr-3;
+                   gmp            = gmp-3;
+                   bison          = bison-3;
+                   flex           = flex-3;
+                   automake       = automake-3;
+                   autoconf       = autoconf-3;
+                   binutils       = binutils-3;
+                   perl           = perl-3;
+                   patchelf       = patchelf-3;
+                   gperf          = gperf-3;
+                   patch          = patch-3;
+                   gzip           = gzip-3;
+                   zlib           = zlib-3;
+                   file           = file-3;
+                   m4             = m4-3;
+                   libxcrypt      = libxcrypt-3;
+                   pkgconf        = pkgconf-3;
+                   coreutils      = coreutils-3;
+                   gnumake        = gnumake-3;
+                   gawk           = gawk-3;
+                   shell          = bash-3; bash = bash-3;
+                   gnutar         = gnutar-3;
+                   bzip2          = bzip2-3;
+                   gnugrep        = gnugrep-3;
+                   gnused         = gnused-3;
+                   diffutils      = diffutils-3;
+                   findutils      = findutils-3;
+                   nxfs-defs      = nxfs-defs;
                  };
 
   nxfsenv-3-a12 = nxfsenv-3-10;
@@ -144,31 +145,7 @@ let
   nxfsenv-3-d13 = nxfsenv-3-10;
   nxfsenv-3-b15 = nxfsenv-3-10;
   nxfsenv-3-16  = nxfsenv-3-10;
-in
-let
-  nxfsenv-3-16 = nxfsenv-3-10 // { binutils = binutils-3;
-                                   perl     = perl-3;
-                                   texinfo  = texinfo-3;
-                                   bison    = bison-3;
-                                   flex     = flex-3;
-                                   file     = file-3;
-                                   pkgconf  = pkgconf-3;
-                                   m4       = m4-3;
-                                   python   = python-3;
-                                   zlib     = zlib-3;
-                                   gperf    = gperf-3;
-                                   patch    = patch-3;
-                                   gzip     = gzip-3;
-                                   patchelf = patchelf-3;
-                                   which    = which-3;
-                                 };
-  nxfsenv-3-94 = nxfsenv-3-16;
-in
-let
-  nxfsenv-3-95 = nxfsenv-3-94 // { glibc = glibc-x1-3; };
-
-  gcc-x0-wrapper-3 = callPackage ./bootstrap-3/nxfs-gcc-x0-wrapper-3
-    { nxfsenv-3   = nxfsenv-3-95; };
+  nxfsenv-3-95  = nxfsenv-3-10;
 in
 let
   nxfsenv-3-95a = nxfsenv-3-95 // { binutils = binutils-3; };
