@@ -350,7 +350,17 @@ let
       nixify-gcc-source    = nixify-gcc-source-3;
     };
 in
+let
+  nxfsenv-3-99 = nxfsenv-3-98 // { libstdcxx = libstdcxx-x2-3; };
+  # gcc-stage3-wrapper-3 :: derivation
+  gcc-x2-wrapper-3 = callPackage ./nxfs-gcc-x2-wrapper-3/package.nix
+    { nxfsenv       = nxfsenv-3-99;
+      gcc-unwrapped = gcc-x1-3;
+      libstdcxx     = libstdcxx-x2-3;
+    };
+in
 {
+  inherit gcc-x2-wrapper-3;
   inherit libstdcxx-x2-3;
   inherit gcc-x1-wrapper-3;
   inherit gcc-x1-3;
