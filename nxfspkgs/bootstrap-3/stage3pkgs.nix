@@ -332,8 +332,14 @@ let
       nixify-gcc-source    = nixify-gcc-source-3;
       toolchain            = linux-headers-1;
     };
+
+  nxfsenv-3-97 = nxfsenv-3-96;
+  # gcc-stage2-wrapper-3 :: derivation
+  gcc-x1-wrapper-3 = callPackage ./nxfs-gcc-x1-wrapper-3/package.nix { nxfsenv = nxfsenv-3-97;
+                                                                       gcc-unwrapped = gcc-x1-3; };
 in
 {
+  inherit gcc-x1-wrapper-3;
   inherit gcc-x1-3;
   inherit binutils-x0-wrapper-3;
   inherit gcc-x0-wrapper-3;
