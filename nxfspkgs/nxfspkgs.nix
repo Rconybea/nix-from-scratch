@@ -94,7 +94,8 @@ let
     bash-3 popen-3 gawk-3 gnumake-3 coreutils-3 pkgconf-3 m4-3 file-3
     zlib-3 gzip-3 patch-3 gperf-3 patchelf-3 libxcrypt-3 perl-3 binutils-3
     autoconf-3 automake-3 flex-3 bison-3 gmp-3 mpfr-3 mpc-3 texinfo-3
-    python-3 lc-all-sort-3 glibc-x1-3 gcc-x0-wrapper-3 binutils-x0-wrapper-3;;
+    python-3 lc-all-sort-3 glibc-x1-3 gcc-x0-wrapper-3 binutils-x0-wrapper-3
+    gcc-x1-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -102,7 +103,8 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-10 = { binutils-x0-wrapper = binutils-x0-wrapper-3;
+  nxfsenv-3-10 = { gcc-x1         = gcc-x1-3;
+                   binutils-x0-wrapper = binutils-x0-wrapper-3;
                    gcc-x0-wrapper = gcc-x0-wrapper-3;
                    glibc-x1       = glibc-x1-3;
                    lc-all-sort    = lc-all-sort-3;
@@ -148,20 +150,7 @@ let
   nxfsenv-3-16  = nxfsenv-3-10;
   nxfsenv-3-95  = nxfsenv-3-10;
   nxfsenv-3-95a = nxfsenv-3-10;
-in
-let
   nxfsenv-3-96 = nxfsenv-3-95a // { gcc = gcc-x0-wrapper-3; };
-
-  # gcc-x1-3 :: derivation
-  gcc-x1-3 = callPackage ./bootstrap-3/nxfs-gcc-x1-3
-    { nxfsenv-3            = nxfsenv-3-96;
-      binutils-wrapper     = binutils-x0-wrapper-3;
-      mpc                  = mpc-3;
-      mpfr                 = mpfr-3;
-      gmp                  = gmp-3;
-      nixify-gcc-source    = bootstrap-2.nxfs-nixify-gcc-source;
-      toolchain            = bootstrap-1.nxfs-toolchain-1; # for linux headers
-    };
 in
 let
   nxfsenv-3-97 = nxfsenv-3-96 // { gcc-stage1 = gcc-x1-3; };

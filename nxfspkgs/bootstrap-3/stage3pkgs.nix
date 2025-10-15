@@ -314,8 +314,27 @@ let
 
   # binutils-x0-wrapper-3 :: derivation
   binutils-x0-wrapper-3 = callPackage ./nxfs-binutils-x0-wrapper-3/package.nix { nxfsenv = nxfsenv-3-95; };
+
+in
+let
+  nxfsenv-3-96 = nxfsenv-3-95 // { gcc = gcc-x0-wrapper-3; };
+
+  # nixify-gcc-source-3 :: (attrset -> derivation)
+  nixify-gcc-source-3 = (callPackage ../bootstrap-2/nxfs-nixify-gcc-source/default.nix);
+
+  # gcc-x1-3 :: derivation
+  gcc-x1-3 = callPackage ./nxfs-gcc-x1-3/package.nix
+    { nxfsenv              = nxfsenv-3-96;
+      binutils-wrapper     = binutils-x0-wrapper-3;
+      mpc                  = mpc-3;
+      mpfr                 = mpfr-3;
+      gmp                  = gmp-3;
+      nixify-gcc-source    = nixify-gcc-source-3;
+      toolchain            = linux-headers-1;
+    };
 in
 {
+  inherit gcc-x1-3;
   inherit binutils-x0-wrapper-3;
   inherit gcc-x0-wrapper-3;
   inherit glibc-x1-3;
