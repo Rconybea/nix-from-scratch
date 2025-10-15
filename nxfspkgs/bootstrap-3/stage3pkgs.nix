@@ -317,6 +317,7 @@ let
 
 in
 let
+  # nxfsenv-3-96 :: attrset
   nxfsenv-3-96 = nxfsenv-3-95 // { gcc = gcc-x0-wrapper-3; };
 
   # nixify-gcc-source-3 :: (attrset -> derivation)
@@ -333,13 +334,17 @@ let
       toolchain            = linux-headers-1;
     };
 
+  # nxfsenv-3-97 :: attrset
   nxfsenv-3-97 = nxfsenv-3-96;
+
   # gcc-stage2-wrapper-3 :: derivation
   gcc-x1-wrapper-3 = callPackage ./nxfs-gcc-x1-wrapper-3/package.nix { nxfsenv = nxfsenv-3-97;
                                                                        gcc-unwrapped = gcc-x1-3; };
 in
 let
+  # nxfsenv-3-98 :: attrset
   nxfsenv-3-98 = nxfsenv-3-97 // { gcc = gcc-x1-wrapper-3; };
+
   # libstdcxx-x2-3 :: derivation
   libstdcxx-x2-3 = callPackage ./nxfs-libstdcxx-x2-3/package.nix
     { nxfsenv              = nxfsenv-3-98;
@@ -351,7 +356,9 @@ let
     };
 in
 let
+  # nxfsenv-3-99 :: attrset
   nxfsenv-3-99 = nxfsenv-3-98 // { libstdcxx = libstdcxx-x2-3; };
+
   # gcc-stage3-wrapper-3 :: derivation
   gcc-x2-wrapper-3 = callPackage ./nxfs-gcc-x2-wrapper-3/package.nix
     { nxfsenv       = nxfsenv-3-99;
@@ -359,7 +366,31 @@ let
       libstdcxx     = libstdcxx-x2-3;
     };
 in
+let
+  # nxfsenv-3-99a :: attrset
+  nxfsenv-3-99a = nxfsenv-3-99 // { gcc = gcc-x2-wrapper-3; };
+
+  # gcc-x3-3 :: derivation
+  gcc-x3-3 = callPackage ./nxfs-gcc-x3-3/package.nix
+    { nxfsenv           = nxfsenv-3-99a;
+      binutils-wrapper  = binutils-x0-wrapper-3;
+      mpc               = mpc-3;
+      mpfr              = mpfr-3;
+      gmp               = gmp-3;
+      nixify-gcc-source = nixify-gcc-source-3;
+      toolchain         = linux-headers-1;
+    };
+in
+let
+  # nxfsenv-3-100 :: attrset
+  nxfsenv-3-100 = nxfsenv-3-99 // { gcc-unwrapped = gcc-x3-3; };
+
+  # gcc-wrapper-3 :: derivation
+  gcc-wrapper-3 = callPackage ./nxfs-gcc-wrapper-3/package.nix { nxfsenv = nxfsenv-3-100; };
+in
 {
+  inherit gcc-wrapper-3;
+  inherit gcc-x3-3;
   inherit gcc-x2-wrapper-3;
   inherit libstdcxx-x2-3;
   inherit gcc-x1-wrapper-3;
