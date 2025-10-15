@@ -427,4 +427,5 @@ in
   inherit findutils-2;
   inherit diffutils-2;
   inherit which-2;
+  linux-headers-2 = nxfsenv-2-100.toolchain;
 }

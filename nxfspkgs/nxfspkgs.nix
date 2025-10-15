@@ -94,7 +94,7 @@ let
     bash-3 popen-3 gawk-3 gnumake-3 coreutils-3 pkgconf-3 m4-3 file-3
     zlib-3 gzip-3 patch-3 gperf-3 patchelf-3 libxcrypt-3 perl-3 binutils-3
     autoconf-3 automake-3 flex-3 bison-3 gmp-3 mpfr-3 mpc-3 texinfo-3
-    python-3;
+    python-3 lc-all-sort-3 glibc-x1-3;
 in
 let
   # callPackage :: path -> attrset -> result,
@@ -102,7 +102,9 @@ let
   #
   callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
   #
-  nxfsenv-3-10 = { python = python-3;
+  nxfsenv-3-10 = { glibc-x1 = glibc-x1-3;
+                   lc-all-sort = lc-all-sort-3;
+                   python = python-3;
                    mpc = mpc-3;
                    mpfr = mpfr-3;
                    gmp = gmp-3;
@@ -160,18 +162,7 @@ let
                                    patchelf = patchelf-3;
                                    which    = which-3;
                                  };
-in
-let
-  nxfsenv-3-94 = nxfsenv-3-16 // { };
-  # TODO: do we still need toolchain?  should use nxfs-gcc-wrapper-2
-  glibc-x1-3 = callPackage ./bootstrap-3/nxfs-glibc-x1-3
-    { nxfsenv-3           = nxfsenv-3-94;
-      nixify-glibc-source = bootstrap-2.nxfs-nixify-glibc-source;
-      lc-all-sort         = bootstrap-2.nxfs-lc-all-sort-2;
-      locale-archive      = bootstrap-1.nxfs-locale-archive-1;
-      toolchain-wrapper   = bootstrap-1.nxfs-toolchain-wrapper-1;
-      toolchain           = bootstrap-1.nxfs-toolchain-1;
-    };
+  nxfsenv-3-94 = nxfsenv-3-16;
 in
 let
   nxfsenv-3-95 = nxfsenv-3-94 // { glibc = glibc-x1-3; };

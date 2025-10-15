@@ -49,7 +49,7 @@ let
   # nxfs-defs :: { target_tuple :: string }
   #   expect nxfs-defs.target_tuple="x86_64-pc-linux-gnu"
   #
-  nxfs-defs = import ./bootstrap-1/nxfs-defs.nix;
+  nxfs-defs = import ../bootstrap-1/nxfs-defs.nix;
 
   # autotools eventually evaluates to derivation with defaults for:
   #   .builder .args .baseInputs .buildInputs .system
@@ -57,6 +57,11 @@ let
   #
   # nxfs-autotools :: pkgs -> attrs -> derivation
   nxfs-autotools = import ../build-support/autotools;
+
+  # TODO: explicit linux-headers package
+  linux-headers-1 = (import ../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix).toolchain;
+  # TODO: use callPackage
+  locale-archive-1 = import ../bootstrap-1/nxfs-locale-archive-1/default.nix;
 
   # bootstrap stdenv for stage-2
   nxfsenv-2        = {
@@ -82,6 +87,7 @@ let
 
     #  expand with stuff from bootstrap-3/default.nix.nxfsenv { .. }
 
+    locale-archive = locale-archive-1;
     nxfs-defs      = nxfs-defs;
   };
 
@@ -257,7 +263,50 @@ let
                                                        popen = popen-3;
                                                      };
 in
+let
+  # nxfsenv-3-16 :: attrset
+  nxfsenv-3-16 = nxfsenv-3-10 // { binutils = binutils-3;
+                                   perl     = perl-3;
+                                   texinfo  = texinfo-3;
+                                   bison    = bison-3;
+                                   flex     = flex-3;
+                                   file     = file-3;
+                                   pkgconf  = pkgconf-3;
+                                   m4       = m4-3;
+                                   python   = python-3;
+                                   zlib     = zlib-3;
+                                   gperf    = gperf-3;
+                                   patch    = patch-3;
+                                   gzip     = gzip-3;
+                                   patchelf = patchelf-3;
+                                   which    = which-3;
+                                 };
+in
+let
+  nxfsenv-3-94 = nxfsenv-3-16 // { };
+
+  # TODO: nxfs-nixify-glibc-source/package.nix
+  #
+  # nixify-glibc-source-3 :: (attrset -> derivation)
+  nixify-glibc-source-3 = (callPackage ../bootstrap-2/nxfs-nixify-glibc-source/default.nix);
+
+  # wrapper for sort -- invokes coreutils.sort with LC_ALL env var set to C
+  lc-all-sort-3 = callPackage ../bootstrap-2/nxfs-lc-all-sort-2/package.nix { nxfsenv = nxfsenv-3-94; };
+
+  # TODO: sub actual linux-headers derivation for toolchain.
+  #
+  # glibc-x1-3 :: derivation
+  #
+  glibc-x1-3 = callPackage ./nxfs-glibc-x1-3/package.nix { nxfsenv             = nxfsenv-3-94;
+                                                           nixify-glibc-source = nixify-glibc-source-3;
+                                                           lc-all-sort         = lc-all-sort-3;
+                                                           locale-archive      = locale-archive-1;
+                                                           toolchain           = linux-headers-1;
+                                                         };
+in
 {
+  inherit glibc-x1-3;
+  inherit lc-all-sort-3;
   inherit python-3;
   inherit texinfo-3;
   inherit mpc-3;

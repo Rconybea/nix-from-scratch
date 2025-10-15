@@ -18,7 +18,6 @@ nxfsenv.mkDerivation {
   bash      = nxfsenv.shell;
   sed       = nxfsenv.gnused;
   gnused    = nxfsenv.gnused;
-  toolchain = nxfsenv.toolchain.toolchain;
 
   builder   = "${nxfsenv.shell}/bin/bash";
   args      = [ ./builder.sh ];
