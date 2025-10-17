@@ -31,5 +31,8 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gcc} -v
 else
-    ${unwrapped_gcc} -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2 "${@}"
+    # minor point: appending flags so that they can be superseded by explicit arguments
+    ${unwrapped_gcc} "${@}" -B${NXFS_SYSROOT_DIR}/lib \
+                     -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib \
+                     -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 fi

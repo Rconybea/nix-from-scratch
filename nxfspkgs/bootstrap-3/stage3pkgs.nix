@@ -58,38 +58,55 @@ let
   # nxfs-autotools :: pkgs -> attrs -> derivation
   nxfs-autotools = import ../build-support/autotools;
 
-  # TODO: explicit linux-headers package
-  linux-headers-1 = (import ../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix).toolchain;
+  linux-headers-2 = stage2pkgs.linux-headers-2a;
+  #  linux-headers-1 = (import ../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix).toolchain;
   # TODO: use callPackage
   locale-archive-1 = import ../bootstrap-1/nxfs-locale-archive-1/default.nix;
 
   # bootstrap stdenv for stage-2
-  nxfsenv-2        = {
-    # coreutils,gnused,bash :: derivation
-    gcc_wrapper    = stage2pkgs.gcc-wrapper-2;
-    glibc          = stage2pkgs.glibc-2;
-    perl           = stage2pkgs.perl-2;
-    patch          = stage2pkgs.patch-2;
-    patchelf       = stage2pkgs.patchelf-2;
-    findutils      = stage2pkgs.findutils-2;
-    binutils       = stage2pkgs.binutils-2;
-    coreutils      = stage2pkgs.coreutils-2;
-    gawk           = stage2pkgs.gawk-2;
-    gnumake        = stage2pkgs.gnumake-2;
-    gnutar         = stage2pkgs.gnutar-2;
-    gnugrep        = stage2pkgs.gnugrep-2;
-    gnused         = stage2pkgs.gnused-2;
-    # want this to be shell
-    bash           = stage2pkgs.bash-2;
-    shell          = stage2pkgs.bash-2;
-    # mkDerivation :: attrs -> derivation
-    mkDerivation   = nxfs-autotools nxfsenv-2;
+  nxfsenv-2        =
+    let
+      # gcc_wrapper,..,shell :: derivation
+      gcc_wrapper    = stage2pkgs.gcc-wrapper-2;
+      glibc          = stage2pkgs.glibc-2;
+      perl           = stage2pkgs.perl-2;
+      patch          = stage2pkgs.patch-2;
+      patchelf       = stage2pkgs.patchelf-2;
+      findutils      = stage2pkgs.findutils-2;
+      diffutils      = stage2pkgs.diffutils-2;
+      binutils       = stage2pkgs.binutils-2;
+      coreutils      = stage2pkgs.coreutils-2;
+      gawk           = stage2pkgs.gawk-2;
+      gzip           = stage2pkgs.gzip-2;
+      gnumake        = stage2pkgs.gnumake-2;
+      gnutar         = stage2pkgs.gnutar-2;
+      gnugrep        = stage2pkgs.gnugrep-2;
+      gnused         = stage2pkgs.gnused-2;
+      shell          = stage2pkgs.bash-2;
+    in
+      {
+        # TODO: eventually remove these for consistency with nixpkgs style
+        inherit
+          gcc_wrapper glibc perl patch patchelf findutils binutils
+          coreutils gawk gnumake gnutar gnugrep gnused shell;
 
-    #  expand with stuff from bootstrap-3/default.nix.nxfsenv { .. }
+        bash = shell;
 
-    locale-archive = locale-archive-1;
-    nxfs-defs      = nxfs-defs;
-  };
+        # mkDerivation :: attrs -> derivation
+        mkDerivation   = nxfs-autotools nxfsenv-2;
+
+        # these automtically populate PATH :-> corresponding executables
+        # are implicitly available to all nix derivations using this nxfsenv.
+        #
+        # initialPath :: [ derivation ]
+        #
+        initialPath = [ coreutils shell gnumake gzip gawk gnugrep gnused gnutar findutils diffutils ];
+
+        # TODO: drop this
+        locale-archive = locale-archive-1;
+
+        inherit nxfs-defs;
+      };
 
   # in nixpkgs/lib/customisation.nix, similar function is lib.callPackageWith
   #
@@ -241,6 +258,12 @@ let
   mpc-3 = callPackage ./nxfs-mpc-3/package.nix { nxfsenv = nxfsenv-3-c13;
                                                  gmp = gmp-3;
                                                  mpfr = mpfr-3; };
+
+  # isl-3 :: derivation
+  isl-3 = callPackage ./nxfs-isl-3/package.nix { nxfsenv = nxfsenv-3-c13;
+                                                 gmp = gmp-3;
+                                               };
+
 in
 let
   # nxfsenv-3-c14 :: attrset
@@ -302,7 +325,7 @@ let
                                                            nixify-glibc-source = nixify-glibc-source-3;
                                                            lc-all-sort         = lc-all-sort-3;
                                                            locale-archive      = locale-archive-1;
-                                                           toolchain           = linux-headers-1;
+                                                           linux-headers       = linux-headers-2;
                                                          };
 in
 let
@@ -310,7 +333,9 @@ let
   nxfsenv-3-95 = nxfsenv-3-94 // { glibc = glibc-x1-3; };
 
   # gcc-x0-wrapper-3 :: derivation
-  gcc-x0-wrapper-3 = callPackage ./nxfs-gcc-x0-wrapper-3/package.nix { nxfsenv = nxfsenv-3-95; };
+  gcc-x0-wrapper-3 = callPackage ./nxfs-gcc-x0-wrapper-3/package.nix { nxfsenv = nxfsenv-3-95;
+                                                                       gcc-unwrapped = nxfsenv-3-95.gcc_wrapper.gcc;
+                                                                     };
 
   # binutils-x0-wrapper-3 :: derivation
   binutils-x0-wrapper-3 = callPackage ./nxfs-binutils-x0-wrapper-3/package.nix { nxfsenv = nxfsenv-3-95; };
@@ -330,8 +355,9 @@ let
       mpc                  = mpc-3;
       mpfr                 = mpfr-3;
       gmp                  = gmp-3;
+      isl                  = isl-3;
       nixify-gcc-source    = nixify-gcc-source-3;
-      toolchain            = linux-headers-1;
+      glibc                = glibc-x1-3;
     };
 
   # nxfsenv-3-97 :: attrset
@@ -352,6 +378,7 @@ let
       mpc                  = mpc-3;
       mpfr                 = mpfr-3;
       gmp                  = gmp-3;
+      glibc                = glibc-x1-3;
       nixify-gcc-source    = nixify-gcc-source-3;
     };
 in
@@ -378,7 +405,6 @@ let
       mpfr              = mpfr-3;
       gmp               = gmp-3;
       nixify-gcc-source = nixify-gcc-source-3;
-      toolchain         = linux-headers-1;
     };
 in
 let
@@ -401,6 +427,7 @@ in
   inherit lc-all-sort-3;
   inherit python-3;
   inherit texinfo-3;
+  inherit isl-3;
   inherit mpc-3;
   inherit mpfr-3;
   inherit gmp-3;

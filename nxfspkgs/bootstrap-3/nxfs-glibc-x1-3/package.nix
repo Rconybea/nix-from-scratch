@@ -12,8 +12,8 @@
   # locale-archive :: derivation
   locale-archive,
 
-  # toolchain :: derivation (unwrapped version).  For linux headers
-  toolchain,
+  # linux-headers :: derivation.  system headers (no glibc headers!)
+  linux-headers
 } :
 
 let
@@ -66,7 +66,7 @@ nxfsenv.mkDerivation {
   system         = builtins.currentSystem;
 
   locale_archive = locale-archive;
-  toolchain      = toolchain;
+  linux_headers  = linux-headers;
 
   patchfile      = ./glibc-2.40-fhs-1.patch;
 
@@ -81,7 +81,7 @@ nxfsenv.mkDerivation {
     set -euo pipefail
 
     # (note: toolchain for linux headers)
-    export PATH=$PATH:$toolchain/x86_64-pc-linux-gnu/bin
+    #export PATH=$PATH:$toolchain/x86_64-pc-linux-gnu/bin
 
     mkdir -p $out
     mkdir -p $source
@@ -96,6 +96,15 @@ nxfsenv.mkDerivation {
     python_program=$(which python3)
     sort_program=$(which sort)
 
+    # 1. copy linux headers to output
+    #
+    # gcc (later in bootstrap) expects them in the same subdir as glibc,
+    # convenient to keep them together anyway
+    #
+    mkdir -p $out/include
+    mkdir -p $out/include/scsi
+    cp -r $linux_headers/include/* $out/include/
+
     # 1. copy source tree to temporary directory
     #
     (cd $src && (tar cf - . | tar xf - -C $src2))
@@ -106,13 +115,13 @@ nxfsenv.mkDerivation {
 
     echo "rootsbindir=$out/sbin" > configparms
 
-    # headers from toolchain
+    # headers from $linux_headers
     #
     # libc_cv_complocaledir: this sets compiled-in default locale directory.
     # We need something that comes from the nix store so that basic locale queries
     # work from within isolated nix builds
     #
-    bash $src2/configure --prefix=$out --enable-kernel=4.19 --with-headers=$toolchain/include --disable-nscd libc_cv_complocaledir=$locale_archive/lib/locale libc_cv_slibdir=$out/lib CC=nxfs-gcc CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+    bash $src2/configure --prefix=$out --enable-kernel=4.19 --with-headers=$linux_headers/include --disable-nscd libc_cv_complocaledir=$locale_archive/lib/locale libc_cv_slibdir=$out/lib CC=nxfs-gcc CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 
     # looks like
     #   make Versions.v.i
@@ -176,7 +185,6 @@ nxfsenv.mkDerivation {
                   python
                   texinfo
                   bison
-                  toolchain
                   gzip
                   diffutils
                   findutils

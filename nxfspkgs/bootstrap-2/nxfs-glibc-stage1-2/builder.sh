@@ -12,6 +12,7 @@ echo "bison=${bison}"
 echo "patch=${patch}"
 echo "gcc_wrapper=${gcc_wrapper}"
 echo "toolchain=${toolchain}"
+echo "linux_headers=${linux_headers}"
 echo "diffutils=${diffutils}"
 echo "findutils=${findutils}"
 echo "gzip=${gzip}"
@@ -42,9 +43,7 @@ export PATH=${gnumake}/bin:${PATH}
 export PATH=${findutils}/bin:${PATH}
 export PATH=${diffutils}/bin:${PATH}
 export PATH=${gzip}/bin:${PATH}
-#export PATH=${toolchain}/x86_64-pc-linux-gnu/debug-root/usr/bin:${PATH}
-#export PATH=${toolchain}/x86_64-pc-linux-gnu/bin:${PATH}
-export PATH=${toolchain}/sbin:${PATH}
+export PATH=${toolchain}/sbin:${PATH}   # unwrapped compiler + binutils
 export PATH=${toolchain}/bin:${PATH}
 export PATH=${gcc_wrapper}/bin:${PATH}
 export PATH=${bison}/bin:${PATH}
@@ -67,7 +66,16 @@ bash_program=${bash}/bin/bash
 python_program=${python}/bin/python3
 sort_program=${coreutils}/bin/sort
 
-# 1. copy source tree to temporary directory
+# 1. copy linux headers to output
+#
+# gcc (later in bootstrap) expects them in the same subdir as glibc,
+# convenient to keep them together anyway
+#
+mkdir -p ${out}/include
+mkdir -p ${out}/include/scsi
+cp -r ${linux_headers}/include/* ${out}/include/
+
+# 2. copy source tree to temporary directory
 #
 (cd ${src} && (tar cf - . | tar xf - -C ${src2}))
 
@@ -143,7 +151,7 @@ find ${src2} -name '*.awk' | xargs --replace={} sed -i -e 's:sort -t:'${sort_pro
 #
 # --with-headers: was ${sysroot}/usr/include, when we used crosstool-ng
 #
-bash ${src2}/configure --prefix=${out} --enable-kernel=4.19 --with-headers=${toolchain}/include --disable-nscd libc_cv_complocaledir=${locale_archive}/lib/locale libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+bash ${src2}/configure --prefix=${out} --enable-kernel=4.19 --with-headers=${linux_headers}/include --disable-nscd libc_cv_complocaledir=${locale_archive}/lib/locale libc_cv_slibdir=${out}/lib CC=nxfs-gcc CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 
 # looks like
 #   make Versions.v.i

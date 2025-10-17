@@ -76,6 +76,7 @@ nxfsenv.mkDerivation {
     cp $gxx_wrapper_script $tmp
     sed -i -e s:@bash@:$bash_program: $tmp
     sed -i -e s:@unwrapped_gxx@:$unwrapped_gxx: $tmp
+    sed -i -e s:@gcc@:$gcc: $tmp
     sed -i -e s:@glibc@:$glibc: $tmp
     chmod +x $tmp
     cp $tmp $out/bin

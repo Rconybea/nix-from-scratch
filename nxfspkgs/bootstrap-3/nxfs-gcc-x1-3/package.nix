@@ -15,9 +15,11 @@
   mpfr,
   # gmp :: derivation
   gmp,
+  # isl :: derivation
+  isl,
 
-  # sysroot :: derivation   --  for linux headers
-  toolchain,
+  # glibc :: derivation   --  glibc + linux headers
+  glibc,
 } :
 
 let
@@ -64,8 +66,7 @@ nxfsenv.mkDerivation {
 
   system       = builtins.currentSystem;
 
-  inherit mpc mpfr gmp flex glibc;
-  inherit toolchain;  # for system headers
+  inherit mpc mpfr gmp isl flex glibc;
 
   src          = nxfs-nixified-gcc-source;
 
@@ -78,6 +79,9 @@ nxfsenv.mkDerivation {
     #   https://gcc.gnu.org/install/configure.html
 
     set -euo pipefail
+
+    echo "nxfs-g++=$(which nxfs-g++)"
+    echo "glibc=$glibc"
 
     src2=$src
     builddir=$TMPDIR/build
@@ -120,11 +124,10 @@ nxfsenv.mkDerivation {
     export CFLAGS="-idirafter $glibc/include"
     # TODO: -O2
 
-    # do we need $toolchain/lib ?
-    LDFLAGS="-B$glibc/lib -B$toolchain/lib"
-    LDFLAGS="$LDFLAGS -L$flex/lib -L$mpc/lib -L$mpfr/lib -L$gmp/lib"
+    LDFLAGS="-B$glibc/lib"
+    LDFLAGS="$LDFLAGS -L$flex/lib -L$mpc/lib -L$mpfr/lib -L$gmp/lib -L$isl/lib"
     LDFLAGS="$LDFLAGS -Wl,-rpath,$mpc/lib -Wl,-rpath,$mpfr/lib -Wl,-rpath,$gmp/lib"
-    LDFLAGS="$LDFLAGS -Wl,-rpath,$glibc/lib -Wl,-rpath,$toolchain/lib"
+    LDFLAGS="$LDFLAGS -Wl,-rpath,$isl/lib -Wl,-rpath,$glibc/lib"
     export LDFLAGS
 
     # The wrapper (nxfs-gcc) injects compiler- and linker- flags to pull in glibc.
@@ -150,19 +153,29 @@ nxfsenv.mkDerivation {
     #           libBrokenLocale.so libBrokenLocale.so.1
     #           libanl.so libanl.so.1 etc.
 
-    # glibc:
-    #  - built by crosstools-ng gcc (adopted into nix store)
-    #  - entirely from within nix, see nxfs-glibc-stage1-2
-    # here we tell nxfs-gcc to use this glibc instead of crosstools-ng glibc
+    # here we tell nxfs-gcc to use native prepared-within-nix glibc (from stage 3)
+    # instead of glibc baked into nxfs-gcc (from stage 2)
     #
-    #export NXFS_SYSROOT_DIR=$glibc
+    export NXFS_SYSROOT_DIR=$glibc
 
     # NOTE: nxfs-gcc automatically inserts flags
     #
     #          -Wl,--rpath=$NXFS_SYSROOT_DIR/lib -Wl,--dynamic-linker=$NXFS_SYSROOT_DIR/lib/ld-linux-x86-64.so.2
     #       We still need them explictly here
     #
-    (cd $builddir && $bash_program $src2/configure --prefix=$out --host=$target_tuple --build=$target_tuple --disable-bootstrap --with-native-system-header-dir=$toolchain/include --enable-lto --disable-nls --with-mpc=$mpc --with-mpfr=$mpfr --with-gmp=$gmp --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib -B$toolchain/lib -Wl,-rpath,$toolchain/lib" --with-boot-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib -B$toolchain/lib -Wl,-rpath,$toolchain/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
+    (cd $builddir \
+      && $bash_program $src2/configure --prefix=$out --disable-bootstrap \
+                       --with-native-system-header-dir=$glibc/include \
+                       --enable-lto --disable-nls --with-mpc=$mpc --with-mpfr=$mpfr \
+                       --with-gmp=$gmp --with-isl=$isl \
+                       --enable-default-pie --enable-default-ssp \
+                       --enable-shared --disable-multilib --disable-threads \
+                       --disable-libatomic --disable-libgomp --disable-libquadmath \
+                       --disable-libssp --disable-libvtv --disable-libstdcxx \
+                       --enable-languages=c,c++ \
+                       --with-stage1-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib" \
+                       --with-boot-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib" \
+                       CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)

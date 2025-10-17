@@ -4,7 +4,9 @@
   # locale-archive :: derivation
   locale-archive,
   # lc-all-sort :: derivation
-  lc-all-sort
+  lc-all-sort,
+  # linux-headers :: derivation
+  linux-headers
 } :
 
 let
@@ -29,6 +31,7 @@ nxfsenv.mkDerivation {
   gawk         = nxfsenv.gawk;
   sed          = nxfsenv.gnused;
   grep         = nxfsenv.gnugrep;
+  linux_headers = linux-headers;
 
   gcc_wrapper  = nxfsenv.toolchain;
   toolchain    = nxfsenv.toolchain.toolchain;

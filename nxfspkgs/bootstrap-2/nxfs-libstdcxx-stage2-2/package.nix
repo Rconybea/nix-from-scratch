@@ -6,7 +6,9 @@
   # mpfr :: derivation
   mpfr,
   # gmp :: derivation
-  gmp
+  gmp,
+  # glibc :: derivation
+  glibc
 } :
 
 let
@@ -28,8 +30,8 @@ nxfsenv.mkDerivation {
 
   system       = builtins.currentSystem;
 
-  inherit mpc mpfr gmp;
-  inherit (nxfsenv) binutils texinfo bison flex m4 coreutils gnumake gawk findutils diffutils glibc;
+  inherit mpc mpfr gmp glibc;
+  inherit (nxfsenv) binutils texinfo bison flex m4 coreutils gnumake gawk findutils diffutils;
   bash         = nxfsenv.shell;
   tar          = nxfsenv.gnutar;
   grep         = nxfsenv.gnugrep;

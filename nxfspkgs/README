@@ -10,6 +10,7 @@ it to be clear that that bootstrap doesn't depend on nixpkgs.
 
 ----------------------------------------------------------------
 Prerequisites
+
 1. dependencies for local {nix, toolchain} installed.
    See nix-from-scratch/Makefile.  Individual packages in nix-from-scratch/pkgs/.
 
@@ -30,7 +31,47 @@ Prerequisites
    (see NXFS_TOOLCHAIN_PREFIX in nix-from-scratch/mk/prefix.mk)
 
 ----------------------------------------------------------------
-Overview
+Tower
+
+           +----------------------------------+
+           |            <nxfspkgs>            |
+           +----------------------------------+
+           |            bootstrap-3           |
+           +----------------------------------+
+           |            bootstrap-2           |
+           +-----------------+----------------+
+           | bootstrap-1     | bootstrap-pkgs |
+           +-----------------+----------------+
+           |            bootstrap             |
+           +----------------------------------+
+
+----------------------------------------------------------------
+Directory Layout
+
+nxfspkgs
++- default.nix             top-level nxfspkgs entry point
++- impure.nix              read .config, overlays, env vars
++- nxfspkgs.nix            nxfs package collection
++- bootstrap/              bootstrap stage0
++- bootstrap-1/            bootstrap stage1
++- bootstrap-1-demo/       tests/demos for stage 1 results
++- bootstrap-2/            bootstrap stage2
++- bootstrap-2-demo/       tests/demos for stage 2 results
++- bootstrap-3/            bootstrap stage3
++- bootstrap-3-demo/       tests/demos for stage 3 results
++- bootstrap-pkgs/         nix packages. used by {stage2, stage3}
++- build-support
+   +- autotools
+      +- default.nix       mkDerivation
++- lib/                    nix packages. used by {bootstrap, post}
+   +- makeCallPackage.nix
++- nix-pills/              incidental.  early nix pills experiments
++- stdenv/                 (abandoned) attempt to provide stdenv from scratch
++- stdenv-to-nix/          (nice try) nixpkgs stdenv using nxfspkgs bootstrap
+
+
+----------------------------------------------------------------
+Bootstrap
 
 0. (may) start with empty nix store
 

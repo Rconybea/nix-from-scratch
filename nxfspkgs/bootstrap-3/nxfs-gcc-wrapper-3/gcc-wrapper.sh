@@ -9,6 +9,8 @@
 unwrapped_gcc=@unwrapped_gcc@
 glibc=@glibc@
 
+PATH=${gcc}/bin:$PATH
+
 # Caller won't usually set this,  in which case nxfs-gcc points destination ELF to imported sysroot
 # (see nix-from-scratch/nxfspkgs/bootstrap-1/nxfs-sysroot-1).
 #
@@ -31,5 +33,8 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gcc} -v
 else
-    ${unwrapped_gcc} -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2 "${@}" -I${NXFS_SYSROOT_DIR}/include
+    # note: options after "${@}" so they can be intercepted by explicit arguments
+    ${unwrapped_gcc} "${@}" -I${NXFS_SYSROOT_DIR}/include \
+                     -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib \
+                     -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 fi

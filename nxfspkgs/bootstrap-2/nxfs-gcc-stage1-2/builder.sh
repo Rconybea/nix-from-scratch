@@ -28,14 +28,6 @@ echo "TMPDIR=${TMPDIR}"
 
 set -x
 
-# 1. ${coreutils}/bin provides mkdir,cat,ls etc.
-#    Shadows external-to-nix versions adopted via crosstool-ng
-# 2. ${gcc_wrapper}/bin/x86_64-pc-linux-gnu-{gcc,g++} builds viable executables.
-# 3. ${toolchain}/bin/x86_64-pc-linux-gnu-gcc can build executables,
-#    but they won't run unless we pass special linker flags
-# 4. ${toolchain}/bin                     has x86_64-pc-linux-gnu-ar
-# 5. ${toolchain}/x86_64-pc-linux-gnu/bin has ar  <- autotools looks for this
-#
 export PATH=${bash}/bin:$PATH
 export PATH=${coreutils}/bin:$PATH
 export PATH=${tar}/bin:$PATH
@@ -43,8 +35,6 @@ export PATH=${sed}/bin:$PATH
 export PATH=${grep}/bin:$PATH
 export PATH=${gawk}/bin:$PATH
 export PATH=${gnumake}/bin:$PATH
-export PATH=${toolchain}/x86_64-pc-linux-gnu/bin:$PATH
-export PATH=${toolchain}/bin:$PATH
 export PATH=${gcc_wrapper}/bin:$PATH
 export PATH=${binutils}/bin:$PATH
 export PATH=${findutils}/bin:$PATH
@@ -108,14 +98,14 @@ export CONFIG_SHELL="${bash_program}"
 #   --with-boot-ldflags
 
 # WARNING!
-#   ${toolchain}/x86_64-pc-linux-gnu/sysroot/usr/include/obstack.h [~/nixroot/nix/store/rh8qr...]
-#   ${sysroot}/usr/include                                         [~/nixroot/nix/store/4ban...]
-# provide obstack.h which shadows the one in ${src}
+#   ${glibc}/include/obstack.h
+# provides obstack.h which shadows the one in ${src}
 #
-#export CFLAGS="-I${coreutils}/include -I${sysroot}/usr/include -I${toolchain}/include"
 export CFLAGS="-idirafter ${glibc}/include"
 # TODO: -O2
 
+# toolchain holds unwrapped, imported, gcc + binutils + glibc from host
+#
 LDFLAGS="-B${glibc}/lib -B${toolchain}/lib"
 LDFLAGS="${LDFLAGS} -L${flex}/lib -L${mpc}/lib -L${mpfr}/lib -L${gmp}/lib"
 LDFLAGS="${LDFLAGS} -Wl,-rpath,${mpc}/lib -Wl,-rpath,${mpfr}/lib -Wl,-rpath,${gmp}/lib"
@@ -157,7 +147,18 @@ ln -s ${glibc}/lib/libc.so.6 ${out}/${target_tuple}/lib/libc.so.6
 #          -Wl,--rpath=${NXFS_SYSROOT_DIR}/lib -Wl,--dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 #       We still need them explictly here
 #
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --disable-bootstrap --with-native-system-header-dir=${toolchain}/include --enable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+(cd ${builddir} \
+     && ${bash_program} ${src2}/configure --prefix=${out} --disable-bootstrap \
+                        --with-native-system-header-dir=${glibc}/include \
+                        --enable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} \
+                        --with-gmp=${gmp} --enable-default-pie --enable-default-ssp \
+                        --enable-shared --disable-multilib --disable-threads \
+                        --disable-libatomic --disable-libgomp --disable-libquadmath \
+                        --disable-libssp --disable-libvtv --disable-libstdcxx \
+                        --enable-languages=c,c++ \
+                        --with-stage1-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" \
+                        --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" \
+                        CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})

@@ -1,3 +1,4 @@
+# Build full-featured native gcc
 {
   # nxfsenv :: attrset
   nxfsenv,
@@ -10,7 +11,9 @@
   # gmp :: derivation
   gmp,
   # binutils-wrapper :: derivation
-  binutils-wrapper
+  binutils-wrapper,
+  # glibc :: derivation  (glibc + linux headers)
+  glibc
 } :
 
 let
@@ -52,14 +55,14 @@ nxfsenv.mkDerivation {
                    nxfsenv.shell
                  ];
 
-  glibc        = nxfsenv.glibc;
-  flex         = nxfsenv.flex;
-  bash         = nxfsenv.shell;
+  flex          = nxfsenv.flex;
+  bash          = nxfsenv.shell;
+  glibc         = glibc;
 
-  builder      = "${nxfsenv.shell}/bin/bash";
-  args         = [ ./builder.sh ];
+  builder       = "${nxfsenv.shell}/bin/bash";
+  args          = [ ./builder.sh ];
 
-  src          = nixified-gcc-source;
+  src           = nixified-gcc-source;
 
-  target_tuple = target_tuple;
+  target_tuple  = target_tuple;
 }

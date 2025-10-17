@@ -1,10 +1,11 @@
 {
-  #  nxfsenv :: { mkDerivation, ... }
+  # nxfsenv :: { mkDerivation, ... }
   nxfsenv,
+  # gcc-unwrapped :: derivation
+  gcc-unwrapped,
 } :
 
 let
-  gcc-unwrapped       = nxfsenv.gcc-unwrapped;
   glibc               = nxfsenv.glibc;
 
   gnused              = nxfsenv.gnused;

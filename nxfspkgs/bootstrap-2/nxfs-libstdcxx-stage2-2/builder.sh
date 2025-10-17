@@ -10,7 +10,6 @@ echo "mpc=${mpc}"
 echo "mpfr=${mpfr}"
 echo "gmp=${gmp}"
 echo "gcc_wrapper=${gcc_wrapper}"
-#echo "toolchain=${toolchain}"
 echo "bison=${bison}";
 echo "flex=${flex}";
 echo "diffutils=${diffutils}"
@@ -104,7 +103,7 @@ export CONFIG_SHELL="${bash_program}"
 #   ${sysroot}/usr/include                                         [~/nixroot/nix/store/4ban...]
 # provide obstack.h which shadows the one in ${src}
 #
-export CFLAGS="-idirafter ${glibc}/include"
+export CPPFLAGS="-idirafter ${glibc}/include"
 # TODO: -O2
 
 LDFLAGS="-B${glibc}/lib"
@@ -120,7 +119,11 @@ export LDFLAGS
 #
 #
 # this builds:
-(cd ${builddir} && ${bash_program} ${src2}/libstdc++-v3/configure --prefix=${out} --with-gxx-include-dir=${out}/${target_tuple}/include/c++/${version} --disable-nls --disable-multilib --enable-libstdcxx-pch CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+(cd ${builddir} && ${bash_program} ${src2}/libstdc++-v3/configure \
+                                   --prefix=${out} \
+                                   --with-gxx-include-dir=${out}/${target_tuple}/include/c++/${version} \
+                                   --disable-nls --disable-multilib --enable-libstdcxx-pch \
+                                   CC=nxfs-gcc CXX=nxfs-g++ CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})

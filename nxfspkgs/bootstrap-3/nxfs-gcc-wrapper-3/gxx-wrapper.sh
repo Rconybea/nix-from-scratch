@@ -25,5 +25,5 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gxx} -v
 else
-    ${unwrapped_gxx} -I${NXFS_SYSROOT_DIR}/include "${@}" -L${gcc}/lib -Wl,-rpath=${gcc}/lib -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
+    ${unwrapped_gxx} "${@}" -I${NXFS_SYSROOT_DIR}/include -L${gcc}/lib -Wl,-rpath=${gcc}/lib -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 fi

@@ -6,7 +6,7 @@
   # mpfr :: derivation
   mpfr,
   # gmp :: derivation
-  gmp
+  gmp,
 } :
 
 let
@@ -38,7 +38,6 @@ nxfsenv.mkDerivation {
                                          url = "https://ftpmirror.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz";
                                          sha256 = "1bdp6l9732316ylpzxnamwpn08kpk91h7cmr3h1rgm3wnkfgxzh9";
                                        };
-
   outputs      = [ "out" "source" ];
 
   target_tuple = nxfs-defs.target_tuple;

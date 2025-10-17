@@ -2,7 +2,7 @@ Try to create a nixpkgs stdenv from the toolchain we've built in bootstrap-3.
 
 To recap :- although in principle nixpkgs will 'just work' with non-standard store location,
 it will have to build everything (including its bootstrap chain, down to minimal bootstrap) from source.
-My experience (with 24.05, 24.11 and various attempts in between) is that I get symied by
+My experience (with 24.05, 24.11 and various attempts in between) is that I get stymied by
 mysterious-to-me compile problems, and I don't have expertise to make sufficient progress on them.
 
 The needle we want to thread: create a nixpkgs-compatible stdenv without using any compiled

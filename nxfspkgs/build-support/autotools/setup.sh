@@ -1,12 +1,33 @@
 #!/bin/bash
+#
+# Primitive version of nixpkgs setup.sh
+#
+# Incoming variables (from ./default.nix, for example)
+#   initialPath
+#   baseInputs
+#   buildInputs
+#   propagatedBuildInputs
+#
 
 set -e
 set -u
 set -o pipefail
 
+# append $1/bin to _PATH (at the end)
+addToEnv() {
+    if [[ -d $1/bin ]]; then
+        eval export _PATH=${_PATH-}${_PATH:+:}$1/bin
+    fi
+}
+
 # nix-build supplied PATH doesn't point anywhere anyway
 
-PATH=
+_PATH=
+for i in ${initialPath}; do
+    addToEnv ${i}
+done
+
+PATH=$_PATH
 export PATH
 
 CFLAGS=
@@ -20,12 +41,6 @@ export LDFLAGS
 
 PKG_CONFIG_PATH=
 export PKG_CONFIG_PATH
-
-addToEnv() {
-    if [[ -d $1/bin ]]; then
-        eval export _PATH=${_PATH-}${_PATH:+:}$1/bin
-    fi
-}
 
 declare pkgs=""
 

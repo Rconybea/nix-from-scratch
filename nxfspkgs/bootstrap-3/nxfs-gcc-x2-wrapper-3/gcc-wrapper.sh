@@ -7,6 +7,7 @@
 # and by defult produces executables that assume /lib64
 
 unwrapped_gcc=@unwrapped_gcc@
+gcc=@gcc@
 glibc=@glibc@
 
 # Caller won't usually set this,  in which case nxfs-gcc points destination ELF to imported sysroot
@@ -31,5 +32,6 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gcc} -v
 else
-    ${unwrapped_gcc} -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2 "${@}" -I${NXFS_SYSROOT_DIR}/include
+    # minor point: appending flags so that they can be superseded by explicit arguments
+    ${unwrapped_gcc} "${@}" -I${NXFS_SYSROOT_DIR}/include -L${gcc}/lib -Wl,-rpath=${gcc}/lib -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 fi

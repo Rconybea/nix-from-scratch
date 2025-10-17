@@ -1,4 +1,4 @@
 {
   # autotools :: pkgs -> attrset -> derivation
-  autotools = import ./autotools;
+  autotools = import ./autotools/default.nix;
 }

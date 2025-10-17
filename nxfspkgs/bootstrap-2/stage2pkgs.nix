@@ -100,22 +100,43 @@ let
   #       If we want to follow the nixpkgs strategy here, need a makeNxfsenv,
   #       since we're progressively changing what would appear in stdenv.initialPath
   #
-  nxfsenv-1 = {
-    toolchain = import ../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
-    gzip      = import ../bootstrap-1/nxfs-gzip-1/default.nix;
-    coreutils = import ../bootstrap-1/nxfs-coreutils-1/default.nix;
-    gnumake   = import ../bootstrap-1/nxfs-gnumake-1/default.nix;
-    gawk      = import ../bootstrap-1/nxfs-gawk-1/default.nix;
-    shell     = bash-1;
-    gnutar    = import ../bootstrap-1/nxfs-tar-1/default.nix;
-    gnugrep   = import ../bootstrap-1/nxfs-grep-1/default.nix;
-    gnused    = import ../bootstrap-1/nxfs-sed-1/default.nix;
-    diffutils = import ../bootstrap-1/nxfs-diffutils-1/default.nix;
-    # mkDerivation :: attrs -> derivation
-    mkDerivation = nxfs-autotools nxfsenv-1;
+  nxfsenv-1 =
+    let
+      # missing (relative to nixpgks):
+      #   bzip2
+      #   xz    (need this if we want to use tar xzf ?)
+      #   patch
 
-    inherit nxfs-defs;
-  };
+      coreutils = import ../bootstrap-1/nxfs-coreutils-1/default.nix;
+      gnumake   = import ../bootstrap-1/nxfs-gnumake-1/default.nix;
+      gzip      = import ../bootstrap-1/nxfs-gzip-1/default.nix;
+      gawk      = import ../bootstrap-1/nxfs-gawk-1/default.nix;
+      gnutar    = import ../bootstrap-1/nxfs-tar-1/default.nix;
+      gnugrep   = import ../bootstrap-1/nxfs-grep-1/default.nix;
+      gnused    = import ../bootstrap-1/nxfs-sed-1/default.nix;
+      findutils = import ../bootstrap-1/nxfs-findutils-1/default.nix;
+      diffutils = import ../bootstrap-1/nxfs-diffutils-1/default.nix;
+      toolchain = import ../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
+      shell     = bash-1;
+    in
+      {
+        # TODO: eventually remove for consistency with nixpkgs style
+        inherit toolchain;
+        # TODO: eventually remove these for consistency with nixpkgs style
+        inherit coreutils shell gnumake gzip gawk gnugrep gnutar gnused findutils diffutils;
+
+        # mkDerivation :: attrs -> derivation
+        mkDerivation = nxfs-autotools nxfsenv-1;
+
+        # these automtically populate PATH :-> corresponding executables
+        # are implicitly available to all nix derivations using this nxfsenv.
+        #
+        # initialPath :: [ derivation ]
+        #
+        initialPath = [ coreutils shell gnumake gzip gawk gnugrep gnused gnutar findutils diffutils toolchain ];
+
+        inherit nxfs-defs;
+      };
 
   # in nixpkgs/lib/customisation.nix, similar function is lib.callPackageWith
   #
@@ -131,14 +152,24 @@ let
 
 in
 let
+  # nxfspkg.stage2pkgs is the *end* result at the end of bootstrap.
+  # The recursive construction would obscure bootstrap progress,
+  # so we're going to pass everything explicitly
+  #
   callPackage = makeCallPackage nxfspkgs.stage2pkgs;
 in
 let
-  nxfsenv-2-00 = nxfsenv-1;
-  which-2 = callPackage ./nxfs-which-2/package.nix { nxfsenv = nxfsenv-2-00; };
+  nxfsenv-2-0a = nxfsenv-1;
+  # already have .linux-headers-2; but want to replace it
+  linux-headers-2a = callPackage ../bootstrap-pkgs/linux-headers/package.nix { nxfsenv = nxfsenv-2-0a; };
+    #{ nxfsenv = nxfsenv-2-0a; };
 in
 let
-  nxfsenv-2-0 = nxfsenv-2-00 // { which = which-2; };
+  nxfsenv-2-0b = nxfsenv-2-0a;
+  which-2 = callPackage ./nxfs-which-2/package.nix { nxfsenv = nxfsenv-2-0a; };
+in
+let
+  nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
   diffutils-2 = callPackage ./nxfs-diffutils-2/package.nix { nxfsenv = nxfsenv-2-0; };
 in
 let
@@ -303,6 +334,7 @@ let
   glibc-2 = callPackage ./nxfs-glibc-stage1-2/package.nix { nxfsenv = nxfsenv-2-94;
                                                             lc-all-sort = lc-all-sort-2;
                                                             locale-archive = locale-archive-1;
+                                                            linux-headers = linux-headers-2a;
                                                           };
 in
 let
@@ -314,6 +346,7 @@ let
   gcc-x0-wrapper-2 = callPackage ./nxfs-gcc-stage1-wrapper-2/package.nix { nxfsenv = nxfsenv-2-95; };
 in
 let
+  # maybe need binutils wrapper ?
   nxfsenv-2-96 = nxfsenv-2-95 // { gcc = gcc-x0-wrapper-2; };  # or 2-95a
 
   # TODO: rename subdir to follow nxfs-gcc-x1-3 in stage3
@@ -321,7 +354,6 @@ let
                                                            mpc = mpc-2;
                                                            mpfr = mpfr-2;
                                                            gmp = gmp-2;
-                                                           # nixify-gcc-source = nxfs-nixify-gcc-source
                                                          };
 in
 let
@@ -341,12 +373,13 @@ let
   libstdcxx-x2-2 = callPackage ./nxfs-libstdcxx-stage2-2/package.nix { nxfsenv = nxfsenv-2-98;
                                                                        mpc = mpc-2;
                                                                        mpfr = mpfr-2;
-                                                                       gmp = gmp-2; };
+                                                                       gmp = gmp-2;
+                                                                       glibc = glibc-2;
+                                                                     };
 in
 let
   # gcc-x2-wrapper-2 :: derivation
   gcc-x2-wrapper-2 = callPackage ./nxfs-gcc-stage3-wrapper-2/package.nix { nxfsenv = nxfsenv-2-98;
-                                                                           # TODO: as gcc-unwrapped
                                                                            gcc-unwrapped = gcc-x1-2;
                                                                            libstdcxx = libstdcxx-x2-2;
                                                                          };
@@ -368,6 +401,14 @@ let
                                                                  nxfs-defs = nxfsenv-2-99a.nxfs-defs;
                                                                };
 
+  # combined-glibc-linux-headers-2 :: derivation
+  combined-glibc-linux-headers-2 = callPackage ../bootstrap-pkgs/combine-glibc-linux-headers/package.nix
+    {
+      nxfsenv = nxfsenv-2-99a;
+      glibc = glibc-2;
+      linux-headers = linux-headers-2a;
+    };
+
   # gcc-x3-2 :: derivation
   gcc-x3-2 = callPackage ./nxfs-gcc-stage2-2/package.nix  { nxfsenv = nxfsenv-2-99a;
                                                             nixified-gcc-source = nixified-gcc-source-2;
@@ -375,6 +416,7 @@ let
                                                             mpfr = mpfr-2;
                                                             gmp = gmp-2;
                                                             binutils-wrapper = binutils-x0-wrapper-2;
+                                                            glibc = glibc-2;
                                                           };
 in
 let
@@ -382,7 +424,9 @@ let
   nxfsenv-2-100 = nxfsenv-2-99a // { gcc-unwrapped = gcc-x3-2; };
 
   # gcc-wrapper-2 :: derivation
-  gcc-wrapper-2 = callPackage ./nxfs-gcc-wrapper-2/package.nix { nxfsenv = nxfsenv-2-100; };
+  gcc-wrapper-2 = callPackage ./nxfs-gcc-wrapper-2/package.nix { nxfsenv = nxfsenv-2-100;
+                                                                 glibc = glibc-2;
+                                                               };
 in
 {
   inherit gcc-wrapper-2;
@@ -427,5 +471,7 @@ in
   inherit findutils-2;
   inherit diffutils-2;
   inherit which-2;
+  inherit combined-glibc-linux-headers-2;
+  inherit linux-headers-2a;
   linux-headers-2 = nxfsenv-2-100.toolchain;
 }

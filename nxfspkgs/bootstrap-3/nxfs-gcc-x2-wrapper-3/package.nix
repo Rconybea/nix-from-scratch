@@ -29,6 +29,8 @@ nxfsenv.mkDerivation {
   libstdcxx          = libstdcxx;
   glibc              = glibc;
 
+  gcc = gcc-unwrapped;
+
   gcc_wrapper_script = ./gcc-wrapper.sh;
   gxx_wrapper_script = ./gxx-wrapper.sh;
 
@@ -41,14 +43,12 @@ nxfsenv.mkDerivation {
 
     builddir=$TMPDIR
 
-    unwrapped_gcc=$(which gcc)
-    unwrapped_gxx=$(which g++)
+    unwrapped_gcc=$gcc/bin/gcc
+    unwrapped_gxx=$gcc/bin/g++
 
     mkdir -p $builddir/bin
 
-    # x86_64-pc-linux-gnu-gcc
     gcc_basename=gcc
-    # x86_64-pc-linux-gnu-gxx
     gxx_basename=g++
 
     mkdir -p $out/bin
@@ -66,6 +66,7 @@ nxfsenv.mkDerivation {
     cp $gcc_wrapper_script $tmp
     sed -i -e s:@bash@:$bash/bin/bash: $tmp
     sed -i -e s:@unwrapped_gcc@:$unwrapped_gcc: $tmp
+    sed -i -e s:@gcc@:$gcc: $tmp
     sed -i -e s:@glibc@:$glibc: $tmp
     chmod +x $tmp
     cp $tmp $out/bin
@@ -76,6 +77,7 @@ nxfsenv.mkDerivation {
     cp $gxx_wrapper_script $tmp
     sed -i -e s:@bash@:$bash/bin/bash: $tmp
     sed -i -e s:@unwrapped_gxx@:$unwrapped_gxx: $tmp
+    sed -i -e s:@gcc@:$gcc: $tmp
     sed -i -e s:@glibc@:$glibc: $tmp
     sed -i -e s:@libstdcxx@:$libstdcxx: $tmp
     sed -i -e s:@target_tuple@:$target_tuple: $tmp

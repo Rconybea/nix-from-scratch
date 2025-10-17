@@ -70,7 +70,8 @@ export CONFIG_SHELL="${bash_program}"
 #   --with-boot-libs
 #   --with-boot-ldflags
 
-export CFLAGS="-idirafter ${glibc}/include"
+# shouldn't need this anymore, we've merged these into linux_headers
+#export CPPFLAGS="-idirafter ${glibc}/include"
 # TODO: -O2
 
 LDFLAGS="-B${glibc}/lib -B${toolchain}/lib"
@@ -105,18 +106,18 @@ ln -s ${glibc}/lib/Scrt1.o ${out}/${target_tuple}/lib/Scrt1.o
 #           libanl.so libanl.so.1 etc.
 
 # glibc:
-#  - built by crosstools-ng gcc (adopted into nix store)
-#  - entirely from within nix, see nxfs-glibc-stage1-2
-# here we tell nxfs-gcc to use this glibc instead of crosstools-ng glibc
+#  - entirely from within nix, see nxfs-glibc-stage1-2; includes linux system headers.
+#  - built by external gcc (imported into nix store)
+# here we tell nxfs-gcc to use this glibc instead of the imported glibc.
 #
-#export NXFS_SYSROOT_DIR=${glibc}
+export NXFS_SYSROOT_DIR=${glibc}
 
 # NOTE: nxfs-gcc automatically inserts flags
 #
 #          -Wl,--rpath=${NXFS_SYSROOT_DIR}/lib -Wl,--dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 #       We still need them explictly here
 #
-(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --disable-bootstrap --with-native-system-header-dir=${toolchain}/include --enable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --enable-threads --enable-libatomic --enable-libgomp --enable-libquadmath --enable-libssp --enable-libvtv --enable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}")
+(cd ${builddir} && ${bash_program} ${src2}/configure --prefix=${out} --disable-bootstrap --with-native-system-header-dir=${glibc}/include --enable-lto --disable-nls --with-mpc=${mpc} --with-mpfr=${mpfr} --with-gmp=${gmp} --enable-default-pie --enable-default-ssp --enable-shared --disable-multilib --enable-threads --enable-libatomic --enable-libgomp --enable-libquadmath --enable-libssp --enable-libvtv --enable-libstdcxx --enable-languages=c,c++ --with-stage1-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" --with-boot-ldflags="-B${glibc}/lib -Wl,-rpath,${glibc}/lib -B${toolchain}/lib -Wl,-rpath,${toolchain}/lib" CC=nxfs-gcc CXX=nxfs-g++ LDFLAGS="${LDFLAGS}")
 
 (cd ${builddir} && make SHELL=${CONFIG_SHELL})
 (cd ${builddir} && make install SHELL=${CONFIG_SHELL})

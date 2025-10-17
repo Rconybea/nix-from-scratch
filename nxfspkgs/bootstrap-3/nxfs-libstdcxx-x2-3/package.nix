@@ -11,12 +11,13 @@
   mpfr,
   # gmp :: derivation
   gmp,
+  # glibc :: derivation
+  glibc
 } :
 
 let
   gcc_wrapper = gcc-wrapper;
-  gcc         = nxfsenv.gcc;
-  glibc       = nxfsenv.glibc;
+  gcc         = gcc-wrapper.gcc;
 
   binutils    = nxfsenv.binutils;
   bison       = nxfsenv.bison;
@@ -72,6 +73,9 @@ nxfsenv.mkDerivation {
 
     set -e
 
+    echo "cpp=$(which cpp)"
+    echo "PATH=$PATH"
+
     builddir=$TMPDIR/build
 
     mkdir -p $builddir
@@ -108,12 +112,14 @@ nxfsenv.mkDerivation {
     #   --with-boot-libs
     #   --with-boot-ldflags
 
-    export CFLAGS="-idirafter $glibc/include"
+    export CPPFLAGS="-idirafter $glibc/include"
     # TODO: -O2
 
     LDFLAGS="-B$glibc/lib"
     LDFLAGS="$LDFLAGS -Wl,-rpath,$glibc/lib"
     export LDFLAGS
+
+    set -x
 
     # NOTE: nxfs-gcc automatically inserts flags
     #
@@ -122,7 +128,11 @@ nxfsenv.mkDerivation {
     #
     #
     # this builds:
-    (cd $builddir && $bash_program $src/libstdc++-v3/configure --prefix=$out --with-gxx-include-dir=$out/$target_tuple/include/c++/$version --host=$target_tuple --build=$target_tuple --disable-nls --disable-multilib --enable-libstdcxx-pch CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
+    (cd $builddir && $bash_program $src/libstdc++-v3/configure \
+                                   --prefix=$out \
+                                   --with-gxx-include-dir=$out/$target_tuple/include/c++/$version \
+                                   --disable-nls --disable-multilib --enable-libstdcxx-pch \
+                                   CC=nxfs-gcc CXX=nxfs-g++ CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
@@ -130,7 +140,8 @@ nxfsenv.mkDerivation {
     (cd $src && (tar cf - . | tar xf - -C $source))
     '';
 
-  buildInputs = [ gcc
+  buildInputs = [ gcc_wrapper
+                  gcc
                   binutils
                   bison
                   flex
