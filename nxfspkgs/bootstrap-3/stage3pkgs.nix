@@ -59,12 +59,40 @@ let
   nxfs-autotools = import ../build-support/autotools;
 
   linux-headers-2 = stage2pkgs.linux-headers-2;
-  #  linux-headers-1 = (import ../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix).toolchain;
+
   # TODO: use callPackage
   locale-archive-1 = import ../bootstrap-1/nxfs-locale-archive-1/default.nix;
 
+  stdenv-2 = (import ../build-support/make-stdenv/make-stdenv.nix { config = config; })
+    { name = "stdenv-2";
+      stagepkgs = { shell = stage2pkgs.bash-2;
+                    coreutils = stage2pkgs.coreutils-2;
+                    gnused = stage2pkgs.gnused-2;
+                  }; };
+
+  # originally intended 'nxfsenv' to be a stdenv substitute.
+  # instead it's grown into a kitchen sink.
+  # try starting over as explicit stdenv, and we'll try to do better this time.
+  #
+  # We want to have:
+  #   stdenv.cc
+  #   stdenv.hasCC
+  #   stdenv.cc.cc
+  #   stdenv.cc.bintools
+  #   stdenv.cc.libc
+  #   stdenv.cc.libc.dev
+  #   stdenv.cc.libc.static
+  #
+  #   stdenv.system + buildPlatform + hostPlatform + targetPlatform
+  #
+  #   stdenv.overrides
+  #   stdenv.fetchurlBoot
+  #   stdenv.initialPath
+  #   stdenv.defaultBuildInputs + defaultNativeBuildInputs
+  #
+
   # bootstrap stdenv for stage-2
-  nxfsenv-2        =
+  nxfsenv-2 =
     let
       # gcc_wrapper,..,shell :: derivation
       gcc_wrapper    = stage2pkgs.gcc-wrapper-2;
@@ -133,7 +161,7 @@ in
 let
   nxfsenv-3-00 = nxfsenv-2;
   # which-3 :: derivation
-  which-3 = callPackage ./nxfs-which-3/package.nix { nxfsenv = nxfsenv-3-00; };
+  which-3 = callPackage ./nxfs-which-3/package.nix { stdenv = stdenv-2; };
   # diffutils-3 :: derivation
   diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { nxfsenv = nxfsenv-3-00; };
 in
