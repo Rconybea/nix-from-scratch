@@ -58,7 +58,7 @@ let
   # nxfs-autotools :: pkgs -> attrs -> derivation
   nxfs-autotools = import ../build-support/autotools;
 
-  linux-headers-2 = stage2pkgs.linux-headers-2a;
+  linux-headers-2 = stage2pkgs.linux-headers-2;
   #  linux-headers-1 = (import ../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix).toolchain;
   # TODO: use callPackage
   locale-archive-1 = import ../bootstrap-1/nxfs-locale-archive-1/default.nix;

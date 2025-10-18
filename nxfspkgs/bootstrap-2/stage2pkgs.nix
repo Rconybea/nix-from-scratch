@@ -167,9 +167,7 @@ let
 in
 let
   nxfsenv-2-0a = nxfsenv-1;
-  # already have .linux-headers-2; but want to replace it
-  linux-headers-2a = callPackage ../bootstrap-pkgs/linux-headers/package.nix { nxfsenv = nxfsenv-2-0a; };
-    #{ nxfsenv = nxfsenv-2-0a; };
+  linux-headers-2 = callPackage ../bootstrap-pkgs/linux-headers/package.nix { nxfsenv = nxfsenv-2-0a; };
 in
 let
   nxfsenv-2-0b = nxfsenv-2-0a;
@@ -341,7 +339,7 @@ let
   glibc-2 = callPackage ./nxfs-glibc-stage1-2/package.nix { nxfsenv = nxfsenv-2-94;
                                                             lc-all-sort = lc-all-sort-2;
                                                             locale-archive = locale-archive-1;
-                                                            linux-headers = linux-headers-2a;
+                                                            linux-headers = linux-headers-2;
                                                           };
 in
 let
@@ -413,7 +411,7 @@ let
     {
       nxfsenv = nxfsenv-2-99a;
       glibc = glibc-2;
-      linux-headers = linux-headers-2a;
+      linux-headers = linux-headers-2;
     };
 
   # gcc-x3-2 :: derivation
@@ -520,6 +518,5 @@ in
   inherit diffutils-2;
   inherit which-2;
   inherit combined-glibc-linux-headers-2;
-  inherit linux-headers-2a;
-  linux-headers-2 = nxfsenv-2-100.toolchain;
+  inherit linux-headers-2;
 }
