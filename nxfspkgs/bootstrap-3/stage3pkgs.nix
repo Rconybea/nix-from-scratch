@@ -119,6 +119,13 @@ let
   # - overrides :: attrset   overrides; apply on top of allpkgs
   #
   makeCallPackage = import ../lib/makeCallPackage.nix;
+
+  # minimal substitute for nixpkgs buildEnv.
+  # (many features omitted in return for much simpler implementation)
+  #
+  # buildEnv :: {name, paths, pathsToLink, coreutils} -> derivation
+  #
+  buildEnv = import ../lib/buildEnv.nix;
 in
 let
   callPackage = makeCallPackage nxfspkgs.stage3pkgs;
@@ -412,9 +419,55 @@ let
   nxfsenv-3-100 = nxfsenv-3-99 // { gcc-unwrapped = gcc-x3-3; };
 
   # gcc-wrapper-3 :: derivation
-  gcc-wrapper-3 = callPackage ./nxfs-gcc-wrapper-3/package.nix { nxfsenv = nxfsenv-3-100; };
+  gcc-wrapper-3 = callPackage ./nxfs-gcc-wrapper-3/package.nix { nxfsenv = nxfsenv-3-100;
+                                                                 gcc-unwrapped = gcc-x3-3;
+                                                                 };
+in
+let
+  stage3env = buildEnv {
+    name = "stage3env";
+    paths = [ gcc-wrapper-3
+              gcc-x3-3
+              binutils-x0-wrapper-3
+              python-3
+              texinfo-3
+              isl-3
+              mpc-3
+              mpfr-3
+              gmp-3
+              bison-3
+              flex-3
+              automake-3
+              autoconf-3
+              binutils-3
+              perl-3
+              libxcrypt-3
+              patchelf-3
+              gperf-3
+              patch-3
+              gzip-3
+              zlib-3
+              file-3
+              m4-3
+              pkgconf-3
+              coreutils-3
+              gnumake-3
+              gawk-3
+              popen-3
+              bash-3
+              gnutar-3
+              bzip2-3
+              gnugrep-3
+              gnused-3
+              findutils-3
+              diffutils-3
+              which-3
+            ];
+      coreutils = coreutils-3;
+    };
 in
 {
+  inherit stage3env;
   inherit gcc-wrapper-3;
   inherit gcc-x3-3;
   inherit gcc-x2-wrapper-3;

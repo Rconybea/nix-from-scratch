@@ -150,6 +150,13 @@ let
   #
   makeCallPackage = import ../lib/makeCallPackage.nix;
 
+  # minimal substitute for nixpkgs buildEnv.
+  # (many features omitted in return for much simpler implementation)
+  #
+  # buildEnv :: {name, paths} -> derivation
+  #
+  buildEnv = import ../lib/buildEnv.nix;
+
 in
 let
   # nxfspkg.stage2pkgs is the *end* result at the end of bootstrap.
@@ -428,7 +435,48 @@ let
                                                                  glibc = glibc-2;
                                                                };
 in
+let
+  stage2env = buildEnv { name = "stage2env";
+                         paths = [ gcc-wrapper-2
+                                   gcc-x3-2
+                                   binutils-x0-wrapper-2
+                                   python-2
+                                   mpc-2
+                                   mpfr-2
+                                   gmp-2
+                                   texinfo-2
+                                   bison-2
+                                   flex-2
+                                   automake-2
+                                   autoconf-2
+                                   binutils-2
+                                   perl-2
+                                   m4-2
+                                   pkgconf-2
+                                   file-2
+                                   gzip-2
+                                   patch-2
+                                   gperf-2
+                                   patchelf-2
+                                   zlib-2
+                                   coreutils-2
+                                   gnumake-2
+                                   gawk-2
+                                   bash-2
+                                   ncurses-2
+                                   gnutar-2
+                                   gnugrep-2
+                                   gnused-2
+                                   findutils-2
+                                   diffutils-2
+                                   which-2
+                                 ];
+                         #pathsToLink = "/bin";
+                         coreutils = coreutils-2;
+                       };
+in
 {
+  inherit stage2env;
   inherit gcc-wrapper-2;
   inherit gcc-x3-2;
   inherit nixified-gcc-source-2;
