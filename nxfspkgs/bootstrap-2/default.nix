@@ -1,3 +1,8 @@
+# DEPRECATED
+#  prefer stage2pkgsl; for example:
+#    $ NIX_PATH=/path/to/nix-from-scratch
+#    $ nix-build '<nxfspkgs>' -A stage2pkgs.gcc-wrapper-2
+
 let
   nxfs-lc-all-sort-2 = import ./nxfs-lc-all-sort-2;
 
