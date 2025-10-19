@@ -1,13 +1,13 @@
 {
-  # nxfsenv :: derivation
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv
 } :
 
 let
   version = "1.13";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-gzip-3";
   version      = version;
 
@@ -28,31 +28,21 @@ nxfsenv.mkDerivation {
 
     src2=$source
 
-    bash_program=$bash/bin/bash
+    shell_program=$shell
 
     # 1. copy source tree to temporary directory,
     #
     (cd $src && (tar cf - . | tar xf - -C $src2))
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell_program"
 
-    (cd $builddir && export CC=nxfs-gcc && export CFLAGS= && export LDFLAGS="-Wl,-enable-new-dtags" && bash $src2/configure --prefix=$out)
+    (cd $builddir && export CC=nxfs-gcc && export CFLAGS= && export LDFLAGS="-Wl,-enable-new-dtags" && $shell_program $src2/configure --prefix=$out)
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
 '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell ];
+  buildInputs = [ ];
 }
