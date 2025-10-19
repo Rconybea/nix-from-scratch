@@ -1,13 +1,15 @@
 {
-  # nxfsenv :: attrset
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
+  # perl :: derivation
+  perl,
 } :
 
 let
   version = "2.43.1";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-binutils-3";
   version      = version;
 
@@ -34,12 +36,10 @@ nxfsenv.mkDerivation {
     #
     chmod -R +w $src2
 
-    bash_program=$bash/bin/bash
-
-    sed -i -e "s:/bin/sh:$bash_program:" $src2/mkinstalldirs
+    sed -i -e "s:/bin/sh:$shell:" $src2/mkinstalldirs
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
     CCFLAGS=
     LDFLAGS="-Wl,-enable-new-dtags"
@@ -49,28 +49,18 @@ nxfsenv.mkDerivation {
     #
     # removing -Dcpp=nxfs-gcc (why did we need this)
     #
-    (cd $builddir && $bash_program $src2/configure --prefix=$out)
+    (cd $builddir && $shell $src2/configure --prefix=$out)
 
     (cd $builddir && make SHELL=$CONFIG_SHELL MAKEINFO=true)
 
     (cd $builddir && make install SHELL=$CONFIG_SHELL MAKEINFO=true)
     '';
 
-  buildInputs = [ nxfsenv.libxcrypt
-                  nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.perl
-                  nxfsenv.pkgconf
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell
-                ];
+  buildInputs = [
+    #nxfsenv.libxcrypt
+    perl
+    #nxfsenv.pkgconf
+  ];
 } // {
   # experiment  - for nxfs bridge-to-nixpkgs.
   # ----------

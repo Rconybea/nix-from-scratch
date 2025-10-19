@@ -65,23 +65,24 @@ let
 
   make-stdenv = (import ../build-support/make-stdenv/make-stdenv.nix { config = config; });
 
-  stdenv-2 = make-stdenv
-    { name = "stdenv-2";
-      stagepkgs = {
-        cc        = stage2pkgs.gcc-wrapper-2;
-        bintools  = stage2pkgs.binutils-x0-wrapper-2;
-        patchelf  = stage2pkgs.patchelf-2;
-        patch     = stage2pkgs.patch-2;
-        shell     = stage2pkgs.bash-2;
-        coreutils = stage2pkgs.coreutils-2;
-        gnumake   = stage2pkgs.gnumake-2;
-        gawk      = stage2pkgs.gawk-2;
-        gnutar    = stage2pkgs.gnutar-2;
-        gnugrep   = stage2pkgs.gnugrep-2;
-        gnused    = stage2pkgs.gnused-2;
-        findutils = stage2pkgs.findutils-2;
-        diffutils = stage2pkgs.diffutils-2;
-      }; };
+  stagepkgs-2 = {
+    cc        = stage2pkgs.gcc-wrapper-2;
+    bintools  = stage2pkgs.binutils-x0-wrapper-2;
+    patchelf  = stage2pkgs.patchelf-2;
+    patch     = stage2pkgs.patch-2;
+    shell     = stage2pkgs.bash-2;
+    coreutils = stage2pkgs.coreutils-2;
+    gnumake   = stage2pkgs.gnumake-2;
+    gawk      = stage2pkgs.gawk-2;
+    gnutar    = stage2pkgs.gnutar-2;
+    gnugrep   = stage2pkgs.gnugrep-2;
+    gnused    = stage2pkgs.gnused-2;
+    findutils = stage2pkgs.findutils-2;
+    diffutils = stage2pkgs.diffutils-2;
+  };
+
+  stdenv-2 = make-stdenv { name = "stdenv-2";
+                           stagepkgs = stagepkgs-2; };
 
   # originally intended 'nxfsenv' to be a stdenv substitute.
   # instead it's grown into a kitchen sink.
@@ -243,27 +244,24 @@ let
   coreutils-3 = callPackage ./nxfs-coreutils-3/package.nix { stdenv = stdenv-2; };
 in
 let
+  stagepkgs-3-1 = stagepkgs-2 // { shell     = bash-3;
+                                   coreutils = coreutils-3;
+                                   gnumake   = gnumake-3;
+                                   gawk      = gawk-3;
+                                   gnutar    = gnutar-3;
+                                   gnugrep   = gnugrep-3;
+                                   gnused    = gnused-3;
+                                   findutils = findutils-3;
+                                   diffutils = diffutils-3;
+                                 };
+
   stdenv-3-1 = make-stdenv { name = "stdenv-3-1";
-                             stagepkgs = {
-                               cc        = stage2pkgs.gcc-wrapper-2;
-                               bintools  = stage2pkgs.binutils-x0-wrapper-2;
-                               patchelf  = stage2pkgs.patchelf-2;
-                               patch     = stage2pkgs.patch-2;
-                               shell     = bash-3;
-                               coreutils = coreutils-3;
-                               gnumake   = gnumake-3;
-                               gawk      = gawk-3;
-                               gnutar    = gnutar-3;
-                               gnugrep   = gnugrep-3;
-                               gnused    = gnused-3;
-                               findutils = findutils-3;
-                               diffutils = diffutils-3;
-                             }; };
+                             stagepkgs = stagepkgs-3-1; };
 
   # nxfsenv-3-10 :: attrset
   nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
   # pkgconf-3 :: derivation
-  pkgconf-3    = callPackage ./nxfs-pkgconf-3/package.nix  { stdenv = stdenv-3-1; };
+  pkgconf-3    = callPackage ./nxfs-pkgconf-3/package.nix { stdenv = stdenv-3-1; };
   # m4-3 :: derivation
   m4-3         = callPackage ./nxfs-m4-3/package.nix { stdenv = stdenv-3-1; };
   # file-3 :: derivation
@@ -304,7 +302,8 @@ let
                                      perl = perl-3;
                                    };
   # binutils-3 :: derivation
-  binutils-3 = callPackage ./nxfs-binutils-3/package.nix { nxfsenv = nxfsenv-3-b13; };
+  binutils-3 = callPackage ./nxfs-binutils-3/package.nix { stdenv = stdenv-3-1;
+                                                           perl = perl-3; };
 
   # autoconf-3 :: derivation
   autoconf-3 = callPackage ./nxfs-autoconf-3/package.nix { nxfsenv = nxfsenv-3-b13; };
