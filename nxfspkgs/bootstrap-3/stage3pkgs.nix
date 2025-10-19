@@ -439,7 +439,10 @@ let
                                                                      };
 
   # binutils-x0-wrapper-3 :: derivation
-  binutils-x0-wrapper-3 = callPackage ./nxfs-binutils-x0-wrapper-3/package.nix { nxfsenv = nxfsenv-3-95; };
+  binutils-x0-wrapper-3 = callPackage ./nxfs-binutils-x0-wrapper-3/package.nix { stdenv = stdenv-3-1;
+                                                                                 binutils = binutils-3;
+                                                                                 glibc = glibc-x1-3;
+                                                                               };
 
 in
 let
