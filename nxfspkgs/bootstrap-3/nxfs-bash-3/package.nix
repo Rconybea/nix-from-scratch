@@ -1,5 +1,6 @@
 {
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
 } :
 
 let
@@ -7,14 +8,14 @@ let
 
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-bash-3";
 
   src          = builtins.fetchTarball { name = "bash-${version}-source";
                                          url = "https://ftpmirror.gnu.org/gnu/bash/bash-${version}.tar.gz";
                                          sha256 = "1bhqakwia1zpnq9kgpn7kxsgvgh5b8nysanki0j2m7v7im4yjcvp"; };
 
-  # for example: nixpkgs bintools-wrapper relies on this
+  # for example: nixpkgs bintools-wrapper relies on this (?)
   shellPath = "/bin/bash";
 
   buildPhase = ''
@@ -30,15 +31,15 @@ nxfsenv.mkDerivation {
 
     chmod -R +w $src2
 
-    bash_program=$bash/bin/bash
+    shell_program=$shell
 
     # patch tparam.c
     sed -i -e '1i #include <unistd.h>' $src2/lib/termcap/tparam.c
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell_program"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out --without-bash-malloc bash_cv_strtold_broken=no CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && $shell_program $src2/configure --prefix=$out --without-bash-malloc bash_cv_strtold_broken=no CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
 
@@ -47,17 +48,5 @@ nxfsenv.mkDerivation {
   '';
 
   buildInputs = [
-    nxfsenv.gcc_wrapper
-    nxfsenv.binutils
-    nxfsenv.gnumake
-    nxfsenv.gawk
-    nxfsenv.gnutar
-    nxfsenv.gnugrep
-    nxfsenv.gnused
-    nxfsenv.findutils
-    nxfsenv.diffutils
-    nxfsenv.coreutils
-    nxfsenv.shell
-    nxfsenv.glibc
   ];
 }

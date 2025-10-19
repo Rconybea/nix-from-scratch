@@ -168,51 +168,51 @@ let
   callPackage = makeCallPackage nxfspkgs.stage3pkgs;
 in
 let
-  nxfsenv-3-00 = nxfsenv-2;
   # which-3 :: derivation
   which-3 = callPackage ./nxfs-which-3/package.nix { stdenv = stdenv-2; };
   # diffutils-3 :: derivation
   diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { stdenv = stdenv-2; };
 in
 let
-  # nxfsenv-3-1 :: attrset
-  nxfsenv-3-1 = nxfsenv-3-00 // { diffutils = diffutils-3; };
   # findutils-3 :: derivation
   findutils-3 = callPackage ./nxfs-findutils-3/package.nix { stdenv = stdenv-2; };
 in
 let
-  # nxfsenv-3-2 :: attrset
-  nxfsenv-3-2 = nxfsenv-3-1 // { findutils = findutils-3; };
   # gnused-3 :: derivation
   gnused-3 = callPackage ./nxfs-sed-3/package.nix { stdenv = stdenv-2; };
 in
 let
-  # nxfsenv-3-3 :: attrset
-  nxfsenv-3-3 = nxfsenv-3-2 // { gnused = gnused-3; };
   # gnugrep-3 :: derivation
   gnugrep-3 = callPackage ./nxfs-grep-3/package.nix { stdenv = stdenv-2; };
 in
 let
-  # nxfsenv-3-3b :: attrset
-  nxfsenv-3-3b = nxfsenv-3-3 // { gnugrep = gnugrep-3; };
   # bzip2-3 :: derivation
   bzip2-3 = callPackage ./nxfs-bzip2-3/package.nix { stdenv = stdenv-2; };
 in
 let
-  # nxfsenv-3-4 :: attrset
-  nxfsenv-3-4 = nxfsenv-3-3b // { bzip2 = bzip2-3; };
   # gnutar-3    :: derivation
   gnutar-3 = callPackage ./nxfs-tar-3/package.nix { stdenv = stdenv-2;
                                                     bzip2 = bzip2-3;
                                                   };
 in
 let
-  # nxfsenv-3-5 :: attrset
-  nxfsenv-3-5 = nxfsenv-3-4 // { gnutar = gnutar-3; };
   # bash-3 :: derivation
-  bash-3 = callPackage ./nxfs-bash-3/package.nix { nxfsenv = nxfsenv-3-5; };
+  bash-3 = callPackage ./nxfs-bash-3/package.nix { stdenv = stdenv-2; };
 in
 let
+  nxfsenv-3-00 = nxfsenv-2;
+  # nxfsenv-3-1 :: attrset
+  nxfsenv-3-1 = nxfsenv-3-00 // { diffutils = diffutils-3; };
+  # nxfsenv-3-2 :: attrset
+  nxfsenv-3-2 = nxfsenv-3-1 // { findutils = findutils-3; };
+  # nxfsenv-3-3 :: attrset
+  nxfsenv-3-3 = nxfsenv-3-2 // { gnused = gnused-3; };
+  # nxfsenv-3-3b :: attrset
+  nxfsenv-3-3b = nxfsenv-3-3 // { gnugrep = gnugrep-3; };
+  # nxfsenv-3-4 :: attrset
+  nxfsenv-3-4 = nxfsenv-3-3b // { bzip2 = bzip2-3; };
+  # nxfsenv-3-5 :: attrset
+  nxfsenv-3-5 = nxfsenv-3-4 // { gnutar = gnutar-3; };
   # nxfsenv-3-6 :: attrset
   nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; shell = bash-3; };
   # (text-only -> natural to use stage2 derivation)
