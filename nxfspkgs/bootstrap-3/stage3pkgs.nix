@@ -275,7 +275,7 @@ let
   # gperf-3 :: derivation
   gperf-3      = callPackage ./nxfs-gperf-3/package.nix { stdenv = stdenv-3-1; };
   # patchelf-3 :: derivation
-  patchelf-3   = callPackage ./nxfs-patchelf-3/package.nix { nxfsenv = nxfsenv-3-10; };
+  patchelf-3   = callPackage ./nxfs-patchelf-3/package.nix { stdenv = stdenv-3-1; };
 in
 let
   # nxfsenv-3-a11 :: attrset
