@@ -1,15 +1,15 @@
 {
-  # nxfsenv :: derivation
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
   # gmp :: derivation
-  gmp
+  gmp,
 } :
 
 let
   version = "4.2.1";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-mpfr-3";
 
   gmp          = gmp;
@@ -27,8 +27,6 @@ nxfsenv.mkDerivation {
     mkdir -p $src2
     mkdir -p $builddir
 
-    bash_program=$bash/bin/bash
-
     # 1. copy source tree to temporary directory,
     #
     (cd $src && (tar cf - . | tar xf - -C $src2))
@@ -37,30 +35,18 @@ nxfsenv.mkDerivation {
     #
     #
     chmod -R +w $src2
-    sed -i "1s:#!.*/bin/sh:#!$bash_program:" $src2/tools/get_patches.sh
+    sed -i "1s:#!.*/bin/sh:#!$shell:" $src2/tools/get_patches.sh
     chmod -R -w $src2
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out --with-gmp=$gmp CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && $shell $src2/configure --prefix=$out --with-gmp=$gmp CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
 '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.m4
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell
-  ];
+  buildInputs = [ gmp ];
 }

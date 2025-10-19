@@ -1,13 +1,15 @@
 {
-  # nxfsenv :: derivation
-  nxfsenv
+  # stdenv :: attrset+derivation
+  stdenv,
+  # m4 :: derivation
+  m4
 } :
 
 let
   version = "6.3.0";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-gmp-3";
   version      = version;
 
@@ -24,40 +26,27 @@ nxfsenv.mkDerivation {
     mkdir -p $src2
     mkdir -p $builddir
 
-    bash_program=$bash/bin/bash
-
     # 1. copy source tree to temporary directory,
     #
     (cd $src && (tar cf - . | tar xf - -C $src2))
 
     # 2. substitute nix-store path-to-bash for /bin/sh.
     #
-    #
     chmod -R +w $src2
-    sed -i "1s:#!.*/bin/sh:#!$bash_program:" $src2/mpn/m4-ccas
+    sed -i "1s:#!.*/bin/sh:#!$shell:" $src2/mpn/m4-ccas
     chmod -R -w $src2
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && $shell $src2/configure --prefix=$out CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
     '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.m4
-                  nxfsenv.file
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell ];
+  buildInputs = [ m4
+    #nxfsenv.file
+  ];
 }

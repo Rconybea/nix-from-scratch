@@ -329,9 +329,10 @@ let
                                                    m4 = m4-3;
                                                  };
   # gmp-3 :: derivation
-  gmp-3 = callPackage ./nxfs-gmp-3/package.nix { nxfsenv = nxfsenv-3-c13; };
+  gmp-3 = callPackage ./nxfs-gmp-3/package.nix { stdenv = stdenv-3-1;
+                                                 m4 = m4-3; };
   # mpfr-3 :: derivation
-  mpfr-3 = callPackage ./nxfs-mpfr-3/package.nix { nxfsenv = nxfsenv-3-c13;
+  mpfr-3 = callPackage ./nxfs-mpfr-3/package.nix { stdenv = stdenv-3-1;
                                                    gmp = gmp-3;
                                                  };
   # mpc-3 :: derivation
