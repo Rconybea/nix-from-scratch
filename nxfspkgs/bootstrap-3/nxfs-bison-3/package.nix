@@ -1,13 +1,19 @@
 {
-  # nxfsenv :: derivation
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
+  # perl :: derivation
+  perl,
+  # flex :: derivation
+  flex,
+  # m4 :: derivation
+  m4,
 } :
 
 let
   version = "3.8.2";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-bison-3";
   version      = version;
 
@@ -27,43 +33,31 @@ nxfsenv.mkDerivation {
     #
     (cd $src && (tar cf - . | tar xf - -C $src2))
 
-    bash_program=$bash/bin/bash
-
     # 2. since we're building in source tree,
     #    will need to be able to write there
     #
     chmod -R +w $src2
-    sed -i "1s:#!.*/bin/sh:#!$bash_program:" $src2/build-aux/move-if-change
+    sed -i "1s:#!.*/bin/sh:#!$shell:" $src2/build-aux/move-if-change
     chmod -R -w $src2
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
     cd $builddir
 
     CCFLAGS=
     LDFLAGS="-Wl,-enable-new-dtags"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out)
+    (cd $builddir && $shell $src2/configure --prefix=$out)
 
     make SHELL=$CONFIG_SHELL
 
     make install SHELL=$CONFIG_SHELL
   '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.perl
-                  nxfsenv.m4
-                  nxfsenv.flex
-                  nxfsenv.file
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell ];
+  buildInputs = [ perl
+                  flex
+                  m4
+                  #nxfsenv.file
+  ];
 }

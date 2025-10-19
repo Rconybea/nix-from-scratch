@@ -305,25 +305,6 @@ let
                                                          };
 in
 let
-  nxfsenv-3-7 = nxfsenv-3-6;
-  # nxfsenv-3-9 :: attrset
-  nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
-  # nxfsenv-3-9 :: attrset
-  nxfsenv-3-9 = nxfsenv-3-6 // { gnumake = gnumake-3; };
-  # nxfsenv-3-10 :: attrset
-  nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
-  # nxfsenv-3-a11 :: attrset
-  nxfsenv-3-a11 = nxfsenv-3-10 // { pkgconf = pkgconf-3; };
-  # nxfsenv-3-a12 :: attrset
-  nxfsenv-3-a12 = nxfsenv-3-a11 // { libxcrypt = libxcrypt-3; };
-  # nxfsenv-3-b13 :: attrset
-  nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
-                                     perl = perl-3;
-                                   };
-  # nxfsenv-b14 :: attrset
-  nxfsenv-3-b14 = nxfsenv-3-b13 // { autoconf = autoconf-3; };
-  # nxfsenv-3-c13 :: attrset
-  nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
   # flex-3 :: derivation
   flex-3 = callPackage ./nxfs-flex-3/package.nix { stdenv = stdenv-3-1;
                                                    m4 = m4-3;
@@ -347,10 +328,33 @@ let
 
 in
 let
+  nxfsenv-3-7 = nxfsenv-3-6;
+  # nxfsenv-3-9 :: attrset
+  nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
+  # nxfsenv-3-9 :: attrset
+  nxfsenv-3-9 = nxfsenv-3-6 // { gnumake = gnumake-3; };
+  # nxfsenv-3-10 :: attrset
+  nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
+  # nxfsenv-3-a11 :: attrset
+  nxfsenv-3-a11 = nxfsenv-3-10 // { pkgconf = pkgconf-3; };
+  # nxfsenv-3-a12 :: attrset
+  nxfsenv-3-a12 = nxfsenv-3-a11 // { libxcrypt = libxcrypt-3; };
+  # nxfsenv-3-b13 :: attrset
+  nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
+                                     perl = perl-3;
+                                   };
+  # nxfsenv-b14 :: attrset
+  nxfsenv-3-b14 = nxfsenv-3-b13 // { autoconf = autoconf-3; };
+  # nxfsenv-3-c13 :: attrset
+  nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
   # nxfsenv-3-c14 :: attrset
   nxfsenv-3-c14 = nxfsenv-3-c13 // { flex = flex-3; };
   # bison-3 :: derivation
-  bison-3 = callPackage ./nxfs-bison-3/package.nix { nxfsenv = nxfsenv-3-c14; };
+  bison-3 = callPackage ./nxfs-bison-3/package.nix { stdenv = stdenv-3-1;
+                                                     perl = perl-3;
+                                                     flex = flex-3;
+                                                     m4 = m4-3;
+                                                   };
 in
 let
   # nxfsenv-3-b15 :: attrset
