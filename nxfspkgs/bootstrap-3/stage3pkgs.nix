@@ -265,7 +265,7 @@ let
   # file-3 :: derivation
   file-3       = callPackage ./nxfs-file-3/package.nix { stdenv = stdenv-3-1; };
   # zlib-3 :: derivation
-  zlib-3       = callPackage ./nxfs-zlib-3/package.nix { nxfsenv = nxfsenv-3-10; };
+  zlib-3       = callPackage ./nxfs-zlib-3/package.nix { stdenv = stdenv-3-1; };
   # gzip-3 :: derivation
   gzip-3       = callPackage ./nxfs-gzip-3/package.nix     { nxfsenv = nxfsenv-3-10; };
   # patch-3 :: derivation
