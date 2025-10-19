@@ -75,6 +75,7 @@ let
         gnutar    = stage2pkgs.gnutar-2;
         gnugrep   = stage2pkgs.gnugrep-2;
         gnused    = stage2pkgs.gnused-2;
+        diffutils = stage2pkgs.diffutils-2;
       }; };
 
   # originally intended 'nxfsenv' to be a stdenv substitute.
@@ -170,7 +171,6 @@ let
   # which-3 :: derivation
   which-3 = callPackage ./nxfs-which-3/package.nix { stdenv = stdenv-2; };
   # diffutils-3 :: derivation
-  #diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { stdenv = stdenv-2; };
   diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { stdenv = stdenv-2; };
 in
 let
@@ -183,7 +183,7 @@ let
   # nxfsenv-3-2 :: attrset
   nxfsenv-3-2 = nxfsenv-3-1 // { findutils = findutils-3; };
   # gnused-3 :: derivation
-  gnused-3 = callPackage ./nxfs-sed-3/package.nix { nxfsenv = nxfsenv-3-2; };
+  gnused-3 = callPackage ./nxfs-sed-3/package.nix { stdenv = stdenv-2; };
 in
 let
   # nxfsenv-3-3 :: attrset

@@ -26,6 +26,7 @@ let
   gawk      = stagepkgs.gawk;
   gnugrep   = stagepkgs.gnugrep;
   gnused    = stagepkgs.gnused;
+  diffutils = stagepkgs.diffutils;
 
   stdenv-derivation = derivation {
     inherit name;
@@ -68,7 +69,7 @@ let
       #
       # initialPath :: [ derivation,.. ]
       #
-      initialPath = [ cc bintools coreutils shell gnumake gnutar gawk gnugrep gnused ];
+      initialPath = [ cc bintools coreutils shell gnumake gnutar gawk gnugrep gnused diffutils ];
 
       defaultBuilder = ./default-builder.sh;
 
