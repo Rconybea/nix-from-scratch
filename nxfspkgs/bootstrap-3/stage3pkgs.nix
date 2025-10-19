@@ -317,7 +317,10 @@ let
   # nxfsenv-b14 :: attrset
   nxfsenv-3-b14 = nxfsenv-3-b13 // { autoconf = autoconf-3; };
   # autoconf-3 :: derivation
-  automake-3 = callPackage ./nxfs-automake-3/package.nix { nxfsenv = nxfsenv-3-b14; };
+  automake-3 = callPackage ./nxfs-automake-3/package.nix { stdenv = stdenv-3-1;
+                                                           autoconf = autoconf-3;
+                                                           perl = perl-3;
+                                                         };
 in
 let
   # nxfsenv-3-c13 :: attrset

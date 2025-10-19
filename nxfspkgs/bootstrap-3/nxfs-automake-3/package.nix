@@ -1,12 +1,17 @@
 {
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
+  # autocon :: derivation
+  autoconf,
+  # perl :: derivation
+  perl,
 } :
 
 let
   version = "1.16.5";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-automake-3";
 
   src          = builtins.fetchTarball { name = "automake-${version}-source";
@@ -37,38 +42,27 @@ nxfsenv.mkDerivation {
     #
     chmod -R +w $src2
 
-    bash_program=$bash/bin/bash
-
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
     cd $builddir
 
     CCFLAGS=
     LDFLAGS="-Wl,-enable-new-dtags"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out CC=nxfs-gcc CXX=nxfs-g++ LDFLAGS="$LDFLAGS")
+    (cd $builddir && $shell $src2/configure --prefix=$out CC=nxfs-gcc CXX=nxfs-g++ LDFLAGS="$LDFLAGS")
 
-    (cd $builddir && sed -i -e 's:#! */bin/sh:#! '$bash_program':' ./pre-inst-env)
+    (cd $builddir && sed -i -e 's:#! */bin/sh:#! '$shell':' ./pre-inst-env)
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
   '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.autoconf
-                  nxfsenv.perl
-                  nxfsenv.m4
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell
+  buildInputs = [
+                  perl
+ #                 nxfsenv.m4
                 ];
+
+  propagatedBuildInputs = [ autoconf ];
 }
