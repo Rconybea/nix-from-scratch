@@ -72,6 +72,7 @@ let
     patch     = stage2pkgs.patch-2;
     shell     = stage2pkgs.bash-2;
     coreutils = stage2pkgs.coreutils-2;
+    gzip      = stage2pkgs.gzip-2;
     gnumake   = stage2pkgs.gnumake-2;
     gawk      = stage2pkgs.gawk-2;
     gnutar    = stage2pkgs.gnutar-2;
