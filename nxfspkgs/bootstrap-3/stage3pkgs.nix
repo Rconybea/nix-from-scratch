@@ -221,16 +221,16 @@ let
                                                                   popen-template = stage2pkgs.popen-template-2; };
 in
 let
-  nxfsenv-3-7 = nxfsenv-3-6;
   gawk-3 = callPackage ./nxfs-gawk-3/package.nix { stdenv = stdenv-2;
                                                    popen = popen-3;
                                                  };
 in
 let
+  nxfsenv-3-7 = nxfsenv-3-6;
   # nxfsenv-3-9 :: attrset
   nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
   # gnumake-3   :: derivation
-  gnumake-3 = callPackage ./nxfs-gnumake-3/package.nix { nxfsenv = nxfsenv-3-8; };
+  gnumake-3 = callPackage ./nxfs-gnumake-3/package.nix { stdenv = stdenv-2; };
 in
 let
   # nxfsenv-3-9 :: attrset
