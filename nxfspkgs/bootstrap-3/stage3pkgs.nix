@@ -232,15 +232,10 @@ let
                                                  };
 in
 let
-  nxfsenv-3-7 = nxfsenv-3-6;
-  # nxfsenv-3-9 :: attrset
-  nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
   # gnumake-3   :: derivation
   gnumake-3 = callPackage ./nxfs-gnumake-3/package.nix { stdenv = stdenv-2; };
 in
 let
-  # nxfsenv-3-9 :: attrset
-  nxfsenv-3-9 = nxfsenv-3-6 // { gnumake = gnumake-3; };
   # coreutils-3 :: derivation
   coreutils-3 = callPackage ./nxfs-coreutils-3/package.nix { stdenv = stdenv-2; };
 in
@@ -259,8 +254,6 @@ let
   stdenv-3-1 = make-stdenv { name = "stdenv-3-1";
                              stagepkgs = stagepkgs-3-1; };
 
-  # nxfsenv-3-10 :: attrset
-  nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
   # pkgconf-3 :: derivation
   pkgconf-3    = callPackage ./nxfs-pkgconf-3/package.nix { stdenv = stdenv-3-1; };
   # m4-3 :: derivation
@@ -279,9 +272,6 @@ let
   patchelf-3   = callPackage ./nxfs-patchelf-3/package.nix { stdenv = stdenv-3-1; };
 in
 let
-  # nxfsenv-3-a11 :: attrset
-  nxfsenv-3-a11 = nxfsenv-3-10 // { pkgconf = pkgconf-3; };
-
   # libxcrypt-3 :: derivation
   libxcrypt-3  = callPackage ./nxfs-libxcrypt-3/package.nix { stdenv = stdenv-3-1;
                                                               perl = stage2pkgs.perl-2;
@@ -289,8 +279,6 @@ let
                                                             };
 in
 let
-  # nxfsenv-3-a12 :: attrset
-  nxfsenv-3-a12 = nxfsenv-3-a11 // { libxcrypt = libxcrypt-3; };
   # perl-3 :: derivation
   perl-3 = callPackage ./nxfs-perl-3/package.nix { stdenv = stdenv-3-1;
                                                    libxcrypt = libxcrypt-3;
@@ -298,10 +286,6 @@ let
                                                  };
 in
 let
-  # nxfsenv-3-b13 :: attrset
-  nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
-                                     perl = perl-3;
-                                   };
   # binutils-3 :: derivation
   binutils-3 = callPackage ./nxfs-binutils-3/package.nix { stdenv = stdenv-3-1;
                                                            perl = perl-3; };
@@ -314,8 +298,6 @@ let
 
 in
 let
-  # nxfsenv-b14 :: attrset
-  nxfsenv-3-b14 = nxfsenv-3-b13 // { autoconf = autoconf-3; };
   # autoconf-3 :: derivation
   automake-3 = callPackage ./nxfs-automake-3/package.nix { stdenv = stdenv-3-1;
                                                            autoconf = autoconf-3;
@@ -323,10 +305,29 @@ let
                                                          };
 in
 let
+  nxfsenv-3-7 = nxfsenv-3-6;
+  # nxfsenv-3-9 :: attrset
+  nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
+  # nxfsenv-3-9 :: attrset
+  nxfsenv-3-9 = nxfsenv-3-6 // { gnumake = gnumake-3; };
+  # nxfsenv-3-10 :: attrset
+  nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
+  # nxfsenv-3-a11 :: attrset
+  nxfsenv-3-a11 = nxfsenv-3-10 // { pkgconf = pkgconf-3; };
+  # nxfsenv-3-a12 :: attrset
+  nxfsenv-3-a12 = nxfsenv-3-a11 // { libxcrypt = libxcrypt-3; };
+  # nxfsenv-3-b13 :: attrset
+  nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
+                                     perl = perl-3;
+                                   };
+  # nxfsenv-b14 :: attrset
+  nxfsenv-3-b14 = nxfsenv-3-b13 // { autoconf = autoconf-3; };
   # nxfsenv-3-c13 :: attrset
   nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
   # flex-3 :: derivation
-  flex-3 = callPackage ./nxfs-flex-3/package.nix { nxfsenv = nxfsenv-3-c13; };
+  flex-3 = callPackage ./nxfs-flex-3/package.nix { stdenv = stdenv-3-1;
+                                                   m4 = m4-3;
+                                                 };
   # gmp-3 :: derivation
   gmp-3 = callPackage ./nxfs-gmp-3/package.nix { nxfsenv = nxfsenv-3-c13; };
   # mpfr-3 :: derivation
