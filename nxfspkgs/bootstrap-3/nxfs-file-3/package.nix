@@ -1,13 +1,13 @@
 {
-  # nxfsenv :: derivation
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv
 } :
 
 let
   version = "5.44";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-file-3";
   version      = version;
 
@@ -25,27 +25,17 @@ nxfsenv.mkDerivation {
     mkdir -p $src2
     mkdir -p $builddir
 
-    bash_program=$bash/bin/bash
+    shell_program=$shell
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell_program"
 
-    (cd $builddir && bash $src2/configure --prefix=$out --enable-install-program=hostname --enable-no-install-program=kill,uptime CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && $shell_program $src2/configure --prefix=$out --enable-install-program=hostname --enable-no-install-program=kill,uptime CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
   '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell ];
+  buildInputs = [ ];
 }
