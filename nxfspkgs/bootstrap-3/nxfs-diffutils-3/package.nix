@@ -1,26 +1,13 @@
 {
-  # nxfsenv :: { mkDerivation :: attrs -> derivation,
-  #              gcc-wrapper :: derivation,  (also as gcc_wrapper)
-  #              binutils    :: derivation,
-  #              gawk        :: derivation,
-  #              gnumake     :: derivation,
-  #              gnugrep     :: derivation,
-  #              gnutar      :: derivation,
-  #              gnused      :: derivation,
-  #              findutils   :: derivation,
-  #              coreutils   :: derivation,
-  #              bash        :: derivation,
-  #              glibc       :: derivation,
-  #              nxfs-defs   :: { target_tuple :: string }
-  #            }
-  nxfsenv,
+  # stdenv: derivation+attrset.
+  stdenv,
 } :
 
 let
   version = "3.10";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-diffutils-3";
   version      = version;
 
@@ -44,33 +31,21 @@ nxfsenv.mkDerivation {
     #
     mkdir -p $out/var/lib/locate
 
-    bash_program=$bash/bin/bash
+    shell_program=$shell
 
     # 1. copy source tree to temporary directory,
     #
     (cd $src && (tar cf - . | tar xf - -C $src2))
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell_program"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out --localstatedir=$out/var/lib/locate CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && $shell_program $src2/configure --prefix=$out --localstatedir=$out/var/lib/locate CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
   '';
 
-  buildInputs = [
-    nxfsenv.gcc_wrapper
-    nxfsenv.binutils
-    nxfsenv.gawk
-    nxfsenv.gnumake
-    nxfsenv.gnugrep
-    nxfsenv.gnutar
-    nxfsenv.gnused
-    nxfsenv.findutils
-    nxfsenv.coreutils
-    nxfsenv.shell
-    nxfsenv.glibc
-  ];
+  buildInputs = [];
 }

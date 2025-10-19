@@ -171,13 +171,12 @@ let
   which-3 = callPackage ./nxfs-which-3/package.nix { stdenv = stdenv-2; };
   # diffutils-3 :: derivation
   #diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { stdenv = stdenv-2; };
-  diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { nxfsenv = nxfsenv-3-00; };
+  diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { stdenv = stdenv-2; };
 in
 let
   # nxfsenv-3-1 :: attrset
   nxfsenv-3-1 = nxfsenv-3-00 // { diffutils = diffutils-3; };
   # findutils-3 :: derivation
-  #findutils-3 = callPackage ./nxfs-findutils-3/package.nix { nxfsenv = nxfsenv-3-1; };
   findutils-3 = callPackage ./nxfs-findutils-3/package.nix { stdenv = stdenv-2; };
 in
 let

@@ -53,17 +53,5 @@ stdenv.mkDerivation {
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
   '';
 
-  buildInputs = [
-#    nxfsenv.diffutils
-#    nxfsenv.gcc_wrapper
-#    nxfsenv.binutils
-#    nxfsenv.gnumake
-#    nxfsenv.gawk
-#    nxfsenv.gnutar
-#    nxfsenv.gnugrep
-#    nxfsenv.gnused
-#    nxfsenv.coreutils
-#    nxfsenv.shell
-#    nxfsenv.glibc
-  ];
+  buildInputs = [];
 }
