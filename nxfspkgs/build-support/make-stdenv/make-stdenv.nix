@@ -19,7 +19,7 @@ let
   bintools  = stagepkgs.bintools;
   patchelf  = stagepkgs.patchelf;
   patch     = stagepkgs.patch;
-  shell     = stagepkgs.shell;
+  shellpkg  = stagepkgs.shell;
   coreutils = stagepkgs.coreutils;
   gnumake   = stagepkgs.gnumake;
   gnutar    = stagepkgs.gnutar;
@@ -70,7 +70,7 @@ let
       #
       # initialPath :: [ derivation,.. ]
       #
-      initialPath = [ cc bintools patchelf patch coreutils shell
+      initialPath = [ cc bintools patchelf patch coreutils shellpkg
                       gnumake gnutar gawk gnugrep gnused findutils diffutils ];
 
       defaultBuilder = ./default-builder.sh;
