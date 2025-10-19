@@ -71,6 +71,7 @@ let
         cc        = stage2pkgs.gcc-wrapper-2;
         bintools  = stage2pkgs.binutils-x0-wrapper-2;
         patchelf  = stage2pkgs.patchelf-2;
+        patch     = stage2pkgs.patch-2;
         shell     = stage2pkgs.bash-2;
         coreutils = stage2pkgs.coreutils-2;
         gnumake   = stage2pkgs.gnumake-2;
@@ -243,16 +244,17 @@ in
 let
   stdenv-3-1 = make-stdenv { name = "stdenv-3-1";
                              stagepkgs = {
-                               cc = stage2pkgs.gcc-wrapper-2;
-                               bintools = stage2pkgs.binutils-x0-wrapper-2;
-                               patchelf = stage2pkgs.patchelf-2;
-                               shell = bash-3;
+                               cc        = stage2pkgs.gcc-wrapper-2;
+                               bintools  = stage2pkgs.binutils-x0-wrapper-2;
+                               patchelf  = stage2pkgs.patchelf-2;
+                               patch     = stage2pkgs.patch-2;
+                               shell     = bash-3;
                                coreutils = coreutils-3;
-                               gnumake = gnumake-3;
-                               gawk = gawk-3;
-                               gnutar = gnutar-3;
-                               gnugrep = gnugrep-3;
-                               gnused = gnused-3;
+                               gnumake   = gnumake-3;
+                               gawk      = gawk-3;
+                               gnutar    = gnutar-3;
+                               gnugrep   = gnugrep-3;
+                               gnused    = gnused-3;
                                diffutils = diffutils-3;
                              }; };
 
