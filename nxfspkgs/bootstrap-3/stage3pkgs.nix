@@ -68,6 +68,7 @@ let
       stagepkgs = {
         cc        = stage2pkgs.gcc-wrapper-2;
         bintools  = stage2pkgs.binutils-x0-wrapper-2;
+        patchelf  = stage2pkgs.patchelf-2;
         shell     = stage2pkgs.bash-2;
         coreutils = stage2pkgs.coreutils-2;
         gnumake   = stage2pkgs.gnumake-2;
@@ -195,13 +196,15 @@ let
   # nxfsenv-3-3b :: attrset
   nxfsenv-3-3b = nxfsenv-3-3 // { gnugrep = gnugrep-3; };
   # bzip2-3 :: derivation
-  bzip2-3 = callPackage ./nxfs-bzip2-3/package.nix { nxfsenv = nxfsenv-3-3b; };
+  bzip2-3 = callPackage ./nxfs-bzip2-3/package.nix { stdenv = stdenv-2; };
 in
 let
   # nxfsenv-3-4 :: attrset
   nxfsenv-3-4 = nxfsenv-3-3b // { bzip2 = bzip2-3; };
   # gnutar-3    :: derivation
-  gnutar-3 = callPackage ./nxfs-tar-3/package.nix { nxfsenv = nxfsenv-3-4; };
+  gnutar-3 = callPackage ./nxfs-tar-3/package.nix { stdenv = stdenv-2;
+                                                    bzip2 = bzip2-3;
+                                                  };
 in
 let
   # nxfsenv-3-5 :: attrset

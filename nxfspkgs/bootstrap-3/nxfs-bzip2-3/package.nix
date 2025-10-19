@@ -1,27 +1,13 @@
 {
-  # nxfsenv :: attrset
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
 } :
 
 let
-  patchelf  = nxfsenv.patchelf;
-  patch     = nxfsenv.patch;
-  findutils = nxfsenv.findutils;
-  diffutils = nxfsenv.diffutils;
-  gcc       = nxfsenv.gcc_wrapper;
-  binutils  = nxfsenv.binutils;
-  gawk      = nxfsenv.gawk;
-  gnumake   = nxfsenv.gnumake;
-  gnugrep   = nxfsenv.gnugrep;
-  gnutar    = nxfsenv.gnutar;
-  gnused    = nxfsenv.gnused;
-  coreutils = nxfsenv.coreutils;
-  bash      = nxfsenv.shell;
-
   version   = "1.0.8";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-bzip2-3";
   version      = version;
   system       = builtins.currentSystem;
@@ -49,10 +35,10 @@ nxfsenv.mkDerivation {
   '';
 
   buildPhase = ''
-    set -x
+    #set -x
 
     builddir=$TMPDIR
-    bash_program=$bash/bin/bash
+    shell_program=$shell
 
     pushd $builddir
 
@@ -64,7 +50,7 @@ nxfsenv.mkDerivation {
     # fix man page install location
     sed -i 's:(PREFIX)/man:(PREFIX)/share/man:g' Makefile
 
-    sed -i "s:/bin/sh:$bash_program:" Makefile Makefile-libbz2_so
+    sed -i "s:/bin/sh:$shell_program:" Makefile Makefile-libbz2_so
 
     LDFLAGS="-Wl,-rpath=$out/lib -Wl,-enable-new-dtags"
 
@@ -87,19 +73,5 @@ nxfsenv.mkDerivation {
     popd
   '';
 
-  buildInputs = [
-    gcc
-    binutils
-    patchelf
-    patch
-    gawk
-    gnumake
-    gnugrep
-    gnutar
-    gnused
-    coreutils
-    diffutils
-    findutils
-    bash
-  ];
+  buildInputs = [];
 }
