@@ -434,8 +434,10 @@ let
   nxfsenv-3-95 = nxfsenv-3-94 // { glibc = glibc-x1-3; };
 
   # gcc-x0-wrapper-3 :: derivation
-  gcc-x0-wrapper-3 = callPackage ./nxfs-gcc-x0-wrapper-3/package.nix { nxfsenv = nxfsenv-3-95;
+  gcc-x0-wrapper-3 = callPackage ./nxfs-gcc-x0-wrapper-3/package.nix { stdenv = stdenv-3-1;
                                                                        gcc-unwrapped = nxfsenv-3-95.gcc_wrapper.gcc;
+                                                                       glibc = glibc-x1-3;
+                                                                       nxfs-defs = nxfs-defs;
                                                                      };
 
   # binutils-x0-wrapper-3 :: derivation

@@ -35,5 +35,6 @@ else
     #>&2 echo "CWD=$(pwd)"
     #>&2 echo "PATH=${PATH}"
 
-    ${unwrapped_gxx} "${@}" -L${gcc}/lib -Wl,-rpath=${gcc}/lib -B${glibc}/lib -Wl,-rpath=${glibc}/lib -Wl,-dynamic-linker=${glibc}/lib/ld-linux-x86-64.so.2
+    ${unwrapped_gxx} "${@}" -L${gcc}/lib -Wl,-rpath=${gcc}/lib -B${glibc}/lib -Wl,-rpath=${glibc}/lib \
+                     -Wl,-dynamic-linker=${glibc}/lib/ld-linux-x86-64.so.2
 fi
