@@ -134,6 +134,10 @@ in a chrooted nix-build,  in particular for building glibc.
 
 DEBUGGING
 
+see [nxfspkgs/build-support/make-derivation/make-derivation.nix for mkDerivation
+
+see [nxfspkgs/build-support/make-stdenv/make-stdenv.nix for stdenv
+
 see [nxfspkgs/build-support/autotools/default.nix]
 for default derivation template.
 template runs default-builder.sh (see below), which imports setup.sh (see below)

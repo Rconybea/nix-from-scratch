@@ -1,4 +1,5 @@
 set -e
+set -x
 
 source ${setupScript}
 

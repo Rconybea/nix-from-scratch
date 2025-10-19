@@ -4,14 +4,11 @@
 #   bash
 #   binutils
 #   glibc
-#   ld_wrapper_script
 #   buildInputs
 #   TMPDIR
 #   out
 
 set -euo pipefail
-
-echo "BEFORE: PATH=$PATH"
 
 PATH=
 for pkg in ${buildInputs}; do
@@ -23,23 +20,50 @@ for pkg in ${buildInputs}; do
     fi
 done
 
-echo "AFTER: PATH=$PATH"
-
 bash_program=${bash}/bin/bash
 
 builddir=${TMPDIR}
 
-unwrapped_ld=${binutils}/bin/ld
-
 mkdir -p ${builddir}/bin
 mkdir -p ${out}/bin
 
-# prepare ld-wrapper script from template
-tmp=${builddir}/bin/ld
-cp ${ld_wrapper_script} ${tmp}
-sed -i -e s:@bash@:${bash_program}: ${tmp}
-sed -i -e s:@unwrapped_ld@:${unwrapped_ld}: ${tmp}
-sed -i -e s:@glibc@:${glibc}: ${tmp}
-chmod +x ${tmp}
-# install ld-wrapper script to output
-cp ${tmp} ${out}/bin
+prepare_wrapper() {
+    name=$1
+    template=$2
+
+    tmp=${builddir}/bin/${name}
+    cp ${template} ${tmp}
+    sed -i \
+        -e s:@prog@:${name}: \
+        -e s:@bash@:${bash_program}: \
+        -e s:@shell@:${bash_program}: \
+        -e s:@binutils@:${binutils}: \
+        -e s:@glibc@:${glibc}: \
+        ${tmp}
+    chmod +x ${tmp}
+    cp ${tmp} ${out}/bin
+}
+
+# bespoke wrappers
+prepare_wrapper ar ${src}/ar-wrapper.sh
+prepare_wrapper ld ${src}/ld-wrapper.sh
+prepare_wrapper strip ${src}/strip-wrapper.sh
+
+# TODO: objcopy needs more care than we take here.
+#       Need to preserve the same sections that
+#       we keep in strip for example
+
+ln -s ${binutils}/bin/addr2line ${out}/bin
+ln -s ${binutils}/bin/as ${out}/bin
+ln -s ${binutils}/bin/c++filt ${out}/bin
+ln -s ${binutils}/bin/elfedit ${out}/bin
+ln -s ${binutils}/bin/gprof ${out}/bin
+ln -s ${binutils}/bin/nm ${out}/bin
+ln -s ${binutils}/bin/objcopy ${out}/bin
+ln -s ${binutils}/bin/objdump ${out}/bin
+ln -s ${binutils}/bin/ranlib ${out}/bin
+ln -s ${binutils}/bin/readelf ${out}/bin
+ln -s ${binutils}/bin/size ${out}/bin
+ln -s ${binutils}/bin/strings ${out}/bin
+
+# omit ld.bfd,  that's deliberately excluded

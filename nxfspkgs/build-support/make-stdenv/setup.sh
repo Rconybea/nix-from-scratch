@@ -15,16 +15,25 @@ set -o pipefail
 
 echo initialPath=${initialPath:-UNSET}
 
-# append $1/bin to _PATH (at the end)
+# 1. append $1/bin to _PATH (at the end)
+# 2. source setup hook $1/nix-support/setup-hook
+#
 addToEnv() {
+    echo "addToEnv: [$1]"
+
     if [[ -d $1/bin ]]; then
         eval export _PATH=${_PATH-}${_PATH:+:}$1/bin
+    fi
+
+    if [[ -f $1/nix-support/setup-hook ]]; then
+        source "${i}/nix-support/setup-hook"
     fi
 }
 
 # nix-build supplied PATH doesn't point anywhere anyway
 
 _PATH=
+
 for i in ${initialPath}; do
     addToEnv ${i}
 done
@@ -68,6 +77,8 @@ findInputs() {
 for i in ${propagatedBuildInputs} ${buildInputs} ${baseInputs}; do
     findInputs $i
 done
+
+echo "pkgs=${pkgs}"
 
 for i in $pkgs; do
     addToEnv ${i}

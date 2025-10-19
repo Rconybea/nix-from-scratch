@@ -11,7 +11,7 @@
 # (though perhaps moot since we don't use this wrapper in nxfs-glibc-stage1-2).
 #
 
-unwrapped_ld=@unwrapped_ld@
+binutils=@binutils@
 glibc=@glibc@
 
 if [[ -z "${NXFS_SYSROOT_DIR}" ]]; then
@@ -24,12 +24,12 @@ if [[ $# -eq 1 ]] && ([[ "$1" == -v ]] || [[ "$1" == --version ]]); then
     # prints a message and return 0 exit code.
     # Make sure we preserve that behavior
     #
-    ${unwrapped_ld} -v
+    ${binutils}/bin/ld -v
 elif [[ $# -eq 1 ]] && [[ "$1" == -v ]]; then
     # similar carveout for
     #  ${unwrapped_ld} --help
     #
-    ${unwrapped_ld} --help
+    ${binutils}/bin/ld --help
 else
-    ${unwrapped_ld} "${@}" -L ${NXFS_SYSROOT_DIR}/lib -rpath ${NXFS_SYSROOT_DIR}/lib -dynamic-linker ${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
+    ${binutils}/bin/ld "${@}" -L ${NXFS_SYSROOT_DIR}/lib -rpath ${NXFS_SYSROOT_DIR}/lib -dynamic-linker ${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 fi

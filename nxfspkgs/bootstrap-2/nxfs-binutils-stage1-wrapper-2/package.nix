@@ -18,5 +18,5 @@ nxfsenv.mkDerivation {
   builder = "${nxfsenv.shell}/bin/bash";
   args = [ ./builder.sh ];
 
-  ld_wrapper_script = ./ld-wrapper.sh;
+  src = ./src;
 }

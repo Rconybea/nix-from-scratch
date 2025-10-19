@@ -1,13 +1,13 @@
 {
-  # expect this to be final env from bootstrap-2
-  nxfsenv,
+  # stdenv :: derivation+attrset
+  stdenv
 } :
 
 let
   version = "4.10.0";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-findutils-3";
   version      = version;
 
@@ -30,7 +30,7 @@ nxfsenv.mkDerivation {
     #
     mkdir -p $out/var/lib/locate
 
-    bash_program=$bash/bin/bash
+    shell_program=$shell
 
     # 1. copy source tree to temporary directory,
     #
@@ -40,13 +40,13 @@ nxfsenv.mkDerivation {
     #
     #
     chmod -R +w $src2
-    sed -i "1s:#!.*/bin/sh:#!$bash_program:" $src2/build-aux/mkinstalldirs
+    sed -i "1s:#!.*/bin/sh:#!$shell_program:" $src2/build-aux/mkinstalldirs
     chmod -R -w $src2
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell_program"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out --localstatedir=$out/var/lib/locate CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && $shell_program $src2/configure --prefix=$out --localstatedir=$out/var/lib/locate CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
@@ -54,16 +54,16 @@ nxfsenv.mkDerivation {
   '';
 
   buildInputs = [
-    nxfsenv.diffutils
-    nxfsenv.gcc_wrapper
-    nxfsenv.binutils
-    nxfsenv.gnumake
-    nxfsenv.gawk
-    nxfsenv.gnutar
-    nxfsenv.gnugrep
-    nxfsenv.gnused
-    nxfsenv.coreutils
-    nxfsenv.shell
-    nxfsenv.glibc
+#    nxfsenv.diffutils
+#    nxfsenv.gcc_wrapper
+#    nxfsenv.binutils
+#    nxfsenv.gnumake
+#    nxfsenv.gawk
+#    nxfsenv.gnutar
+#    nxfsenv.gnugrep
+#    nxfsenv.gnused
+#    nxfsenv.coreutils
+#    nxfsenv.shell
+#    nxfsenv.glibc
   ];
 }

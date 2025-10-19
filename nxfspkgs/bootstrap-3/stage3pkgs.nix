@@ -65,10 +65,17 @@ let
 
   stdenv-2 = (import ../build-support/make-stdenv/make-stdenv.nix { config = config; })
     { name = "stdenv-2";
-      stagepkgs = { shell = stage2pkgs.bash-2;
-                    coreutils = stage2pkgs.coreutils-2;
-                    gnused = stage2pkgs.gnused-2;
-                  }; };
+      stagepkgs = {
+        cc        = stage2pkgs.gcc-wrapper-2;
+        bintools  = stage2pkgs.binutils-x0-wrapper-2;
+        shell     = stage2pkgs.bash-2;
+        coreutils = stage2pkgs.coreutils-2;
+        gnumake   = stage2pkgs.gnumake-2;
+        gawk      = stage2pkgs.gawk-2;
+        gnutar    = stage2pkgs.gnutar-2;
+        gnugrep   = stage2pkgs.gnugrep-2;
+        gnused    = stage2pkgs.gnused-2;
+      }; };
 
   # originally intended 'nxfsenv' to be a stdenv substitute.
   # instead it's grown into a kitchen sink.
@@ -163,13 +170,15 @@ let
   # which-3 :: derivation
   which-3 = callPackage ./nxfs-which-3/package.nix { stdenv = stdenv-2; };
   # diffutils-3 :: derivation
+  #diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { stdenv = stdenv-2; };
   diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { nxfsenv = nxfsenv-3-00; };
 in
 let
   # nxfsenv-3-1 :: attrset
   nxfsenv-3-1 = nxfsenv-3-00 // { diffutils = diffutils-3; };
   # findutils-3 :: derivation
-  findutils-3 = callPackage ./nxfs-findutils-3/package.nix { nxfsenv = nxfsenv-3-1; };
+  #findutils-3 = callPackage ./nxfs-findutils-3/package.nix { nxfsenv = nxfsenv-3-1; };
+  findutils-3 = callPackage ./nxfs-findutils-3/package.nix { stdenv = stdenv-2; };
 in
 let
   # nxfsenv-3-2 :: attrset

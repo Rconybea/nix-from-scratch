@@ -430,6 +430,7 @@ let
 
   # gcc-wrapper-2 :: derivation
   gcc-wrapper-2 = callPackage ./nxfs-gcc-wrapper-2/package.nix { nxfsenv = nxfsenv-2-100;
+                                                                 bintools = binutils-x0-wrapper-2;
                                                                  glibc = glibc-2;
                                                                };
 in

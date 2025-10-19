@@ -17,8 +17,14 @@
 :
 
 let
+  cc        = stagepkgs.cc;
+  bintools  = stagepkgs.bintools;
   shell     = stagepkgs.shell;
   coreutils = stagepkgs.coreutils;
+  gnumake   = stagepkgs.gnumake;
+  gnutar    = stagepkgs.gnutar;
+  gawk      = stagepkgs.gawk;
+  gnugrep   = stagepkgs.gnugrep;
   gnused    = stagepkgs.gnused;
 
   stdenv-derivation = derivation {
@@ -54,15 +60,15 @@ let
       #
       baseInputs = [ ];
 
-      # these automtically populate PATH :-> corresponding executables
-      # are implicitly available to all nix derivations using this stdenv.
+      # these automtically populate PATH :-> corresponding bin directories
+      # are available to all nix derivations using this stdenv; but nothijng else!
       #
       # If a package wants other attributes (headers, libraries, pkgconfig files, ...)
       # it should add package to buildInputs
       #
       # initialPath :: [ derivation,.. ]
       #
-      initialPath = [ coreutils shell gnused ];
+      initialPath = [ cc bintools coreutils shell gnumake gnutar gawk gnugrep gnused ];
 
       defaultBuilder = ./default-builder.sh;
 

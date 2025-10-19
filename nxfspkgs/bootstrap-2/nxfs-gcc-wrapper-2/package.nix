@@ -1,6 +1,8 @@
 {
   # nxfsenv :: attrset
   nxfsenv,
+  # bintools :: derivation
+  bintools,
   # glibc :: derivation
   glibc,
 } :
@@ -11,6 +13,7 @@ nxfsenv.mkDerivation {
 
   cxx_version = "14.2.0";
 
+  bintools = bintools;
   glibc = glibc;
 
   bash = nxfsenv.shell;
@@ -22,6 +25,7 @@ nxfsenv.mkDerivation {
 
   gcc_wrapper_script = ./gcc-wrapper.sh;
   gxx_wrapper_script = ./gxx-wrapper.sh;
+  setup_hook = ./setup-hook.sh;
 
   gcc = nxfsenv.gcc-unwrapped;
 

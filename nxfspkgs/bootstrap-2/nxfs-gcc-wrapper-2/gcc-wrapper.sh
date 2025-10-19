@@ -7,7 +7,18 @@
 # and by defult produces executables that assume /lib64
 
 unwrapped_gcc=@unwrapped_gcc@
+bintools=@bintools@
 glibc=@glibc@
+
+export PATH="${bintools}/bin:$PATH"
+
+# TODO: should pickup NIX_CFLAGS_COMPILE, NIX_LDFLAGS
+# e.g.
+#   extraBefore=($NIX_CFLAGS_COMPILE)
+#   extraAfter=($NIX_LDFLAGS)
+# then
+#   @gcc/bin/gcc '${extraBefore[@]}" "$@" "${extraAfter[@]}"
+#
 
 # Caller won't usually set this,  in which case nxfs-gcc points destination ELF to imported sysroot
 # (see nix-from-scratch/nxfspkgs/bootstrap-1/nxfs-sysroot-1).
@@ -31,5 +42,8 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gcc} -v
 else
-    ${unwrapped_gcc} -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2 "${@}" -I${NXFS_SYSROOT_DIR}/include
+    ${unwrapped_gcc} "${@}" \
+                     -I${NXFS_SYSROOT_DIR}/include \
+                     -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib \
+                     -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 fi
