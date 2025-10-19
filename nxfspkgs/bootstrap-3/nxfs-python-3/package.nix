@@ -1,8 +1,10 @@
 {
-  # nxfsenv :: derivation
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
   # popen :: derivation
   popen,
+  # zlib :: derivation
+  zlib,
 } :
 
 let
@@ -11,12 +13,11 @@ let
   version = "3.12.6";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-python-3";
   version      = version;
 
-  popen        = popen;
-  zlib         = nxfsenv.zlib;
+  inherit popen zlib;
 
   src          = builtins.fetchTarball { name = "python-${version}-source";
                                          url = "https://www.python.org/ftp/python/${version}/Python-${version}.tar.xz";
@@ -34,8 +35,6 @@ nxfsenv.mkDerivation {
     mkdir -p $src2
     mkdir -p $builddir
 
-    bash_program=$bash/bin/bash
-
     # 1. copy source tree to temporary directory,
     #
     (cd $src && (tar cf - . | tar xf - -C $src2))
@@ -48,7 +47,7 @@ nxfsenv.mkDerivation {
 
     pushd $src2/Lib
 
-    sed -i -e "s:'/bin/sh':'"$bash_program"':" subprocess.py
+    sed -i -e "s:'/bin/sh':'"$shell"':" subprocess.py
 
     popd
 
@@ -78,7 +77,7 @@ nxfsenv.mkDerivation {
     popd
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
     CFLAGS="-I$zlib/include"
     LDFLAGS="-Wl,-rpath=$out/lib -L$zlib/lib -Wl,-rpath=$zlib/lib"
@@ -113,24 +112,11 @@ nxfsenv.mkDerivation {
     #   _tkinter
     #   readline
     #
-    (cd $builddir && $bash_program $src2/configure --prefix=$out --enable-shared --enable-optimizations CC="nxfs-gcc" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
+    (cd $builddir && $shell $src2/configure --prefix=$out --enable-shared --enable-optimizations CC="nxfs-gcc" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
     '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.pkgconf
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnutar
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell
-                ];
+  buildInputs = [ zlib ];
 }

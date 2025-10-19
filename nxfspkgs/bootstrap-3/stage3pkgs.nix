@@ -336,6 +336,19 @@ let
                                                    };
 in
 let
+  # texinfo-3 :: derivation
+  texinfo-3 = callPackage ./nxfs-texinfo-3/package.nix { stdenv = stdenv-3-1;
+                                                         perl = perl-3;
+                                                       };
+in
+let
+  # python-3 :: derivation
+  python-3 = callPackage ./nxfs-python-3/package.nix { stdenv = stdenv-3-1;
+                                                       popen = popen-3;
+                                                       zlib = zlib-3;
+                                                     };
+in
+let
   nxfsenv-3-7 = nxfsenv-3-6;
   # nxfsenv-3-9 :: attrset
   nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
@@ -359,21 +372,9 @@ let
   nxfsenv-3-c14 = nxfsenv-3-c13 // { flex = flex-3; };
   # nxfsenv-3-b15 :: attrset
   nxfsenv-3-b15 = nxfsenv-3-b14 // nxfsenv-3-c14 // { bison = bison-3; };
-  # texinfo-3 :: derivation
-  texinfo-3 = callPackage ./nxfs-texinfo-3/package.nix { stdenv = stdenv-3-1;
-                                                         perl = perl-3;
-                                                       };
-in
-let
   # editor bait: pkg-config
   nxfsenv-3-d13 = nxfsenv-3-10 // { pkgconf = pkgconf-3;
                                     zlib = zlib-3; };
-  # python-3 :: derivation
-  python-3 = callPackage ./nxfs-python-3/package.nix { nxfsenv = nxfsenv-3-d13;
-                                                       popen = popen-3;
-                                                     };
-in
-let
   # nxfsenv-3-16 :: attrset
   nxfsenv-3-16 = nxfsenv-3-10 // { binutils = binutils-3;
                                    perl     = perl-3;
