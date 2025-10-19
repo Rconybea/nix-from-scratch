@@ -1,6 +1,10 @@
 {
-  # nxfsenv :: derivation
-  nxfsenv,
+  # stdenv :: derivation+attrset
+  stdenv,
+  # libxcrypt :: derivation
+  libxcrypt,
+  # pkgconf :: derivation
+  pkgconf,
 } :
 
 let
@@ -8,11 +12,12 @@ let
   version = "5.40.0";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-perl-3";
 
-  libxcrypt    = nxfsenv.libxcrypt;
-  gcc_wrapper  = nxfsenv.gcc_wrapper;
+  inherit libxcrypt;
+
+  #gcc_wrapper  = nxfsenv.gcc_wrapper;
 
   version             = version;
   version_major_minor = version_major_minor;
@@ -23,6 +28,10 @@ nxfsenv.mkDerivation {
 
   buildPhase = ''
     set -e
+
+    echo "PATH=$PATH"
+
+    set -x
 
     src2=$TMPDIR/src2
     # perl builds in source tree
@@ -39,10 +48,8 @@ nxfsenv.mkDerivation {
     #
     chmod -R +w $src2
 
-    bash_program=$bash/bin/bash
-
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL=$shell
 
     perlout=$out/lib/perl5/$version_major_minor
 
@@ -54,25 +61,12 @@ nxfsenv.mkDerivation {
     # -e: stop questions after config.sh
     # -s: silent mode
     #
-    sh Configure -de -Dperl_lc_all_uses_name_value_pairs=define -Dcc=$gcc_wrapper/bin/nxfs-gcc -Dcflags="$CCFLAGS" -Dldflags="$LDFLAGS" -Dprefix=$out -Dvendorprefix=$out -Duseshrplib -Dprivlib=$perlout/core_perl -Darchlib=$perlout/core_perl -Dsitelib=$perlout/site_perl -Dsitearch=$perlout/site_perl -Dvendorlib=$perlout/vendor_perl -Dvendorarch=$perlout/vendor_perl
+    sh Configure -de -Dperl_lc_all_uses_name_value_pairs=define -Dcc=$CC -Dcflags="$CCFLAGS" -Dldflags="$LDFLAGS" -Dprefix=$out -Dvendorprefix=$out -Duseshrplib -Dprivlib=$perlout/core_perl -Darchlib=$perlout/core_perl -Dsitelib=$perlout/site_perl -Dsitearch=$perlout/site_perl -Dvendorlib=$perlout/vendor_perl -Dvendorarch=$perlout/vendor_perl
 
     make SHELL=$CONFIG_SHELL
-
     make install SHELL=$CONFIG_SHELL
 
   '';
 
-  buildInputs = [ nxfsenv.libxcrypt
-                  nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.pkgconf
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell ];
+  buildInputs = [ libxcrypt pkgconf ];
 }

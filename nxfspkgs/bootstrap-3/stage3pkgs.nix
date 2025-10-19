@@ -293,7 +293,10 @@ let
   # nxfsenv-3-a12 :: attrset
   nxfsenv-3-a12 = nxfsenv-3-a11 // { libxcrypt = libxcrypt-3; };
   # perl-3 :: derivation
-  perl-3 = callPackage ./nxfs-perl-3/package.nix { nxfsenv = nxfsenv-3-a12; };
+  perl-3 = callPackage ./nxfs-perl-3/package.nix { stdenv = stdenv-3-1;
+                                                   libxcrypt = libxcrypt-3;
+                                                   pkgconf = pkgconf-3;
+                                                 };
 in
 let
   # nxfsenv-3-b13 :: attrset
