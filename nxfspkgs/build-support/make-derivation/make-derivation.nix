@@ -125,6 +125,7 @@ let
       derivation' = derivation
         ({
           name = name';
+          inherit pname version;
           inherit (stdenv) system shell defaultSetup baseInputs initialPath;
 
           builder = "${stdenv.shell}";
