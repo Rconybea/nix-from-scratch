@@ -55,9 +55,5 @@ stdenv.mkDerivation {
     make install SHELL=$CONFIG_SHELL
   '';
 
-  buildInputs = [ perl
-                  flex
-                  m4
-                  #nxfsenv.file
-  ];
+  buildInputs = [ perl flex m4 ];
 }

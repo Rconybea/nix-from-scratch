@@ -1,12 +1,15 @@
 {
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
+  # perl :: derivation
+  perl,
 } :
 
 let
   version = "6.7";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-texinfo-3";
   version      = version;
 
@@ -32,36 +35,20 @@ nxfsenv.mkDerivation {
     #
     chmod -R +w $src2
 
-    bash_program=$bash/bin/bash
-
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
     cd $builddir
 
     CCFLAGS=
     LDFLAGS="-Wl,-enable-new-dtags"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out)
+    (cd $builddir && $shell $src2/configure --prefix=$out)
 
     make SHELL=$CONFIG_SHELL
 
     make install SHELL=$CONFIG_SHELL
   '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.perl
-                  nxfsenv.m4
-                  nxfsenv.bison
-                  nxfsenv.flex
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell ];
+  buildInputs = [ perl ];
 }

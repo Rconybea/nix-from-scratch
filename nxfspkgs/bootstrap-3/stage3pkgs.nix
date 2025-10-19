@@ -328,6 +328,14 @@ let
 
 in
 let
+  # bison-3 :: derivation
+  bison-3 = callPackage ./nxfs-bison-3/package.nix { stdenv = stdenv-3-1;
+                                                     perl = perl-3;
+                                                     flex = flex-3;
+                                                     m4 = m4-3;
+                                                   };
+in
+let
   nxfsenv-3-7 = nxfsenv-3-6;
   # nxfsenv-3-9 :: attrset
   nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
@@ -349,18 +357,12 @@ let
   nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
   # nxfsenv-3-c14 :: attrset
   nxfsenv-3-c14 = nxfsenv-3-c13 // { flex = flex-3; };
-  # bison-3 :: derivation
-  bison-3 = callPackage ./nxfs-bison-3/package.nix { stdenv = stdenv-3-1;
-                                                     perl = perl-3;
-                                                     flex = flex-3;
-                                                     m4 = m4-3;
-                                                   };
-in
-let
   # nxfsenv-3-b15 :: attrset
   nxfsenv-3-b15 = nxfsenv-3-b14 // nxfsenv-3-c14 // { bison = bison-3; };
   # texinfo-3 :: derivation
-  texinfo-3 = callPackage ./nxfs-texinfo-3/package.nix { nxfsenv = nxfsenv-3-b15; };
+  texinfo-3 = callPackage ./nxfs-texinfo-3/package.nix { stdenv = stdenv-3-1;
+                                                         perl = perl-3;
+                                                       };
 in
 let
   # editor bait: pkg-config
