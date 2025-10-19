@@ -1,13 +1,13 @@
 {
-  # nxfsenv   :: attrset
-  nxfsenv,
+  # stdenv :: attrset
+  stdenv,
 } :
 
 let
   version = "3.11";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-gnugrep-3";
   version      = version;
 
@@ -20,29 +20,16 @@ nxfsenv.mkDerivation {
 
     builddir=$TMPDIR
 
-    bash_program=$bash/bin/bash
+    shell_program=$shell
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell_program"
 
-    (cd $builddir && $bash_program $src/configure --prefix=$out CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && $shell_program $src/configure --prefix=$out CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
   '';
 
-  buildInputs = [
-    nxfsenv.gcc_wrapper
-    nxfsenv.binutils
-    nxfsenv.gawk
-    nxfsenv.gnumake
-    nxfsenv.gnugrep
-    nxfsenv.gnutar
-    nxfsenv.gnused
-    nxfsenv.findutils
-    nxfsenv.diffutils
-    nxfsenv.coreutils
-    nxfsenv.shell
-    nxfsenv.glibc
-  ];
+  buildInputs = [];
 }

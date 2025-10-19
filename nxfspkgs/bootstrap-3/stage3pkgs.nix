@@ -189,7 +189,7 @@ let
   # nxfsenv-3-3 :: attrset
   nxfsenv-3-3 = nxfsenv-3-2 // { gnused = gnused-3; };
   # gnugrep-3 :: derivation
-  gnugrep-3 = callPackage ./nxfs-grep-3/package.nix { nxfsenv = nxfsenv-3-3; };
+  gnugrep-3 = callPackage ./nxfs-grep-3/package.nix { stdenv = stdenv-2; };
 in
 let
   # nxfsenv-3-3b :: attrset
