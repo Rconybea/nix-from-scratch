@@ -1,13 +1,17 @@
 {
-  # nxfsenv :: attrset
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
+  # perl :: derivation
+  perl,
+  # pkgconf :: derivation
+  pkgconf,
 } :
 
 let
   version = "4.4.36";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-libxcrypt-3";
   version      = version;
 
@@ -16,7 +20,6 @@ nxfsenv.mkDerivation {
     url = "https://github.com/besser82/libxcrypt/releases/download/v${version}/libxcrypt-${version}.tar.xz";
     sha256 = "1iflya5d4ndgjg720p40x19c1j2g72zn64al8f74x3h4bnapqx1d";
   };
-#  target_tuple = nxfs-defs.target_tuple;
 
   buildPhase = ''
     #!/bin/bash
@@ -28,8 +31,6 @@ nxfsenv.mkDerivation {
 
     mkdir -p $src2
     mkdir -p $builddir
-
-    bash_program=$bash/bin/bash
 
     # 1. copy source tree to temporary directory,
     #
@@ -44,29 +45,20 @@ nxfsenv.mkDerivation {
     #   .m4 and .in files (assume they trigger re-running autoconf)
     #   test/ files
     #
-    sed -i -e "s:/bin/sh:$bash_program:g" $src2/build-aux/scripts/move-if-change
+    sed -i -e "s:/bin/sh:$shell:g" $src2/build-aux/scripts/move-if-change
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out --enable-hashes=strong,glibc --disable-werror CC=nxfs-gcc CFLAGS="-std=gnu17" LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && $shell $src2/configure --prefix=$out --enable-hashes=strong,glibc --disable-werror CC=nxfs-gcc CFLAGS="-std=gnu17" LDFLAGS="-Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
 '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.perl
-                  nxfsenv.pkgconf
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell ];
+  buildInputs = [
+    perl
+    pkgconf
+  ];
 }

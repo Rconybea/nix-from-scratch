@@ -79,6 +79,7 @@ let
         gnutar    = stage2pkgs.gnutar-2;
         gnugrep   = stage2pkgs.gnugrep-2;
         gnused    = stage2pkgs.gnused-2;
+        findutils = stage2pkgs.findutils-2;
         diffutils = stage2pkgs.diffutils-2;
       }; };
 
@@ -255,6 +256,7 @@ let
                                gnutar    = gnutar-3;
                                gnugrep   = gnugrep-3;
                                gnused    = gnused-3;
+                               findutils = findutils-3;
                                diffutils = diffutils-3;
                              }; };
 
@@ -282,7 +284,10 @@ let
   nxfsenv-3-a11 = nxfsenv-3-10 // { pkgconf = pkgconf-3; };
 
   # libxcrypt-3 :: derivation
-  libxcrypt-3  = callPackage ./nxfs-libxcrypt-3/package.nix { nxfsenv = nxfsenv-3-a11; };
+  libxcrypt-3  = callPackage ./nxfs-libxcrypt-3/package.nix { stdenv = stdenv-3-1;
+                                                              perl = stage2pkgs.perl-2;
+                                                              pkgconf = pkgconf-3;
+                                                            };
 in
 let
   # nxfsenv-3-a12 :: attrset
