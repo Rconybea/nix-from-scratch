@@ -1,13 +1,13 @@
 {
-  # nxfsenv :: attrset
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
 } :
 
 let
   version = "1.4.19";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-m4-3";
   version      = version;
 
@@ -24,7 +24,7 @@ nxfsenv.mkDerivation {
     mkdir -p $src2
     mkdir -p $builddir
 
-    bash_program=$bash/bin/bash
+    shell_program=$shell
 
     # 1. copy source tree to temporary directory,
     #
@@ -35,28 +35,17 @@ nxfsenv.mkDerivation {
     #
     chmod -R +w $src2
 
-    (cd $src2 && $bash_program $m4_patch)
+    (cd $src2 && $shell_program $m4_patch)
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell_program"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && $shell_program $src2/configure --prefix=$out CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
     '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell
-                ];
+  buildInputs = [ ];
 }
