@@ -7,12 +7,10 @@
 :
 
 {
+  # name :: string
   name,
-
-  # stagepkgs.shell/bin/bash
-  # stagepkgs.coreutils
-  #
-  stagepkgs
+  # stagepkgs :: attrset
+  stagepkgs,
 }
 :
 
@@ -20,6 +18,7 @@ let
   cc        = stagepkgs.cc;
   bintools  = stagepkgs.bintools;
   patchelf  = stagepkgs.patchelf;
+  patch     = stagepkgs.patch;
   shell     = stagepkgs.shell;
   coreutils = stagepkgs.coreutils;
   gnumake   = stagepkgs.gnumake;
@@ -70,7 +69,7 @@ let
       #
       # initialPath :: [ derivation,.. ]
       #
-      initialPath = [ cc bintools patchelf coreutils shell gnumake gnutar gawk gnugrep gnused diffutils ];
+      initialPath = [ cc bintools patchelf patch coreutils shell gnumake gnutar gawk gnugrep gnused diffutils ];
 
       defaultBuilder = ./default-builder.sh;
 
