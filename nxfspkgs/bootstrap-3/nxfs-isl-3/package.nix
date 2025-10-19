@@ -1,6 +1,6 @@
 {
-  # nxfsenv :: derivation
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
   # gmp :: derivation
   gmp
 } :
@@ -9,7 +9,7 @@ let
   version = "0.24";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-isl-3";
   version      = version;
 
@@ -29,16 +29,14 @@ nxfsenv.mkDerivation {
     mkdir -p $src2
     mkdir -p $builddir
 
-    bash_program=$bash/bin/bash
-
     # 1. copy source tree to temporary directory,
     #
     (cd $src && (tar cf - . | tar xf - -C $src2))
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
-    (cd $builddir && $bash_program $src2/configure --prefix=$out --with-gmp=$gmp CC=nxfs-gcc CPPFLAGS="-I$gmp/include" CFLAGS= LDFLAGS="-L$gmp/lib -Wl,-rpath,$gmp/lib -Wl,-enable-new-dtags")
+    (cd $builddir && $shell $src2/configure --prefix=$out --with-gmp=$gmp CC=nxfs-gcc CPPFLAGS="-I$gmp/include" CFLAGS= LDFLAGS="-L$gmp/lib -Wl,-rpath,$gmp/lib -Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
@@ -46,17 +44,5 @@ nxfsenv.mkDerivation {
 
 '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.m4
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.file
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell ];
+  buildInputs = [ ];
 }
