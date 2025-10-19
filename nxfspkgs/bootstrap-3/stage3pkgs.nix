@@ -222,7 +222,7 @@ let
 in
 let
   nxfsenv-3-7 = nxfsenv-3-6;
-  gawk-3 = callPackage ./nxfs-gawk-3/package.nix { nxfsenv = nxfsenv-3-6;
+  gawk-3 = callPackage ./nxfs-gawk-3/package.nix { stdenv = stdenv-2;
                                                    popen = popen-3;
                                                  };
 in

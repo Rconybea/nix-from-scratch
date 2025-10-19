@@ -1,6 +1,6 @@
 {
-  # nxfsenv :: attrset
-  nxfsenv,
+  # stdenv :: derivation+attrset
+  stdenv,
   # popen :: derivation
   popen
 } :
@@ -9,7 +9,7 @@ let
   version = "5.3.0";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-gawk-3";
 
   src          = builtins.fetchTarball { name = "gawk-${version}-source";
@@ -39,20 +39,20 @@ nxfsenv.mkDerivation {
 
     # 2. substitute nix-store path-to-bash for /bin/sh.
     #
-    #
-    bash_program=$bash/bin/bash
+    shell_program=$shell
+
     # skipping:
     #   .m4 and .in files (assume they trigger re-running autoconf)
     #   test/ files
     #
-    sed -i -e "s:/bin/sh:$bash_program:g" $src2/configure $src2/build-aux/*
+    sed -i -e "s:/bin/sh:$shell_program:g" $src2/configure $src2/build-aux/*
 
     # The file io.c contains sveral calls like
     #   execl("/bin/sh", "sh", "-c", command, NULL)
     # rewrite these to
     #   execl("/path/to/nix/store/bash/bin/bash", "bash", "c", command, NULL)
     #
-    sed -i -e 's:"/bin/sh", "sh":"'$bash_program'", "bash":' $src2/io.c
+    sed -i -e 's:"/bin/sh", "sh":"'$shell_program'", "bash":' $src2/io.c
 
     # ----------------------------------------------------------------
     # nxfs_system()
@@ -105,7 +105,7 @@ nxfsenv.mkDerivation {
     # ----------------------------------------------------------------
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell_program"
 
     # 1.
     # we shouldn't need special compiler/linker instructions,
@@ -127,16 +127,5 @@ nxfsenv.mkDerivation {
     (cd $src2 && (tar cvf - . | tar xf - -C $source))
     '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.coreutils
-                  nxfsenv.shell
-                  nxfsenv.glibc ];
+  buildInputs = [ ];
 }
