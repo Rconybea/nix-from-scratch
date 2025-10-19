@@ -56,11 +56,7 @@ stdenv.mkDerivation {
     (cd $builddir && make install SHELL=$CONFIG_SHELL MAKEINFO=true)
     '';
 
-  buildInputs = [
-    #nxfsenv.libxcrypt
-    perl
-    #nxfsenv.pkgconf
-  ];
+  buildInputs = [ perl ];
 } // {
   # experiment  - for nxfs bridge-to-nixpkgs.
   # ----------
