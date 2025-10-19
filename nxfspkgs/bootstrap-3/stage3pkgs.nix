@@ -63,7 +63,9 @@ let
   # TODO: use callPackage
   locale-archive-1 = import ../bootstrap-1/nxfs-locale-archive-1/default.nix;
 
-  stdenv-2 = (import ../build-support/make-stdenv/make-stdenv.nix { config = config; })
+  make-stdenv = (import ../build-support/make-stdenv/make-stdenv.nix { config = config; });
+
+  stdenv-2 = make-stdenv
     { name = "stdenv-2";
       stagepkgs = {
         cc        = stage2pkgs.gcc-wrapper-2;
@@ -236,13 +238,28 @@ let
   # nxfsenv-3-9 :: attrset
   nxfsenv-3-9 = nxfsenv-3-6 // { gnumake = gnumake-3; };
   # coreutils-3 :: derivation
-  coreutils-3 = callPackage ./nxfs-coreutils-3/package.nix { nxfsenv = nxfsenv-3-9; };
+  coreutils-3 = callPackage ./nxfs-coreutils-3/package.nix { stdenv = stdenv-2; };
 in
 let
+  stdenv-3-1 = make-stdenv { name = "stdenv-3-1";
+                             stagepkgs = {
+                               cc = stage2pkgs.gcc-wrapper-2;
+                               bintools = stage2pkgs.binutils-x0-wrapper-2;
+                               patchelf = stage2pkgs.patchelf-2;
+                               shell = bash-3;
+                               coreutils = coreutils-3;
+                               gnumake = gnumake-3;
+                               gawk = gawk-3;
+                               gnutar = gnutar-3;
+                               gnugrep = gnugrep-3;
+                               gnused = gnused-3;
+                               diffutils = diffutils-3;
+                             }; };
+
   # nxfsenv-3-10 :: attrset
   nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
   # pkgconf-3 :: derivation
-  pkgconf-3    = callPackage ./nxfs-pkgconf-3/package.nix  { nxfsenv = nxfsenv-3-10; };
+  pkgconf-3    = callPackage ./nxfs-pkgconf-3/package.nix  { stdenv = stdenv-3-1; };
   # m4-3 :: derivation
   m4-3         = callPackage ./nxfs-m4-3/package.nix { nxfsenv = nxfsenv-3-10; };
   # file-3 :: derivation

@@ -1,13 +1,13 @@
 {
-  # nxfsenv :: attrset
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
 } :
 
 let
   version = "2.3.0";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-pkgconf-3";
   version      = version;
 
@@ -28,7 +28,7 @@ nxfsenv.mkDerivation {
 
     src2=$source
 
-    bash_program=$bash/bin/bash
+    shell_program=$shell
 
     # 1. copy source tree to temporary directory,
     #
@@ -40,9 +40,9 @@ nxfsenv.mkDerivation {
     # ----------------------------------------------------------------
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell_program"
 
-    (cd $builddir && export CC=nxfs-gcc && export CFLAGS= && export LDFLAGS="-Wl,-enable-new-dtags" && bash $src2/configure --prefix=$out)
+    (cd $builddir && export CC=nxfs-gcc && export CFLAGS= && export LDFLAGS="-Wl,-enable-new-dtags" && $shell_program $src2/configure --prefix=$out)
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
@@ -51,17 +51,5 @@ nxfsenv.mkDerivation {
     (cd $out/bin && ln -s pkgconf pkg-config)
 '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.coreutils
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.shell
-                  nxfsenv.glibc
-                ];
+  buildInputs = [ ];
 }

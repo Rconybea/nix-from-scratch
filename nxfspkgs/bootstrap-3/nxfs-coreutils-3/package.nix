@@ -1,13 +1,13 @@
 {
-  # nxfsenv :: attrset
-  nxfsenv,
+  # stdenv :: derivation+attrset
+  stdenv,
 } :
 
 let
   version = "9.5";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-coreutils-3";
 
   src          = builtins.fetchTarball { name = "coreutils-${version}-source";
@@ -23,7 +23,7 @@ nxfsenv.mkDerivation {
     mkdir -p $src2
     mkdir -p $builddir
 
-    bash_program=$bash/bin/bash
+    shell_program=$shell
 
     # ----------------------------------------------------------------
     # NOTE: omitting coreutils unicode patch
@@ -31,26 +31,14 @@ nxfsenv.mkDerivation {
     # ----------------------------------------------------------------
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell_program"
 
-    (cd $builddir && bash $src2/configure --prefix=$out --enable-install-program=hostname --enable-no-install-program=kill,uptime CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && $shell_program $src2/configure --prefix=$out --enable-install-program=hostname --enable-no-install-program=kill,uptime CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
   '';
 
-  buildInputs = [ nxfsenv.gcc_wrapper
-                  nxfsenv.binutils
-                  nxfsenv.coreutils
-                  nxfsenv.gnumake
-                  nxfsenv.gawk
-                  nxfsenv.gnutar
-                  nxfsenv.gnugrep
-                  nxfsenv.gnused
-                  nxfsenv.findutils
-                  nxfsenv.diffutils
-                  nxfsenv.bash
-                  nxfsenv.glibc
-                ];
+  buildInputs = [];
 }
