@@ -2,7 +2,6 @@
   # { bash,coreutils,findutils,grep,tar,sed} :: derivatioh
   bash ? import ../nxfs-bash-2,
   python ? import ../nxfs-python-2,
-#  file ? import ../nxfs-file-2,
   coreutils ? import ../nxfs-coreutils-2,
   findutils ? import ../nxfs-findutils-2,
   grep ? import ../nxfs-grep-2,
@@ -33,6 +32,7 @@ derivation {
   args = [ ./builder.sh ];
 
   src          = builtins.fetchTarball { name = "glibc-${version}-source";
+                                         # TODO: use ftpmirror.gnu.org here
                                          url = "https://ftp.gnu.org/gnu/glibc/glibc-${version}.tar.xz";
                                          sha256 = "0ncvsz2r8py3z0v52fqniz5lq5jy30h0m0xx41ah19nl1rznflkh";
                                        };

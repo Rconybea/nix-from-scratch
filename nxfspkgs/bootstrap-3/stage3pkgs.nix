@@ -392,28 +392,41 @@ let
                                    patchelf = patchelf-3;
                                    which    = which-3;
                                  };
-in
-let
   # nxfsenv-3-95 :: attrset
   nxfsenv-3-94 = nxfsenv-3-16 // { };
-
+in
+let
   # TODO: nxfs-nixify-glibc-source/package.nix
   #
   # nixify-glibc-source-3 :: (attrset -> derivation)
-  nixify-glibc-source-3 = (callPackage ../bootstrap-2/nxfs-nixify-glibc-source/default.nix);
+  #
+  nixified-glibc-source-3 =
+    callPackage ../bootstrap-2/nxfs-nixify-glibc-source/default.nix
+      { python = python-3;
+        coreutils = coreutils-3;
+        findutils = findutils-3;
+        bash = bash-3;
+        grep = gnugrep-3;
+        tar = gnutar-3;
+        sed = gnused-3;
+        locale-archive = locale-archive-1;
+        nxfs-defs = nxfs-defs;
+      };
 
   # wrapper for sort -- invokes coreutils.sort with LC_ALL env var set to C
   # lc-all-sort-3 :: derivation
   lc-all-sort-3 = callPackage ../bootstrap-2/nxfs-lc-all-sort-2/package.nix { nxfsenv = nxfsenv-3-94; };
 
-  # TODO: sub actual linux-headers derivation for toolchain.
-  #
   # glibc-x1-3 :: derivation
-  glibc-x1-3 = callPackage ./nxfs-glibc-x1-3/package.nix { nxfsenv             = nxfsenv-3-94;
-                                                           nixify-glibc-source = nixify-glibc-source-3;
-                                                           lc-all-sort         = lc-all-sort-3;
-                                                           locale-archive      = locale-archive-1;
-                                                           linux-headers       = linux-headers-2;
+  glibc-x1-3 = callPackage ./nxfs-glibc-x1-3/package.nix { stdenv                = stdenv-3-1;
+                                                           nixified-glibc-source = nixified-glibc-source-3;
+                                                           lc-all-sort           = lc-all-sort-3;
+                                                           locale-archive        = locale-archive-1;
+                                                           linux-headers         = linux-headers-2;
+                                                           python                = python-3;
+                                                           bison                 = bison-3;
+                                                           texinfo               = texinfo-3;
+                                                           which                 = which-3;
                                                          };
 in
 let

@@ -1,10 +1,21 @@
 {
-  # everything in nxfsenv is from bootstrap-2/
-  #  nxfsenv :: { mkDerivation, ... }
-  nxfsenv,
+  # stdenv :: attrset+derivation
+  stdenv,
 
-  # nixify-glibc-soruce :: attrset -> derivation
-  nixify-glibc-source,
+  # python :: derivation
+  python,
+
+  # texinfo :: derivation
+  texinfo,
+
+  # stdenv :: derivation
+  bison,
+
+  # which :: derivation
+  which,
+
+  # nixified-glibc-soruce :: derivation
+  nixified-glibc-source,
 
   # lc-all-sort :: derivation
   lc-all-sort,
@@ -13,52 +24,17 @@
   locale-archive,
 
   # linux-headers :: derivation.  system headers (no glibc headers!)
-  linux-headers
+  linux-headers,
+
+  # nxfs-defs :: attrset  -- analogous to nixpkgs platform
+  #nxfs-defs,
 } :
 
 let
-  gcc_wrapper = nxfsenv.gcc_wrapper;
-  bison       = nxfsenv.bison;
-  texinfo     = nxfsenv.texinfo;
-  m4          = nxfsenv.m4;  # new
-  python      = nxfsenv.python;
-  patchelf    = nxfsenv.patchelf;
-  gzip        = nxfsenv.gzip;
-  patch       = nxfsenv.patch;
-  gperf       = nxfsenv.gperf;
-  coreutils   = nxfsenv.coreutils;
-  bash        = nxfsenv.bash;
-  gnutar      = nxfsenv.gnutar;
-  gnumake     = nxfsenv.gnumake;
-  gawk        = nxfsenv.gawk;
-  gnused      = nxfsenv.gnused;
-  gnugrep     = nxfsenv.gnugrep;
-  binutils    = nxfsenv.binutils;
-  diffutils   = nxfsenv.diffutils;
-  findutils   = nxfsenv.findutils;
-  which       = nxfsenv.which;
-
-  nxfs-defs   = nxfsenv.nxfs-defs;
-in
-
-let
-  # nixified-glibc-source :: derivation
-  nixified-glibc-source = nixify-glibc-source {
-    inherit bash python coreutils findutils nxfs-defs;
-    grep = gnugrep;
-    tar = gnutar;
-    sed = gnused;
-  };
-
   version = "2.40";
 in
 
-# PLAN
-#   - building with nxfs-toolchain-1 (redirected crosstool-ng toolchain):
-#     compiler expects to use binutils from the crosstool-ng toolchain
-#   - in this derivation building glibc from source from within nix environment
-#
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   version        = version;
   pname          = "nxfs-glibc";  # nixpkgs requires this
   name           = "nxfs-glibc-x1-${version}-3";
@@ -92,7 +68,6 @@ nxfsenv.mkDerivation {
     mkdir -p $src2
     mkdir -p $builddir
 
-    bash_program=$(which bash)
     python_program=$(which python3)
     sort_program=$(which sort)
 
@@ -109,7 +84,7 @@ nxfsenv.mkDerivation {
     #
     (cd $src && (tar cf - . | tar xf - -C $src2))
 
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
     pushd $builddir
 
@@ -121,7 +96,7 @@ nxfsenv.mkDerivation {
     # We need something that comes from the nix store so that basic locale queries
     # work from within isolated nix builds
     #
-    bash $src2/configure --prefix=$out --enable-kernel=4.19 --with-headers=$linux_headers/include --disable-nscd libc_cv_complocaledir=$locale_archive/lib/locale libc_cv_slibdir=$out/lib CC=nxfs-gcc CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+    $shell $src2/configure --prefix=$out --enable-kernel=4.19 --with-headers=$linux_headers/include --disable-nscd libc_cv_complocaledir=$locale_archive/lib/locale libc_cv_slibdir=$out/lib CC=nxfs-gcc CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 
     # looks like
     #   make Versions.v.i
@@ -177,25 +152,26 @@ nxfsenv.mkDerivation {
     (cd $src2 && (tar cf - . | tar xf - -C $source))
   '';
 
-  buildInputs = [ gcc_wrapper
-                  binutils
-                  lc-all-sort
-                  patchelf
-                  gperf
-                  python
-                  texinfo
-                  bison
-                  gzip
-                  diffutils
-                  findutils
-                  gnumake
-                  gnutar
-                  gawk
-                  gnugrep
-                  gnused
-                  coreutils
-                  patch
-                  bash
-                  which
-                ];
+  buildInputs = [
+    #gcc_wrapper
+    #binutils
+    lc-all-sort
+    #patchelf
+    #gperf
+    python
+    texinfo
+    bison
+    #gzip
+    #diffutils
+    #findutils
+    #gnumake
+    #gnutar
+    #gawk
+    #gnugrep
+    #gnused
+    #coreutils
+    #patch
+    #bash
+    which
+  ];
 }
