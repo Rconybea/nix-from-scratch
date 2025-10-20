@@ -470,7 +470,6 @@ let
                                    diffutils-2
                                    which-2
                                  ];
-                         #pathsToLink = "/bin";
                          coreutils = coreutils-2;
                        };
 in
