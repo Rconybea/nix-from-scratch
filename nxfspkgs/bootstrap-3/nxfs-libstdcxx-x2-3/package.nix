@@ -1,71 +1,32 @@
 {
-  #  nxfsenv :: attrset
-  nxfsenv,
+  # stdenv :: deirvation+attrset
+  stdenv,
   # gcc-x1-wrapper-3 :: derivation
   gcc-wrapper,
-  # nixify-gcc-source :: derivation
-  nixify-gcc-source,
-  # mpc :: derivation
-  mpc,
-  # mpfr :: derivation
-  mpfr,
-  # gmp :: derivation
-  gmp,
+  # nixified-gcc-source :: derivation
+  nixified-gcc-source,
+  # binutils-wrapper :: derivation
+  binutils-wrapper,
   # glibc :: derivation
-  glibc
+  glibc,
+  # nxfs-defs :: derivation
+  nxfs-defs
 } :
 
-let
-  gcc_wrapper = gcc-wrapper;
-  gcc         = gcc-wrapper.gcc;
-
-  binutils    = nxfsenv.binutils;
-  bison       = nxfsenv.bison;
-  flex        = nxfsenv.flex;
-  texinfo     = nxfsenv.texinfo;
-  m4          = nxfsenv.m4;
-  gawk        = nxfsenv.gawk;
-  file        = nxfsenv.file;
-  gnumake     = nxfsenv.gnumake;
-  gnused      = nxfsenv.gnused;
-  gnugrep     = nxfsenv.gnugrep;
-  gnutar      = nxfsenv.gnutar;
-  bash        = nxfsenv.shell;
-  findutils   = nxfsenv.findutils;
-  diffutils   = nxfsenv.diffutils;
-  coreutils   = nxfsenv.coreutils;
-  which       = nxfsenv.which;
-in
-
-let
-  # nxfs-nixified-gcc-source :: derivation
-  nxfs-nixified-gcc-source = nixify-gcc-source {
-    inherit bash file findutils coreutils;
-    sed       = gnused;
-    grep      = gnugrep;
-    tar       = gnutar;
-  };
-
-in
-
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-libstdcxx-x2-3";
-  version      = nxfs-nixified-gcc-source.version;
+  version      = nixified-gcc-source.version;
 
   system       = builtins.currentSystem;
 
+  gcc_wrapper  = gcc-wrapper;
   glibc        = glibc;
 
-  mpc          = mpc;
-  mpfr         = mpfr;
-  gmp          = gmp;
-
-  flex         = flex;
-  src          = nxfs-nixified-gcc-source;
+  src          = nixified-gcc-source;
 
   outputs      = [ "out" "source" ];
 
-  target_tuple = nxfsenv.nxfs-defs.target_tuple;
+  target_tuple = nxfs-defs.target_tuple;
 
   buildPhase = ''
     # See also
@@ -73,7 +34,7 @@ nxfsenv.mkDerivation {
 
     set -e
 
-    echo "cpp=$(which cpp)"
+    #echo "cpp=$(which cpp)"
     echo "PATH=$PATH"
 
     builddir=$TMPDIR/build
@@ -83,10 +44,8 @@ nxfsenv.mkDerivation {
     mkdir -p $out
     mkdir -p $source
 
-    bash_program=$(which bash)
-
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
     # --disable-nls:                    no internationalization.  don't need during bootstrap
     # --enable-gprofng=no:              don't need gprofng tool during bootstrap
@@ -119,7 +78,8 @@ nxfsenv.mkDerivation {
     LDFLAGS="$LDFLAGS -Wl,-rpath,$glibc/lib"
     export LDFLAGS
 
-    set -x
+    gcc=$gcc_wrapper/bin/gcc;
+    gxx=$gcc_wrapper/bin/g++;
 
     # NOTE: nxfs-gcc automatically inserts flags
     #
@@ -128,11 +88,11 @@ nxfsenv.mkDerivation {
     #
     #
     # this builds:
-    (cd $builddir && $bash_program $src/libstdc++-v3/configure \
-                                   --prefix=$out \
-                                   --with-gxx-include-dir=$out/$target_tuple/include/c++/$version \
-                                   --disable-nls --disable-multilib --enable-libstdcxx-pch \
-                                   CC=nxfs-gcc CXX=nxfs-g++ CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS")
+    (cd $builddir && $shell $src/libstdc++-v3/configure \
+                            --prefix=$out \
+                            --with-gxx-include-dir=$out/$target_tuple/include/c++/$version \
+                            --disable-nls --disable-multilib --enable-libstdcxx-pch \
+                            CC=$gcc CXX=$gxx CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
@@ -140,21 +100,11 @@ nxfsenv.mkDerivation {
     (cd $src && (tar cf - . | tar xf - -C $source))
     '';
 
-  buildInputs = [ gcc_wrapper
-                  gcc
-                  binutils
-                  bison
-                  flex
-                  texinfo
-                  m4
-                  gnumake
-                  gawk
-                  gnugrep
-                  gnused
-                  gnutar
-                  findutils
-                  diffutils
-                  coreutils
-                  bash
-                  which ];
+  buildInputs = [ gcc-wrapper
+                  gcc-wrapper.cc
+                  binutils-wrapper
+#                  flex
+#                  texinfo
+#                  m4
+                ];
 }

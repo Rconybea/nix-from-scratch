@@ -502,13 +502,13 @@ let
 
   # libstdcxx-x2-3 :: derivation
   libstdcxx-x2-3 = callPackage ./nxfs-libstdcxx-x2-3/package.nix
-    { nxfsenv              = nxfsenv-3-98;
+    {
+      stdenv               = stdenv-3-1;
       gcc-wrapper          = gcc-x1-wrapper-3;
-      mpc                  = mpc-3;
-      mpfr                 = mpfr-3;
-      gmp                  = gmp-3;
+      binutils-wrapper     = binutils-x0-wrapper-3;
       glibc                = glibc-x1-3;
-      nixify-gcc-source    = nixify-gcc-source-3;
+      nixified-gcc-source  = nixified-gcc-source-3;
+      nxfs-defs            = nxfs-defs;
     };
 in
 let
