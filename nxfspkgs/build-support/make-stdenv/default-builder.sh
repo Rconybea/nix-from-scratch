@@ -1,5 +1,5 @@
 set -e
-set -x
+#set -x
 
 source ${setupScript}
 
