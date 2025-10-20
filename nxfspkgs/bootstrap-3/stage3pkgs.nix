@@ -162,11 +162,17 @@ let
                                                             };
 in
 let
-  # gnutar-3    :: derivation
+  # gnutar-3 :: derivation
   gnutar-3 = callPackage ../bootstrap-pkgs/gnutar/package.nix { stdenv = stdenv-2;
                                                                 bzip2 = bzip2-3;
                                                                 stageid = "3";
                                                               };
+in
+let
+  # ncurses-3 :: derivation
+  ncurses-3 = callPackage ../bootstrap-pkgs/ncurses/package.nix { stdenv = stdenv-2;
+                                                                  stageid = "3";
+                                                                };
 in
 let
   # bash-3 :: derivation

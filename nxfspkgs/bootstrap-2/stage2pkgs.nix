@@ -235,6 +235,13 @@ let
                                                               };
 in
 let
+  # do we actually need ncurses-2 ?
+  # was not present in stage3 (although added it for consistency's sake)
+
+  ncurses-2 = callPackage ../bootstrap-pkgs/ncurses/package.nix { stdenv = stdenv-1;
+                                                                  stageid = "2"; };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -243,11 +250,8 @@ let
   nxfsenv-2-3 = nxfsenv-2-2 // { gnused = gnused-2; };
   nxfsenv-2-4 = nxfsenv-2-3 // { gnugrep = gnugrep-2; };
   nxfsenv-2-5 = nxfsenv-2-4 // { gnutar = gnutar-2; };
-
-  ncurses-2 = callPackage ./nxfs-ncurses-2/package.nix { nxfsenv = nxfsenv-2-5; };
-in
-let
   nxfsenv-2-6 = nxfsenv-2-5 // { ncurses = ncurses-2; };
+
   bash-2 = callPackage ./nxfs-bash-2/package.nix { nxfsenv = nxfsenv-2-6; };
 in
 let
