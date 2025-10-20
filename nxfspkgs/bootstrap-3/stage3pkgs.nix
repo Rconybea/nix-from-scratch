@@ -430,12 +430,12 @@ let
                                                          };
 in
 let
-  # nxfsenv-3-95 :: attrset
-  nxfsenv-3-95 = nxfsenv-3-94 // { glibc = glibc-x1-3; };
-
+  # TODO:: want stdenv.cc.cc here.
+  #        Should be same as stage2pkgs.gcc-x3-2 = stage2pkgs.gcc-wrapper-2.cc
+  #
   # gcc-x0-wrapper-3 :: derivation
   gcc-x0-wrapper-3 = callPackage ./nxfs-gcc-x0-wrapper-3/package.nix { stdenv = stdenv-3-1;
-                                                                       gcc-unwrapped = nxfsenv-3-95.gcc_wrapper.gcc;
+                                                                       gcc-unwrapped = stage2pkgs.gcc-x3-2;
                                                                        glibc = glibc-x1-3;
                                                                        nxfs-defs = nxfs-defs;
                                                                      };
@@ -448,11 +448,6 @@ let
 
 in
 let
-  # nxfsenv-3-96 :: attrset
-  nxfsenv-3-96 = nxfsenv-3-95 // { gcc = gcc-x0-wrapper-3; };
-
-  # nixify-gcc-source-3 :: (attrset -> derivation)
-  nixify-gcc-source-3 = (callPackage ../bootstrap-2/nxfs-nixify-gcc-source/default.nix);
   # TODO: nxfs-nixify-gcc-source/package.nix
   #
   nixified-gcc-source-3 =
@@ -486,8 +481,8 @@ let
       nxfs-defs            = nxfs-defs;
     };
 
-  # nxfsenv-3-97 :: attrset
-  nxfsenv-3-97 = nxfsenv-3-96;
+  # nixify-gcc-source-3 :: (attrset -> derivation)
+  nixify-gcc-source-3 = (callPackage ../bootstrap-2/nxfs-nixify-gcc-source/default.nix);
 
   # gcc-stage2-wrapper-3 :: derivation
   gcc-x1-wrapper-3 = callPackage ./nxfs-gcc-x1-wrapper-3/package.nix { stdenv = stdenv-3-1;
@@ -497,9 +492,6 @@ let
                                                                      };
 in
 let
-  # nxfsenv-3-98 :: attrset
-  nxfsenv-3-98 = nxfsenv-3-97 // { gcc = gcc-x1-wrapper-3; };
-
   # libstdcxx-x2-3 :: derivation
   libstdcxx-x2-3 = callPackage ./nxfs-libstdcxx-x2-3/package.nix
     {
@@ -512,9 +504,6 @@ let
     };
 in
 let
-  # nxfsenv-3-99 :: attrset
-  nxfsenv-3-99 = nxfsenv-3-98 // { libstdcxx = libstdcxx-x2-3; };
-
   # gcc-stage3-wrapper-3 :: derivation
   gcc-x2-wrapper-3 = callPackage ./nxfs-gcc-x2-wrapper-3/package.nix
     {
@@ -526,6 +515,16 @@ let
     };
 in
 let
+  # nxfsenv-3-95 :: attrset
+  nxfsenv-3-95 = nxfsenv-3-94 // { glibc = glibc-x1-3; };
+  # nxfsenv-3-96 :: attrset
+  nxfsenv-3-96 = nxfsenv-3-95 // { gcc = gcc-x0-wrapper-3; };
+  # nxfsenv-3-97 :: attrset
+  nxfsenv-3-97 = nxfsenv-3-96;
+  # nxfsenv-3-98 :: attrset
+  nxfsenv-3-98 = nxfsenv-3-97 // { gcc = gcc-x1-wrapper-3; };
+  # nxfsenv-3-99 :: attrset
+  nxfsenv-3-99 = nxfsenv-3-98 // { libstdcxx = libstdcxx-x2-3; };
   # nxfsenv-3-99a :: attrset
   nxfsenv-3-99a = nxfsenv-3-99 // { gcc = gcc-x2-wrapper-3; };
 
