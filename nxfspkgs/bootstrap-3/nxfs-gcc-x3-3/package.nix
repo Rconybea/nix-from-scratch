@@ -1,76 +1,40 @@
 {
-  # everything in nxfsenv is from bootstrap-2/
-  #  nxfsenv :: { mkDerivation, ... }
-  nxfsenv,
+  # attrset+derivation
+  stdenv,
+  # nixified-gcc-source :: derivation
+  nixified-gcc-source,
+  # gcc-wrapper :: derivation
+  gcc-wrapper,
   # binutils-stage1-wrapper-2 :: derivation
   binutils-wrapper,
-  # nixify-gcc-source :: attrset -> derivation
-  nixify-gcc-source,
   # mpc :: derivation
   mpc,
   # mpfr :: derivation
   mpfr,
   # gmp :: derivation
   gmp,
-#  # glibc :: derivation
-#  glibc,
-#  # toolchain :: derivation
-#  toolchain
+  # bison :: derivation
+  bison,
+  # flex :: derivation
+  flex,
+  # texinfo :: derivation
+  texinfo,
+  # m4 :: derivation
+  m4,
+  # glibc :: derivation
+  glibc,
+  # nxfs-defs :: derivation
+  nxfs-defs,
 } :
 
-let
-  gcc         = nxfsenv.gcc;
-  glibc       = nxfsenv.glibc;
-
-  binutils    = nxfsenv.binutils;
-  bison       = nxfsenv.bison;
-  flex        = nxfsenv.flex;
-  texinfo     = nxfsenv.texinfo;
-  m4          = nxfsenv.m4;
-  gawk        = nxfsenv.gawk;
-  file        = nxfsenv.file;
-  gnumake     = nxfsenv.gnumake;
-  gnused      = nxfsenv.gnused;
-  gnugrep     = nxfsenv.gnugrep;
-  gnutar      = nxfsenv.gnutar;
-  bash        = nxfsenv.shell;
-  findutils   = nxfsenv.findutils;
-  diffutils   = nxfsenv.diffutils;
-  coreutils   = nxfsenv.coreutils;
-  which       = nxfsenv.which;
-
-  # nxfs-defs :: attrset
-  nxfs-defs = nxfsenv.nxfs-defs;
-in
-
-let
-  # nxfs-nixified-gcc-source :: derivation
-  nxfs-nixified-gcc-source = nixify-gcc-source {
-    bash      = bash;
-    file      = file;
-    findutils = findutils;
-    sed       = gnused;
-    grep      = gnugrep;
-    tar       = gnutar;
-    coreutils = coreutils;
-    nxfs-defs = nxfs-defs;
-  };
-in
-
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-gcc-x3-3";
-  version      = nxfs-nixified-gcc-source.version;
+  version      = nixified-gcc-source.version;
   system       = builtins.currentSystem;
 
-  inherit glibc;
+  inherit mpc mpfr gmp flex glibc;
 
-#  toolchain    = toolchain;
-
-  inherit mpc mpfr gmp flex;
-
-  bash         = bash;
-
-  src          = nxfs-nixified-gcc-source;
+  src          = nixified-gcc-source;
 
   target_tuple = nxfs-defs.target_tuple;
 
@@ -80,13 +44,15 @@ nxfsenv.mkDerivation {
 
     set -e
 
+    echo PATH=$PATH
+
     src2=$src
     builddir=$TMPDIR/build
 
     mkdir -p $builddir
     mkdir -p $out/$target_tuple/lib
 
-    bash_program=$(which bash)
+    bash_program=$shell
 
     # $src2/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$bash_program"
@@ -154,7 +120,7 @@ nxfsenv.mkDerivation {
     #          -Wl,--rpath=$NXFS_SYSROOT_DIR/lib -Wl,--dynamic-linker=$NXFS_SYSROOT_DIR/lib/ld-linux-x86-64.so.2
     #       We still need them explictly here
     #
-    (cd $builddir && $bash_program $src2/configure \
+    (cd $builddir && $shell $src2/configure \
                                    --prefix=$out \
                                    --disable-bootstrap \
                                    --with-native-system-header-dir=$glibc/include \
@@ -182,23 +148,12 @@ nxfsenv.mkDerivation {
   '';
 
   # note: will appear in path left-to-right
-  buildInputs  = [ bison
+  buildInputs  = [ gcc-wrapper
+                   binutils-wrapper
+                   bison
                    flex
                    texinfo
                    m4
-                   diffutils
-                   findutils
-                   binutils-wrapper
-                   binutils
-                   gcc
-                   gnumake
-                   gawk
-                   gnugrep
-                   gnused
-                   gnutar
-                   coreutils
-                   bash
-                   which
                  ];
 
 } // {

@@ -531,12 +531,19 @@ let
 
   # gcc-x3-3 :: derivation
   gcc-x3-3 = callPackage ./nxfs-gcc-x3-3/package.nix
-    { nxfsenv           = nxfsenv-3-99a;
-      binutils-wrapper  = binutils-x0-wrapper-3;
-      mpc               = mpc-3;
-      mpfr              = mpfr-3;
-      gmp               = gmp-3;
-      nixify-gcc-source = nixify-gcc-source-3;
+    { stdenv              = stdenv-3-1;
+      nixified-gcc-source = nixified-gcc-source-3;
+      gcc-wrapper         = gcc-x2-wrapper-3;
+      binutils-wrapper    = binutils-x0-wrapper-3;
+      mpc                 = mpc-3;
+      mpfr                = mpfr-3;
+      gmp                 = gmp-3;
+      bison               = bison-3;
+      flex                = flex-3;
+      texinfo             = texinfo-3;
+      m4                  = m4-3;
+      glibc               = glibc-x1-3;
+      nxfs-defs           = nxfs-defs;
     };
 in
 let
