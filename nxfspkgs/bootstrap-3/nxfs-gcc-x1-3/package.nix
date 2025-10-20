@@ -1,13 +1,11 @@
 {
-  # everything in nxfsenv is from bootstrap-2/
-  #  nxfsenv :: derivation
-  nxfsenv,
+  stdenv,
+
+  # nixified-gcc-source :: derivation
+  nixified-gcc-source,
 
   # binutils-wrapper :: derivation
   binutils-wrapper,
-
-  # nixify-gcc-source :: attrset -> derivation
-  nixify-gcc-source,
 
   # mpc :: derivation
   mpc,
@@ -18,49 +16,30 @@
   # isl :: derivation
   isl,
 
+  # bison :: derivation
+  bison,
+
+  # flex :: derivation
+  flex,
+
+  # texinfo :: derivation
+  texinfo,
+
+  # m4 :: derivation
+  m4,
+
   # glibc :: derivation   --  glibc + linux headers
   glibc,
+
+  # nxfs-defs :: derivation
+  nxfs-defs,
 } :
 
 let
-  nxfs-defs = nxfsenv.nxfs-defs;
-
-  # nxfs-nixified-gcc-source :: derivation
-  nxfs-nixified-gcc-source = nixify-gcc-source {
-    bash      = nxfsenv.bash;
-    file      = nxfsenv.file;
-    findutils = nxfsenv.findutils;
-    sed       = nxfsenv.gnused;
-    grep      = nxfsenv.gnugrep;
-    tar       = nxfsenv.gnutar;
-    coreutils = nxfsenv.coreutils;
-    nxfs-defs = nxfs-defs;
-  };
+  version = nixified-gcc-source.version;
 in
 
-let
-  gcc          = nxfsenv.gcc;
-  bison        = nxfsenv.bison;
-  flex         = nxfsenv.flex;
-  texinfo      = nxfsenv.texinfo;
-  m4           = nxfsenv.m4;
-  binutils     = nxfsenv.binutils;
-  gnumake      = nxfsenv.gnumake;
-  gawk         = nxfsenv.gawk;
-  gnutar       = nxfsenv.gnutar;
-  gnugrep      = nxfsenv.gnugrep;
-  gnused       = nxfsenv.gnused;
-  findutils    = nxfsenv.findutils;
-  diffutils    = nxfsenv.diffutils;
-  coreutils    = nxfsenv.coreutils;
-  bash         = nxfsenv.shell;
-  which        = nxfsenv.which;
-  glibc        = nxfsenv.glibc;
-
-  version = nxfs-nixified-gcc-source.version;
-in
-
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name         = "nxfs-gcc-x1-3";
   version      = version;
 
@@ -68,7 +47,7 @@ nxfsenv.mkDerivation {
 
   inherit mpc mpfr gmp isl flex glibc;
 
-  src          = nxfs-nixified-gcc-source;
+  src          = nixified-gcc-source;
 
   outputs      = [ "out" "source" ];
 
@@ -80,7 +59,7 @@ nxfsenv.mkDerivation {
 
     set -euo pipefail
 
-    echo "nxfs-g++=$(which nxfs-g++)"
+    #echo "nxfs-g++=$(which nxfs-g++)"
     echo "glibc=$glibc"
 
     src2=$src
@@ -92,10 +71,8 @@ nxfsenv.mkDerivation {
     mkdir -p $out/$target_tuple/lib
     mkdir $source
 
-    bash_program=$(which bash)
-
     # $src2/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$bash_program"
+    export CONFIG_SHELL="$shell"
 
     # --disable-nls:                    no internationalization.  don't need during bootstrap
     # --enable-gprofng=no:              don't need gprofng tool during bootstrap
@@ -164,7 +141,7 @@ nxfsenv.mkDerivation {
     #       We still need them explictly here
     #
     (cd $builddir \
-      && $bash_program $src2/configure --prefix=$out --disable-bootstrap \
+      && $shell $src2/configure --prefix=$out --disable-bootstrap \
                        --with-native-system-header-dir=$glibc/include \
                        --enable-lto --disable-nls --with-mpc=$mpc --with-mpfr=$mpfr \
                        --with-gmp=$gmp --with-isl=$isl \
@@ -191,21 +168,11 @@ nxfsenv.mkDerivation {
     (cd $src2 && (tar cf - . | tar xf - -C $source))
   '';
 
-  buildInputs = [ gcc
+  buildInputs = [
+                  binutils-wrapper
                   bison
                   flex
                   texinfo
                   m4
-                  binutils-wrapper
-                  binutils
-                  gnumake
-                  gawk
-                  gnutar
-                  gnugrep
-                  gnused
-                  findutils
-                  diffutils
-                  coreutils
-                  bash
-                  which ];
+  ];
 }

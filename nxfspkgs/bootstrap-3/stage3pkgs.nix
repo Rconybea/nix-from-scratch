@@ -453,17 +453,37 @@ let
 
   # nixify-gcc-source-3 :: (attrset -> derivation)
   nixify-gcc-source-3 = (callPackage ../bootstrap-2/nxfs-nixify-gcc-source/default.nix);
+  # TODO: nxfs-nixify-gcc-source/package.nix
+  #
+  nixified-gcc-source-3 =
+    callPackage ../bootstrap-2/nxfs-nixify-gcc-source/default.nix
+      {
+        bash      = bash-3;
+        file      = file-3;
+        findutils = findutils-3;
+        sed       = gnused-3;
+        grep      = gnugrep-3;
+        tar       = gnutar-3;
+        coreutils = coreutils-3;
+        nxfs-defs = nxfs-defs;
+      };
 
   # gcc-x1-3 :: derivation
   gcc-x1-3 = callPackage ./nxfs-gcc-x1-3/package.nix
-    { nxfsenv              = nxfsenv-3-96;
+    {
+      stdenv               = stdenv-3-1;
+      nixified-gcc-source  = nixified-gcc-source-3;
       binutils-wrapper     = binutils-x0-wrapper-3;
       mpc                  = mpc-3;
       mpfr                 = mpfr-3;
       gmp                  = gmp-3;
       isl                  = isl-3;
-      nixify-gcc-source    = nixify-gcc-source-3;
+      bison                = bison-3;
+      flex                 = flex-3;
+      texinfo              = texinfo-3;
+      m4                   = m4-3;
       glibc                = glibc-x1-3;
+      nxfs-defs            = nxfs-defs;
     };
 
   # nxfsenv-3-97 :: attrset
