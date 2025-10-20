@@ -525,7 +525,6 @@ let
       coreutils = coreutils-3;
     };
 in
-let
   {
     inherit stage3env;
     inherit gcc-wrapper-3;
