@@ -336,70 +336,6 @@ let
                                                      };
 in
 let
-  # nxfsenv-3-00 :: attrset
-  nxfsenv-3-00 = nxfsenv-2;
-  # nxfsenv-3-1 :: attrset
-  nxfsenv-3-1 = nxfsenv-3-00 // { diffutils = diffutils-3; };
-  # nxfsenv-3-2 :: attrset
-  nxfsenv-3-2 = nxfsenv-3-1 // { findutils = findutils-3; };
-  # nxfsenv-3-3 :: attrset
-  nxfsenv-3-3 = nxfsenv-3-2 // { gnused = gnused-3; };
-  # nxfsenv-3-3b :: attrset
-  nxfsenv-3-3b = nxfsenv-3-3 // { gnugrep = gnugrep-3; };
-  # nxfsenv-3-4 :: attrset
-  nxfsenv-3-4 = nxfsenv-3-3b // { bzip2 = bzip2-3; };
-  # nxfsenv-3-5 :: attrset
-  nxfsenv-3-5 = nxfsenv-3-4 // { gnutar = gnutar-3; };
-  # nxfsenv-3-6 :: attrset
-  nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; shell = bash-3; };
-  # nxfsenv-3-7 :: attrset
-  nxfsenv-3-7 = nxfsenv-3-6;
-  # nxfsenv-3-9 :: attrset
-  nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
-  # nxfsenv-3-9 :: attrset
-  nxfsenv-3-9 = nxfsenv-3-6 // { gnumake = gnumake-3; };
-  # nxfsenv-3-10 :: attrset
-  nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
-  # nxfsenv-3-a11 :: attrset
-  nxfsenv-3-a11 = nxfsenv-3-10 // { pkgconf = pkgconf-3; };
-  # nxfsenv-3-a12 :: attrset
-  nxfsenv-3-a12 = nxfsenv-3-a11 // { libxcrypt = libxcrypt-3; };
-  # nxfsenv-3-b13 :: attrset
-  nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
-                                     perl = perl-3;
-                                   };
-  # nxfsenv-b14 :: attrset
-  nxfsenv-3-b14 = nxfsenv-3-b13 // { autoconf = autoconf-3; };
-  # nxfsenv-3-c13 :: attrset
-  nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
-  # nxfsenv-3-c14 :: attrset
-  nxfsenv-3-c14 = nxfsenv-3-c13 // { flex = flex-3; };
-  # nxfsenv-3-b15 :: attrset
-  nxfsenv-3-b15 = nxfsenv-3-b14 // nxfsenv-3-c14 // { bison = bison-3; };
-  # editor bait: pkg-config
-  nxfsenv-3-d13 = nxfsenv-3-10 // { pkgconf = pkgconf-3;
-                                    zlib = zlib-3; };
-  # nxfsenv-3-16 :: attrset
-  nxfsenv-3-16 = nxfsenv-3-10 // { binutils = binutils-3;
-                                   perl     = perl-3;
-                                   texinfo  = texinfo-3;
-                                   bison    = bison-3;
-                                   flex     = flex-3;
-                                   file     = file-3;
-                                   pkgconf  = pkgconf-3;
-                                   m4       = m4-3;
-                                   python   = python-3;
-                                   zlib     = zlib-3;
-                                   gperf    = gperf-3;
-                                   patch    = patch-3;
-                                   gzip     = gzip-3;
-                                   patchelf = patchelf-3;
-                                   which    = which-3;
-                                 };
-  # nxfsenv-3-95 :: attrset
-  nxfsenv-3-94 = nxfsenv-3-16 // { };
-in
-let
   # TODO: nxfs-nixify-glibc-source/package.nix
   #
   # nixify-glibc-source-3 :: (attrset -> derivation)
@@ -417,9 +353,12 @@ let
         nxfs-defs = nxfs-defs;
       };
 
-  # wrapper for sort -- invokes coreutils.sort with LC_ALL env var set to C
+  # glibc-targeted wrapper for sort -- invokes coreutils.sort with LC_ALL env var set to C.
+  # Makes it convenient to kitbash glibc build to replace hardwired /bin/sort assumption
+  #
   # lc-all-sort-3 :: derivation
-  lc-all-sort-3 = callPackage ../bootstrap-2/nxfs-lc-all-sort-2/package.nix { nxfsenv = nxfsenv-3-94; };
+  lc-all-sort-3 = callPackage ../bootstrap-pkgs/lc-all-sort/package.nix { stdenv = stdenv-3-1;
+                                                                          coreutils = coreutils-3; };
 
   # glibc-x1-3 :: derivation
   glibc-x1-3 = callPackage ./nxfs-glibc-x1-3/package.nix { stdenv                = stdenv-3-1;
@@ -516,6 +455,68 @@ let
     };
 in
 let
+  # nxfsenv-3-00 :: attrset
+  nxfsenv-3-00 = nxfsenv-2;
+  # nxfsenv-3-1 :: attrset
+  nxfsenv-3-1 = nxfsenv-3-00 // { diffutils = diffutils-3; };
+  # nxfsenv-3-2 :: attrset
+  nxfsenv-3-2 = nxfsenv-3-1 // { findutils = findutils-3; };
+  # nxfsenv-3-3 :: attrset
+  nxfsenv-3-3 = nxfsenv-3-2 // { gnused = gnused-3; };
+  # nxfsenv-3-3b :: attrset
+  nxfsenv-3-3b = nxfsenv-3-3 // { gnugrep = gnugrep-3; };
+  # nxfsenv-3-4 :: attrset
+  nxfsenv-3-4 = nxfsenv-3-3b // { bzip2 = bzip2-3; };
+  # nxfsenv-3-5 :: attrset
+  nxfsenv-3-5 = nxfsenv-3-4 // { gnutar = gnutar-3; };
+  # nxfsenv-3-6 :: attrset
+  nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; shell = bash-3; };
+  # nxfsenv-3-7 :: attrset
+  nxfsenv-3-7 = nxfsenv-3-6;
+  # nxfsenv-3-9 :: attrset
+  nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
+  # nxfsenv-3-9 :: attrset
+  nxfsenv-3-9 = nxfsenv-3-6 // { gnumake = gnumake-3; };
+  # nxfsenv-3-10 :: attrset
+  nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
+  # nxfsenv-3-a11 :: attrset
+  nxfsenv-3-a11 = nxfsenv-3-10 // { pkgconf = pkgconf-3; };
+  # nxfsenv-3-a12 :: attrset
+  nxfsenv-3-a12 = nxfsenv-3-a11 // { libxcrypt = libxcrypt-3; };
+  # nxfsenv-3-b13 :: attrset
+  nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
+                                     perl = perl-3;
+                                   };
+  # nxfsenv-b14 :: attrset
+  nxfsenv-3-b14 = nxfsenv-3-b13 // { autoconf = autoconf-3; };
+  # nxfsenv-3-c13 :: attrset
+  nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
+  # nxfsenv-3-c14 :: attrset
+  nxfsenv-3-c14 = nxfsenv-3-c13 // { flex = flex-3; };
+  # nxfsenv-3-b15 :: attrset
+  nxfsenv-3-b15 = nxfsenv-3-b14 // nxfsenv-3-c14 // { bison = bison-3; };
+  # editor bait: pkg-config
+  nxfsenv-3-d13 = nxfsenv-3-10 // { pkgconf = pkgconf-3;
+                                    zlib = zlib-3; };
+  # nxfsenv-3-16 :: attrset
+  nxfsenv-3-16 = nxfsenv-3-10 // { binutils = binutils-3;
+                                   perl     = perl-3;
+                                   texinfo  = texinfo-3;
+                                   bison    = bison-3;
+                                   flex     = flex-3;
+                                   file     = file-3;
+                                   pkgconf  = pkgconf-3;
+                                   m4       = m4-3;
+                                   python   = python-3;
+                                   zlib     = zlib-3;
+                                   gperf    = gperf-3;
+                                   patch    = patch-3;
+                                   gzip     = gzip-3;
+                                   patchelf = patchelf-3;
+                                   which    = which-3;
+                                 };
+  # nxfsenv-3-95 :: attrset
+  nxfsenv-3-94 = nxfsenv-3-16 // { };
   # nxfsenv-3-95 :: attrset
   nxfsenv-3-95 = nxfsenv-3-94 // { glibc = glibc-x1-3; };
   # nxfsenv-3-96 :: attrset
