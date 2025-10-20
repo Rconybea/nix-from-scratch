@@ -9,10 +9,6 @@
   nxfs-defs,
 } :
 
-let
-  target_tuple        = nxfs-defs.target_tuple;
-in
-
 stdenv.mkDerivation {
   # nxfsenv.gcc_wrapper     will be stage2pkgs.gcc-wrapper-2 (see nxfs-gcc-wrapper-2)
   #   wrapper needed to point to location of stage2 glibc and libstdc++
@@ -33,7 +29,7 @@ stdenv.mkDerivation {
   # cc: derivation for unwrapped gcc
   cc                 = gcc-unwrapped;
 
-  target_tuple       = target_tuple;
+  target_tuple       = nxfs-defs.target_tuple;
 
   buildPhase = ''
     # script to intercept calls to $cc,
