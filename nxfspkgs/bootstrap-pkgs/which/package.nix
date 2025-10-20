@@ -1,7 +1,7 @@
 {
   # stdenv :: derivation+attrset
   stdenv,
-  # stageid :: integer  -- bootstrap stage calling this package. "2" or "3"
+  # stageid :: integer  -- bootstrap stage calling this package. '2' or '3'
   stageid,
 } :
 

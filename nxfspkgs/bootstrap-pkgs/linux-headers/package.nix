@@ -1,5 +1,5 @@
 {
-  nxfsenv
+  stdenv
 } :
 
 let
@@ -8,8 +8,10 @@ let
   tarball = "linux-${version}.tar.xz";
 in
 
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name = "linux-headers";
+  version = version;
+  version_major = version_major;
 
   # NOTE: using builtins.fetchTarball instead of builtins.fetchurl
   #       because we don't have stage1 xz program available

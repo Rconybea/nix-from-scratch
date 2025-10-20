@@ -65,8 +65,37 @@ let
 in
 
 let
+  # stage1pkgs :: attrset -- all stage1 packages
+  stage1pkgs = nxfspkgs.stage1pkgs;
+
   bash-1 = import ../bootstrap-1/nxfs-bash-1/default.nix;
+
+  # TODO: use callPackage
   locale-archive-1 = import ../bootstrap-1/nxfs-locale-archive-1/default.nix;
+
+  make-stdenv = (import ../build-support/make-stdenv/make-stdenv.nix { config = config; });
+
+  # stdenv interface, except that patch is missing.
+  # when patch becomes available below, will need to splice it in
+  stagepkgs-1 = {
+    cc        = stage1pkgs.nxfs-toolchain-wrapper-1;
+    bintools  = stage1pkgs.nxfs-toolchain-wrapper-1;
+    patchelf  = stage1pkgs.nxfs-patchelf-1;
+    patch     = stage1pkgs.nxfs-empty-1;  # -- patch not available from stage1!
+    shell     = stage1pkgs.nxfs-bash-1;
+    coreutils = stage1pkgs.nxfs-coreutils-1;
+    gzip      = stage1pkgs.nxfs-gzip-1;
+    gnumake   = stage1pkgs.nxfs-gnumake-1;
+    gawk      = stage1pkgs.nxfs-gawk-1;
+    gnutar    = stage1pkgs.nxfs-tar-1;
+    gnugrep   = stage1pkgs.nxfs-grep-1;
+    gnused    = stage1pkgs.nxfs-sed-1;
+    findutils = stage1pkgs.nxfs-findutils-1;
+    diffutils = stage1pkgs.nxfs-diffutils-1;
+  };
+
+  stdenv-1 = make-stdenv { name = "stdenv-1";
+                           stagepkgs = stagepkgs-1; };
 
   # initial bootstrap stdenv for stage-2.
   #
@@ -156,22 +185,25 @@ let
   # buildEnv :: {name, paths} -> derivation
   #
   buildEnv = import ../lib/buildEnv.nix;
-
 in
 let
-  # nxfspkg.stage2pkgs is the *end* result at the end of bootstrap.
-  # The recursive construction would obscure bootstrap progress,
-  # so we're going to pass everything explicitly
+  # nxfspkg.stage2pkgs is the attribute set returned by *this file*.
+  # It contains packages we haven't defined yet,
+  # so need to be careful not to create cycles.
+  # Achieve this by refraining from any forward references.
   #
   callPackage = makeCallPackage nxfspkgs.stage2pkgs;
 in
 let
-  nxfsenv-2-0a = nxfsenv-1;
-  linux-headers-2 = callPackage ../bootstrap-pkgs/linux-headers/package.nix { nxfsenv = nxfsenv-2-0a; };
+  # linux-headers-2 :: derivation
+  linux-headers-2 = callPackage ../bootstrap-pkgs/linux-headers/package.nix { stdenv = stdenv-1; };
 in
 let
+  nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
-  which-2 = callPackage ./nxfs-which-2/package.nix { nxfsenv = nxfsenv-2-0a; };
+  which-2 = callPackage ../bootstrap-pkgs/which/package.nix { stdenv = stdenv-1;
+                                                              stageid = "2";
+                                                            };
 in
 let
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };

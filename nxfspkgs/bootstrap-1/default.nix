@@ -20,6 +20,7 @@ let
   nxfs-bash-0            = import ../bootstrap/nxfs-bash-0;
   nxfs-sysroot-0         = import ../bootstrap/nxfs-sysroot-0;
 
+  nxfs-empty-1           = import ./nxfs-empty-1/package.nix;
   nxfs-defs              = import ./nxfs-defs.nix;
 
   bash = "${nxfs-bash-0}/bin/bash";
@@ -58,6 +59,7 @@ derivation {
   nxfs-bash-1            = nxfs-bash-1;
   nxfs-redirect-elf-file = nxfs-redirect-elf-file;
   nxfs-sysroot-1         = nxfs-sysroot-1;
+  nxfs-empty-1           = nxfs-empty-1;
   nxfs-defs-system       = nxfs-defs.system;
   nxfs-defs-target_tuple = nxfs-defs.target_tuple;
 }

@@ -43,6 +43,8 @@ let
   bootstrap-2 = import ./bootstrap-2;
   #bootstrap-3 = import ./bootstrap-3;  # superseded
 
+  # placeholder for new version of stage1 bootstrap.  intend to replace bootstrap-1
+  stage1pkgs = bootstrap-1;
   # new version of stage2 bootstrap.  intend to replace bootstrap-2
   stage2pkgs = (import ./bootstrap-2/stage2pkgs.nix) args;
   stage3pkgs = (import ./bootstrap-3/stage3pkgs.nix) args;
@@ -987,6 +989,7 @@ let
     });
 in
 {
+  stage1pkgs                                  = stage1pkgs;
   stage2pkgs                                  = stage2pkgs;
   stage3pkgs                                  = stage3pkgs;
 

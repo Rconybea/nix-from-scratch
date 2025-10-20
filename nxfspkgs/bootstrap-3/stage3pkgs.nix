@@ -12,9 +12,6 @@
 #   $ export NIX_PATH=path/to/nix-from-scratch:${NIX_PATH}
 #   $ nix-build '<nxfspkgs>' -A stage3pkgs.diffutils-3
 #
-# Major difference from nixpkgs.nix: w'ere carefully nesting
-# nxfsenv attribute sets so that bootstrap process is more spelled out.
-# See nxfsenv-2-0...
 {
   # nxfspkgs: will be the contents of nxfspkgs/nxfspkgs.nix after composing
   # with config choices + overlays.
@@ -44,6 +41,7 @@
   args :
 
 let
+  # stage2pkgs :: attrset -- all stage2 packages
   stage2pkgs = nxfspkgs.stage2pkgs;
 
   # nxfs-defs :: { target_tuple :: string }
@@ -51,20 +49,22 @@ let
   #
   nxfs-defs = import ../bootstrap-1/nxfs-defs.nix;
 
-  # autotools eventually evaluates to derivation with defaults for:
-  #   .builder .args .baseInputs .buildInputs .system
-  # default builder requires pkgs.bash
-  #
-  # nxfs-autotools :: pkgs -> attrs -> derivation
-  nxfs-autotools = import ../build-support/autotools;
+#  # autotools eventually evaluates to derivation with defaults for:
+#  #   .builder .args .baseInputs .buildInputs .system
+#  # default builder requires pkgs.bash
+#  #
+#  # nxfs-autotools :: pkgs -> attrs -> derivation
+#  nxfs-autotools = import ../build-support/autotools;
 
   linux-headers-2 = stage2pkgs.linux-headers-2;
 
   # TODO: use callPackage
   locale-archive-1 = import ../bootstrap-1/nxfs-locale-archive-1/default.nix;
 
+  # make-stdenv :: attrset -> attrset+derivation
   make-stdenv = (import ../build-support/make-stdenv/make-stdenv.nix { config = config; });
 
+  # stdenv interface
   stagepkgs-2 = {
     cc        = stage2pkgs.gcc-wrapper-2;
     bintools  = stage2pkgs.binutils-x0-wrapper-2;
@@ -130,7 +130,9 @@ let
 in
 let
   # which-3 :: derivation
-  which-3 = callPackage ./nxfs-which-3/package.nix { stdenv = stdenv-2; };
+  which-3 = callPackage ../bootstrap-pkgs/which/package.nix { stdenv = stdenv-2;
+                                                              stageid = "3";
+                                                            };
   # diffutils-3 :: derivation
   diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { stdenv = stdenv-2; };
 in
