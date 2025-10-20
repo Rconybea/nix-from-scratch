@@ -50,6 +50,7 @@ sysroot=${toolchain}
 # prepare gcc-wrapper script from template
 tmp=${builddir}/bin/${gcc_basename}
 cp ${gcc_wrapper_script} ${tmp}
+sed -i -e s:@bintools@:${toolchain}: ${tmp}
 sed -i -e s:@gcc_specs@:${gcc_specs}: ${tmp}
 sed -i -e s:@bash@:${bash}/bin/bash: ${tmp}
 sed -i -e s:@unwrapped_gcc@:${unwrapped_gcc}: ${tmp}
@@ -62,6 +63,7 @@ cp ${tmp} ${out}/bin/nxfs-gcc
 # prepare gxx-wrapper script from template
 tmp=${builddir}/bin/${gxx_basename}
 cp ${gxx_wrapper_script} ${tmp}
+sed -i -e s:@bintools@:${toolchain}: ${tmp}
 sed -i -e s:@gcc_specs@:${gcc_specs}: ${tmp}
 sed -i -e s:@bash@:${bash}/bin/bash: ${tmp}
 sed -i -e s:@unwrapped_gxx@:${unwrapped_gxx}: ${tmp}

@@ -79,7 +79,7 @@ let
   # when patch becomes available below, will need to splice it in
   stagepkgs-1 = {
     cc        = stage1pkgs.nxfs-toolchain-wrapper-1;
-    bintools  = stage1pkgs.nxfs-toolchain-wrapper-1;
+    bintools  = stage1pkgs.nxfs-binutils-x0-wrapper-1;
     patchelf  = stage1pkgs.nxfs-patchelf-1;
     patch     = stage1pkgs.nxfs-empty-1;  # -- patch not available from stage1!
     shell     = stage1pkgs.nxfs-bash-1;
@@ -199,18 +199,21 @@ let
   linux-headers-2 = callPackage ../bootstrap-pkgs/linux-headers/package.nix { stdenv = stdenv-1; };
 in
 let
-  nxfsenv-2-0a = nxfsenv-1;
-  nxfsenv-2-0b = nxfsenv-2-0a;
   which-2 = callPackage ../bootstrap-pkgs/which/package.nix { stdenv = stdenv-1;
                                                               stageid = "2";
                                                             };
 in
 let
-  nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
-  diffutils-2 = callPackage ./nxfs-diffutils-2/package.nix { nxfsenv = nxfsenv-2-0; };
+  diffutils-2 = callPackage ../bootstrap-pkgs/diffutils/package.nix { stdenv = stdenv-1;
+                                                                      stageid = "2";
+                                                                    };
 in
 let
+  nxfsenv-2-0a = nxfsenv-1;
+  nxfsenv-2-0b = nxfsenv-2-0a;
+  nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
   nxfsenv-2-1 = nxfsenv-2-0 // { diffutils = diffutils-2; };
+
   findutils-2 = callPackage ./nxfs-findutils-2/package.nix { nxfsenv = nxfsenv-2-1; };
 in
 let

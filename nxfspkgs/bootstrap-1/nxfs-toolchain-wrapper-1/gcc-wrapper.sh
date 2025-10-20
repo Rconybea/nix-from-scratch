@@ -7,6 +7,9 @@
 # and by defult produces executables that assume /lib64
 
 unwrapped_gcc=@unwrapped_gcc@
+bintools=@bintools@
+
+export PATH="${bintools}/bin:$PATH"
 
 #2> echo "nxfs: gcc-wrapper calling:"
 #2> echo "nxfs:   ${unwrapped_gcc} -Wl,--rpath=${sysroot}/lib -Wl,--dynamic-linker=${sysroot}/lib/ld-linux-x86-64.so.2" "${@}"
@@ -33,5 +36,7 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gcc} -v
 else
-    ${unwrapped_gcc} -specs @gcc_specs@ -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=@dynamic_linker@ "${@}"
+    ${unwrapped_gcc} -specs @gcc_specs@ \
+                     -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib \
+                     -Wl,-dynamic-linker=@dynamic_linker@ "${@}"
 fi

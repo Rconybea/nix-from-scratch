@@ -1,5 +1,6 @@
 let
   nxfs-toolchain-wrapper-1 = import ./nxfs-toolchain-wrapper-1;
+  nxfs-binutils-x0-wrapper-1 = import ./nxfs-binutils-x0-wrapper-1/package.nix;
   nxfs-libxcrypt-1       = import ./nxfs-libxcrypt-1;
   nxfs-locale-archive-1  = import ./nxfs-locale-archive-1;
   nxfs-findutils-1       = import ./nxfs-findutils-1;
@@ -35,7 +36,7 @@ derivation {
   bash_builder = "./builder.sh";
   args = [bash ./builder.sh];
 
-  buildInputs = [nxfs-toolchain-wrapper-1
+  buildInputs = [nxfs-toolchain-wrapper-1 nxfs-binutils-x0-wrapper-1
                  nxfs-libxcrypt-1
                  nxfs-findutils-1 nxfs-diffutils-1 nxfs-sed-1 nxfs-gnumake-1 nxfs-gawk-1 nxfs-gzip-1
                  nxfs-grep-1 nxfs-toolchain-1 nxfs-tar-1
@@ -43,6 +44,7 @@ derivation {
                 ];
 
   nxfs-toolchain-wrapper-1 = nxfs-toolchain-wrapper-1;
+  nxfs-binutils-x0-wrapper-1 = nxfs-binutils-x0-wrapper-1;
   nxfs-locale-archive-1  = nxfs-locale-archive-1;
   nxfs-diffutils-1       = nxfs-diffutils-1;
   nxfs-findutils-1       = nxfs-findutils-1;

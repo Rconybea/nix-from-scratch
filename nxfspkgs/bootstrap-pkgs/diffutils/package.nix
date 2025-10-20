@@ -1,6 +1,8 @@
 {
   # stdenv: derivation+attrset.
   stdenv,
+  # stageid :: string  -- bootstrap stage of this package. "2" for stage 2, "3" for stage 3
+  stageid,
 } :
 
 let
@@ -8,7 +10,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-diffutils-3";
+  name         = "nxfs-diffutils-${stageid}";
   version      = version;
 
   src          = builtins.fetchTarball { name = "diffutils-${version}-source";
