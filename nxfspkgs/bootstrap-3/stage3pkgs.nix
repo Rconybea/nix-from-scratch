@@ -517,9 +517,12 @@ let
 
   # gcc-stage3-wrapper-3 :: derivation
   gcc-x2-wrapper-3 = callPackage ./nxfs-gcc-x2-wrapper-3/package.nix
-    { nxfsenv       = nxfsenv-3-99;
+    {
+      stdenv        = stdenv-3-1;
       gcc-unwrapped = gcc-x1-3;
       libstdcxx     = libstdcxx-x2-3;
+      glibc         = glibc-x1-3;
+      nxfs-defs     = nxfs-defs;
     };
 in
 let

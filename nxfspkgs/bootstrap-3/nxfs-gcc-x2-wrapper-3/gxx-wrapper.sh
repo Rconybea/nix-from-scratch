@@ -14,6 +14,8 @@ glibc=@glibc@
 target_tuple=@target_tuple@
 cxx_version=@cxx_version@
 
+PATH=${gcc}/bin:$PATH
+
 # Caller won't usually set this,  in which case nxfs-gcc points destination ELF to imported sysroot
 # (see nix-from-scratch/nxfspkgs/bootstrap-1/nxfs-sysroot-1).
 #
@@ -37,5 +39,9 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     ${unwrapped_gxx} -v
 else
     cxxdir=${libstdcxx}/${target_tuple}/include/c++/${cxx_version}
-    ${unwrapped_gxx} "${@}" -I${cxxdir} -I${cxxdir}/${target_tuple} -I${NXFS_SYSROOT_DIR}/include -L${gcc}/lib -Wl,-rpath=${gcc}/lib  -B${NXFS_SYSROOT_DIR}/lib -L${libstdcxx}/lib -Wl,-rpath=${libstdcxx}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
+    ${unwrapped_gxx} "${@}" -I${cxxdir} -I${cxxdir}/${target_tuple} -I${NXFS_SYSROOT_DIR}/include \
+                     -L${gcc}/lib -Wl,-rpath=${gcc}/lib \
+                     -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib \
+                     -L${libstdcxx}/lib -Wl,-rpath=${libstdcxx}/lib \
+                     -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 fi

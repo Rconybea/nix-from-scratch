@@ -1,27 +1,17 @@
 {
-  # nxfsenv :: attrset
-  nxfsenv,
-  # gcc-unwrapped :: bootstrap
+  # stdenv :: attrset+derivation
+  stdenv,
+  # gcc-unwrapped :: derivation
   gcc-unwrapped,
-  # libstdcxx :: bootstrap
+  # libstdcxx :: derivation
   libstdcxx,
+  # glibc :: derivation
+  glibc,
+  # nxfs-defs :: derivation
+  nxfs-defs,
 } :
 
-let
-  glibc     = nxfsenv.glibc;
-  gnused    = nxfsenv.gnused;
-  coreutils = nxfsenv.coreutils;
-  bash      = nxfsenv.shell;
-  which     = nxfsenv.which;
-
-  nxfs-defs = nxfsenv.nxfs-defs;
-in
-
-let
-  version = nxfsenv.gcc-stage1.version;
-in
-
-nxfsenv.mkDerivation {
+stdenv.mkDerivation {
   name               = "gcc-x2-wrapper-3";
   version            = gcc-unwrapped.version;
   system             = builtins.currentSystem;
@@ -29,7 +19,8 @@ nxfsenv.mkDerivation {
   libstdcxx          = libstdcxx;
   glibc              = glibc;
 
-  gcc = gcc-unwrapped;
+  # cc: derivation for unwrapped gcc
+  cc = gcc-unwrapped;
 
   gcc_wrapper_script = ./gcc-wrapper.sh;
   gxx_wrapper_script = ./gxx-wrapper.sh;
@@ -43,8 +34,8 @@ nxfsenv.mkDerivation {
 
     builddir=$TMPDIR
 
-    unwrapped_gcc=$gcc/bin/gcc
-    unwrapped_gxx=$gcc/bin/g++
+    unwrapped_gcc=$cc/bin/gcc
+    unwrapped_gxx=$cc/bin/g++
 
     mkdir -p $builddir/bin
 
@@ -62,11 +53,11 @@ nxfsenv.mkDerivation {
     # so we can know which one's being invoked.
 
     # prepare gcc-wrapper script from template
-    tmp=$builddir/bin/gcc
+    tmp=$builddir/bin/$gcc_basename
     cp $gcc_wrapper_script $tmp
-    sed -i -e s:@bash@:$bash/bin/bash: $tmp
-    sed -i -e s:@unwrapped_gcc@:$unwrapped_gcc: $tmp
-    sed -i -e s:@gcc@:$gcc: $tmp
+    sed -i -e s:@bash@:$shell: $tmp
+    sed -i -e s:@unwrapped_gcc@:$gcc_basename: $tmp
+    sed -i -e s:@gcc@:$cc: $tmp
     sed -i -e s:@glibc@:$glibc: $tmp
     chmod +x $tmp
     cp $tmp $out/bin
@@ -75,9 +66,9 @@ nxfsenv.mkDerivation {
     # prepare gxx-wrapper script from template
     tmp=$builddir/bin/g++
     cp $gxx_wrapper_script $tmp
-    sed -i -e s:@bash@:$bash/bin/bash: $tmp
-    sed -i -e s:@unwrapped_gxx@:$unwrapped_gxx: $tmp
-    sed -i -e s:@gcc@:$gcc: $tmp
+    sed -i -e s:@bash@:$shell: $tmp
+    sed -i -e s:@unwrapped_gxx@:$gxx_basename: $tmp
+    sed -i -e s:@gcc@:$cc: $tmp
     sed -i -e s:@glibc@:$glibc: $tmp
     sed -i -e s:@libstdcxx@:$libstdcxx: $tmp
     sed -i -e s:@target_tuple@:$target_tuple: $tmp
@@ -88,5 +79,5 @@ nxfsenv.mkDerivation {
     cp $tmp $out/bin/nxfs-g++
     '';
 
-  buildInputs = [ gcc-unwrapped glibc bash gnused coreutils which ];
+  buildInputs = [ gcc-unwrapped glibc ];
 }
