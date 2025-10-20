@@ -181,11 +181,15 @@ let
                                                           };
 in
 let
-  # popen-template-3
-  popen-template-3 = callPackage ../bootstrap-pkgs/popen-template/package.nix { stdenv = stdenv-2; };
-  # popen-3     :: derivation
+  # popen-template-3 :: derivation
+  popen-template-3 = callPackage ../bootstrap-pkgs/popen-template/package.nix { stdenv = stdenv-2;
+                                                                                stageid = "3";
+                                                                              };
+  # popen-3 :: derivation
   popen-3 = callPackage ../bootstrap-pkgs/popen/package.nix { stdenv = stdenv-2;
-                                                              popen-template = popen-template-3; };
+                                                              popen-template = popen-template-3;
+                                                              stageid = "3";
+                                                            };
 in
 let
   # gawk-3 :: derivation

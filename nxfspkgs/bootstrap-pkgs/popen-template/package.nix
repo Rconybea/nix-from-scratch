@@ -1,6 +1,8 @@
 {
   # stdenv :: attrset+derivation
   stdenv,
+  # stageid :: string
+  stageid,
 } :
 
 let
@@ -8,7 +10,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name = "nxfs-popen-template";
+  name = "nxfs-popen-template-${stageid}";
 
   inherit version;
 

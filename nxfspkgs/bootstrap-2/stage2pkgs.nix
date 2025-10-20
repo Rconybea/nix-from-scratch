@@ -246,6 +246,13 @@ let
                                                             stageid = "2"; };
 in
 let
+  # TODO: bootstrap-3 to use this form for popen-template.
+  #       else must preserve nxfs-popen-template-2/default.nix
+  popen-template-2 = callPackage ../bootstrap-pkgs/popen-template/package.nix { stdenv = stdenv-1;
+                                                                                stageid = "2";
+                                                                              };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -257,16 +264,12 @@ let
   nxfsenv-2-6 = nxfsenv-2-5 // { ncurses = ncurses-2; };
   nxfsenv-2-7 = nxfsenv-2-6 // { shell = bash-2; };
 
-  # TODO: bootstrap-3 to use this form for popen-template.
-  #       else must preserve nxfs-popen-template-2/default.nix
-  popen-template-2 = callPackage ./nxfs-popen-template-2/package.nix { nxfsenv = nxfsenv-2-7; };
-in
-let
   # don't need nxfsenv with popen-template member
   #nxfsenv-2-8 = nxfsenv-2-7 // { popen-template = popen-template-2; };
-  popen-2 = callPackage ./nxfs-popen-2/package.nix { nxfsenv = nxfsenv-2-7;
-                                                     popen-template = popen-template-2;
-                                                   };
+  popen-2 = callPackage ../bootstrap-pkgs/popen/package.nix { stdenv = stdenv-1;
+                                                              popen-template = popen-template-2;
+                                                              stageid = "2";
+                                                            };
 in
 let
   gawk-2 = callPackage ./nxfs-gawk-2/package.nix { nxfsenv = nxfsenv-2-7;
