@@ -7,9 +7,18 @@
 # and by defult produces executables that assume /lib64
 
 unwrapped_gcc=@unwrapped_gcc@
+bintools=@bintools@
 glibc=@glibc@
 
-PATH=${gcc}/bin:$PATH
+export PATH="${bintools}/bin:$PATH"
+
+# TODO: should pickup NIX_CFLAGS_COMPILE, NIX_LDFLAGS
+# e.g.
+#   extraBefore=($NIX_CFLAGS_COMPILE)
+#   extraAfter=($NIX_LDFLAGS)
+# then
+#   @gcc/bin/gcc '${extraBefore[@]}" "$@" "${extraAfter[@]}"
+#
 
 # Caller won't usually set this,  in which case nxfs-gcc points destination ELF to imported sysroot
 # (see nix-from-scratch/nxfspkgs/bootstrap-1/nxfs-sysroot-1).

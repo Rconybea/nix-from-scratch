@@ -455,80 +455,6 @@ let
     };
 in
 let
-  # nxfsenv-3-00 :: attrset
-  nxfsenv-3-00 = nxfsenv-2;
-  # nxfsenv-3-1 :: attrset
-  nxfsenv-3-1 = nxfsenv-3-00 // { diffutils = diffutils-3; };
-  # nxfsenv-3-2 :: attrset
-  nxfsenv-3-2 = nxfsenv-3-1 // { findutils = findutils-3; };
-  # nxfsenv-3-3 :: attrset
-  nxfsenv-3-3 = nxfsenv-3-2 // { gnused = gnused-3; };
-  # nxfsenv-3-3b :: attrset
-  nxfsenv-3-3b = nxfsenv-3-3 // { gnugrep = gnugrep-3; };
-  # nxfsenv-3-4 :: attrset
-  nxfsenv-3-4 = nxfsenv-3-3b // { bzip2 = bzip2-3; };
-  # nxfsenv-3-5 :: attrset
-  nxfsenv-3-5 = nxfsenv-3-4 // { gnutar = gnutar-3; };
-  # nxfsenv-3-6 :: attrset
-  nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; shell = bash-3; };
-  # nxfsenv-3-7 :: attrset
-  nxfsenv-3-7 = nxfsenv-3-6;
-  # nxfsenv-3-9 :: attrset
-  nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
-  # nxfsenv-3-9 :: attrset
-  nxfsenv-3-9 = nxfsenv-3-6 // { gnumake = gnumake-3; };
-  # nxfsenv-3-10 :: attrset
-  nxfsenv-3-10 = nxfsenv-3-9 // { coreutils = coreutils-3; };
-  # nxfsenv-3-a11 :: attrset
-  nxfsenv-3-a11 = nxfsenv-3-10 // { pkgconf = pkgconf-3; };
-  # nxfsenv-3-a12 :: attrset
-  nxfsenv-3-a12 = nxfsenv-3-a11 // { libxcrypt = libxcrypt-3; };
-  # nxfsenv-3-b13 :: attrset
-  nxfsenv-3-b13 = nxfsenv-3-a12 // { m4 = m4-3;
-                                     perl = perl-3;
-                                   };
-  # nxfsenv-b14 :: attrset
-  nxfsenv-3-b14 = nxfsenv-3-b13 // { autoconf = autoconf-3; };
-  # nxfsenv-3-c13 :: attrset
-  nxfsenv-3-c13 = nxfsenv-3-b13 // { file = file-3; };
-  # nxfsenv-3-c14 :: attrset
-  nxfsenv-3-c14 = nxfsenv-3-c13 // { flex = flex-3; };
-  # nxfsenv-3-b15 :: attrset
-  nxfsenv-3-b15 = nxfsenv-3-b14 // nxfsenv-3-c14 // { bison = bison-3; };
-  # editor bait: pkg-config
-  nxfsenv-3-d13 = nxfsenv-3-10 // { pkgconf = pkgconf-3;
-                                    zlib = zlib-3; };
-  # nxfsenv-3-16 :: attrset
-  nxfsenv-3-16 = nxfsenv-3-10 // { binutils = binutils-3;
-                                   perl     = perl-3;
-                                   texinfo  = texinfo-3;
-                                   bison    = bison-3;
-                                   flex     = flex-3;
-                                   file     = file-3;
-                                   pkgconf  = pkgconf-3;
-                                   m4       = m4-3;
-                                   python   = python-3;
-                                   zlib     = zlib-3;
-                                   gperf    = gperf-3;
-                                   patch    = patch-3;
-                                   gzip     = gzip-3;
-                                   patchelf = patchelf-3;
-                                   which    = which-3;
-                                 };
-  # nxfsenv-3-95 :: attrset
-  nxfsenv-3-94 = nxfsenv-3-16 // { };
-  # nxfsenv-3-95 :: attrset
-  nxfsenv-3-95 = nxfsenv-3-94 // { glibc = glibc-x1-3; };
-  # nxfsenv-3-96 :: attrset
-  nxfsenv-3-96 = nxfsenv-3-95 // { gcc = gcc-x0-wrapper-3; };
-  # nxfsenv-3-97 :: attrset
-  nxfsenv-3-97 = nxfsenv-3-96;
-  # nxfsenv-3-98 :: attrset
-  nxfsenv-3-98 = nxfsenv-3-97 // { gcc = gcc-x1-wrapper-3; };
-  # nxfsenv-3-99 :: attrset
-  nxfsenv-3-99 = nxfsenv-3-98 // { libstdcxx = libstdcxx-x2-3; };
-  # nxfsenv-3-99a :: attrset
-  nxfsenv-3-99a = nxfsenv-3-99 // { gcc = gcc-x2-wrapper-3; };
 
   # gcc-x3-3 :: derivation
   gcc-x3-3 = callPackage ./nxfs-gcc-x3-3/package.nix
@@ -548,12 +474,12 @@ let
     };
 in
 let
-  # nxfsenv-3-100 :: attrset
-  nxfsenv-3-100 = nxfsenv-3-99 // { gcc-unwrapped = gcc-x3-3; };
-
   # gcc-wrapper-3 :: derivation
-  gcc-wrapper-3 = callPackage ./nxfs-gcc-wrapper-3/package.nix { nxfsenv = nxfsenv-3-100;
+  gcc-wrapper-3 = callPackage ./nxfs-gcc-wrapper-3/package.nix { stdenv = stdenv-3-1;
+                                                                 bintools = binutils-x0-wrapper-3;
                                                                  gcc-unwrapped = gcc-x3-3;
+                                                                 glibc = glibc-x1-3;
+                                                                 nxfs-defs = nxfs-defs;
                                                                  };
 in
 let
@@ -599,49 +525,50 @@ let
       coreutils = coreutils-3;
     };
 in
-{
-  inherit stage3env;
-  inherit gcc-wrapper-3;
-  inherit gcc-x3-3;
-  inherit gcc-x2-wrapper-3;
-  inherit libstdcxx-x2-3;
-  inherit gcc-x1-wrapper-3;
-  inherit gcc-x1-3;
-  inherit binutils-x0-wrapper-3;
-  inherit gcc-x0-wrapper-3;
-  inherit glibc-x1-3;
-  inherit lc-all-sort-3;
-  inherit python-3;
-  inherit texinfo-3;
-  inherit isl-3;
-  inherit mpc-3;
-  inherit mpfr-3;
-  inherit gmp-3;
-  inherit bison-3;
-  inherit flex-3;
-  inherit automake-3;
-  inherit autoconf-3;
-  inherit binutils-3;
-  inherit perl-3;
-  inherit libxcrypt-3;
-  inherit patchelf-3;
-  inherit gperf-3;
-  inherit patch-3;
-  inherit gzip-3;
-  inherit zlib-3;
-  inherit file-3;
-  inherit m4-3;
-  inherit pkgconf-3;
-  inherit coreutils-3;
-  inherit gnumake-3;
-  inherit gawk-3;
-  inherit popen-3;
-  inherit bash-3;
-  inherit gnutar-3;
-  inherit bzip2-3;
-  inherit gnugrep-3;
-  inherit gnused-3;
-  inherit findutils-3;
-  inherit diffutils-3;
-  inherit which-3;
-}
+let
+  {
+    inherit stage3env;
+    inherit gcc-wrapper-3;
+    inherit gcc-x3-3;
+    inherit gcc-x2-wrapper-3;
+    inherit libstdcxx-x2-3;
+    inherit gcc-x1-wrapper-3;
+    inherit gcc-x1-3;
+    inherit binutils-x0-wrapper-3;
+    inherit gcc-x0-wrapper-3;
+    inherit glibc-x1-3;
+    inherit lc-all-sort-3;
+    inherit python-3;
+    inherit texinfo-3;
+    inherit isl-3;
+    inherit mpc-3;
+    inherit mpfr-3;
+    inherit gmp-3;
+    inherit bison-3;
+    inherit flex-3;
+    inherit automake-3;
+    inherit autoconf-3;
+    inherit binutils-3;
+    inherit perl-3;
+    inherit libxcrypt-3;
+    inherit patchelf-3;
+    inherit gperf-3;
+    inherit patch-3;
+    inherit gzip-3;
+    inherit zlib-3;
+    inherit file-3;
+    inherit m4-3;
+    inherit pkgconf-3;
+    inherit coreutils-3;
+    inherit gnumake-3;
+    inherit gawk-3;
+    inherit popen-3;
+    inherit bash-3;
+    inherit gnutar-3;
+    inherit bzip2-3;
+    inherit gnugrep-3;
+    inherit gnused-3;
+    inherit findutils-3;
+    inherit diffutils-3;
+    inherit which-3;
+  }

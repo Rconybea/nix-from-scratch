@@ -8,11 +8,24 @@
 
 unwrapped_gxx=@unwrapped_gxx@
 gcc=@gcc@
+bintools=@bintools@
 glibc=@glibc@
 
 target_tuple=@target_tuple@
 cxx_version=@cxx_version@
 
+export PATH="${bintools}/bin:$PATH"
+
+# Caller won't usually set this,  in which case nxfs-gcc points destination ELF to imported sysroot
+# (see nix-from-scratch/nxfspkgs/bootstrap-1/nxfs-sysroot-1).
+#
+# When building glibc (see nix-from-scratch/nxfspkgs/bootstrap-2/nxfs-glibc-stage1-2) this is counterproductive.
+# We need build artifacts to point to output directory.
+#
+# Can't just use a different wrapper,
+# because glibc configure script checks that compiler produces runnable executables.
+# Workaround is in glibc build to call configure with NXFS_SYSROOT_DIR empty,  then compile with NXFS_SYSROOT set to ${output}
+#
 if [[ -z "${NXFS_SYSROOT_DIR}" ]]; then
     NXFS_SYSROOT_DIR=${glibc}
 fi
@@ -25,5 +38,9 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gxx} -v
 else
-    ${unwrapped_gxx} "${@}" -I${NXFS_SYSROOT_DIR}/include -L${gcc}/lib -Wl,-rpath=${gcc}/lib -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
+    ${unwrapped_gxx} "${@}" \
+                     -I${NXFS_SYSROOT_DIR}/include \
+                     -L${gcc}/lib -Wl,-rpath=${gcc}/lib \
+                     -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib \
+                     -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 fi
