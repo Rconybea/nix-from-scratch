@@ -106,51 +106,6 @@ let
   #   stdenv.defaultBuildInputs + defaultNativeBuildInputs
   #
 
-  # bootstrap stdenv for stage-2
-  nxfsenv-2 =
-    let
-      # gcc_wrapper,..,shell :: derivation
-      gcc_wrapper    = stage2pkgs.gcc-wrapper-2;
-      glibc          = stage2pkgs.glibc-2;
-      perl           = stage2pkgs.perl-2;
-      patch          = stage2pkgs.patch-2;
-      patchelf       = stage2pkgs.patchelf-2;
-      findutils      = stage2pkgs.findutils-2;
-      diffutils      = stage2pkgs.diffutils-2;
-      binutils       = stage2pkgs.binutils-2;
-      coreutils      = stage2pkgs.coreutils-2;
-      gawk           = stage2pkgs.gawk-2;
-      gzip           = stage2pkgs.gzip-2;
-      gnumake        = stage2pkgs.gnumake-2;
-      gnutar         = stage2pkgs.gnutar-2;
-      gnugrep        = stage2pkgs.gnugrep-2;
-      gnused         = stage2pkgs.gnused-2;
-      shell          = stage2pkgs.bash-2;
-    in
-      {
-        # TODO: eventually remove these for consistency with nixpkgs style
-        inherit
-          gcc_wrapper glibc perl patch patchelf findutils binutils
-          coreutils gawk gnumake gnutar gnugrep gnused shell;
-
-        bash = shell;
-
-        # mkDerivation :: attrs -> derivation
-        mkDerivation   = nxfs-autotools nxfsenv-2;
-
-        # these automtically populate PATH :-> corresponding executables
-        # are implicitly available to all nix derivations using this nxfsenv.
-        #
-        # initialPath :: [ derivation ]
-        #
-        initialPath = [ coreutils shell gnumake gzip gawk gnugrep gnused gnutar findutils diffutils ];
-
-        # TODO: drop this
-        locale-archive = locale-archive-1;
-
-        inherit nxfs-defs;
-      };
-
   # in nixpkgs/lib/customisation.nix, similar function is lib.callPackageWith
   #
   # makeCallPackage :: allpkgs -> path -> overrides -> result
