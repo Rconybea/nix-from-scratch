@@ -3,6 +3,8 @@
   stdenv,
   # bzip2 :: derivation
   bzip2,
+  # stageid :: string  -- "2" for stage2, "3" for stage3
+  stageid,
 } :
 
 let
@@ -10,7 +12,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-gnutar-3";
+  name         = "nxfs-gnutar-${stageid}";
   version      = version;
 
   src          = builtins.fetchTarball { name = "tar-${version}-source";
@@ -38,20 +40,7 @@ stdenv.mkDerivation {
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
   '';
 
-  buildInputs = [
-#    nxfsenv.gcc_wrapper
-#    nxfsenv.binutils
-#    nxfsenv.gawk
-#    nxfsenv.gnumake
-#    nxfsenv.gnutar
-#    nxfsenv.gnugrep
-#    nxfsenv.gnused
-#    nxfsenv.findutils
-#    nxfsenv.diffutils
-#    nxfsenv.coreutils
-#    nxfsenv.shell
-#    nxfsenv.glibc
-  ];
+  buildInputs = [ ];
 
   propagatedBuildInputs = [
     bzip2

@@ -157,13 +157,16 @@ let
 in
 let
   # bzip2-3 :: derivation
-  bzip2-3 = callPackage ./nxfs-bzip2-3/package.nix { stdenv = stdenv-2; };
+  bzip2-3 = callPackage ../bootstrap-pkgs/bzip2/package.nix { stdenv = stdenv-2;
+                                                              stageid = "3";
+                                                            };
 in
 let
   # gnutar-3    :: derivation
-  gnutar-3 = callPackage ./nxfs-tar-3/package.nix { stdenv = stdenv-2;
-                                                    bzip2 = bzip2-3;
-                                                  };
+  gnutar-3 = callPackage ../bootstrap-pkgs/gnutar/package.nix { stdenv = stdenv-2;
+                                                                bzip2 = bzip2-3;
+                                                                stageid = "3";
+                                                              };
 in
 let
   # bash-3 :: derivation

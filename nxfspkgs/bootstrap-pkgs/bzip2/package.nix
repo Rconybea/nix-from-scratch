@@ -1,6 +1,8 @@
 {
   # stdenv :: attrset+derivation
   stdenv,
+  # stageid :: string  -- "2" for stage2, "3" for stage3
+  stageid
 } :
 
 let

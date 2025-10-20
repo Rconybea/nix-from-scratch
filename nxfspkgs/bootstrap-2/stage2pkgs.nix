@@ -222,7 +222,17 @@ let
 in
 let
   gnugrep-2 = callPackage ../bootstrap-pkgs/gnugrep/package.nix { stdenv = stdenv-1;
-                                                                  stageid = "3"; };
+                                                                  stageid = "2"; };
+in
+let
+  bzip2-2 = callPackage ../bootstrap-pkgs/bzip2/package.nix { stdenv = stdenv-1;
+                                                              stageid = "2"; };
+
+
+  gnutar-2 = callPackage ../bootstrap-pkgs/gnutar/package.nix { stdenv = stdenv-1;
+                                                                bzip2 = bzip2-2;
+                                                                stageid = "2";
+                                                              };
 in
 let
   nxfsenv-2-0a = nxfsenv-1;
@@ -232,11 +242,8 @@ let
   nxfsenv-2-2 = nxfsenv-2-1 // { findutils = findutils-2; };
   nxfsenv-2-3 = nxfsenv-2-2 // { gnused = gnused-2; };
   nxfsenv-2-4 = nxfsenv-2-3 // { gnugrep = gnugrep-2; };
-
-  gnutar-2 = callPackage ./nxfs-tar-2/package.nix { nxfsenv = nxfsenv-2-4; };
-in
-let
   nxfsenv-2-5 = nxfsenv-2-4 // { gnutar = gnutar-2; };
+
   ncurses-2 = callPackage ./nxfs-ncurses-2/package.nix { nxfsenv = nxfsenv-2-5; };
 in
 let
@@ -516,6 +523,8 @@ let
                        };
 in
 {
+  # listed in top-down topological order
+
   inherit stage2env;
   inherit gcc-wrapper-2;
   inherit gcc-x3-2;
@@ -554,6 +563,7 @@ in
   inherit bash-2;
   inherit ncurses-2;
   inherit gnutar-2;
+  inherit bzip2-2;
   inherit gnugrep-2;
   inherit gnused-2;
   inherit findutils-2;
