@@ -481,9 +481,6 @@ let
       nxfs-defs            = nxfs-defs;
     };
 
-  # nixify-gcc-source-3 :: (attrset -> derivation)
-  nixify-gcc-source-3 = (callPackage ../bootstrap-2/nxfs-nixify-gcc-source/default.nix);
-
   # gcc-stage2-wrapper-3 :: derivation
   gcc-x1-wrapper-3 = callPackage ./nxfs-gcc-x1-wrapper-3/package.nix { stdenv = stdenv-3-1;
                                                                        gcc-unwrapped = gcc-x1-3;
