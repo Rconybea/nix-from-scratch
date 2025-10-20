@@ -1,6 +1,8 @@
 {
   # stdenv :: attrset+derivation
   stdenv,
+  # stageid :: string  -- "2" for stage2, "3" for stage3
+  stageid
 } :
 
 let
@@ -8,7 +10,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-gnused-3";
+  name         = "nxfs-gnused-${stageid}";
   version      = version;
   system       = builtins.currentSystem;
 
@@ -35,18 +37,5 @@ stdenv.mkDerivation {
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
   '';
 
-  buildInputs = [
-#    nxfsenv.findutils
-#    nxfsenv.diffutils
-#    nxfsenv.gcc_wrapper
-#    nxfsenv.binutils
-#    nxfsenv.gawk
-#    nxfsenv.gnumake
-#    nxfsenv.gnugrep
-#    nxfsenv.gnutar
-#    nxfsenv.gnused
-#    nxfsenv.coreutils
-#    nxfsenv.shell
-#    nxfsenv.glibc
-  ];
+  buildInputs = [];
 }

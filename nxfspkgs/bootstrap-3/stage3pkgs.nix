@@ -134,15 +134,20 @@ let
                                                               stageid = "3";
                                                             };
   # diffutils-3 :: derivation
-  diffutils-3 = callPackage ./nxfs-diffutils-3/package.nix { stdenv = stdenv-2; };
+  diffutils-3 = callPackage ../bootstrap-pkgs/diffutils/package.nix { stdenv = stdenv-2;
+                                                                      stageid = "3";
+                                                                    };
 in
 let
   # findutils-3 :: derivation
-  findutils-3 = callPackage ./nxfs-findutils-3/package.nix { stdenv = stdenv-2; };
+  findutils-3 = callPackage ../bootstrap-pkgs/findutils/package.nix { stdenv = stdenv-2;
+                                                                    stageid = "3"; };
 in
 let
   # gnused-3 :: derivation
-  gnused-3 = callPackage ./nxfs-sed-3/package.nix { stdenv = stdenv-2; };
+  gnused-3 = callPackage ../bootstrap-pkgs/gnused/package.nix { stdenv = stdenv-2;
+                                                                stageid = "3";
+                                                              };
 in
 let
   # gnugrep-3 :: derivation
