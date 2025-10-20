@@ -1,6 +1,8 @@
 {
   # stdenv :: attrset+derivation
   stdenv,
+  # stageid :: string
+  stageid,
 } :
 
 let
@@ -9,7 +11,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-bash-3";
+  name         = "nxfs-bash-${stageid}";
 
   src          = builtins.fetchTarball { name = "bash-${version}-source";
                                          url = "https://ftpmirror.gnu.org/gnu/bash/bash-${version}.tar.gz";

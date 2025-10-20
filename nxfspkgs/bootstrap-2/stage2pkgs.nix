@@ -242,6 +242,10 @@ let
                                                                   stageid = "2"; };
 in
 let
+  bash-2 = callPackage ../bootstrap-pkgs/bash/package.nix { stdenv = stdenv-1;
+                                                            stageid = "2"; };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -251,12 +255,8 @@ let
   nxfsenv-2-4 = nxfsenv-2-3 // { gnugrep = gnugrep-2; };
   nxfsenv-2-5 = nxfsenv-2-4 // { gnutar = gnutar-2; };
   nxfsenv-2-6 = nxfsenv-2-5 // { ncurses = ncurses-2; };
+  nxfsenv-2-7 = nxfsenv-2-6 // { shell = bash-2; };
 
-  bash-2 = callPackage ./nxfs-bash-2/package.nix { nxfsenv = nxfsenv-2-6; };
-in
-let
-  nxfsenv-2-7 = nxfsenv-2-6 // { shell = bash-2;
-                               };
   # TODO: bootstrap-3 to use this form for popen-template.
   #       else must preserve nxfs-popen-template-2/default.nix
   popen-template-2 = callPackage ./nxfs-popen-template-2/package.nix { nxfsenv = nxfsenv-2-7; };

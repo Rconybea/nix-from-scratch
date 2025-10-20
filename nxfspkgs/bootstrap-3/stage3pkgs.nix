@@ -176,7 +176,9 @@ let
 in
 let
   # bash-3 :: derivation
-  bash-3 = callPackage ./nxfs-bash-3/package.nix { stdenv = stdenv-2; };
+  bash-3 = callPackage ../bootstrap-pkgs/bash/package.nix { stdenv = stdenv-2;
+                                                            stageid = "3";
+                                                          };
 in
 let
   # popen-template-3
