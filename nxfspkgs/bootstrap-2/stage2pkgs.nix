@@ -214,7 +214,10 @@ let
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
   nxfsenv-2-1 = nxfsenv-2-0 // { diffutils = diffutils-2; };
 
-  findutils-2 = callPackage ./nxfs-findutils-2/package.nix { nxfsenv = nxfsenv-2-1; };
+  findutils-2 = callPackage ../bootstrap-pkgs/findutils/package.nix { stdenv = stdenv-1;
+                                                                      stageid = "2";
+                                                                    };
+  #findutils-2 = callPackage ./nxfs-findutils-2/package.nix { nxfsenv = nxfsenv-2-1; };
 in
 let
   nxfsenv-2-2 = nxfsenv-2-1 // { findutils = findutils-2; };
