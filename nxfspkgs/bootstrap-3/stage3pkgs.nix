@@ -490,8 +490,11 @@ let
   nxfsenv-3-97 = nxfsenv-3-96;
 
   # gcc-stage2-wrapper-3 :: derivation
-  gcc-x1-wrapper-3 = callPackage ./nxfs-gcc-x1-wrapper-3/package.nix { nxfsenv = nxfsenv-3-97;
-                                                                       gcc-unwrapped = gcc-x1-3; };
+  gcc-x1-wrapper-3 = callPackage ./nxfs-gcc-x1-wrapper-3/package.nix { stdenv = stdenv-3-1;
+                                                                       gcc-unwrapped = gcc-x1-3;
+                                                                       glibc = glibc-x1-3;
+                                                                       nxfs-defs = nxfs-defs;
+                                                                     };
 in
 let
   # nxfsenv-3-98 :: attrset

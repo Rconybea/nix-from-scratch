@@ -7,7 +7,10 @@
 # and by defult produces executables that assume /lib64
 
 unwrapped_gcc=@unwrapped_gcc@
+gcc=@gcc@
 glibc=@glibc@
+
+PATH=${gcc}/bin:$PATH
 
 # Caller won't usually set this,  in which case nxfs-gcc points destination ELF to imported sysroot
 # (see nix-from-scratch/nxfspkgs/bootstrap-1/nxfs-sysroot-1).
@@ -31,6 +34,7 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gcc} -v
 else
+    # minor point: don't need -I${glibc}/include, because nix store glibc location baked in to gcc at compile time
     # minor point: appending flags so that they can be superseded by explicit arguments
     ${unwrapped_gcc} "${@}" -B${NXFS_SYSROOT_DIR}/lib \
                      -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib \

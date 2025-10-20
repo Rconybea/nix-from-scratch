@@ -10,6 +10,8 @@ unwrapped_gxx=@unwrapped_gxx@
 gcc=@gcc@
 glibc=@glibc@
 
+PATH=${gcc}/bin:$PATH
+
 # Caller won't usually set this,  in which case nxfs-gcc points destination ELF to imported sysroot
 # (see nix-from-scratch/nxfspkgs/bootstrap-1/nxfs-sysroot-1).
 #
