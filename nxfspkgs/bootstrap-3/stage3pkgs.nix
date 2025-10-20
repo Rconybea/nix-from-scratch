@@ -151,7 +151,9 @@ let
 in
 let
   # gnugrep-3 :: derivation
-  gnugrep-3 = callPackage ./nxfs-grep-3/package.nix { stdenv = stdenv-2; };
+  gnugrep-3 = callPackage ../bootstrap-pkgs/gnugrep/package.nix { stdenv = stdenv-2;
+                                                                  stageid = "3";
+                                                                };
 in
 let
   # bzip2-3 :: derivation

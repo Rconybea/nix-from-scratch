@@ -221,17 +221,18 @@ let
   #gnused-2 = callPackage ./nxfs-sed-2/package.nix { nxfsenv = nxfsenv-2-2; };
 in
 let
+  gnugrep-2 = callPackage ../bootstrap-pkgs/gnugrep/package.nix { stdenv = stdenv-1;
+                                                                  stageid = "3"; };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
   nxfsenv-2-1 = nxfsenv-2-0 // { diffutils = diffutils-2; };
   nxfsenv-2-2 = nxfsenv-2-1 // { findutils = findutils-2; };
   nxfsenv-2-3 = nxfsenv-2-2 // { gnused = gnused-2; };
-
-  gnugrep-2 = callPackage ./nxfs-grep-2/package.nix { nxfsenv = nxfsenv-2-3; };
-in
-let
   nxfsenv-2-4 = nxfsenv-2-3 // { gnugrep = gnugrep-2; };
+
   gnutar-2 = callPackage ./nxfs-tar-2/package.nix { nxfsenv = nxfsenv-2-4; };
 in
 let
