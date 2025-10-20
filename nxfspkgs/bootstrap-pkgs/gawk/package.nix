@@ -2,7 +2,9 @@
   # stdenv :: derivation+attrset
   stdenv,
   # popen :: derivation
-  popen
+  popen,
+  # stageid :: string  -- "2" for stage2, "3" for stage3
+  stageid
 } :
 
 let
@@ -10,7 +12,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-gawk-3";
+  name         = "nxfs-gawk-${stageid}";
 
   src          = builtins.fetchTarball { name = "gawk-${version}-source";
                                          url = "https://ftpmirror.gnu.org/gnu/gawk/gawk-${version}.tar.xz";

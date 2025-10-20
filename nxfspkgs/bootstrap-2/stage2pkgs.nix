@@ -253,6 +253,18 @@ let
                                                                               };
 in
 let
+  # don't need nxfsenv with popen-template member
+  #nxfsenv-2-8 = nxfsenv-2-7 // { popen-template = popen-template-2; };
+  popen-2 = callPackage ../bootstrap-pkgs/popen/package.nix { stdenv = stdenv-1;
+                                                              popen-template = popen-template-2;
+                                                              stageid = "2";
+                                                            };
+in
+let
+  gawk-2 = callPackage ../bootstrap-pkgs/gawk/package.nix { stdenv = stdenv-1;
+                                                            popen = popen-2;
+                                                            stageid = "2";
+                                                          };
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -263,18 +275,6 @@ let
   nxfsenv-2-5 = nxfsenv-2-4 // { gnutar = gnutar-2; };
   nxfsenv-2-6 = nxfsenv-2-5 // { ncurses = ncurses-2; };
   nxfsenv-2-7 = nxfsenv-2-6 // { shell = bash-2; };
-
-  # don't need nxfsenv with popen-template member
-  #nxfsenv-2-8 = nxfsenv-2-7 // { popen-template = popen-template-2; };
-  popen-2 = callPackage ../bootstrap-pkgs/popen/package.nix { stdenv = stdenv-1;
-                                                              popen-template = popen-template-2;
-                                                              stageid = "2";
-                                                            };
-in
-let
-  gawk-2 = callPackage ./nxfs-gawk-2/package.nix { nxfsenv = nxfsenv-2-7;
-                                                   popen = popen-2;
-                                                 };
   nxfsenv-2-8 = nxfsenv-2-7 // { gawk = gawk-2; };
 in
 let

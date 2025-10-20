@@ -193,9 +193,10 @@ let
 in
 let
   # gawk-3 :: derivation
-  gawk-3 = callPackage ./nxfs-gawk-3/package.nix { stdenv = stdenv-2;
-                                                   popen = popen-3;
-                                                 };
+  gawk-3 = callPackage ../bootstrap-pkgs/gawk/package.nix { stdenv = stdenv-2;
+                                                            popen = popen-3;
+                                                            stageid = "3";
+                                                          };
 in
 let
   # gnumake-3   :: derivation
