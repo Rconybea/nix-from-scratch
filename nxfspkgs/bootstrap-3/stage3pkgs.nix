@@ -208,26 +208,9 @@ in
 let
   # popen-template-3
   popen-template-3 = callPackage ../bootstrap-pkgs/popen-template/package.nix { stdenv = stdenv-2; };
-  # nxfsenv-3-00 :: attrset
-  nxfsenv-3-00 = nxfsenv-2;
-  # nxfsenv-3-1 :: attrset
-  nxfsenv-3-1 = nxfsenv-3-00 // { diffutils = diffutils-3; };
-  # nxfsenv-3-2 :: attrset
-  nxfsenv-3-2 = nxfsenv-3-1 // { findutils = findutils-3; };
-  # nxfsenv-3-3 :: attrset
-  nxfsenv-3-3 = nxfsenv-3-2 // { gnused = gnused-3; };
-  # nxfsenv-3-3b :: attrset
-  nxfsenv-3-3b = nxfsenv-3-3 // { gnugrep = gnugrep-3; };
-  # nxfsenv-3-4 :: attrset
-  nxfsenv-3-4 = nxfsenv-3-3b // { bzip2 = bzip2-3; };
-  # nxfsenv-3-5 :: attrset
-  nxfsenv-3-5 = nxfsenv-3-4 // { gnutar = gnutar-3; };
-  # nxfsenv-3-6 :: attrset
-  nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; shell = bash-3; };
-  # (text-only -> natural to use stage2 derivation)
   # popen-3     :: derivation
-  popen-3 = callPackage ../bootstrap-2/nxfs-popen-2/package.nix { nxfsenv = nxfsenv-3-6;
-                                                                  popen-template = popen-template-3; };
+  popen-3 = callPackage ../bootstrap-pkgs/popen/package.nix { stdenv = stdenv-2;
+                                                              popen-template = popen-template-3; };
 in
 let
   # gawk-3 :: derivation
@@ -353,6 +336,23 @@ let
                                                      };
 in
 let
+  # nxfsenv-3-00 :: attrset
+  nxfsenv-3-00 = nxfsenv-2;
+  # nxfsenv-3-1 :: attrset
+  nxfsenv-3-1 = nxfsenv-3-00 // { diffutils = diffutils-3; };
+  # nxfsenv-3-2 :: attrset
+  nxfsenv-3-2 = nxfsenv-3-1 // { findutils = findutils-3; };
+  # nxfsenv-3-3 :: attrset
+  nxfsenv-3-3 = nxfsenv-3-2 // { gnused = gnused-3; };
+  # nxfsenv-3-3b :: attrset
+  nxfsenv-3-3b = nxfsenv-3-3 // { gnugrep = gnugrep-3; };
+  # nxfsenv-3-4 :: attrset
+  nxfsenv-3-4 = nxfsenv-3-3b // { bzip2 = bzip2-3; };
+  # nxfsenv-3-5 :: attrset
+  nxfsenv-3-5 = nxfsenv-3-4 // { gnutar = gnutar-3; };
+  # nxfsenv-3-6 :: attrset
+  nxfsenv-3-6 = nxfsenv-3-5 // { bash = bash-3; shell = bash-3; };
+  # nxfsenv-3-7 :: attrset
   nxfsenv-3-7 = nxfsenv-3-6;
   # nxfsenv-3-9 :: attrset
   nxfsenv-3-8 = nxfsenv-3-7 // { gawk = gawk-3; };
