@@ -206,6 +206,9 @@ let
   bash-3 = callPackage ./nxfs-bash-3/package.nix { stdenv = stdenv-2; };
 in
 let
+  # popen-template-3
+  popen-template-3 = callPackage ../bootstrap-pkgs/popen-template/package.nix { stdenv = stdenv-2; };
+  # nxfsenv-3-00 :: attrset
   nxfsenv-3-00 = nxfsenv-2;
   # nxfsenv-3-1 :: attrset
   nxfsenv-3-1 = nxfsenv-3-00 // { diffutils = diffutils-3; };
@@ -224,9 +227,10 @@ let
   # (text-only -> natural to use stage2 derivation)
   # popen-3     :: derivation
   popen-3 = callPackage ../bootstrap-2/nxfs-popen-2/package.nix { nxfsenv = nxfsenv-3-6;
-                                                                  popen-template = stage2pkgs.popen-template-2; };
+                                                                  popen-template = popen-template-3; };
 in
 let
+  # gawk-3 :: derivation
   gawk-3 = callPackage ./nxfs-gawk-3/package.nix { stdenv = stdenv-2;
                                                    popen = popen-3;
                                                  };
