@@ -1,6 +1,8 @@
 {
   # stdenv :: derivation+attrset
   stdenv,
+  # stageid :: string  -- "2" for stage2, "3" for stage3
+  stageid,
 } :
 
 let
@@ -8,7 +10,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-coreutils-3";
+  name         = "nxfs-coreutils-${stageid}";
 
   src          = builtins.fetchTarball { name = "coreutils-${version}-source";
                                          url = "https://ftpmirror.gnu.org/gnu/coreutils/coreutils-${version}.tar.xz";

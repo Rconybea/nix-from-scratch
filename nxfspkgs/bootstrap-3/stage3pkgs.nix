@@ -205,10 +205,17 @@ let
 in
 let
   # coreutils-3 :: derivation
-  coreutils-3 = callPackage ./nxfs-coreutils-3/package.nix { stdenv = stdenv-2; };
+  coreutils-3 = callPackage ../bootstrap-pkgs/coreutils/package.nix { stdenv = stdenv-2;
+                                                                      stageid = "3"; };
 in
 let
-  stagepkgs-3-1 = stagepkgs-2 // { shell     = bash-3;
+  # patch-3 :: derivation
+  patch-3      = callPackage ../bootstrap-pkgs/patch/package.nix { stdenv = stdenv-2;
+                                                                   stageid = "3";
+                                                                 };
+
+  stagepkgs-3-1 = stagepkgs-2 // { patch     = patch-3;
+                                   shell     = bash-3;
                                    coreutils = coreutils-3;
                                    gnumake   = gnumake-3;
                                    gawk      = gawk-3;
@@ -232,8 +239,6 @@ let
   zlib-3       = callPackage ./nxfs-zlib-3/package.nix { stdenv = stdenv-3-1; };
   # gzip-3 :: derivation
   gzip-3       = callPackage ./nxfs-gzip-3/package.nix { stdenv = stdenv-3-1; };
-  # patch-3 :: derivation
-  patch-3      = callPackage ./nxfs-patch-3/package.nix { stdenv = stdenv-3-1; };
   # gperf-3 :: derivation
   gperf-3      = callPackage ./nxfs-gperf-3/package.nix { stdenv = stdenv-3-1; };
   # patchelf-3 :: derivation

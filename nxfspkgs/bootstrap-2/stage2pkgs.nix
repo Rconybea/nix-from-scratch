@@ -265,6 +265,23 @@ let
                                                             popen = popen-2;
                                                             stageid = "2";
                                                           };
+in
+let
+  gnumake-2 = callPackage ../bootstrap-pkgs/gnumake/package.nix { stdenv = stdenv-1;
+                                                                  stageid = "2";
+                                                                };
+in
+let
+  coreutils-2 = callPackage ../bootstrap-pkgs/coreutils/package.nix { stdenv = stdenv-1;
+                                                                      stageid = "2";
+                                                                    };
+in
+let
+  # patch-2 :: derivation
+  patch-2    = callPackage ../bootstrap-pkgs/patch/package.nix { stdenv = stdenv-1;
+                                                                 stageid = "2";
+                                                               };
+
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -276,19 +293,7 @@ let
   nxfsenv-2-6 = nxfsenv-2-5 // { ncurses = ncurses-2; };
   nxfsenv-2-7 = nxfsenv-2-6 // { shell = bash-2; };
   nxfsenv-2-8 = nxfsenv-2-7 // { gawk = gawk-2; };
-in
-let
-  gnumake-2 = callPackage ../bootstrap-pkgs/gnumake/package.nix { stdenv = stdenv-1;
-                                                                  stageid = "2";
-                                                                };
-in
-let
   nxfsenv-2-9 = nxfsenv-2-8 // { gnumake = gnumake-2; };
-  coreutils-2 = callPackage ./nxfs-coreutils-2/package.nix { nxfsenv = nxfsenv-2-9; };
-in
-let
-  # switching here to stage3 numbering for nxfsenv's
-
   nxfsenv-2-10 = nxfsenv-2-9 // { coreutils = coreutils-2; };
 
   # pkgconf-2 :: derivation
@@ -306,8 +311,6 @@ let
   patchelf-2 = callPackage ./nxfs-patchelf-2/package.nix { nxfsenv = nxfsenv-2-10; };
   # gperf-2 :: derivation
   gperf-2    = callPackage ./nxfs-gperf-2/package.nix { nxfsenv = nxfsenv-2-10; };
-  # patch-2 :: derivation
-  patch-2    = callPackage ./nxfs-patch-2/package.nix { nxfsenv = nxfsenv-2-10; };
   # gzip-2 :: derivation
   gzip-2     = callPackage ./nxfs-gzip-2/package.nix { nxfsenv = nxfsenv-2-10; };
 in
