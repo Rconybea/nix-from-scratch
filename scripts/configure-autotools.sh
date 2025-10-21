@@ -139,8 +139,12 @@ if [[ -n ${configure_exec} ]]; then
     #
     2>&1 echo ${configure_exec} ${configure_extra_args}..
     set -x
-    ${configure_exec} ${configure_extra_args}
+    (${configure_exec} ${configure_extra_args} 2>&1) | tee ${log_dir}/config.log
     set +x
+    cat > ${cmd} <<EOF
+export PATH=$PATH
+${configure_exec} ${configure_extra_args}
+EOF
 else
     if [[ -n ${cflags_arg} ]]; then
         if [[ -n ${cppflags_arg} ]]; then
