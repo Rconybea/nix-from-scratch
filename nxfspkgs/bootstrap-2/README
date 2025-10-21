@@ -60,13 +60,13 @@ Dependencies somewhat overspecified for the sake of simplicity.
  +------------------------------------------+-----------------------+---------------+-----------------+
  | -A stage2pkgs.coreutils-2                  nxfs-coreutils-2                                        |
  +----------------------------------------------------------------------------------------------------+
- | -A stage2pkgs.gnumake-2                    nxfs-gnumake-2                                          |
+ | -A stage2pkgs.gnumake-2                    bootstrap-pkgs/gnumake                                  |
  +----------------------------------------------------------------------------------------------------+
- | -A stage2pkgs.gawk-2                       bootstrap-pkgs/gawk-2                                   |
+ | -A stage2pkgs.gawk-2                       bootstrap-pkgs/gawk                                     |
  +----------------------------------------------------------------------------------------------------+
- | -A stage2pkgs.popen-2                      bootstrap-pkgs/popen-2                                  |
+ | -A stage2pkgs.popen-2                      bootstrap-pkgs/popen                                    |
  +----------------------------------------------------------------------------------------------------+
- | -A stage2pkgs.popen-template-2             bootstrap-pkgs/popen-template-2                         |
+ | -A stage2pkgs.popen-template-2             bootstrap-pkgs/popen-template                           |
  +----------------------------------------------------------------------------------------------------+
  | -A stage2pkgs.bash-2                       bootstrap-pkgs/bash                                     |
  +----------------------------------------------------------------------------------------------------+

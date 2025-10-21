@@ -1,6 +1,8 @@
 {
   # stdenv :: derivation+attrset
   stdenv,
+  # stageid :: string -- "2" for stage2, "3" for stage3
+  stageid,
 } :
 
 let
@@ -8,7 +10,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-gnumake-3";
+  name         = "nxfs-gnumake-${stageid}";
 
   src          = builtins.fetchTarball { name = "make-${version}-source";
                                          url = "https://ftpmirror.gnu.org/gnu/make/make-${version}.tar.gz";

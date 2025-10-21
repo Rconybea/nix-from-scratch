@@ -278,7 +278,9 @@ let
   nxfsenv-2-8 = nxfsenv-2-7 // { gawk = gawk-2; };
 in
 let
-  gnumake-2 = callPackage ./nxfs-gnumake-2/package.nix { nxfsenv = nxfsenv-2-8; };
+  gnumake-2 = callPackage ../bootstrap-pkgs/gnumake/package.nix { stdenv = stdenv-1;
+                                                                  stageid = "2";
+                                                                };
 in
 let
   nxfsenv-2-9 = nxfsenv-2-8 // { gnumake = gnumake-2; };

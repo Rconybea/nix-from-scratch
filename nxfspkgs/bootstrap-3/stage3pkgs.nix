@@ -200,7 +200,8 @@ let
 in
 let
   # gnumake-3   :: derivation
-  gnumake-3 = callPackage ./nxfs-gnumake-3/package.nix { stdenv = stdenv-2; };
+  gnumake-3 = callPackage ../bootstrap-pkgs/gnumake/package.nix { stdenv = stdenv-2;
+                                                                  stageid = "3"; };
 in
 let
   # coreutils-3 :: derivation
