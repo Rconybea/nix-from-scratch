@@ -68,3 +68,8 @@ cp ${tmp} ${out}/bin/
 cp ${tmp} ${out}/bin/nxfs-g++
 
 cp ${setup_hook} ${out}/nix-support/setup-hook
+
+# verify gcc wrappers run
+
+${out}/bin/nxfs-gcc -v
+${out}/bin/nxfs-g++ -v

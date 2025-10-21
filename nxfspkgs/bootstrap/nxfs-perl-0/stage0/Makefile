@@ -21,7 +21,7 @@ PREFIX:=$(shell realpath ../$(stem))
 # REQUIRE:
 #  - sysroot available in nix store
 #
-sysroot_storepath:=$(shell nix-build ../../nxfs-sysroot-0)
+sysroot_storepath:=$(shell nix-build ../../nxfs-toolchain-0)
 libxcrypt_storepath:=$(shell nix-build ../../nxfs-libxcrypt-0)
 
 version_major=5.0
@@ -41,14 +41,18 @@ url:=https://www.cpan.org/src/$(version_major)/$(tarball)
 # verify this sha
 sha256:=d5325300ad267624cb0b7d512cfdfcd74fa7fe00c455c5b51a6bd53e5e199ef9
 #
-cflags:=-I$(EXT_PREFIX)/include -I$(sysroot_storepath)/usr/include
-ldflags:=-L$(libxcrypt_storepath)/lib -Wl,-enable-new-dtags -Wl,-rpath,$(libxcrypt_storepath)/lib -Wl,-rpath,$(sysroot_storepath)/usr/lib -Wl,-rpath,$(sysroot_storepath)/lib -Wl,-dynamic-linker,$(sysroot_storepath)/lib/ld-linux-x86-64.so.2
+cflags:=-I$(EXT_PREFIX)/include -I$(sysroot_storepath)/include
+ldflags:=-L$(libxcrypt_storepath)/lib -Wl,-enable-new-dtags -Wl,-rpath,$(libxcrypt_storepath)/lib -Wl,-rpath,$(sysroot_storepath)/lib -L$(EXT_PREFIX)/lib -Wl,-rpath,${EXT_PREFIX}/lib -Wl,-dynamic-linker,$(sysroot_storepath)/lib/ld-linux-x86-64.so.2
 #
 patch_script:=
 srcdir:=src
 builddir:=src
-post_install_hook:=./perl-post-install-hook.sh --prefix=$(PREFIX) --runpath=$(libxcrypt_storepath)/lib:$(sysroot_storepath)/usr/lib:$(sysroot_storepath)/lib --version-major-minor=$(version_major_minor)
+pre_configure_hook:=
+configure_exec:=sh
+# see ./configure_perl.sh.  Needs cript because cflags contains embedded space.
+#configure_extra_args:=Configure -des -Dprefix=$(PREFIX) -Dccflags=$(cflags) -Dvendorprefix=$(PREFIX) -Duseshrplib -Dprivlib=$(PREFIX)/lib/perl5/$(version_major_minor)/core_perl -Darchlib=$(PREFIX)/lib/perl5/$(version_major_minor)/core_perl -Dsitelib=$(PREFIX)/lib/perl5/$(version_major_minor)/site_perl -Dsitearch=$(PREFIX)/lib/perl5/$(version_major_minor)/site_perl -Dvendorlib=$(PREFIX)/lib/perl5/$(version_major_minor)/vendor_perl -Dvendorarch=$(PREFIX)/lib/perl5/$(version_major_minor)/vendor_perl
 
+post_install_hook:=./perl-post-install-hook.sh --prefix=$(PREFIX) --runpath=$(libxcrypt_storepath)/lib:$(sysroot_storepath)/lib --version-major-minor=$(version_major_minor)
 
 .PHONY: all
 all: install
@@ -82,7 +86,7 @@ include $(TOP_DIR)/mk/patch.mk
 
 state/config.result $(builddir): state/patch.result
 	mkdir -p $(builddir)
-	./configure_perl.sh --prefix=$(PREFIX) --src-dir=$(srcdir) --cflags="$(cflags)" --ldflags="$(ldflags)" --version-major-minor=$(version_major_minor)
+	(./configure_perl.sh --local-prefix=$(EXT_PREFIX) --prefix=$(PREFIX) --src-dir=$(srcdir) --cflags="$(cflags)" --ldflags="$(ldflags)" --version-major-minor=$(version_major_minor) 2>&1) | tee log/config.log
 
 .PHONY: config
 config: state/config.result

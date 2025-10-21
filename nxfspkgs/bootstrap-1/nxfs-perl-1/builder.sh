@@ -1,11 +1,11 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 echo
-echo "chmod=${chmod}"
+echo "patchelf=${patchelf}"
 echo "bash=${bash}"
-echo "mkdir=${mkdir}"
+echo "coreutils=${coreutils}"
 echo "tar=${tar}"
 echo "nxfs_toolchain_1=${nxfs_toolchain_1}"
 echo "nxfs_perl_0=${nxfs_perl_0}"
@@ -15,7 +15,9 @@ echo "target_runpath=${target_runpath}"
 echo "TMP=${TMP}"
 echo
 
-${mkdir} ${out}
+export PATH=${tar}/bin:${coreutils}/bin:${patchelf}/bin
+
+mkdir ${out}
 
 # libc: only as smoke test for valid sysroot
 libc=${nxfs_toolchain_1}/lib/libc.so.6
@@ -45,12 +47,12 @@ echo "stage1 libc:       ${libc}"
 #
 staging=${TMP}
 
-${mkdir} -p ${staging}
+mkdir -p ${staging}
 
-(cd ${nxfs_perl_0} && (${tar} cf - . | ${tar} xf - -C ${staging}))
+(cd ${nxfs_perl_0} && (tar cf - . | tar xf - -C ${staging}))
 
-${chmod} u+w ${staging}
-${chmod} u+w ${staging}/bin
+chmod u+w ${staging}
+chmod u+w ${staging}/bin
 
 for dir in ${staging}/bin ${staging}/lib/perl5/5.40/core_perl/CORE; do
     for file in ${dir}/*; do
@@ -64,12 +66,12 @@ for dir in ${staging}/bin ${staging}/lib/perl5/5.40/core_perl/CORE; do
     done
 done
 
-${chmod} u-w ${staging}/bin
+chmod u-w ${staging}/bin
 
 # ----------------------------------------------------------------
 # copy to final destination
 #
 final=${out}
 
-(cd ${staging} && (${tar} cf - . | ${tar} xf - -C ${final})
+(cd ${staging} && (tar cf - . | tar xf - -C ${final})
 )

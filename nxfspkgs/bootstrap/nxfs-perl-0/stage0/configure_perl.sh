@@ -1,6 +1,8 @@
 #!/bin/bash
 # reminder: perl builds in source directory
 
+set -euo pipefail
+
 self_name=$(basename ${0})
 
 usage() {
@@ -11,6 +13,7 @@ srcdir=
 cflags=
 ldflags=
 prefix=
+local_prefix=
 version_major_minor=
 
 while [[ $# > 0 ]]; do
@@ -26,6 +29,9 @@ while [[ $# > 0 ]]; do
             ;;
         --prefix=*)
             prefix=${1#*=}
+            ;;
+        --local-prefix=*)
+            local_prefix=${1#*=}
             ;;
         --version-major-minor=*)
             version_major_minor=${1#*=}
@@ -69,4 +75,17 @@ pushd ${srcdir}
 
 perldir=${prefix}/lib/perl5/${version_major_minor}
 
-sh Configure -des -Dprefix=${prefix} -Dccflags="${cflags}" -Dldflags="${ldflags}" -Dvendorprefix=${prefix} -Duseshrplib -Dprivlib=${perldir}/core_perl -Darchlib=${perldir}/core_perl -Dsitelib=${perldir}/site_perl -Dsitearch=${perldir}/site_perl -Dvendorlib=${perldir}/vendor_perl -Dvendorarch=${perldir}/vendor_perl
+set -x
+
+#sh Configure -des -Dprefix=${prefix} -Dccflags="${cflags}" -Dldflags="${ldflags}" -Dvendorprefix=${prefix} -Duseshrplib -Dprivlib=${perldir}/core_perl -Darchlib=${perldir}/core_perl -Dsitelib=${perldir}/site_perl -Dsitearch=${perldir}/site_perl -Dvendorlib=${perldir}/vendor_perl -Dvendorarch=${perldir}/vendor_perl
+
+# -Uuselocale: disable locale support (assume we don't need during bootstrap)
+#
+sh Configure -des -Dprefix=${prefix} -Dccflags="${cflags}" -Dldflags="${ldflags}" \
+   -Dlocincpth=${local_prefix}/include -Dloclibpth=${local_prefix}/lib -Dlibpth="${local_prefix}/lib /usr/lib" \
+   -Dvendorprefix=${prefix} -Duseshrplib \
+   -Dprivlib=${perldir}/core_perl -Darchlib=${perldir}/core_perl -Dsitelib=${perldir}/site_perl \
+   -Dsitearch=${perldir}/site_perl -Dvendorlib=${perldir}/vendor_perl -Dvendorarch=${perldir}/vendor_perl \
+   -Uuselocale
+
+set +x

@@ -70,9 +70,9 @@ established in nxfs-toolchain-0
 14. nxfs-diffutils-0.  diffutils 3.10   build in stage0, install (to ./diffutils),  then run ./copy2nix.sh
 15. nxfs-gzip-0.       gzip 1.13        build in stage0, install (to ./gzip),       then run ./copy2nix.sh
 16. nxfs-cacert-0.     n/a              copy from host                              just run ./copy2nix.sh
+17. nxfs-perl-0.       perl 5.40.0      build in stage0, install (to ./perl/),      then run ./copy2nix.sh
 
 perl,m4 likely not needed in stage0 (as of 4jan2025),  keeping around in case need them later
-(19). nxfs-perl-0.       perl 5.40.0     build in stage0, install (to ./perl/),      then run ./copy2nix.sh
 (20). nxfs-m4-0.         m4 1.4.19       build in stage0, install (to ./m4/),        then run ./copy2nix.sh
 
 Then continue in ../bootstrap-1

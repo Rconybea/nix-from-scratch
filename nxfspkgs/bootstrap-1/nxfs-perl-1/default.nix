@@ -10,14 +10,11 @@ let
   nxfs-toolchain-1       = import ../nxfs-toolchain-1/default.nix;
   nxfs-redirect-elf-file = import ../nxfs-redirect-elf-file/default.nix;
 
-#  gnumake           = "${nxfs-gnumake-1}/bin/make";
-  tar               = "${nxfs-tar-1}/bin/tar";
   bash              = "${nxfs-bash-1}/bin/bash";
   basename          = "${nxfs-coreutils-1}/bin/basename";
   head              = "${nxfs-coreutils-1}/bin/head";
   chmod             = "${nxfs-coreutils-1}/bin/chmod";
   mkdir             = "${nxfs-coreutils-1}/bin/mkdir";
-  patchelf          = "${nxfs-patchelf-1}/bin/patchelf";
 
   redirect_elf_file = "${nxfs-redirect-elf-file}/bootstrap-scripts/redirect-elf-file.sh";
 in
@@ -26,14 +23,12 @@ derivation {
   name               = "nxfs-perl-1";
   system             = builtins.currentSystem;
 
+  coreutils          = nxfs-coreutils-1;
   basename           = basename;
-  head               = head;
   bash               = bash;
-  chmod              = chmod;
-  mkdir              = mkdir;
   builder            = bash;
-  patchelf           = patchelf;
-  tar                = tar;
+  patchelf           = nxfs-patchelf-1;
+  tar                = nxfs-tar-1;
 
   redirect_elf_file  = redirect_elf_file;
 

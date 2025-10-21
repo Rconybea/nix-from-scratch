@@ -17,8 +17,6 @@ stdenv.mkDerivation {
 
   inherit libxcrypt;
 
-  #gcc_wrapper  = nxfsenv.gcc_wrapper;
-
   version             = version;
   version_major_minor = version_major_minor;
 

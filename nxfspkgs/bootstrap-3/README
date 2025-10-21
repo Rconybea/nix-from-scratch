@@ -70,10 +70,10 @@ WWe need nxfs-xz-3, nxfs-bzip-3, nxfs-curl-3 for a stdenv.
  |                 | nxfs-autoconf-3 | nxfs-flex-3      | nxfs-gmp-3    |               |     gperf/      |
  +-----------------+-----------------+---------------+--+------c13------+------d13------+                 |
  +--------------------------b13------+---------------|  -A stage3pkgs   | -A stage3pkgs |                 |
- | -A stage3pkgs   nxfs-perl-3       | -A stage3pkgs |     .file-3      |    .zlib-3    |                 |
+ | -A stage3pkgs   perl/             | -A stage3pkgs |     .file-3      |    .zlib-3    |                 |
  |    .perl-3                        |    .m4-3      |                  |               |                 |
  +-----------------------------------+               |                  |               | -A stage3pkgs   |
- | -A stage3pkgs   nxfs-libxcrypt-3  |               |                  |               |    .patchelf-3  |
+ | -A stage3pkgs   libxcrypt/        |               |                  |               |    .patchelf-3  |
  |    .libxcrypt-3                   |      m4/      |      file/       |     zlib/     |                 |
  +-----------------------------------+               |                  |               |    patchelf/    |
  | -A stage3pkgs   pkgconf/          |               |                  |               |                 |

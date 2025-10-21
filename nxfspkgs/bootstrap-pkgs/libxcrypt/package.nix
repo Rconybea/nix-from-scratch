@@ -5,6 +5,8 @@
   perl,
   # pkgconf :: derivation
   pkgconf,
+  # stageid :: string  -- "2" for stage2, "3" for stage3
+  stageid
 } :
 
 let
@@ -12,7 +14,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-libxcrypt-3";
+  name         = "nxfs-libxcrypt-${stageid}";
   version      = version;
 
   src = builtins.fetchTarball {

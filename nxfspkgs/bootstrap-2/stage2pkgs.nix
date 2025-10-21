@@ -319,6 +319,27 @@ let
   gperf-2    = callPackage ../bootstrap-pkgs/gperf/package.nix { stdenv = stdenv-2-1;
                                                                  stageid = "2"; };
 
+  # note: stage2pkgs.nxfs-perl-1 doesn't actually exist
+  #       + harder to provide than we might expect.
+  #       If we decide we want to revisit, probably build stage0/stage1 without libcrypt
+#
+#  # libxcrypt-2 :: derivation
+#  libxcrypt-2 = callPackage ../bootstrap-pkgs/libxcrypt/package.nix { stdenv = stdenv-2-1;
+#                                                                      perl = stage1pkgs.nxfs-perl-1;
+#                                                                      pkgconf = pkgconf-2;
+#                                                                      stageid = "2"; };
+
+  # NOTE: stage3 perl gets pkgconf, libxcrypt.
+  #       in stage2 we don't need it
+  #
+  # perl-2 :: derivation
+  perl-2     = callPackage ../bootstrap-pkgs/perl/package.nix { stdenv = stdenv-2-1;
+                                                                pkgconf = pkgconf-2;
+                                                                with-xcrypt = false;
+                                                                locale-archive = locale-archive-1;
+                                                                stageid = "2"; };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -332,12 +353,6 @@ let
   nxfsenv-2-8 = nxfsenv-2-7 // { gawk = gawk-2; };
   nxfsenv-2-9 = nxfsenv-2-8 // { gnumake = gnumake-2; };
   nxfsenv-2-10 = nxfsenv-2-9 // { coreutils = coreutils-2; };
-
-  # NOTE: stage3 perl gets pkgconf, libxcrypt
-  # perl-2 :: derivation
-  perl-2     = callPackage ./nxfs-perl-2/package.nix { nxfsenv = nxfsenv-2-10; };
-in
-let
   nxfsenv-2-b13 = nxfsenv-2-10 // { m4 = m4-2;
                                     perl = perl-2; };
 
@@ -582,6 +597,7 @@ in
   inherit autoconf-2;
   inherit binutils-2;
   inherit perl-2;
+#  inherit libxcrypt-2;
   inherit m4-2;
   inherit pkgconf-2;
   inherit file-2;

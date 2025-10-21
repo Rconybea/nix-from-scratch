@@ -253,17 +253,18 @@ let
 in
 let
   # libxcrypt-3 :: derivation
-  libxcrypt-3  = callPackage ./nxfs-libxcrypt-3/package.nix { stdenv = stdenv-3-1;
-                                                              perl = stage2pkgs.perl-2;
-                                                              pkgconf = pkgconf-3;
-                                                            };
+  libxcrypt-3  = callPackage ../bootstrap-pkgs/libxcrypt/package.nix { stdenv = stdenv-3-1;
+                                                                       perl = stage2pkgs.perl-2;
+                                                                       pkgconf = pkgconf-3;
+                                                                       stageid = "3"; };
 in
 let
   # perl-3 :: derivation
-  perl-3 = callPackage ./nxfs-perl-3/package.nix { stdenv = stdenv-3-1;
-                                                   libxcrypt = libxcrypt-3;
-                                                   pkgconf = pkgconf-3;
-                                                 };
+  perl-3 = callPackage ../bootstrap-pkgs/perl/package.nix { stdenv = stdenv-3-1;
+                                                            libxcrypt = libxcrypt-3;
+                                                            pkgconf = pkgconf-3;
+                                                            locale-archive = locale-archive-1;
+                                                            stageid = "3"; };
 in
 let
   # binutils-3 :: derivation
