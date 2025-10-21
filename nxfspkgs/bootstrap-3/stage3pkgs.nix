@@ -244,9 +244,9 @@ let
   # patchelf-3 :: derivation
   patchelf-3   = callPackage ../bootstrap-pkgs/patchelf/package.nix { stdenv = stdenv-3-1;
                                                                       stageid = "3"; };
-
   # gzip-3 :: derivation
-  gzip-3       = callPackage ./nxfs-gzip-3/package.nix { stdenv = stdenv-3-1; };
+  gzip-3       = callPackage ../bootstrap-pkgs/gzip/package.nix { stdenv = stdenv-3-1;
+                                                                  stageid = "3"; };
   # gperf-3 :: derivation
   gperf-3      = callPackage ./nxfs-gperf-3/package.nix { stdenv = stdenv-3-1; };
 in

@@ -1,6 +1,8 @@
 {
   # stdenv :: attrset+derivation
-  stdenv
+  stdenv,
+  # stageid :: string  -- "2" for stage2, "3" for stage3
+  stageid,
 } :
 
 let
@@ -8,7 +10,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-gzip-3";
+  name         = "nxfs-gzip-${stageid}";
   version      = version;
 
   src          = builtins.fetchTarball { name = "gzip-${version}-source";
