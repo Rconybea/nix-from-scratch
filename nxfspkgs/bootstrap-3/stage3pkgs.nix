@@ -239,13 +239,16 @@ let
   file-3       = callPackage ../bootstrap-pkgs/file/package.nix { stdenv = stdenv-3-1;
                                                                   stageid = "3"; };
   # zlib-3 :: derivation
-  zlib-3       = callPackage ./nxfs-zlib-3/package.nix { stdenv = stdenv-3-1; };
+  zlib-3       = callPackage ../bootstrap-pkgs/zlib/package.nix { stdenv = stdenv-3-1;
+                                                                  stageid = "3"; };
+  # patchelf-3 :: derivation
+  patchelf-3   = callPackage ../bootstrap-pkgs/patchelf/package.nix { stdenv = stdenv-3-1;
+                                                                      stageid = "3"; };
+
   # gzip-3 :: derivation
   gzip-3       = callPackage ./nxfs-gzip-3/package.nix { stdenv = stdenv-3-1; };
   # gperf-3 :: derivation
   gperf-3      = callPackage ./nxfs-gperf-3/package.nix { stdenv = stdenv-3-1; };
-  # patchelf-3 :: derivation
-  patchelf-3   = callPackage ./nxfs-patchelf-3/package.nix { stdenv = stdenv-3-1; };
 in
 let
   # libxcrypt-3 :: derivation

@@ -52,11 +52,11 @@ Dependencies somewhat overspecified for the sake of simplicity.
  |                 |    .autoconf-2  |   .flex-2    |    .gmp-2     |               |                 |
  |                 |                 |              |               |               | -A stage2pkgs   |
  |                 | nxfs-autoconf-2 | nxfs-flex-2  | nxfs-gmp-2    |               |    .patchelf-2  |
- +-----------------------------------+------+-------+---------------+---------------+ nxfs-patchelf-2 |
- | -A stage2pkgs.perl-2     nxfs-perl-2     | -A stage2pkgs.file-2  | -A stage2pkgs |                 |
+ +-----------------------------------+------+-------+---------------+---------------+                 |
+ | -A stage2pkgs.perl-2     nxfs-perl-2     | -A stage2pkgs.file-2  | -A stage2pkgs |    patchelf/    |
  | -A stage2pkgs.m4-2       m4/             |                       |    .zlib-2    |                 |
  +------------------------------------------+                       |               |                 |
- | -A stage2pkgs.pkgconf-2  pkgconf/        |         file/         |  nxfs-zlib-2  |                 |
+ | -A stage2pkgs.pkgconf-2  pkgconf/        |         file/         |     zlib/     |                 |
  +------------------------------------------+-----------------------+---------------+-----------------+
  | -A stage2pkgs.patch-2                      bootstrap-pkgs/patch                                    |
  +----------------------------------------------------------------------------------------------------+
