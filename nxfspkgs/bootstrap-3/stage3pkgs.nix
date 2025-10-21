@@ -230,7 +230,9 @@ let
                              stagepkgs = stagepkgs-3-1; };
 
   # pkgconf-3 :: derivation
-  pkgconf-3    = callPackage ./nxfs-pkgconf-3/package.nix { stdenv = stdenv-3-1; };
+  pkgconf-3    = callPackage ../bootstrap-pkgs/pkgconf/package.nix { stdenv = stdenv-3-1;
+                                                                     stageid = "3";
+                                                                   };
   # m4-3 :: derivation
   m4-3         = callPackage ./nxfs-m4-3/package.nix { stdenv = stdenv-3-1; };
   # file-3 :: derivation

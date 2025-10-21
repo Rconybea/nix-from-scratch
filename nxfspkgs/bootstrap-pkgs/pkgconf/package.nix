@@ -1,6 +1,8 @@
 {
   # stdenv :: attrset+derivation
   stdenv,
+  # stageid :: string  -- "2" for stage2, "3" for stage3
+  stageid,
 } :
 
 let
@@ -8,7 +10,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-pkgconf-3";
+  name         = "nxfs-pkgconf-${stageid}";
   version      = version;
 
   src          = builtins.fetchTarball { name = "pkgconf-${version}-source";

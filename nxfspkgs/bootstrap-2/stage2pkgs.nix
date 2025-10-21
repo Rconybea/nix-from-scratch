@@ -282,6 +282,26 @@ let
                                                                  stageid = "2";
                                                                };
 
+  stagepkgs-2-1 = stagepkgs-1 // { patch     = patch-2;
+                                   shell     = bash-2;
+                                   coreutils = coreutils-2;
+                                   gnumake   = gnumake-2;
+                                   gawk      = gawk-2;
+                                   gnutar    = gnutar-2;
+                                   gnugrep   = gnugrep-2;
+                                   gnused    = gnused-2;
+                                   findutils = findutils-2;
+                                   diffutils = diffutils-2;
+                                 };
+
+  stdenv-2-1 = make-stdenv { name = "stdenv-2-1";
+                             stagepkgs = stagepkgs-2-1; };
+
+  # pkgconf-2 :: derivation
+  pkgconf-2  = callPackage ../bootstrap-pkgs/pkgconf/package.nix { stdenv = stdenv-2-1;
+                                                                   stageid = "2";
+                                                                 };
+
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -296,8 +316,6 @@ let
   nxfsenv-2-9 = nxfsenv-2-8 // { gnumake = gnumake-2; };
   nxfsenv-2-10 = nxfsenv-2-9 // { coreutils = coreutils-2; };
 
-  # pkgconf-2 :: derivation
-  pkgconf-2  = callPackage ./nxfs-pkgconf-2/package.nix { nxfsenv = nxfsenv-2-10; };
   # m4-2 :: derivation
   m4-2       = callPackage ./nxfs-m4-2/package.nix { nxfsenv = nxfsenv-2-10; };
   # NOTE: stage3 perl gets pkgconf, libxcrypt
