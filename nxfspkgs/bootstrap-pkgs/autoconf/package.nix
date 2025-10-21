@@ -5,6 +5,8 @@
   perl,
   # m4 :: derivation
   m4,
+  # stageid :: string -- "2" for stage2, "3" for stage3 etc.
+  stageid,
 } :
 
 let
@@ -12,7 +14,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-autoconf-3";
+  name         = "nxfs-autoconf-${stageid}";
 
   src          = builtins.fetchTarball { name = "autoconf-${version}-source";
                                          url = "https://ftpmirror.gnu.org/gnu/autoconf/autoconf-${version}.tar.xz";

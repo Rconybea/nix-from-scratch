@@ -344,7 +344,13 @@ let
   binutils-2 = callPackage ../bootstrap-pkgs/binutils/package.nix { stdenv = stdenv-2-1;
                                                                     perl = perl-2;
                                                                     stageid = "2"; };
-
+  # autoconf-2 :: derivation
+  autoconf-2 = callPackage ../bootstrap-pkgs/autoconf/package.nix { stdenv = stdenv-2-1;
+                                                                    perl = perl-2;
+                                                                    m4 = m4-2;
+                                                                    stageid = "2"; };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -360,11 +366,6 @@ let
   nxfsenv-2-10 = nxfsenv-2-9 // { coreutils = coreutils-2; };
   nxfsenv-2-b13 = nxfsenv-2-10 // { m4 = m4-2;
                                     perl = perl-2; };
-
-  # autoconf-2 :: derivation
-  autoconf-2 = callPackage ./nxfs-autoconf-2/package.nix { nxfsenv = nxfsenv-2-b13; };
-in
-let
   nxfsenv-2-b14 = nxfsenv-2-b13 // { autoconf = autoconf-2; };
 
   # automake-2 :: derivation
