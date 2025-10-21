@@ -5,6 +5,8 @@
   autoconf,
   # perl :: derivation
   perl,
+  # stageid :: string
+  stageid,
 } :
 
 let
@@ -12,7 +14,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-automake-3";
+  name         = "nxfs-automake-${stageid}";
 
   src          = builtins.fetchTarball { name = "automake-${version}-source";
                                          url = "https://ftpmirror.gnu.org/gnu/automake/automake-${version}.tar.xz";

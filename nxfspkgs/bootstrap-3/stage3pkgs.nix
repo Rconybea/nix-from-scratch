@@ -283,10 +283,11 @@ let
 in
 let
   # autoconf-3 :: derivation
-  automake-3 = callPackage ./nxfs-automake-3/package.nix { stdenv = stdenv-3-1;
-                                                           autoconf = autoconf-3;
-                                                           perl = perl-3;
-                                                         };
+  automake-3 = callPackage ../bootstrap-pkgs/automake/package.nix { stdenv = stdenv-3-1;
+                                                                    autoconf = autoconf-3;
+                                                                    perl = perl-3;
+                                                                    stageid = "3";
+                                                                  };
 in
 let
   # flex-3 :: derivation

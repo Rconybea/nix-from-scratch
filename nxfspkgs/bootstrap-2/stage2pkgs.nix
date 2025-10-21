@@ -369,7 +369,10 @@ let
   nxfsenv-2-b14 = nxfsenv-2-b13 // { autoconf = autoconf-2; };
 
   # automake-2 :: derivation
-  automake-2 = callPackage ./nxfs-automake-2/package.nix { nxfsenv = nxfsenv-2-b14; };
+  automake-2 = callPackage ../bootstrap-pkgs/automake/package.nix { stdenv = stdenv-2-1;
+                                                                    autoconf = autoconf-2;
+                                                                    perl = perl-2;
+                                                                    stageid = "2"; };
 in
 let
   nxfsenv-2-c13 = nxfsenv-2-b13 // { file = file-2; };
