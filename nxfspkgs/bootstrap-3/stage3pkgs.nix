@@ -231,10 +231,10 @@ let
 
   # pkgconf-3 :: derivation
   pkgconf-3    = callPackage ../bootstrap-pkgs/pkgconf/package.nix { stdenv = stdenv-3-1;
-                                                                     stageid = "3";
-                                                                   };
+                                                                     stageid = "3"; };
   # m4-3 :: derivation
-  m4-3         = callPackage ./nxfs-m4-3/package.nix { stdenv = stdenv-3-1; };
+  m4-3         = callPackage ../bootstrap-pkgs/m4/package.nix { stdenv = stdenv-3-1;
+                                                                stageid = "3"; };
   # file-3 :: derivation
   file-3       = callPackage ./nxfs-file-3/package.nix { stdenv = stdenv-3-1; };
   # zlib-3 :: derivation

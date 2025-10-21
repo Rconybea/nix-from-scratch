@@ -299,8 +299,10 @@ let
 
   # pkgconf-2 :: derivation
   pkgconf-2  = callPackage ../bootstrap-pkgs/pkgconf/package.nix { stdenv = stdenv-2-1;
-                                                                   stageid = "2";
-                                                                 };
+                                                                   stageid = "2"; };
+  # m4-2 :: derivation
+  m4-2       = callPackage ../bootstrap-pkgs/m4/package.nix { stdenv = stdenv-2-1;
+                                                              stageid = "2"; };
 
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
@@ -316,8 +318,6 @@ let
   nxfsenv-2-9 = nxfsenv-2-8 // { gnumake = gnumake-2; };
   nxfsenv-2-10 = nxfsenv-2-9 // { coreutils = coreutils-2; };
 
-  # m4-2 :: derivation
-  m4-2       = callPackage ./nxfs-m4-2/package.nix { nxfsenv = nxfsenv-2-10; };
   # NOTE: stage3 perl gets pkgconf, libxcrypt
   # perl-2 :: derivation
   perl-2     = callPackage ./nxfs-perl-2/package.nix { nxfsenv = nxfsenv-2-10; };
