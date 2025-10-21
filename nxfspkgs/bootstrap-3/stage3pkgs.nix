@@ -236,7 +236,8 @@ let
   m4-3         = callPackage ../bootstrap-pkgs/m4/package.nix { stdenv = stdenv-3-1;
                                                                 stageid = "3"; };
   # file-3 :: derivation
-  file-3       = callPackage ./nxfs-file-3/package.nix { stdenv = stdenv-3-1; };
+  file-3       = callPackage ../bootstrap-pkgs/file/package.nix { stdenv = stdenv-3-1;
+                                                                  stageid = "3"; };
   # zlib-3 :: derivation
   zlib-3       = callPackage ./nxfs-zlib-3/package.nix { stdenv = stdenv-3-1; };
   # gzip-3 :: derivation
