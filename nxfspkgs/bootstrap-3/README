@@ -64,12 +64,12 @@ WWe need nxfs-xz-3, nxfs-bzip-3, nxfs-curl-3 for a stdenv.
  |                 | -A stage3pkgs   | -A stage3pkgs    | -A stage3pkgs |               |                 |
  | nxfs-binutils-3 |    .automake-3  |    .bison-3      |    .mpfr-3    | nxfs-python-3 |                 |
  |                 | nxfs-automake-3 | nxfs-bison-3     | nxfs-mpfr-3   |               |                 |
- |                 +--------b14------+------c14---------+------d14------+               |                 |
- |                 | -A stage3pkgs   | -A stage3pkgs    | -A stage3pkgs |               |                 |
+ |                 +--------b14------+------c14---------+------d14------+               | -A stage3pkgs   |
+ |                 | -A stage3pkgs   | -A stage3pkgs    | -A stage3pkgs |               |    .gperf-3     |
  |                 |    .autoconf-3  |    .flex-3       |    .gmp-3     |               |                 |
- |                 | nxfs-autoconf-3 | nxfs-flex-3      | nxfs-gmp-3    |               | -A stage3pkgs   |
- +-----------------+-----------------+---------------+--+------c13------+------d13------+    .gperf-3     |
- +--------------------------b13------+---------------|  -A stage3pkgs   | -A stage3pkgs | nxfs-gperf-3    |
+ |                 | nxfs-autoconf-3 | nxfs-flex-3      | nxfs-gmp-3    |               |     gperf/      |
+ +-----------------+-----------------+---------------+--+------c13------+------d13------+                 |
+ +--------------------------b13------+---------------|  -A stage3pkgs   | -A stage3pkgs |                 |
  | -A stage3pkgs   nxfs-perl-3       | -A stage3pkgs |     .file-3      |    .zlib-3    |                 |
  |    .perl-3                        |    .m4-3      |                  |               |                 |
  +-----------------------------------+               |                  |               | -A stage3pkgs   |

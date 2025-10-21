@@ -44,11 +44,11 @@ Dependencies somewhat overspecified for the sake of simplicity.
  |                 |                                | nxfs-mpc-2    |               |     gzip/       |
  |                 +-----------------+--------------+---------------+               |                 |
  |                 | -A stage2pkgs   |-A stage2pkgs | -A stage2pkgs |               |                 |
- | nxfs-binutils-2 |    .automake-2  |   .bison-2   |    .mpfr-2    |               |                 |
- |                 |                 |              |               |               |                 |
- |                 | nxfs-automake-2 | nxfs-bison-2 | nxfs-mpfr-2   | nxfs-python-2 | -A stage2pkgs   |
- |                 +-----------------+--------------+---------------+               |    .gperf-2     |
- |                 | -A stage2pkgs   |-A stage2pkgs | -A stage2pkgs |               | nxfs-gperf-2    |
+ | nxfs-binutils-2 |    .automake-2  |   .bison-2   |    .mpfr-2    |               | -A stage2pkgs   |
+ |                 |                 |              |               |               |    .gperf-2     |
+ |                 | nxfs-automake-2 | nxfs-bison-2 | nxfs-mpfr-2   | nxfs-python-2 |                 |
+ |                 +-----------------+--------------+---------------+               |     gperf/      |
+ |                 | -A stage2pkgs   |-A stage2pkgs | -A stage2pkgs |               |                 |
  |                 |    .autoconf-2  |   .flex-2    |    .gmp-2     |               |                 |
  |                 |                 |              |               |               | -A stage2pkgs   |
  |                 | nxfs-autoconf-2 | nxfs-flex-2  | nxfs-gmp-2    |               |    .patchelf-2  |

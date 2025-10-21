@@ -315,6 +315,9 @@ let
   # gzip-2 :: derivation
   gzip-2     = callPackage ../bootstrap-pkgs/gzip/package.nix { stdenv = stdenv-2-1;
                                                                 stageid = "2"; };
+  # gperf-2 :: derivation
+  gperf-2    = callPackage ../bootstrap-pkgs/gperf/package.nix { stdenv = stdenv-2-1;
+                                                                 stageid = "2"; };
 
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
@@ -333,8 +336,6 @@ let
   # NOTE: stage3 perl gets pkgconf, libxcrypt
   # perl-2 :: derivation
   perl-2     = callPackage ./nxfs-perl-2/package.nix { nxfsenv = nxfsenv-2-10; };
-  # gperf-2 :: derivation
-  gperf-2    = callPackage ./nxfs-gperf-2/package.nix { nxfsenv = nxfsenv-2-10; };
 in
 let
   nxfsenv-2-b13 = nxfsenv-2-10 // { m4 = m4-2;

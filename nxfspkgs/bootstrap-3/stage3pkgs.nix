@@ -248,7 +248,8 @@ let
   gzip-3       = callPackage ../bootstrap-pkgs/gzip/package.nix { stdenv = stdenv-3-1;
                                                                   stageid = "3"; };
   # gperf-3 :: derivation
-  gperf-3      = callPackage ./nxfs-gperf-3/package.nix { stdenv = stdenv-3-1; };
+  gperf-3      = callPackage ../bootstrap-pkgs/gperf/package.nix { stdenv = stdenv-3-1;
+                                                                   stageid = "3"; };
 in
 let
   # libxcrypt-3 :: derivation
