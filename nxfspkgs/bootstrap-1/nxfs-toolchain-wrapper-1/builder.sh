@@ -36,6 +36,7 @@ gcc_basename=$(basename ${gcc})
 gxx_basename=$(basename ${gxx})
 
 mkdir -p ${out}/bin
+mkdir -p ${out}/nix-support
 
 sysroot=${toolchain}
 
@@ -72,6 +73,11 @@ sed -i -e s:@dynamic_linker@:${dynamic_linker}: ${tmp}
 chmod +x ${tmp}
 cp ${tmp} ${out}/bin
 cp ${tmp} ${out}/bin/nxfs-g++
+
+# setup hook cooperates with stdenv,
+# see make-stdenv/setup.sh
+#
+cp ${setup_hook} ${out}/nix-support/setup-hook
 
 # verify gcc wrappers run
 

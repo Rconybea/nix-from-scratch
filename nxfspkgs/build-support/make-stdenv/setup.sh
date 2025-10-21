@@ -18,6 +18,9 @@ echo initialPath=${initialPath:-UNSET}
 # 1. append $1/bin to _PATH (at the end)
 # 2. source setup hook $1/nix-support/setup-hook
 #
+# remarks:
+# 1. eval here allows RHS to refer to other variables
+#
 addToEnv() {
     echo "addToEnv: [$1]"
 
@@ -53,6 +56,20 @@ export LDFLAGS
 PKG_CONFIG_PATH=
 export PKG_CONFIG_PATH
 
+# compile flags for (recursively enumerated) dependencies D
+# that have a D/include subdirectory
+#
+_NIX_CFLAGS_COMPILE=
+NIX_CFLAGS_COMPILE=
+export NIX_CFLAGS_COMPILE
+
+# linker flags for (recursively enumerated) dependencies D
+# that have a D/lib subdirectory
+#
+_NIX_LDFLAGS=
+NIX_LDFLAGS=
+export NIX_LDFLAGS
+
 declare pkgs=""
 
 findInputs() {
@@ -84,11 +101,28 @@ for i in $pkgs; do
     addToEnv ${i}
 
     if [[ -d ${i}/lib/pkgconfig ]]; then
-        eval export _PKG_CONFIG_PATH=${_PKG_CONFIG_PATH-}${_PKG_CONFIG_PATH:+:}${i}/lib/pkgconfig
+        eval export _PKG_CONFIG_PATH=${_PKG_CONFIG_PATH:-}${_PKG_CONFIG_PATH:+:}${i}/lib/pkgconfig
     fi
+
+    if [[ -d ${i}/include ]]; then
+        eval export _NIX_CFLAGS_COMPILE=\"${_NIX_CFLAGS_COMPILE:-}${_NIX_CFLAGS_COMPILE:+ }-isystem ${i}/include\"
+    fi
+
+    if [[ -d ${i}/lib ]]; then
+        eval export _NIX_LDFLAGS=\"${_NIX_LDFLAGS:-}${_NIX_LDFLAGS:+ }-L${i}/lib -Wl,-rpath,${i}/lib\"
+    fi
+
 done
+
+# PATH, PKG_CONFIG_PATH, NIX_CFLAGS_COMPILE, NIX_LDFLAGS_COMPILE:
+# 1. individual package builder can choose to override these.
+# 2. underscore-prefixed values available in case package builder want to reference them
+# 3. gcc wrappers automatically pass NIX_CFLAGS_COMPILE to compiler
+#
 PATH="${_PATH-}${_PATH:+${PATH:+:}}$PATH"
-PKG_CONFIG_PATH="${_PKG_CONFIG_PATH-}${_PKG_CONFIG_PATH:+${PKG_CONFIG_PATH:+:}}$PKG_CONFIG_PATH"
+PKG_CONFIG_PATH="${_PKG_CONFIG_PATH:-}${_PKG_CONFIG_PATH:+${PKG_CONFIG_PATH:+:}}$PKG_CONFIG_PATH"
+NIX_CFLAGS_COMPILE="${_NIX_CFLAGS_COMPILE:-}"
+NIX_LDFLAGS="${_NIX_LDFLAGS:-}"
 
 ## copy drv.buildInputs, drv.derivation into PATH, in left-to-right order
 #for dir in ${propagatedBuildInputs} ${buildInputs} ${baseInputs}; do

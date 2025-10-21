@@ -21,6 +21,13 @@ derivation {
   gcc_version        = "14.2.0";
   system             = builtins.currentSystem;
 
+  # want to support the following structure for stdenv:
+  #   stdenv.cc
+  #   stdenv.cc.cc        *this package*            (bundled with stdenv.cc.libc in stage1)
+  #   stdenv.cc.bintools  *wrapped* bintools
+  #   stdenv.cc.libc      *also this package* glibc (bundled with stdenv.cc.cc in stage1)
+  #   stdenv.cc.libc.dev  libc headers              (bundled with stdenv.cc.cc in stage1 - defer for now)
+
   toolchain          = nxfs-toolchain-0;
 
   inherit bash;

@@ -5,6 +5,9 @@
 #
 # Need this to adopt a gcc that was originally compiled outside nix store,
 # and by defult produces executables that assume /lib64
+#
+# See nix-from-scratch/nxfspkgs/build-support/make-stdenv/setup.sh
+#
 
 unwrapped_gcc=@unwrapped_gcc@
 bintools=@bintools@
@@ -37,6 +40,7 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     ${unwrapped_gcc} -v
 else
     ${unwrapped_gcc} -specs @gcc_specs@ \
+                     ${NIX_CFLAGS_COMPILE:-} \
                      -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib \
                      -Wl,-dynamic-linker=@dynamic_linker@ "${@}"
 fi

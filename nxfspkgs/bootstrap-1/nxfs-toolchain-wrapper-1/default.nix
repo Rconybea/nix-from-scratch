@@ -1,8 +1,9 @@
 let
-  nxfs-gnused-1 = import ../../bootstrap-1/nxfs-sed-1/default.nix;
-  nxfs-toolchain-1 = import ../../bootstrap-1/nxfs-toolchain-1/default.nix;
-  nxfs-coreutils-1 = import ../../bootstrap-1/nxfs-coreutils-1/default.nix;
-  nxfs-bash-1 = import ../../bootstrap-1/nxfs-bash-1/default.nix;
+  nxfs-bintools-x0-wrapper-1 = import ../nxfs-binutils-x0-wrapper-1/package.nix;
+  nxfs-gnused-1 = import ../nxfs-sed-1/default.nix;
+  nxfs-toolchain-1 = import ../nxfs-toolchain-1/default.nix;
+  nxfs-coreutils-1 = import ../nxfs-coreutils-1/default.nix;
+  nxfs-bash-1 = import ../nxfs-bash-1/default.nix;
   nxfs-defs = import ../nxfs-defs.nix;
 in
 
@@ -10,6 +11,16 @@ in
 derivation {
   name = "toolchain-wrapper-1";
   system = builtins.currentSystem;
+
+  # want to support the following structure for stdenv:
+  #   stdenv.cc           (this wrapper)
+  #   stdenv.cc.cc        unwrapped c/c++ compiler
+  #   stdenv.cc.bintools  *wrapped* bintools
+  #   stdenv.cc.libc      glibc (same as stdenv.cc.cc in stage1)
+  #
+  cc = nxfs-toolchain-1;
+  bintools = nxfs-bintools-x0-wrapper-1;
+  libc = nxfs-toolchain-1;
 
   bash = nxfs-bash-1;
   sed = nxfs-gnused-1;
@@ -20,6 +31,7 @@ derivation {
   builder = "${nxfs-bash-1}/bin/bash";
   args = [ ./builder.sh ];
 
+  setup_hook = ./setup-hook.sh;
   gcc_wrapper_script = ./gcc-wrapper.sh;
   gxx_wrapper_script = ./gxx-wrapper.sh;
 

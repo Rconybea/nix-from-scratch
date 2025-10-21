@@ -37,10 +37,12 @@ let
 
   stdenv-new =
     stdenv-derivation //
-    rec {
+    {
       system = stdenv-derivation.system;
 
       shell = "${stagepkgs.shell}/bin/sh";
+
+      inherit cc;
 
       # attributes that appear in call to mkDerivation:
       # 1. can be accessed directly from build script
