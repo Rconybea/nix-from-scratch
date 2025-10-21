@@ -3,6 +3,8 @@
   stdenv,
   # perl :: derivation
   perl,
+  # stageid :: string
+  stageid,
 } :
 
 let
@@ -10,7 +12,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-binutils-3";
+  name         = "nxfs-binutils-${stageid}";
   version      = version;
 
   src          = builtins.fetchTarball { name = "binutils-${version}-source";

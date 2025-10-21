@@ -268,8 +268,10 @@ let
 in
 let
   # binutils-3 :: derivation
-  binutils-3 = callPackage ./nxfs-binutils-3/package.nix { stdenv = stdenv-3-1;
-                                                           perl = perl-3; };
+  binutils-3 = callPackage ../bootstrap-pkgs/binutils/package.nix { stdenv = stdenv-3-1;
+                                                                    perl = perl-3;
+                                                                    stageid = "3";
+                                                                  };
 
   # autoconf-3 :: derivation
   autoconf-3 = callPackage ./nxfs-autoconf-3/package.nix { stdenv = stdenv-3-1;
