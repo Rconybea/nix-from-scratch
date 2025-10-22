@@ -4,7 +4,9 @@
   # mpfr :: derivation
   mpfr,
   # gmp :: derivation
-  gmp
+  gmp,
+  # stageid :: string  -- "2" for stage2, "3" for stage3 etc.
+  stageid,
 } :
 
 let
@@ -12,7 +14,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-mpc-3";
+  name         = "nxfs-mpc-${stageid}";
   version      = version;
 
   mpfr         = mpfr;

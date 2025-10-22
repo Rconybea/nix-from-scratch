@@ -411,10 +411,10 @@ let
 in
 let
   # mpc-2 :: derivation
-  mpc-2  = callPackage ./nxfs-mpc-2/package.nix { nxfsenv = nxfsenv-2-c13;
-                                                  mpfr = mpfr-2;
-                                                  gmp = gmp-2;
-                                                };
+  mpc-2  = callPackage ../bootstrap-pkgs/mpc/package.nix { stdenv = stdenv-2-1;
+                                                           mpfr = mpfr-2;
+                                                           gmp = gmp-2;
+                                                           stageid = "2"; };
 in
 let
   # TODO: pkgconf, for consistency with stage3

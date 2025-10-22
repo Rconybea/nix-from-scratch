@@ -305,10 +305,10 @@ let
                                                             gmp = gmp-3;
                                                             stageid = "3"; };
   # mpc-3 :: derivation
-  mpc-3 = callPackage ./nxfs-mpc-3/package.nix { stdenv = stdenv-3-1;
-                                                 gmp = gmp-3;
-                                                 mpfr = mpfr-3; };
-
+  mpc-3 = callPackage ../bootstrap-pkgs/mpc/package.nix { stdenv = stdenv-3-1;
+                                                          gmp = gmp-3;
+                                                          mpfr = mpfr-3;
+                                                          stageid = "3"; };
   # isl-3 :: derivation
   isl-3 = callPackage ./nxfs-isl-3/package.nix { stdenv = stdenv-3-1;
                                                  gmp = gmp-3;
