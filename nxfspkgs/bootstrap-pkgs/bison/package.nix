@@ -7,6 +7,8 @@
   flex,
   # m4 :: derivation
   m4,
+  # stageid :: string  - "2" for stage2, "3" for stage3 etc.
+  stageid,
 } :
 
 let
@@ -14,7 +16,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-bison-3";
+  name         = "nxfs-bison-${stageid}";
   version      = version;
 
   src          = builtins.fetchTarball { name = "bison-${version}-source";

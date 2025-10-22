@@ -351,6 +351,13 @@ let
                                                                     stageid = "2"; };
 in
 let
+  # automake-2 :: derivation
+  automake-2 = callPackage ../bootstrap-pkgs/automake/package.nix { stdenv = stdenv-2-1;
+                                                                    autoconf = autoconf-2;
+                                                                    perl = perl-2;
+                                                                    stageid = "2"; };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -367,14 +374,6 @@ let
   nxfsenv-2-b13 = nxfsenv-2-10 // { m4 = m4-2;
                                     perl = perl-2; };
   nxfsenv-2-b14 = nxfsenv-2-b13 // { autoconf = autoconf-2; };
-
-  # automake-2 :: derivation
-  automake-2 = callPackage ../bootstrap-pkgs/automake/package.nix { stdenv = stdenv-2-1;
-                                                                    autoconf = autoconf-2;
-                                                                    perl = perl-2;
-                                                                    stageid = "2"; };
-in
-let
   nxfsenv-2-c13 = nxfsenv-2-b13 // { file = file-2; };
 
   # flex-2 :: derivation
@@ -387,7 +386,11 @@ in
 let
   nxfsenv-2-c14 = nxfsenv-2-c13 // { flex = flex-2; };
   # bison-2 :: derivation
-  bison-2 = callPackage ./nxfs-bison-2/package.nix { nxfsenv = nxfsenv-2-c14; };
+  bison-2 = callPackage ../bootstrap-pkgs/bison/package.nix { stdenv = stdenv-2-1;
+                                                              perl = perl-2;
+                                                              flex = flex-2;
+                                                              m4 = m4-2;
+                                                              stageid = "2"; };
 in
 let
   nxfsenv-2-b15 = nxfsenv-2-b14 // nxfsenv-2-c14 // { bison = bison-2; };

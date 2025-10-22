@@ -46,7 +46,7 @@ Dependencies somewhat overspecified for the sake of simplicity.
  |                 | -A stage2pkgs   |-A stage2pkgs | -A stage2pkgs |               |                 |
  |    binutils/    |    .automake-2  |   .bison-2   |    .mpfr-2    |               | -A stage2pkgs   |
  |                 |                 |              |               |               |    .gperf-2     |
- |                 |    automake/    | nxfs-bison-2 | nxfs-mpfr-2   | nxfs-python-2 |                 |
+ |                 |    automake/    |    bison/    | nxfs-mpfr-2   | nxfs-python-2 |                 |
  |                 +-----------------+--------------+---------------+               |     gperf/      |
  |                 | -A stage2pkgs   |-A stage2pkgs | -A stage2pkgs |               |                 |
  |                 |    .autoconf-2  |   .flex-2    |    .gmp-2     |               |                 |

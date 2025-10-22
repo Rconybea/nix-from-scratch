@@ -319,6 +319,7 @@ let
                                                      perl = perl-3;
                                                      flex = flex-3;
                                                      m4 = m4-3;
+                                                     stageid = "3";
                                                    };
 in
 let
