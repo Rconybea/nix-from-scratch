@@ -384,6 +384,19 @@ let
                                                                 };
 in
 let
+  # mpr-2 :: derivation
+  mpfr-2 = callPackage ../bootstrap-pkgs/mpfr/package.nix { stdenv = stdenv-2-1;
+                                                            gmp = gmp-2;
+                                                            stageid = "2"; };
+in
+let
+  # mpc-2 :: derivation
+  mpc-2  = callPackage ../bootstrap-pkgs/mpc/package.nix { stdenv = stdenv-2-1;
+                                                           mpfr = mpfr-2;
+                                                           gmp = gmp-2;
+                                                           stageid = "2"; };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -403,29 +416,16 @@ let
   nxfsenv-2-c13 = nxfsenv-2-b13 // { file = file-2; };
   nxfsenv-2-c14 = nxfsenv-2-c13 // { flex = flex-2; };
   nxfsenv-2-b15 = nxfsenv-2-b14 // nxfsenv-2-c14 // { bison = bison-2; };
-
-  # mpr-2 :: derivation
-  mpfr-2 = callPackage ../bootstrap-pkgs/mpfr/package.nix { stdenv = stdenv-2-1;
-                                                            gmp = gmp-2;
-                                                            stageid = "2"; };
-in
-let
-  # mpc-2 :: derivation
-  mpc-2  = callPackage ../bootstrap-pkgs/mpc/package.nix { stdenv = stdenv-2-1;
-                                                           mpfr = mpfr-2;
-                                                           gmp = gmp-2;
-                                                           stageid = "2"; };
-in
-let
   # TODO: pkgconf, for consistency with stage3
   nxfsenv-2-d13 = nxfsenv-2-10 // { pkgconf = pkgconf-2;
                                     zlib = zlib-2;
                                   };
 
   # python-2 :: derivation
-  python-2 = callPackage ./nxfs-python-2/package.nix { nxfsenv = nxfsenv-2-d13;
-                                                       popen = popen-2;
-                                                     };
+  python-2 = callPackage ../bootstrap-pkgs/python/package.nix { stdenv = stdenv-2-1;
+                                                                popen = popen-2;
+                                                                zlib = zlib-2;
+                                                                stageid = "2"; };
 in
 let
   # wrapper for sort -- invokes coreutils.sort with LC_ALL env var set to C

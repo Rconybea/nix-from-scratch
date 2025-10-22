@@ -5,6 +5,8 @@
   popen,
   # zlib :: derivation
   zlib,
+  # stageid :: string  -- "2" for stage2, "3" for stage3 etc.
+  stageid,
 } :
 
 let
@@ -14,7 +16,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-python-3";
+  name         = "nxfs-python-${stageid}";
   version      = version;
 
   inherit popen zlib;

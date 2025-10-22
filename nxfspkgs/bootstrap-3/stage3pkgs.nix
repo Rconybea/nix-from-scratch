@@ -333,10 +333,10 @@ let
 in
 let
   # python-3 :: derivation
-  python-3 = callPackage ./nxfs-python-3/package.nix { stdenv = stdenv-3-1;
-                                                       popen = popen-3;
-                                                       zlib = zlib-3;
-                                                     };
+  python-3 = callPackage ../bootstrap-pkgs/python/package.nix { stdenv = stdenv-3-1;
+                                                                popen = popen-3;
+                                                                zlib = zlib-3;
+                                                                stageid = "3"; };
 in
 let
   # TODO: nxfs-nixify-glibc-source/package.nix
