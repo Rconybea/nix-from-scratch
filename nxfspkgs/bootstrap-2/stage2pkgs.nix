@@ -378,8 +378,9 @@ let
   nxfsenv-2-c13 = nxfsenv-2-b13 // { file = file-2; };
 
   # flex-2 :: derivation
-  flex-2 = callPackage ./nxfs-flex-2/package.nix { nxfsenv = nxfsenv-2-c13; };
-
+  flex-2 = callPackage ../bootstrap-pkgs/flex/package.nix { stdenv = stdenv-2-1;
+                                                            m4 = m4-2;
+                                                            stageid = "2"; };
   # gmp-2 :: derivation
   gmp-2 = callPackage ./nxfs-gmp-2/package.nix { nxfsenv = nxfsenv-2-c13; };
 in

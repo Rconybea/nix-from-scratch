@@ -291,9 +291,10 @@ let
 in
 let
   # flex-3 :: derivation
-  flex-3 = callPackage ./nxfs-flex-3/package.nix { stdenv = stdenv-3-1;
-                                                   m4 = m4-3;
-                                                 };
+  flex-3 = callPackage ../bootstrap-pkgs/flex/package.nix { stdenv = stdenv-3-1;
+                                                            m4 = m4-3;
+                                                            stageid = "3";
+                                                          };
   # gmp-3 :: derivation
   gmp-3 = callPackage ./nxfs-gmp-3/package.nix { stdenv = stdenv-3-1;
                                                  m4 = m4-3; };
