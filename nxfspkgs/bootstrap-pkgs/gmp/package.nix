@@ -2,7 +2,9 @@
   # stdenv :: attrset+derivation
   stdenv,
   # m4 :: derivation
-  m4
+  m4,
+  # stageid :: string
+  stageid,
 } :
 
 let
@@ -10,7 +12,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-gmp-3";
+  name         = "nxfs-gmp-${stageid}";
   version      = version;
 
   src          = builtins.fetchTarball { name = "gmp-${version}-source";
@@ -46,7 +48,5 @@ stdenv.mkDerivation {
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
     '';
 
-  buildInputs = [ m4
-    #nxfsenv.file
-  ];
+  buildInputs = [ m4 ];
 }
