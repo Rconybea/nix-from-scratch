@@ -485,7 +485,13 @@ let
                                                                                           stageid = "2";
                                                                                         };
 
-  gcc-x0-wrapper-2 = callPackage ./nxfs-gcc-stage1-wrapper-2/package.nix { nxfsenv = nxfsenv-2-95; };
+  # gcc-x0-wrapper-2 :: derivation
+  gcc-x0-wrapper-2 = callPackage ../bootstrap-pkgs/gcc-x0-wrapper/package.nix { stdenv = stdenv-2-1;
+                                                                                cc = stage1pkgs.nxfs-toolchain-1;
+                                                                                libc = glibc-2;
+                                                                                nxfs-defs = nxfs-defs;
+                                                                                stageid = "2";
+                                                                              };
 in
 let
   # maybe need binutils wrapper ?

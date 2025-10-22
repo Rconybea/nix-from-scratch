@@ -18,7 +18,7 @@ in
 derivation {
   name               = "nxfs-toolchain-1";
   host_tuple         = "x86_64-pc-linux-gnu";
-  gcc_version        = "14.2.0";
+  version            = "14.2.0";
   system             = builtins.currentSystem;
 
   # want to support the following structure for stdenv:

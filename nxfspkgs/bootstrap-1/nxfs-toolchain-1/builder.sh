@@ -22,7 +22,7 @@ set -euo pipefail
 
 echo
 echo "host_tuple=${host_tuple}"
-echo "gcc_version=${gcc_version}"
+echo "version=${version} [gcc]"
 echo "bash=${bash}"
 echo "toolchain=${toolchain}"
 echo "gawk=${gawk}"
@@ -33,6 +33,8 @@ echo "patchelf=${patchelf}"
 echo "redirect_elf_file_0=${redirect_elf_file_0}"
 echo "TMP=${TMP}"
 echo
+
+gcc_version=${version}
 
 # not feasible here, see R3 above
 #export PATH=${gnused}/bin:${gnutar}/bin:${coreutils}/bin:${patchelf}/bin

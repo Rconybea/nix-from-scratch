@@ -375,22 +375,30 @@ let
                                                                };
 in
 let
-  # TODO:: want stdenv.cc.cc here.
-  #        Should be same as stage2pkgs.gcc-x3-2 = stage2pkgs.gcc-wrapper-2.cc
-  #
-  # gcc-x0-wrapper-3 :: derivation
-  gcc-x0-wrapper-3 = callPackage ./nxfs-gcc-x0-wrapper-3/package.nix { stdenv = stdenv-3-1;
-                                                                       gcc-unwrapped = stage2pkgs.gcc-x3-2;
-                                                                       glibc = glibc-x1-3;
-                                                                       nxfs-defs = nxfs-defs;
-                                                                     };
-
   # binutils-x0-wrapper-3 :: derivation
   binutils-x0-wrapper-3 = callPackage ../bootstrap-pkgs/binutils-x0-wrapper/package.nix { stdenv = stdenv-3-1;
                                                                                           bintools = binutils-3;
                                                                                           libc = glibc-x1-3;
                                                                                           stageid = "3";
                                                                                         };
+in
+let
+  # gcc-x0-wrapper-3: wrapper for stage2 C compiler:
+  # - using stage3 bintools
+  # - using stage3 libc
+  #
+  # TODO:: want spelling to be stdenv.cc.cc here instead of stage2pkgs.gcc-x3-2
+  #        Should be same as stage2pkgs.gcc-x3-2 = stage2pkgs.gcc-wrapper-2.cc
+  #
+  # gcc-x0-wrapper-3 :: derivation
+  gcc-x0-wrapper-3 = callPackage ../bootstrap-pkgs/gcc-x0-wrapper/package.nix { stdenv = stdenv-3-1;
+                                                                                gcc-unwrapped = stage2pkgs.gcc-x3-2;
+                                                                                bintools = binutils-x0-wrapper-3;
+                                                                                libc = glibc-x1-3;
+                                                                                nxfs-defs = nxfs-defs;
+                                                                                stageid = "3";
+                                                                              };
+
 
 in
 let

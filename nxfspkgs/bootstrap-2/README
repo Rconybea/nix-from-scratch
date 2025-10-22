@@ -34,7 +34,7 @@ Dependencies somewhat overspecified for the sake of simplicity.
  +----------------------------------------------------------------------------------------------------+
  | -A gcc-x1-2                                nxfs-gcc-stage1-2                                       |
  +----------------------------------------------------+-----------------------------------------------+
- | -A binutils-x0-wrapper-2  binutils-x0-wrapper/     | -A gcc-x0-wrapper-2 nxfs-gcc-stage1-wrapper-2 |
+ | -A binutils-x0-wrapper-2  binutils-x0-wrapper/     | -A gcc-x0-wrapper-2    gcc-x0-wrapper/        |
  +----------------------------------------------------+-----------------------------------------------+
  | -A stage2pkgs.glibc-2                      bootstrap-pkgs/glibc                                    |
  +-----------------+--------------------------------+---------------+---------------+-----------------+

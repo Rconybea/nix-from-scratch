@@ -34,7 +34,10 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gcc} -v
 else
-    ${unwrapped_gcc} "${@}" -I${glibc}/include \
+    # -idirafter ${glibc}/include      standard C library headers, last resort
+    #
+    ${unwrapped_gcc} "${@}" \
+                     -idirafter ${glibc}/include \
                      -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib \
                      -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 fi

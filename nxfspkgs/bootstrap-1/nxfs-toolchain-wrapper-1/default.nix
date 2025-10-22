@@ -17,8 +17,11 @@ derivation {
   #   stdenv.cc.cc        unwrapped c/c++ compiler
   #   stdenv.cc.bintools  *wrapped* bintools
   #   stdenv.cc.libc      glibc (same as stdenv.cc.cc in stage1)
+  #   stdenv.cc.version   gcc version. prioritize (vs {binutils,glibc})
+  #                       because needed for downstream wrapper include paths
   #
   cc = nxfs-toolchain-1;
+  version = nxfs-toolchain-1.version;  # e.g. "14.2.0"
   bintools = nxfs-bintools-x0-wrapper-1;
   libc = nxfs-toolchain-1;
 
