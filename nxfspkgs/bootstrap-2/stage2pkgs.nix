@@ -395,7 +395,10 @@ in
 let
   nxfsenv-2-b15 = nxfsenv-2-b14 // nxfsenv-2-c14 // { bison = bison-2; };
   # texinfo-2 :: derivation
-  texinfo-2 = callPackage ./nxfs-texinfo-2/package.nix { nxfsenv = nxfsenv-2-b15; };
+  texinfo-2 = callPackage ../bootstrap-pkgs/texinfo/package.nix { stdenv = stdenv-2-1;
+                                                                  perl = perl-2;
+                                                                  stageid = "2";
+                                                                };
 in
 let
   # mpr-2 :: derivation

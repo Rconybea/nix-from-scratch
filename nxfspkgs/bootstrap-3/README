@@ -57,9 +57,9 @@ WWe need nxfs-xz-3, nxfs-bzip-3, nxfs-curl-3 for a stdenv.
  +------------------------------------------------------+-------------------------------------------------+
  | -A stage3pkgs.glibc-x1-3                   nxfs-glibc-x1-3                                             |
  +-----------------+------------------------------------+---------------+---------------+-----------------+
- | -A stage3pkgs   | -A stage3pkgs                      | -A stage3pkgs | -A stage3pkgs | -A stage3pkgs   |
- |    .binutils-3  |    .texinfo-3                      |    .mpc-3     |    .python-3  |    .gzip-3      |
- |                 |         nxfs-texinfo-3             | nxfs-mpc-3    |               |                 |
+ | -A stage3pkgs   | -A stage3pkgs.texinfo-3            | -A stage3pkgs | -A stage3pkgs | -A stage3pkgs   |
+ |    .binutils-3  |                                    |    .mpc-3     |    .python-3  |    .gzip-3      |
+ |                 |              texinfo/              | nxfs-mpc-3    |               |                 |
  |                 +----------------b15-----------------+------d15------+               |     gzip/       |
  |                 | -A stage3pkgs   | -A stage3pkgs    | -A stage3pkgs |               |                 |
  |    binutils/    |    .automake-3  |    .bison-3      |    .mpfr-3    | nxfs-python-3 |                 |

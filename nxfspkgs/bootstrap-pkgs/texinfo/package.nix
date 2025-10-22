@@ -3,6 +3,8 @@
   stdenv,
   # perl :: derivation
   perl,
+  # stageid :: string  - "2" for stage2, "3" for stage3 etc.
+  stageid,
 } :
 
 let
@@ -10,7 +12,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-texinfo-3";
+  name         = "nxfs-texinfo-${stageid}";
   version      = version;
 
   src          = builtins.fetchTarball { name = "texinfo-${version}-source";

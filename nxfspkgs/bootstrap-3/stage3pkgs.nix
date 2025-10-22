@@ -324,9 +324,10 @@ let
 in
 let
   # texinfo-3 :: derivation
-  texinfo-3 = callPackage ./nxfs-texinfo-3/package.nix { stdenv = stdenv-3-1;
-                                                         perl = perl-3;
-                                                       };
+  texinfo-3 = callPackage ../bootstrap-pkgs/texinfo/package.nix { stdenv = stdenv-3-1;
+                                                                  perl = perl-3;
+                                                                  stageid = "3";
+                                                                };
 in
 let
   # python-3 :: derivation
