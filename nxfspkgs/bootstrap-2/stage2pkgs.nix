@@ -358,6 +358,32 @@ let
                                                                     stageid = "2"; };
 in
 let
+  # flex-2 :: derivation
+  flex-2 = callPackage ../bootstrap-pkgs/flex/package.nix { stdenv = stdenv-2-1;
+                                                            m4 = m4-2;
+                                                            stageid = "2"; };
+  # gmp-2 :: derivation
+  gmp-2 = callPackage ../bootstrap-pkgs/gmp/package.nix { stdenv = stdenv-2-1;
+                                                          m4 = m4-2;
+                                                          stageid = "2";
+                                                        };
+in
+let
+  # bison-2 :: derivation
+  bison-2 = callPackage ../bootstrap-pkgs/bison/package.nix { stdenv = stdenv-2-1;
+                                                              perl = perl-2;
+                                                              flex = flex-2;
+                                                              m4 = m4-2;
+                                                              stageid = "2"; };
+in
+let
+  # texinfo-2 :: derivation
+  texinfo-2 = callPackage ../bootstrap-pkgs/texinfo/package.nix { stdenv = stdenv-2-1;
+                                                                  perl = perl-2;
+                                                                  stageid = "2";
+                                                                };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -375,38 +401,13 @@ let
                                     perl = perl-2; };
   nxfsenv-2-b14 = nxfsenv-2-b13 // { autoconf = autoconf-2; };
   nxfsenv-2-c13 = nxfsenv-2-b13 // { file = file-2; };
-
-  # flex-2 :: derivation
-  flex-2 = callPackage ../bootstrap-pkgs/flex/package.nix { stdenv = stdenv-2-1;
-                                                            m4 = m4-2;
-                                                            stageid = "2"; };
-  # gmp-2 :: derivation
-  gmp-2 = callPackage ../bootstrap-pkgs/gmp/package.nix { stdenv = stdenv-2-1;
-                                                          m4 = m4-2;
-                                                          stageid = "2";
-                                                        };
-in
-let
   nxfsenv-2-c14 = nxfsenv-2-c13 // { flex = flex-2; };
-  # bison-2 :: derivation
-  bison-2 = callPackage ../bootstrap-pkgs/bison/package.nix { stdenv = stdenv-2-1;
-                                                              perl = perl-2;
-                                                              flex = flex-2;
-                                                              m4 = m4-2;
-                                                              stageid = "2"; };
-in
-let
   nxfsenv-2-b15 = nxfsenv-2-b14 // nxfsenv-2-c14 // { bison = bison-2; };
-  # texinfo-2 :: derivation
-  texinfo-2 = callPackage ../bootstrap-pkgs/texinfo/package.nix { stdenv = stdenv-2-1;
-                                                                  perl = perl-2;
-                                                                  stageid = "2";
-                                                                };
-in
-let
+
   # mpr-2 :: derivation
-  mpfr-2 = callPackage ./nxfs-mpfr-2/package.nix { nxfsenv = nxfsenv-2-c13;
-                                                   gmp = gmp-2; };
+  mpfr-2 = callPackage ../bootstrap-pkgs/mpfr/package.nix { stdenv = stdenv-2-1;
+                                                            gmp = gmp-2;
+                                                            stageid = "2"; };
 in
 let
   # mpc-2 :: derivation

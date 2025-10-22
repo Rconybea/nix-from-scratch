@@ -301,9 +301,9 @@ let
                                                          stageid = "3";
                                                        };
   # mpfr-3 :: derivation
-  mpfr-3 = callPackage ./nxfs-mpfr-3/package.nix { stdenv = stdenv-3-1;
-                                                   gmp = gmp-3;
-                                                 };
+  mpfr-3 = callPackage ../bootstrap-pkgs/mpfr/package.nix { stdenv = stdenv-3-1;
+                                                            gmp = gmp-3;
+                                                            stageid = "3"; };
   # mpc-3 :: derivation
   mpc-3 = callPackage ./nxfs-mpc-3/package.nix { stdenv = stdenv-3-1;
                                                  gmp = gmp-3;

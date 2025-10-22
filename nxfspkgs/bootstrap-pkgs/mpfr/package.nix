@@ -3,6 +3,8 @@
   stdenv,
   # gmp :: derivation
   gmp,
+  # stageid :: string
+  stageid,
 } :
 
 let
@@ -10,12 +12,12 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-mpfr-3";
+  name         = "nxfs-mpfr-${stageid}";
 
   gmp          = gmp;
 
   src          = builtins.fetchTarball { name = "mpfr-${version}-source";
-                                         url = "https://ftp.gnu.org/gnu/mpfr/mpfr-${version}.tar.xz";
+                                         url = "https://ftpmirror.gnu.org/gnu/mpfr/mpfr-${version}.tar.xz";
                                          sha256 = "1irpgc9aqyhgkwqk7cvib1dgr5v5hf4m0vaaknssyfpkjmab9ydq"; };
 
   buildPhase = ''
