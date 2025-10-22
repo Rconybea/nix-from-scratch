@@ -497,6 +497,13 @@ let
   # maybe need binutils wrapper ?
   nxfsenv-2-96 = nxfsenv-2-95 // { gcc = gcc-x0-wrapper-2; };  # or 2-95a
 
+  # nixified-gcc-source-2 :: derivation
+  nixified-gcc-source-2 = callPackage
+    ../bootstrap-pkgs/nixify-gcc-source/package.nix { stdenv = stdenv-2-1;
+                                                      file = file-2;
+                                                      which = which-2;
+                                                      stageid = "2"; };
+
   # TODO: rename subdir to follow nxfs-gcc-x1-3 in stage3
   gcc-x1-2 = callPackage ./nxfs-gcc-stage1-2/package.nix { nxfsenv = nxfsenv-2-96;
                                                            mpc = mpc-2;
@@ -537,17 +544,6 @@ let
 
   # nxfsenv-2-99a :: attrset
   nxfsenv-2-99a = nxfsenv-2-98 // { gcc = gcc-x2-wrapper-2; };
-
-  # nixifed-gcc-source-2 :: derivation
-  nixified-gcc-source-2 = callPackage ./nxfs-nixify-gcc-source { bash = nxfsenv-2-99a.shell;
-                                                                 file = nxfsenv-2-99a.file;
-                                                                 coreutils = nxfsenv-2-99a.coreutils;
-                                                                 findutils = nxfsenv-2-99a.findutils;
-                                                                 grep = nxfsenv-2-99a.gnugrep;
-                                                                 tar = nxfsenv-2-99a.gnutar;
-                                                                 sed = nxfsenv-2-99a.gnused;
-                                                                 nxfs-defs = nxfsenv-2-99a.nxfs-defs;
-                                                               };
 
   # combined-glibc-linux-headers-2 :: derivation
   combined-glibc-linux-headers-2 = callPackage ../bootstrap-pkgs/combine-glibc-linux-headers/package.nix

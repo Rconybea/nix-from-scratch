@@ -402,24 +402,19 @@ let
 
 in
 let
-  # TODO: nxfs-nixify-gcc-source/package.nix
-  #
+  # nixified-gcc-source-3 :: derivation
   nixified-gcc-source-3 =
-    callPackage ../bootstrap-2/nxfs-nixify-gcc-source/default.nix
+    callPackage ../bootstrap-pkgs/nixify-gcc-source/package.nix
       {
-        bash      = bash-3;
+        stdenv    = stdenv-3-1;
         file      = file-3;
-        findutils = findutils-3;
-        sed       = gnused-3;
-        grep      = gnugrep-3;
-        tar       = gnutar-3;
-        coreutils = coreutils-3;
-        nxfs-defs = nxfs-defs;
+        which     = which-3;
+        stageid = "3";
       };
 
   # gcc-x1-3 :: derivation
-  gcc-x1-3 = callPackage ./nxfs-gcc-x1-3/package.nix
-    {
+  gcc-x1-3 = callPackage ../nxfs-gcc-x1-3/package.nix
+     {
       stdenv               = stdenv-3-1;
       nixified-gcc-source  = nixified-gcc-source-3;
       binutils-wrapper     = binutils-x0-wrapper-3;
