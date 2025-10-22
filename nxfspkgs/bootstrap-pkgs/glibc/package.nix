@@ -8,7 +8,7 @@
   # texinfo :: derivation
   texinfo,
 
-  # stdenv :: derivation
+  # bison :: derivation
   bison,
 
   # which :: derivation
@@ -28,6 +28,9 @@
 
   # nxfs-defs :: attrset  -- analogous to nixpkgs platform
   #nxfs-defs,
+
+  # stageid :: string -- "2" for stage2, "3' for stage3 etc.
+  stageid,
 } :
 
 let
@@ -37,7 +40,7 @@ in
 stdenv.mkDerivation {
   version        = version;
   pname          = "nxfs-glibc";  # nixpkgs requires this
-  name           = "nxfs-glibc-x1-${version}-3";
+  name           = "nxfs-glibc-x1-${version}-${stageid}";
 
   system         = builtins.currentSystem;
 
@@ -153,25 +156,10 @@ stdenv.mkDerivation {
   '';
 
   buildInputs = [
-    #gcc_wrapper
-    #binutils
     lc-all-sort
-    #patchelf
-    #gperf
     python
     texinfo
     bison
-    #gzip
-    #diffutils
-    #findutils
-    #gnumake
-    #gnutar
-    #gawk
-    #gnugrep
-    #gnused
-    #coreutils
-    #patch
-    #bash
     which
   ];
 }

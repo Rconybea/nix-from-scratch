@@ -28,7 +28,9 @@ stdenv.mkDerivation {
     cp $src $tmp
 
     sed -i -e '1s:/bin/sh:'$shell':' $tmp
+    chmod +x $tmp
 
     cp $tmp $out/bin/which
+
   '';
 }

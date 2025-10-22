@@ -2,7 +2,9 @@
   # stdenv :: attrset+derivation
   stdenv,
   # coreutils :: attrset
-  coreutils
+  coreutils,
+  # stageid :: string
+  stageid,
 } :
 
 # Shim for glibc build.
@@ -14,7 +16,7 @@
 # In nix build /bin isn't available, so we need a workaround.
 
 stdenv.mkDerivation {
-  name   = "lc-all-sort";
+  name   = "lc-all-sort-${stageid}";
   system = builtins.currentSystem;
 
   src = ./src;

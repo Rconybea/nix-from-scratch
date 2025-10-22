@@ -397,6 +397,46 @@ let
                                                            stageid = "2"; };
 in
 let
+  # python-2 :: derivation
+  python-2 = callPackage
+    ../bootstrap-pkgs/python/package.nix { stdenv = stdenv-2-1;
+                                           popen = popen-2;
+                                           zlib = zlib-2;
+                                           stageid = "2"; };
+in
+let
+  nixified-glibc-source-2 = callPackage
+    ../bootstrap-pkgs/nixify-glibc-source/package.nix
+    { stdenv = stdenv-2-1;
+      python = python-2;
+      coreutils = coreutils-2;
+      which = which-2;
+      locale-archive = locale-archive-1;
+      stageid = "2"; };
+
+  # wrapper for sort -- invokes coreutils.sort with LC_ALL env var set to C
+  lc-all-sort-2 = callPackage
+    ../bootstrap-pkgs/lc-all-sort/package.nix { stdenv = stdenv-2-1;
+                                                coreutils = coreutils-2;
+                                                stageid = "2"; };
+
+in
+let
+  # glibc-2 :: derivation   # glibc-x1-3 in stage3
+  glibc-2 = callPackage
+    ../bootstrap-pkgs/glibc/package.nix { stdenv = stdenv-2-1;
+                                          python = python-2;
+                                          texinfo = texinfo-2;
+                                          bison = bison-2;
+                                          which = which-2;
+                                          nixified-glibc-source = nixified-glibc-source-2;
+                                          lc-all-sort = lc-all-sort-2;
+                                          locale-archive = locale-archive-1;
+                                          linux-headers = linux-headers-2;
+                                          stageid = "2";
+                                        };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -420,17 +460,6 @@ let
   nxfsenv-2-d13 = nxfsenv-2-10 // { pkgconf = pkgconf-2;
                                     zlib = zlib-2;
                                   };
-
-  # python-2 :: derivation
-  python-2 = callPackage ../bootstrap-pkgs/python/package.nix { stdenv = stdenv-2-1;
-                                                                popen = popen-2;
-                                                                zlib = zlib-2;
-                                                                stageid = "2"; };
-in
-let
-  # wrapper for sort -- invokes coreutils.sort with LC_ALL env var set to C
-  lc-all-sort-2 = callPackage ./nxfs-lc-all-sort-2/package.nix { nxfsenv = nxfsenv-2-10; };
-
   nxfsenv-2-16 = nxfsenv-2-10 // { binutils = binutils-2;
                                    perl     = perl-2;
                                    texinfo  = texinfo-2;
@@ -447,18 +476,7 @@ let
                                    patchelf = patchelf-2;
                                    which    = which-2;
                                  };
-in
-let
   nxfsenv-2-94 = nxfsenv-2-16 // { texinfo = texinfo-2; };
-
-  # glibc-2 :: derivation   # glibc-x1-3 in stage3
-  glibc-2 = callPackage ./nxfs-glibc-stage1-2/package.nix { nxfsenv = nxfsenv-2-94;
-                                                            lc-all-sort = lc-all-sort-2;
-                                                            locale-archive = locale-archive-1;
-                                                            linux-headers = linux-headers-2;
-                                                          };
-in
-let
   nxfsenv-2-95 = nxfsenv-2-94 // { glibc = glibc-2; };
 
   binutils-x0-wrapper-2 = callPackage ./nxfs-binutils-stage1-wrapper-2/package.nix { nxfsenv = nxfsenv-2-95;
@@ -603,6 +621,7 @@ in
   inherit binutils-x0-wrapper-2;
   inherit gcc-x0-wrapper-2;
   inherit glibc-2;
+  inherit nixified-glibc-source-2;
   inherit python-2;
   inherit mpc-2;
   inherit mpfr-2;

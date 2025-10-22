@@ -344,16 +344,13 @@ let
   # nixify-glibc-source-3 :: (attrset -> derivation)
   #
   nixified-glibc-source-3 =
-    callPackage ../bootstrap-2/nxfs-nixify-glibc-source/default.nix
-      { python = python-3;
+    callPackage ../bootstrap-2/nixify-glibc-source/package.nix
+      { stdenv = stdenv -3-1;
+        python = python-3;
         coreutils = coreutils-3;
-        findutils = findutils-3;
-        bash = bash-3;
-        grep = gnugrep-3;
-        tar = gnutar-3;
-        sed = gnused-3;
+        which = which-3;
         locale-archive = locale-archive-1;
-        nxfs-defs = nxfs-defs;
+        stageid = "3";
       };
 
   # glibc-targeted wrapper for sort -- invokes coreutils.sort with LC_ALL env var set to C.
@@ -361,19 +358,21 @@ let
   #
   # lc-all-sort-3 :: derivation
   lc-all-sort-3 = callPackage ../bootstrap-pkgs/lc-all-sort/package.nix { stdenv = stdenv-3-1;
-                                                                          coreutils = coreutils-3; };
+                                                                          coreutils = coreutils-3;
+                                                                          stageid = "3"; };
 
   # glibc-x1-3 :: derivation
-  glibc-x1-3 = callPackage ./nxfs-glibc-x1-3/package.nix { stdenv                = stdenv-3-1;
-                                                           nixified-glibc-source = nixified-glibc-source-3;
-                                                           lc-all-sort           = lc-all-sort-3;
-                                                           locale-archive        = locale-archive-1;
-                                                           linux-headers         = linux-headers-2;
-                                                           python                = python-3;
-                                                           bison                 = bison-3;
-                                                           texinfo               = texinfo-3;
-                                                           which                 = which-3;
-                                                         };
+  glibc-x1-3 = callPackage ../bootstrap-pkgs/glibc/package.nix { stdenv                = stdenv-3-1;
+                                                                 nixified-glibc-source = nixified-glibc-source-3;
+                                                                 lc-all-sort           = lc-all-sort-3;
+                                                                 locale-archive        = locale-archive-1;
+                                                                 linux-headers         = linux-headers-2;
+                                                                 python                = python-3;
+                                                                 bison                 = bison-3;
+                                                                 texinfo               = texinfo-3;
+                                                                 which                 = which-3;
+                                                                 stageid               = "3";
+                                                               };
 in
 let
   # TODO:: want stdenv.cc.cc here.

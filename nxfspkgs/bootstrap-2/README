@@ -36,7 +36,7 @@ Dependencies somewhat overspecified for the sake of simplicity.
  +----------------------------------------------------+-----------------------------------------------+
  | -A binutils-x0-wrapper-2 nxfs-binutils-x0-wrapper-2| -A gcc-x0-wrapper-2 nxfs-gcc-stage1-wrapper-2 |
  +----------------------------------------------------+-----------------------------------------------+
- | -A stage2pkgs.glibc-2                      nxfs-glibc-stage1-2                                     |
+ | -A stage2pkgs.glibc-2                      bootstrap-pkgs/glibc                                    |
  +-----------------+--------------------------------+---------------+---------------+-----------------+
  | -A stage2pkgs   | -A stage2pkgs.texinfo-2        | -A stage2pkgs | -A stage2pkgs | -A stage2pkgs   |
  |    .binutils-2  |                                |    .mpc-2     |    .python-2  |    .gzip-2      |
