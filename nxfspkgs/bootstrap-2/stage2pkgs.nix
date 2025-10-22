@@ -479,8 +479,11 @@ let
   nxfsenv-2-94 = nxfsenv-2-16 // { texinfo = texinfo-2; };
   nxfsenv-2-95 = nxfsenv-2-94 // { glibc = glibc-2; };
 
-  binutils-x0-wrapper-2 = callPackage ./nxfs-binutils-stage1-wrapper-2/package.nix { nxfsenv = nxfsenv-2-95;
-                                                                                   };
+  binutils-x0-wrapper-2 = callPackage ../bootstrap-pkgs/binutils-x0-wrapper/package.nix { stdenv = stdenv-2-1;
+                                                                                          bintools = binutils-2;
+                                                                                          libc = glibc-2;
+                                                                                          stageid = "2";
+                                                                                        };
 
   gcc-x0-wrapper-2 = callPackage ./nxfs-gcc-stage1-wrapper-2/package.nix { nxfsenv = nxfsenv-2-95; };
 in

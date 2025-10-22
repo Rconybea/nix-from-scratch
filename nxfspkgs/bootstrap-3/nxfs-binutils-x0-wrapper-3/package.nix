@@ -18,8 +18,6 @@ stdenv.mkDerivation {
   inherit glibc;
 
   buildPhase = ''
-    unwrapped_ld=${binutils}/bin/ld
-
     builddir=$TMPDIR
 
     mkdir -p $builddir/bin

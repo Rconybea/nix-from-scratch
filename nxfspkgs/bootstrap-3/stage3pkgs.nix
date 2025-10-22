@@ -345,7 +345,7 @@ let
   #
   nixified-glibc-source-3 =
     callPackage ../bootstrap-2/nixify-glibc-source/package.nix
-      { stdenv = stdenv -3-1;
+      { stdenv = stdenv-3-1;
         python = python-3;
         coreutils = coreutils-3;
         which = which-3;
@@ -386,10 +386,11 @@ let
                                                                      };
 
   # binutils-x0-wrapper-3 :: derivation
-  binutils-x0-wrapper-3 = callPackage ./nxfs-binutils-x0-wrapper-3/package.nix { stdenv = stdenv-3-1;
-                                                                                 binutils = binutils-3;
-                                                                                 glibc = glibc-x1-3;
-                                                                               };
+  binutils-x0-wrapper-3 = callPackage ../bootstrap-pkgs/binutils-x0-wrapper/package.nix { stdenv = stdenv-3-1;
+                                                                                          bintools = binutils-3;
+                                                                                          libc = glibc-x1-3;
+                                                                                          stageid = "3";
+                                                                                        };
 
 in
 let
