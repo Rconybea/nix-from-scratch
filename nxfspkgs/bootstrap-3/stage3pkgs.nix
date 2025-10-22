@@ -315,12 +315,12 @@ let
 in
 let
   # bison-3 :: derivation
-  bison-3 = callPackage ./nxfs-bison-3/package.nix { stdenv = stdenv-3-1;
-                                                     perl = perl-3;
-                                                     flex = flex-3;
-                                                     m4 = m4-3;
-                                                     stageid = "3";
-                                                   };
+  bison-3 = callPackage ../bootstrap-pkgs/bison/package.nix { stdenv = stdenv-3-1;
+                                                              perl = perl-3;
+                                                              flex = flex-3;
+                                                              m4 = m4-3;
+                                                              stageid = "3";
+                                                            };
 in
 let
   # texinfo-3 :: derivation
