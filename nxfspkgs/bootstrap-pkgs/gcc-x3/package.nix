@@ -13,6 +13,8 @@
   mpfr,
   # gmp :: derivation
   gmp,
+  # isl :: derivation
+  isl,
   # bison :: derivation
   bison,
   # flex :: derivation
@@ -25,14 +27,18 @@
   glibc,
   # nxfs-defs :: derivation
   nxfs-defs,
+  # stageid :: string  -- "2" for stage2 etc.
+  stageid,
 } :
 
 stdenv.mkDerivation {
-  name         = "nxfs-gcc-x3-3";
+  name         = "nxfs-gcc-x3-${stageid}";
   version      = nixified-gcc-source.version;
   system       = builtins.currentSystem;
 
-  inherit mpc mpfr gmp flex glibc;
+  inherit mpc mpfr gmp isl flex glibc;
+
+  libc = glibc;
 
   src          = nixified-gcc-source;
 
@@ -85,8 +91,8 @@ stdenv.mkDerivation {
     # TODO: -O2
 
     LDFLAGS="-B$glibc/lib"
-    LDFLAGS="$LDFLAGS -L$flex/lib -L$mpc/lib -L$mpfr/lib -L$gmp/lib"
-    LDFLAGS="$LDFLAGS -Wl,-rpath,$mpc/lib -Wl,-rpath,$mpfr/lib -Wl,-rpath,$gmp/lib"
+    LDFLAGS="$LDFLAGS -L$flex/lib -L$mpc/lib -L$mpfr/lib -L$isl/lib -L$gmp/lib"
+    LDFLAGS="$LDFLAGS -Wl,-rpath,$mpc/lib -Wl,-rpath,$mpfr/lib -Wl,-rpath,$isl/lib -Wl,-rpath,$gmp/lib"
     LDFLAGS="$LDFLAGS -Wl,-rpath,$glibc/lib"
     export LDFLAGS
 
@@ -125,11 +131,18 @@ stdenv.mkDerivation {
                                    --disable-bootstrap \
                                    --with-native-system-header-dir=$glibc/include \
                                    --enable-lto --disable-nls \
-                                   --with-mpc=$mpc --with-mpfr=$mpfr --with-gmp=$gmp \
-                                   --enable-default-pie --enable-default-ssp \
-                                   --enable-shared --disable-multilib --enable-threads \
-                                   --enable-libatomic --enable-libgomp --enable-libquadmath \
-                                   --enable-libssp --enable-libvtv --enable-libstdcxx \
+                                   --with-mpc=$mpc --with-mpfr=$mpfr --with-gmp=$gmp --with-isl=$isl \
+                                   --enable-default-pie \
+                                   --enable-default-ssp \
+                                   --enable-shared \
+                                   --disable-multilib \
+                                   --enable-threads \
+                                   --enable-libatomic \
+                                   --enable-libgomp \
+                                   --enable-libquadmath \
+                                   --enable-libssp \
+                                   --enable-libvtv \
+                                   --enable-libstdcxx \
                                    --enable-languages=c,c++ \
                                    --with-stage1-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib" \
                                    --with-boot-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib" \
@@ -137,6 +150,57 @@ stdenv.mkDerivation {
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
+
+    # build will produce binaries that put the lib directory from the unwrapped compiler that
+    # that nxfs-gcc invokes. Can prune these here, since built compiler doesn't need them.
+    #
+    # Contrast with previous gcc build, where we needed to keep bootstrap libraries
+    # in RUNPATH, but control ordering
+
+    #prev_unwrapped_gcc="${gcc-wrapper.cc}";  # not needed, since we built full gcc here
+
+    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/cpp
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/cpp
+
+    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcc
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc
+
+    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/g++
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/g++
+
+    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcc-ar
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc-ar
+
+    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcc-nm
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc-nm
+
+    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcc-ranlib
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc-ranlib
+
+    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcov
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcov
+
+    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcov-dump
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcov-dump
+
+    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcov-tool
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcov-tool
+
+    patchelf --set-rpath $out/lib:$mpc/lib:$mpfr/lib:$isl/lib:$gmp/lib:$libc/lib $out/bin/lto-dump
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/lto-dump
+
+    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/libasan.so
+    patchelf --set-rpath $glibc/lib $out/lib/libatomic.so.1
+    patchelf --set-rpath $glibc/lib $out/lib/libgcc_s.so.1
+    patchelf --set-rpath $glibc/lib $out/lib/libgomp.so.1
+    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/libhwasan.so
+    patchelf --set-rpath $glibc/lib $out/lib/libitm.so.1
+    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/liblsan.so
+    patchelf --set-rpath $glibc/lib $out/lib/libquadmath.so
+    patchelf --set-rpath $glibc/lib $out/lib/libssp.so
+    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/libstdc++.so
+    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/libtsan.so
+    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/libubsan.so
 
     # can now remove the toolchain(sysroot) debris we temporarily put into $out/$target_tuple
     rm $out/$target_tuple/lib/crt1.o

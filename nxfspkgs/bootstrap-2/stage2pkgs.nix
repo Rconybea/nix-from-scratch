@@ -513,6 +513,26 @@ let
                                                  };
 in
 let
+  # gcc-x3-2 :: derivation
+  gcc-x3-2 = callPackage
+    ../bootstrap-pkgs/gcc-x3/package.nix { stdenv              = stdenv-2-1;
+                                           nixified-gcc-source = nixified-gcc-source-2;
+                                           gcc-wrapper         = gcc-x2-wrapper-2;
+                                           binutils-wrapper    = binutils-x0-wrapper-2;
+                                           mpc                 = mpc-2;
+                                           mpfr                = mpfr-2;
+                                           gmp                 = gmp-2;
+                                           isl                 = isl-2;
+                                           bison               = bison-2;
+                                           flex                = flex-2;
+                                           texinfo             = texinfo-2;
+                                           m4                  = m4-2;
+                                           glibc               = glibc-2;
+                                           nxfs-defs           = nxfs-defs;
+                                           stageid             = "2";
+                                         };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -557,27 +577,6 @@ let
   nxfsenv-2-97 = nxfsenv-2-96 // { gcc-x1 = gcc-x1-2; };
   nxfsenv-2-98 = nxfsenv-2-97 // { gcc = gcc-x1-wrapper-2; };
   nxfsenv-2-99a = nxfsenv-2-98 // { gcc = gcc-x2-wrapper-2; };
-
-  # combined-glibc-linux-headers-2 :: derivation
-  combined-glibc-linux-headers-2 = callPackage ../bootstrap-pkgs/combine-glibc-linux-headers/package.nix
-    {
-      nxfsenv = nxfsenv-2-99a;
-      glibc = glibc-2;
-      linux-headers = linux-headers-2;
-    };
-
-  # gcc-x3-2 :: derivation
-  gcc-x3-2 = callPackage ./nxfs-gcc-stage2-2/package.nix  { nxfsenv = nxfsenv-2-99a;
-                                                            nixified-gcc-source = nixified-gcc-source-2;
-                                                             mpc = mpc-2;
-                                                            mpfr = mpfr-2;
-                                                            gmp = gmp-2;
-                                                            binutils-wrapper = binutils-x0-wrapper-2;
-                                                            glibc = glibc-2;
-                                                          };
-in
-let
-  # nxfsenv-2-100 :: attrset
   nxfsenv-2-100 = nxfsenv-2-99a // { gcc-unwrapped = gcc-x3-2; };
 
   # gcc-wrapper-2 :: derivation
@@ -675,6 +674,6 @@ in
   inherit findutils-2;
   inherit diffutils-2;
   inherit which-2;
-  inherit combined-glibc-linux-headers-2;
+#  inherit combined-glibc-linux-headers-2;
   inherit linux-headers-2;
 }

@@ -175,11 +175,9 @@ stdenv.mkDerivation {
     patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/cpp
     patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/cpp
 
-    #patchelf --set-rpath $out/lib:$mpc/lib:$mpfr/lib:$gmp/lib:$isl/lib:$libc/lib:$prev_unwrapped_gcc/lib $out/bin/gcc
     patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/gcc
     patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc
 
-    #patchelf --set-rpath $out/lib:$mpc/lib:$mpfr/lib:$gmp/lib:$isl/lib:$libc/lib:$prev_unwrapped_gcc/lib $out/bin/g++
     patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/g++
     patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/g++
 

@@ -465,21 +465,23 @@ in
 let
 
   # gcc-x3-3 :: derivation
-  gcc-x3-3 = callPackage ./nxfs-gcc-x3-3/package.nix
-    { stdenv              = stdenv-3-1;
-      nixified-gcc-source = nixified-gcc-source-3;
-      gcc-wrapper         = gcc-x2-wrapper-3;
-      binutils-wrapper    = binutils-x0-wrapper-3;
-      mpc                 = mpc-3;
-      mpfr                = mpfr-3;
-      gmp                 = gmp-3;
-      bison               = bison-3;
-      flex                = flex-3;
-      texinfo             = texinfo-3;
-      m4                  = m4-3;
-      glibc               = glibc-x1-3;
-      nxfs-defs           = nxfs-defs;
-    };
+  gcc-x3-3 = callPackage
+    ../bootstrap-pkgs/gcc-x3/package.nix { stdenv              = stdenv-3-1;
+                                           nixified-gcc-source = nixified-gcc-source-3;
+                                           gcc-wrapper         = gcc-x2-wrapper-3;
+                                           binutils-wrapper    = binutils-x0-wrapper-3;
+                                           mpc                 = mpc-3;
+                                           mpfr                = mpfr-3;
+                                           gmp                 = gmp-3;
+                                           isl                 = isl-3;
+                                           bison               = bison-3;
+                                           flex                = flex-3;
+                                           texinfo             = texinfo-3;
+                                           m4                  = m4-3;
+                                           glibc               = glibc-x1-3;
+                                           nxfs-defs           = nxfs-defs;
+                                           stageid             = "3";
+                                         };
 in
 let
   # gcc-wrapper-3 :: derivation
