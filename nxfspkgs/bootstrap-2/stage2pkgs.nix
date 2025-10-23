@@ -502,6 +502,17 @@ let
                                             };
 in
 let
+  # gcc-x2-wrapper-2 :: derivation
+  gcc-x2-wrapper-2 = callPackage
+    ../bootstrap-pkgs/gcc-x2-wrapper/package.nix { stdenv    = stdenv-2-1;
+                                                   cc        = gcc-x1-2;  # unwrapped cc
+                                                   libstdcxx = libstdcxx-x2-2;
+                                                   libc      = glibc-2;
+                                                   nxfs-defs = nxfs-defs;
+                                                   stageid   = "2";
+                                                 };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -545,16 +556,6 @@ let
   nxfsenv-2-96 = nxfsenv-2-95 // { gcc = gcc-x0-wrapper-2; };  # or 2-95a
   nxfsenv-2-97 = nxfsenv-2-96 // { gcc-x1 = gcc-x1-2; };
   nxfsenv-2-98 = nxfsenv-2-97 // { gcc = gcc-x1-wrapper-2; };
-  # gcc-x2-wrapper-2 :: derivation
-  gcc-x2-wrapper-2 = callPackage ./nxfs-gcc-stage3-wrapper-2/package.nix { nxfsenv = nxfsenv-2-98;
-                                                                           gcc-unwrapped = gcc-x1-2;
-                                                                           libstdcxx = libstdcxx-x2-2;
-                                                                         };
-in
-let
-  # TODO: omitting nxfsenv.libstdcxx (maybe rename to nxfsenv.cc.libstdcxx ?)
-
-  # nxfsenv-2-99a :: attrset
   nxfsenv-2-99a = nxfsenv-2-98 // { gcc = gcc-x2-wrapper-2; };
 
   # combined-glibc-linux-headers-2 :: derivation

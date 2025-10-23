@@ -453,14 +453,14 @@ let
 in
 let
   # gcc-stage3-wrapper-3 :: derivation
-  gcc-x2-wrapper-3 = callPackage ./nxfs-gcc-x2-wrapper-3/package.nix
-    {
-      stdenv        = stdenv-3-1;
-      gcc-unwrapped = gcc-x1-3;
-      libstdcxx     = libstdcxx-x2-3;
-      glibc         = glibc-x1-3;
-      nxfs-defs     = nxfs-defs;
-    };
+  gcc-x2-wrapper-3 = callPackage
+    ../bootstrap-pkgs/gcc-x2-wrapper/package.nix { stdenv        = stdenv-3-1;
+                                                   cc            = gcc-x1-3;
+                                                   libstdcxx     = libstdcxx-x2-3;
+                                                   libc          = glibc-x1-3;
+                                                   nxfs-defs     = nxfs-defs;
+                                                   stageid       = "3";
+                                                 };
 in
 let
 

@@ -23,6 +23,12 @@
   args :
 
 let
+  lib = {
+    #buildEnv = import ./lib/makeEnv.nix;
+    makeCallPackage = import ./lib/makeCallPackage.nix;
+    optionalAttrs = import ./lib/optionalAttrs.nix;
+  };
+
   # nxfs-cacert :: derivation    ( SSL certificates, copied from build host)
   nxfs-cacert = import ./bootstrap/nxfs-cacert-0;
 
@@ -104,7 +110,7 @@ let
   # callPackage :: path -> attrset -> result,
   # where path is a nix expression that evalutes to :: result
   #
-  callPackage = (import ./lib/makeCallPackage.nix) allPkgs;
+  callPackage = lib.makeCallPackage allPkgs;
   #
   nxfsenv-3-10 = { gcc-wrapper    = gcc-wrapper-3;
                    gcc-x3         = gcc-x3-3;
@@ -989,6 +995,8 @@ let
     });
 in
 {
+  inherit lib;
+
   stage1pkgs                                  = stage1pkgs;
   stage2pkgs                                  = stage2pkgs;
   stage3pkgs                                  = stage3pkgs;
