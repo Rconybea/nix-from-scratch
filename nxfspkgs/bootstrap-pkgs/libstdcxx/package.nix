@@ -1,7 +1,7 @@
 {
   # stdenv :: deirvation+attrset
   stdenv,
-  # gcc-x1-wrapper-3 :: derivation
+  # gcc-wrapper :: derivation
   gcc-wrapper,
   # nixified-gcc-source :: derivation
   nixified-gcc-source,
@@ -10,16 +10,18 @@
   # glibc :: derivation
   glibc,
   # nxfs-defs :: derivation
-  nxfs-defs
+  nxfs-defs,
+  # stageid :: string -- "2" for stage2, etc.
+  stageid,
 } :
 
 stdenv.mkDerivation {
-  name         = "nxfs-libstdcxx-x2-3";
+  name         = "nxfs-libstdcxx-x2-${stageid}";
   version      = nixified-gcc-source.version;
 
   system       = builtins.currentSystem;
 
-  gcc_wrapper  = gcc-wrapper;
+  gcc-wrapper  = gcc-wrapper;
   glibc        = glibc;
 
   src          = nixified-gcc-source;
@@ -32,10 +34,11 @@ stdenv.mkDerivation {
     # See also
     #   https://gcc.gnu.org/install/configure.html
 
-    set -e
+    set -euo pipefail
 
-    #echo "cpp=$(which cpp)"
-    echo "PATH=$PATH"
+    prev_unwrapped_gcc=${gcc-wrapper.cc}
+
+    #echo "PATH=$PATH"
 
     builddir=$TMPDIR/build
 
@@ -78,8 +81,8 @@ stdenv.mkDerivation {
     LDFLAGS="$LDFLAGS -Wl,-rpath,$glibc/lib"
     export LDFLAGS
 
-    gcc=$gcc_wrapper/bin/gcc;
-    gxx=$gcc_wrapper/bin/g++;
+    gcc=${gcc-wrapper}/bin/gcc;
+    gxx=${gcc-wrapper}/bin/g++;
 
     # NOTE: nxfs-gcc automatically inserts flags
     #
@@ -97,14 +100,18 @@ stdenv.mkDerivation {
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
 
+    echo "prev_unwrapped_gcc=$prev_unwrapped_gcc"
+
+    patchelf --set-rpath $prev_unwrapped_gcc/lib:$glibc/lib $out/lib/libstdc++.so
+
+    # bootstrap gcc will put it's own library into RUNPATH;
+    # since libstdc++.so
+    #
     (cd $src && (tar cf - . | tar xf - -C $source))
     '';
 
   buildInputs = [ gcc-wrapper
                   gcc-wrapper.cc
                   binutils-wrapper
-#                  flex
-#                  texinfo
-#                  m4
                 ];
 }

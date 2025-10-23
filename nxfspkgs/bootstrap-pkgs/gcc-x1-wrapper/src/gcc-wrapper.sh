@@ -34,9 +34,10 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     #
     ${unwrapped_gcc} -v
 else
-    # minor point: don't need -I${glibc}/include, because nix store glibc location baked in to gcc at compile time
-    # minor point: appending flags so that they can be superseded by explicit arguments
+    # -idirafter ${glibc}/include      standard C library headers, last resort
+    #
     ${unwrapped_gcc} "${@}" \
+                     -idirafter ${glibc}/include \
                      -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib \
                      -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 fi

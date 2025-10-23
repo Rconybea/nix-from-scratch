@@ -33,6 +33,9 @@
 
   # nxfs-defs :: derivation
   nxfs-defs,
+
+  # stageid :: string  -- "2" for stage2 etc.
+  stageid,
 } :
 
 let
@@ -40,12 +43,14 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-gcc-x1-3";
+  name         = "nxfs-gcc-x1-${stageid}";
   version      = version;
 
   system       = builtins.currentSystem;
 
   inherit mpc mpfr gmp isl flex glibc;
+
+  libc = glibc;
 
   src          = nixified-gcc-source;
 
@@ -59,8 +64,10 @@ stdenv.mkDerivation {
 
     set -euo pipefail
 
-    #echo "nxfs-g++=$(which nxfs-g++)"
-    echo "glibc=$glibc"
+    prev_unwrapped_gcc=${stdenv.cc.cc}
+
+    echo "prev_unwrapped_gcc=$prev_unwrapped_gcc"
+    echo "glibc=$libc"
 
     src2=$src
     builddir=$TMPDIR/build
@@ -98,13 +105,13 @@ stdenv.mkDerivation {
     #   --with-boot-libs
     #   --with-boot-ldflags
 
-    export CFLAGS="-idirafter $glibc/include"
+    export CFLAGS="-idirafter $libc/include"
     # TODO: -O2
 
-    LDFLAGS="-B$glibc/lib"
+    LDFLAGS="-B$libc/lib"
     LDFLAGS="$LDFLAGS -L$flex/lib -L$mpc/lib -L$mpfr/lib -L$gmp/lib -L$isl/lib"
     LDFLAGS="$LDFLAGS -Wl,-rpath,$mpc/lib -Wl,-rpath,$mpfr/lib -Wl,-rpath,$gmp/lib"
-    LDFLAGS="$LDFLAGS -Wl,-rpath,$isl/lib -Wl,-rpath,$glibc/lib"
+    LDFLAGS="$LDFLAGS -Wl,-rpath,$isl/lib -Wl,-rpath,$libc/lib"
     export LDFLAGS
 
     # The wrapper (nxfs-gcc) injects compiler- and linker- flags to pull in glibc.
@@ -122,18 +129,18 @@ stdenv.mkDerivation {
     #    so we could try to copy (or, symlink) {crti.o,crtn.o,libc.so,} from there
     #    I expect this is problematic for the same reason we can't just copy libc.so: it expects to know where it lives.
     #
-    ln -s $glibc/lib/crti.o $out/$target_tuple/lib/crti.o
-    ln -s $glibc/lib/crtn.o $out/$target_tuple/lib/crtn.o
-    ln -s $glibc/lib/libc.so $out/$target_tuple/lib/libc.so
-    ln -s $glibc/lib/libc.so.6 $out/$target_tuple/lib/libc.so.6
+    ln -s $libc/lib/crti.o $out/$target_tuple/lib/crti.o
+    ln -s $libc/lib/crtn.o $out/$target_tuple/lib/crtn.o
+    ln -s $libc/lib/libc.so $out/$target_tuple/lib/libc.so
+    ln -s $libc/lib/libc.so.6 $out/$target_tuple/lib/libc.so.6
     # omitting: Mcrt1.o, Scrt1.o, crt1.o gcrt1.o grcrt1.o ld-linux-x86-64.so.2
     #           libBrokenLocale.so libBrokenLocale.so.1
     #           libanl.so libanl.so.1 etc.
 
-    # here we tell nxfs-gcc to use native prepared-within-nix glibc (from stage 3)
-    # instead of glibc baked into nxfs-gcc (from stage 2)
+    # here we tell nxfs-gcc to use native prepared-within-nix glibc (i.e. $libc from this stage)
+    # instead of glibc baked into nxfs-gcc (from prev stage)
     #
-    export NXFS_SYSROOT_DIR=$glibc
+    export NXFS_SYSROOT_DIR=$libc
 
     # NOTE: nxfs-gcc automatically inserts flags
     #
@@ -142,7 +149,7 @@ stdenv.mkDerivation {
     #
     (cd $builddir \
       && $shell $src2/configure --prefix=$out --disable-bootstrap \
-                       --with-native-system-header-dir=$glibc/include \
+                       --with-native-system-header-dir=$libc/include \
                        --enable-lto --disable-nls --with-mpc=$mpc --with-mpfr=$mpfr \
                        --with-gmp=$gmp --with-isl=$isl \
                        --enable-default-pie --enable-default-ssp \
@@ -150,14 +157,54 @@ stdenv.mkDerivation {
                        --disable-libatomic --disable-libgomp --disable-libquadmath \
                        --disable-libssp --disable-libvtv --disable-libstdcxx \
                        --enable-languages=c,c++ \
-                       --with-stage1-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib" \
-                       --with-boot-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib" \
+                       --with-stage1-ldflags="-B$libc/lib -Wl,-rpath,$libc/lib" \
+                       --with-boot-ldflags="-B$libc/lib -Wl,-rpath,$libc/lib" \
                        CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
 
-    # gcc build doesn't
+    # build will produce binaries that put the lib directory from the unwrapped compiler that
+    # that nxfs-gcc invokes. Would like to prune these, but they're needed since new gcc doesn't come with libstdc++.
+    # Instead, put them at the end of RUNPATH, so they don't intercept the glibc we just provided
+    #
+    # prioritize libs from new compiler over version from $prev_unwrapped_gcc/lib
+    # in this phase we need bootstrap compiler's lib directory in RUNPATH;
+    # however it must come at the end; also patch dynamic linker to refer to the correct libc
+
+    patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/cpp
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/cpp
+
+    #patchelf --set-rpath $out/lib:$mpc/lib:$mpfr/lib:$gmp/lib:$isl/lib:$libc/lib:$prev_unwrapped_gcc/lib $out/bin/gcc
+    patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/gcc
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc
+
+    #patchelf --set-rpath $out/lib:$mpc/lib:$mpfr/lib:$gmp/lib:$isl/lib:$libc/lib:$prev_unwrapped_gcc/lib $out/bin/g++
+    patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/g++
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/g++
+
+    patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/gcc-ar
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc-ar
+
+    patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/gcc-nm
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc-nm
+
+    patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/gcc-ranlib
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc-ranlib
+
+    patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/gcov
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcov
+
+    patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/gcov-dump
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcov-dump
+
+    patchelf --set-rpath $out/lib:$glibc/lib:$prev_unwrapped_gcc/lib $out/bin/gcov-tool
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcov-tool
+
+    # note: $isl/lib is load-bearing; indirect dependency
+    patchelf --set-rpath $out/lib:$mpc/lib:$mpfr/lib:$isl/lib:$gmp/lib:$libc/lib:$prev_unwrapped_gcc/lib $out/bin/lto-dump
+    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/lto-dump
+
 
     # can now remove the sysroot debris we temporarily put into $out/$target_tuple
     rm $out/$target_tuple/lib/crti.o

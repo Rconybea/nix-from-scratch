@@ -2,7 +2,9 @@
   # stdenv :: attrset+derivation
   stdenv,
   # gmp :: derivation
-  gmp
+  gmp,
+  # stageid :: string   -- "2" for stage2 etc.
+  stageid,
 } :
 
 let
@@ -10,7 +12,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name         = "nxfs-isl-3";
+  name         = "nxfs-isl-${stageid}";
   version      = version;
 
   gmp          = gmp;

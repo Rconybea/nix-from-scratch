@@ -431,23 +431,25 @@ let
     };
 
   # gcc-stage2-wrapper-3 :: derivation
-  gcc-x1-wrapper-3 = callPackage ./nxfs-gcc-x1-wrapper-3/package.nix { stdenv = stdenv-3-1;
-                                                                       gcc-unwrapped = gcc-x1-3;
-                                                                       glibc = glibc-x1-3;
-                                                                       nxfs-defs = nxfs-defs;
-                                                                     };
+  gcc-x1-wrapper-3 = callPackage
+    ../bootstrap-pkgs/gcc-x1-wrapper/package.nix { stdenv = stdenv-3-1;
+                                                   gcc-unwrapped = gcc-x1-3;
+                                                   glibc = glibc-x1-3;
+                                                   nxfs-defs = nxfs-defs;
+                                                   stageid = "3";
+                                                 };
 in
 let
   # libstdcxx-x2-3 :: derivation
-  libstdcxx-x2-3 = callPackage ./nxfs-libstdcxx-x2-3/package.nix
-    {
-      stdenv               = stdenv-3-1;
-      gcc-wrapper          = gcc-x1-wrapper-3;
-      binutils-wrapper     = binutils-x0-wrapper-3;
-      glibc                = glibc-x1-3;
-      nixified-gcc-source  = nixified-gcc-source-3;
-      nxfs-defs            = nxfs-defs;
-    };
+  libstdcxx-x2-3 = callPackage
+    ../bootstrap-pkgs/libstdcxx/package.nix { stdenv               = stdenv-3-1;
+                                              gcc-wrapper          = gcc-x1-wrapper-3;
+                                              binutils-wrapper     = binutils-x0-wrapper-3;
+                                              glibc                = glibc-x1-3;
+                                              nixified-gcc-source  = nixified-gcc-source-3;
+                                              nxfs-defs            = nxfs-defs;
+                                              stageid              = "3";
+                                            };
 in
 let
   # gcc-stage3-wrapper-3 :: derivation

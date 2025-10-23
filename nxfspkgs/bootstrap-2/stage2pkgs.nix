@@ -388,6 +388,10 @@ let
   mpfr-2 = callPackage ../bootstrap-pkgs/mpfr/package.nix { stdenv = stdenv-2-1;
                                                             gmp = gmp-2;
                                                             stageid = "2"; };
+  # isl-2 :: derivation
+  isl-2 = callPackage ../bootstrap-pkgs/isl/package.nix { stdenv = stdenv-2-1;
+                                                          gmp = gmp-2;
+                                                          stageid = "2"; };
 in
 let
   # mpc-2 :: derivation
@@ -437,6 +441,67 @@ let
                                         };
 in
 let
+  binutils-x0-wrapper-2 = callPackage ../bootstrap-pkgs/binutils-x0-wrapper/package.nix { stdenv = stdenv-2-1;
+                                                                                          bintools = binutils-2;
+                                                                                          libc = glibc-2;
+                                                                                          stageid = "2";
+                                                                                        };
+
+  # gcc-x0-wrapper-2 :: derivation
+  gcc-x0-wrapper-2 = callPackage ../bootstrap-pkgs/gcc-x0-wrapper/package.nix { stdenv = stdenv-2-1;
+                                                                                cc = stage1pkgs.nxfs-toolchain-1;
+                                                                                libc = glibc-2;
+                                                                                nxfs-defs = nxfs-defs;
+                                                                                stageid = "2";
+                                                                              };
+in
+let
+
+  # nixified-gcc-source-2 :: derivation
+  nixified-gcc-source-2 = callPackage
+    ../bootstrap-pkgs/nixify-gcc-source/package.nix { stdenv = stdenv-2-1;
+                                                      file = file-2;
+                                                      which = which-2;
+                                                      stageid = "2"; };
+
+  # this version
+  gcc-x1-2 = callPackage ../bootstrap-pkgs/gcc-x1/package.nix { stdenv = stdenv-2-1;
+                                                                nixified-gcc-source = nixified-gcc-source-2;
+                                                                binutils-wrapper = binutils-x0-wrapper-2;
+                                                                mpc = mpc-2;
+                                                                mpfr = mpfr-2;
+                                                                gmp = gmp-2;
+                                                                isl = isl-2;
+                                                                bison = bison-2;
+                                                                flex = flex-2;
+                                                                texinfo = texinfo-2;
+                                                                m4 = m4-2;
+                                                                glibc = glibc-2;
+                                                                nxfs-defs = nxfs-defs;
+                                                                stageid = "2"; };
+in
+let
+  # gcc-x1-wrapper-2 :: derivation
+  gcc-x1-wrapper-2 = callPackage ../bootstrap-pkgs/gcc-x1-wrapper/package.nix { stdenv = stdenv-2-1;
+                                                                                cc = gcc-x1-2;
+                                                                                libc = glibc-2;
+                                                                                nxfs-defs = nxfs-defs;
+                                                                                stageid = "2";
+                                                                              };
+in
+let
+  # libstdcxx-x2-2 :: derivation
+  libstdcxx-x2-2 = callPackage
+    ../bootstrap-pkgs/libstdcxx/package.nix { stdenv              = stdenv-2-1;
+                                              gcc-wrapper         = gcc-x1-wrapper-2;
+                                              binutils-wrapper    = binutils-x0-wrapper-2;
+                                              glibc               = glibc-2;
+                                              nixified-gcc-source = nixified-gcc-source-2;
+                                              nxfs-defs           = nxfs-defs;
+                                              stageid             = "2";
+                                            };
+in
+let
   nxfsenv-2-0a = nxfsenv-1;
   nxfsenv-2-0b = nxfsenv-2-0a;
   nxfsenv-2-0 = nxfsenv-2-0a // { which = which-2; };
@@ -456,7 +521,6 @@ let
   nxfsenv-2-c13 = nxfsenv-2-b13 // { file = file-2; };
   nxfsenv-2-c14 = nxfsenv-2-c13 // { flex = flex-2; };
   nxfsenv-2-b15 = nxfsenv-2-b14 // nxfsenv-2-c14 // { bison = bison-2; };
-  # TODO: pkgconf, for consistency with stage3
   nxfsenv-2-d13 = nxfsenv-2-10 // { pkgconf = pkgconf-2;
                                     zlib = zlib-2;
                                   };
@@ -478,61 +542,9 @@ let
                                  };
   nxfsenv-2-94 = nxfsenv-2-16 // { texinfo = texinfo-2; };
   nxfsenv-2-95 = nxfsenv-2-94 // { glibc = glibc-2; };
-
-  binutils-x0-wrapper-2 = callPackage ../bootstrap-pkgs/binutils-x0-wrapper/package.nix { stdenv = stdenv-2-1;
-                                                                                          bintools = binutils-2;
-                                                                                          libc = glibc-2;
-                                                                                          stageid = "2";
-                                                                                        };
-
-  # gcc-x0-wrapper-2 :: derivation
-  gcc-x0-wrapper-2 = callPackage ../bootstrap-pkgs/gcc-x0-wrapper/package.nix { stdenv = stdenv-2-1;
-                                                                                cc = stage1pkgs.nxfs-toolchain-1;
-                                                                                libc = glibc-2;
-                                                                                nxfs-defs = nxfs-defs;
-                                                                                stageid = "2";
-                                                                              };
-in
-let
-  # maybe need binutils wrapper ?
   nxfsenv-2-96 = nxfsenv-2-95 // { gcc = gcc-x0-wrapper-2; };  # or 2-95a
-
-  # nixified-gcc-source-2 :: derivation
-  nixified-gcc-source-2 = callPackage
-    ../bootstrap-pkgs/nixify-gcc-source/package.nix { stdenv = stdenv-2-1;
-                                                      file = file-2;
-                                                      which = which-2;
-                                                      stageid = "2"; };
-
-  # TODO: rename subdir to follow nxfs-gcc-x1-3 in stage3
-  gcc-x1-2 = callPackage ./nxfs-gcc-stage1-2/package.nix { nxfsenv = nxfsenv-2-96;
-                                                           mpc = mpc-2;
-                                                           mpfr = mpfr-2;
-                                                           gmp = gmp-2;
-                                                         };
-in
-let
-  # TODO: name = gcc-unwrapped instead of gcc-x1
-
-  # nxfsenv-2-97 :: attrset
   nxfsenv-2-97 = nxfsenv-2-96 // { gcc-x1 = gcc-x1-2; };
-
-  # gcc-x1-wrapper-2 :: derivation
-  gcc-x1-wrapper-2 = callPackage ./nxfs-gcc-stage2-wrapper-2/package.nix { nxfsenv = nxfsenv-2-97; };
-in
-let
-  # nxfsenv-2-98 :: attrset
   nxfsenv-2-98 = nxfsenv-2-97 // { gcc = gcc-x1-wrapper-2; };
-
-  # libstdcxx-x2-2 :: derivation
-  libstdcxx-x2-2 = callPackage ./nxfs-libstdcxx-stage2-2/package.nix { nxfsenv = nxfsenv-2-98;
-                                                                       mpc = mpc-2;
-                                                                       mpfr = mpfr-2;
-                                                                       gmp = gmp-2;
-                                                                       glibc = glibc-2;
-                                                                     };
-in
-let
   # gcc-x2-wrapper-2 :: derivation
   gcc-x2-wrapper-2 = callPackage ./nxfs-gcc-stage3-wrapper-2/package.nix { nxfsenv = nxfsenv-2-98;
                                                                            gcc-unwrapped = gcc-x1-2;
@@ -556,7 +568,7 @@ let
   # gcc-x3-2 :: derivation
   gcc-x3-2 = callPackage ./nxfs-gcc-stage2-2/package.nix  { nxfsenv = nxfsenv-2-99a;
                                                             nixified-gcc-source = nixified-gcc-source-2;
-                                                            mpc = mpc-2;
+                                                             mpc = mpc-2;
                                                             mpfr = mpfr-2;
                                                             gmp = gmp-2;
                                                             binutils-wrapper = binutils-x0-wrapper-2;
@@ -630,6 +642,7 @@ in
   inherit python-2;
   inherit mpc-2;
   inherit mpfr-2;
+  inherit isl-2;
   inherit gmp-2;
   inherit texinfo-2;
   inherit bison-2;
