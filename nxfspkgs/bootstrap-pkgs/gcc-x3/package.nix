@@ -33,6 +33,7 @@
 
 stdenv.mkDerivation {
   name         = "nxfs-gcc-x3-${stageid}";
+  # e.g. 14.2.0
   version      = nixified-gcc-source.version;
   system       = builtins.currentSystem;
 
@@ -151,56 +152,95 @@ stdenv.mkDerivation {
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)
 
-    # build will produce binaries that put the lib directory from the unwrapped compiler that
-    # that nxfs-gcc invokes. Can prune these here, since built compiler doesn't need them.
+    # build will produce binaries that include in RUNPATH directories from the bootstrap compiler
+    # that nxfs-gcc invokes. Prune these here, since new compiler doesn't need them,
+    # and they could interfere if loaded ahead of similarly named libraries owned by the new compiler
     #
     # Contrast with previous gcc build, where we needed to keep bootstrap libraries
     # in RUNPATH, but control ordering
 
     #prev_unwrapped_gcc="${gcc-wrapper.cc}";  # not needed, since we built full gcc here
 
-    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/cpp
-    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/cpp
+    dynamic_linker=$glibc/lib/ld-linux-x86-64.so.2
 
-    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcc
-    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc
+    if [ ! -e $dynamic_linker ]; then
+         echo "error: dynamic_linker [$dynamic_linker] not found"
+         exit 1
+    fi
 
-    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/g++
-    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/g++
+    patchelf_exec() {
+        target=$1
+        rpath=$2
 
-    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcc-ar
-    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc-ar
+        patchelf --set-rpath $rpath $target
+        patchelf --set-interpreter $dynamic_linker $target
+    }
 
-    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcc-nm
-    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc-nm
+    set -x
 
-    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcc-ranlib
-    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcc-ranlib
+    # for targets that need libc only
+    rpath_a=$glibc/lib
 
-    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcov
-    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcov
+    # for targets that need libc + {libstdc++, libgcc_s, libm}
+    rpath_b=$out/lib:$glibc/lib
+    # for targets that need {libmpc, libmpfr, libgmp, libisl, libc, libstdc++, libgcc_s, libm, libc}
+    rpath_c=$out/lib:$mpc/lib:$mpfr/lib:$isl/lib:$gmp/lib:$libc/lib
 
-    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcov-dump
-    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcov-dump
+    bindir=$out/bin
 
-    patchelf --set-rpath $out/lib:$glibc/lib $out/bin/gcov-tool
-    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/gcov-tool
+    patchelf_exec $bindir/cpp $rpath_b
+    patchelf_exec $bindir/gcc $rpath_b
+    patchelf_exec $bindir/g++ $rpath_b
+    patchelf_exec $bindir/gcc-ar $rpath_b
+    patchelf_exec $bindir/gcc-nm $rpath_b
+    patchelf_exec $bindir/gcc-nm $rpath_b
+    patchelf_exec $bindir/gcc-ranlib $rpath_b
+    patchelf_exec $bindir/gcov $rpath_b
+    patchelf_exec $bindir/gcov-dump $rpath_b
+    patchelf_exec $bindir/gcov-tool $rpath_b
+    patchelf_exec $bindir/lto-dump $rpath_c
 
-    patchelf --set-rpath $out/lib:$mpc/lib:$mpfr/lib:$isl/lib:$gmp/lib:$libc/lib $out/bin/lto-dump
-    patchelf --set-interpreter $glibc/lib/ld-linux-x86-64.so.2 $out/bin/lto-dump
+    libdir=$out/lib
 
-    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/libasan.so
-    patchelf --set-rpath $glibc/lib $out/lib/libatomic.so.1
-    patchelf --set-rpath $glibc/lib $out/lib/libgcc_s.so.1
-    patchelf --set-rpath $glibc/lib $out/lib/libgomp.so.1
-    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/libhwasan.so
-    patchelf --set-rpath $glibc/lib $out/lib/libitm.so.1
-    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/liblsan.so
-    patchelf --set-rpath $glibc/lib $out/lib/libquadmath.so
-    patchelf --set-rpath $glibc/lib $out/lib/libssp.so
-    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/libstdc++.so
-    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/libtsan.so
-    patchelf --set-rpath $out/lib:$glibc/lib $out/lib/libubsan.so
+    patchelf --set-rpath $rpath_b $libdir/libasan.so
+    patchelf --set-rpath $rpath_a $libdir/libatomic.so.1
+    patchelf --set-rpath $rpath_a $libdir/libgcc_s.so.1
+    patchelf --set-rpath $rpath_a $libdir/libgomp.so.1
+    patchelf --set-rpath $rpath_b $libdir/libhwasan.so
+    patchelf --set-rpath $rpath_a $libdir/libitm.so.1
+    patchelf --set-rpath $rpath_b $libdir/liblsan.so
+    patchelf --set-rpath $rpath_a $libdir/libquadmath.so
+    patchelf --set-rpath $rpath_a $libdir/libssp.so
+    patchelf --set-rpath $rpath_b $libdir/libstdc++.so
+    patchelf --set-rpath $rpath_b $libdir/libtsan.so
+    patchelf --set-rpath $rpath_b $libdir/libubsan.so
+
+    patchelf --set-rpath $rpath_b $out/lib64/libcc1.so
+
+    patchelf --set-rpath $rpath_b $libdir/gcc/$target_tuple/$version/plugin/libcp1plugin.so
+    patchelf --set-rpath $rpath_b $libdir/gcc/$target_tuple/$version/plugin/libcc1plugin.so
+
+    # also handle executables in $out/libexec/gcc/$target_tuple/$version
+
+    execdir=$out/libexec/gcc/$target_tuple/$version
+
+    patchelf_exec $execdir/cc1 $rpath_c
+    patchelf_exec $execdir/cc1plus $rpath_c
+    patchelf_exec $execdir/collect2 $rpath_b
+    patchelf_exec $execdir/g++-mapper-server $rpath_b
+    patchelf --set-rpath $rpath_a $execdir/liblto_plugin.so
+    patchelf_exec $execdir/lto-wrapper $rpath_b
+    patchelf_exec $execdir/lto1 $rpath_c
+
+    patchelf_exec $execdir/install-tools/fixincl $rpath_a
+
+    patchelf_exec $execdir/plugin/gengtype $rpath_b
+
+    # also nuke at best misleading .la files
+    rm -f $libdir/gcc/$target_tuple/$version/plugin/*.la
+    rm -f $libdir/*.la
+    rm -f $out/lib64/*.la
+    rm -f $execdir/*.la
 
     # can now remove the toolchain(sysroot) debris we temporarily put into $out/$target_tuple
     rm $out/$target_tuple/lib/crt1.o
