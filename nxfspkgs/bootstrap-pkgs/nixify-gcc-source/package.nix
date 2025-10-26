@@ -39,7 +39,7 @@ stdenv.mkDerivation {
     #  - don't try to expand .l files (will trigger doc rebuild)
     #  - replace shebangs: {/bin/sh, /usr/bin/env sh, /usr/bin/env bash} -> $shell
     #
-    (cd $out && find . -type f | grep -v '*.l$' | xargs --replace=xx sed -i -e "1s:#! /bin/sh:#! $shell:" -e "1s:#!/usr/bin/env sh:#! $shell:" -e "#1:#!/usr/bin/env bash:#! $shell:" xx)
+    (cd $out && find . -type f | grep -v '*.l$' | xargs sed -i -e "1s:#! /bin/sh:#! $shell:" -e "1s:#!/usr/bin/env sh:#! $shell:" -e "#1:#!/usr/bin/env bash:#! $shell:")
 '';
 
   shell = stdenv.shell;

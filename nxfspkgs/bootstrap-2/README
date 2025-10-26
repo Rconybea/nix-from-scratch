@@ -19,10 +19,15 @@ Dependency Tower
 Dependencies somewhat overspecified for the sake of simplicity.
 (For example nxfs-zlib-2 needs nxfs-sed-2, but not nxfs-gawk-2)
 
-
-
  +----------------------------------------------------------------------------------------------------+
- | -A gcc-wrapper-2                           nxfs-gcc-wrapper-2                                      |
+ | -A gcc-wrapper-2                           boottsrap-pkgs/gcc-x3-wrapper                           |
+ | -A gcc-x5-wrapper-2                                                                                |
+ +----------------------------------------------------------------------------------------------------+
+ | -A gcc-x5-2                                bootstrap-pkgs/gcc-fixpoint                             |
+ +----------------------------------------------------------------------------------------------------+
+ | -A gcc-x4-2                                bootstrap-pkgs/gcc-x3                                   |
+ +----------------------------------------------------------------------------------------------------+
+ | -A gcc-x3-wrapper-2                        bootstrap-pkgs/gcc-x3-wrapper                           |
  +----------------------------------------------------------------------------------------------------+
  | -A gcc-x3-2                                bootstrap-pkgs/gcc-x3                                   |
  +----------------------------------------------------------------------------------------------------+
@@ -94,6 +99,27 @@ Dependencies somewhat overspecified for the sake of simplicity.
  +----------------------------------------------------------------------------------------------------+
 
 nxfs-gcc-wrapper-2 gcc/g++ wrapper scripts to inject nix-store paths
+
+----------------------------------------------------------------
+Details
+
+- gcc-x5-2: redirect hashes for gcc-x4-2 and gcc-x3-2 references to point to gcc-x5-2 instead.
+  gcc-x5-2 contains reference to imported bootstrap components only through glibc-2.
+  Ohterwise it's "fully bootstrapped".
+- gcc-x4-2: rebuild gcc using gcc-x3-2.
+  milestone: first 2nd generation native gcc
+- gcc-x3-2: assemble gcc from gcc-x1-2 + libstdcxx-x1-2.
+  milestone: first full-featured native gcc in bootstrap.
+  Although this is a native gcc, it contains references to imported bootstrap components through glibc-2
+- libstdcxx-x1-2: first native libstdcxx in bootstrap; compiled using gcc-x1-2.
+- gcc-x1-2: minimal native gcc. C-only, missing various features, but sufficiently capable to compile
+  a full-featured version of gcc.
+- glibc-2: libc, compiled with bootstrap gcc.
+  Although this is a nix-native gcc, it will contain references to bootstrap tools through
+  subsidiary glibc references: python, bash etc.
+- binutils-2 .. which-2 nix-native toolchain dependencies (both build-time and run-time),
+  compiled with imported bootstrap toolchain nxfs-toolchain-1
+
 
 NOTE:
 1. Dependency nxfs-gnumake-2 <- nxfs-bash-2 is load-bearing.

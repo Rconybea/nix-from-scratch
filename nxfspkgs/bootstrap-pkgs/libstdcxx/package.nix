@@ -26,8 +26,6 @@ stdenv.mkDerivation {
 
   src          = nixified-gcc-source;
 
-  outputs      = [ "out" "source" ];
-
   target_tuple = nxfs-defs.target_tuple;
 
   buildPhase = ''
@@ -45,7 +43,6 @@ stdenv.mkDerivation {
     mkdir -p $builddir
 
     mkdir -p $out
-    mkdir -p $source
 
     # $src/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$shell"
@@ -94,6 +91,7 @@ stdenv.mkDerivation {
     (cd $builddir && $shell $src/libstdc++-v3/configure \
                             --prefix=$out \
                             --with-gxx-include-dir=$out/$target_tuple/include/c++/$version \
+                            --disable-fixincludes \
                             --disable-nls --disable-multilib --enable-libstdcxx-pch \
                             CC=$gcc CXX=$gxx CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS")
 
@@ -104,10 +102,7 @@ stdenv.mkDerivation {
 
     patchelf --set-rpath $prev_unwrapped_gcc/lib:$glibc/lib $out/lib/libstdc++.so
 
-    # bootstrap gcc will put it's own library into RUNPATH;
-    # since libstdc++.so
-    #
-    (cd $src && (tar cf - . | tar xf - -C $source))
+    rm -f $out/build.env
     '';
 
   buildInputs = [ gcc-wrapper

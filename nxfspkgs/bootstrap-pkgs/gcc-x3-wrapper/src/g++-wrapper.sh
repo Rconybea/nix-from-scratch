@@ -6,9 +6,12 @@
 # Need this to adopt a gcc that was originally compiled outside nix store,
 # and by defult produces executables that assume /lib64
 
-unwrapped_gcc=@unwrapped_gcc@
+unwrapped_gxx=@unwrapped_gxx@
 gcc=@gcc@
 glibc=@glibc@
+
+target_tuple=@target_tuple@
+gcc_version=@gcc_version@
 
 PATH=${gcc}/bin:$PATH
 
@@ -32,13 +35,18 @@ if [[ $# -eq 1 ]] && [[ "$1" == '-v' ]]; then
     # prints a message and returns 0 exit code,
     # but won't preserve that behavior if we also pass linker arguments
     #
-    ${unwrapped_gcc} -v
+    ${unwrapped_gxx} -v
 else
-    # minor point: appending flags so that they can be superseded by explicit arguments
-    ${unwrapped_gcc} "${@}" \
-                     -I${NXFS_SYSROOT_DIR}/include \
-                     -L${gcc}/lib -Wl,-rpath=${gcc}/lib \
-                     -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib
+    set -x
 
-#                     -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
+    cxxdir=${gcc}/include/c++/${gcc_version}
+    # NOTE: '-idirafter ${NXFS_SYSROOT_DIR}/include' here is load-bearing.
+    #       gcc-x3-2 needs this to come after gcc directories.
+    #
+    ${unwrapped_gxx} "${@}" \
+                     -isystem ${cxxdir} -I${cxxdir}/${target_tuple} \
+                     -idirafter ${NXFS_SYSROOT_DIR}/include \
+                     -L${gcc}/lib -Wl,-rpath=${gcc}/lib \
+                     -B${NXFS_SYSROOT_DIR}/lib -Wl,-rpath=${NXFS_SYSROOT_DIR}/lib \
+                     -Wl,-dynamic-linker=${NXFS_SYSROOT_DIR}/lib/ld-linux-x86-64.so.2
 fi

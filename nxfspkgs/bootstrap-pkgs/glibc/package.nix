@@ -65,6 +65,8 @@ stdenv.mkDerivation {
     mkdir -p $out
     mkdir -p $source
 
+    rm -f $out/build.env
+
     src2=$TMPDIR/src2
     builddir=$TMPDIR/build
 

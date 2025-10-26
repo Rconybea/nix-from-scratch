@@ -23,16 +23,18 @@
   texinfo,
   # m4 :: derivation
   m4,
+  # libstdxx :: derivation   -- same as gcc-wrapper.libstdcxx -- not used here
+  libstdcxx,
   # glibc :: derivation
   glibc,
   # nxfs-defs :: derivation
   nxfs-defs,
-  # stageid :: string  -- "2" for stage2 etc.
+  # stageid :: string  -- "x3-2" for x3 stage2, "x4-2" for x4 stage2 etc.
   stageid,
 } :
 
 stdenv.mkDerivation {
-  name         = "nxfs-gcc-x3-${stageid}";
+  name         = "nxfs-gcc-${stageid}";
   # e.g. 14.2.0
   version      = nixified-gcc-source.version;
   system       = builtins.currentSystem;
@@ -57,6 +59,13 @@ stdenv.mkDerivation {
     builddir=$TMPDIR/build
 
     mkdir -p $builddir
+    mkdir -p $out/lib
+
+    # don't want separate /lib and /lib64 dirs.
+    # only supporting 64-bit builds here
+    #
+    (cd $out && ln -sf lib lib64)
+
     mkdir -p $out/$target_tuple/lib
 
     bash_program=$shell
@@ -65,6 +74,8 @@ stdenv.mkDerivation {
     export CONFIG_SHELL="$bash_program"
 
     # --disable-nls:                    no internationalization.  don't need during bootstrap
+    # --disable-fixincludes:            intended for compatibility with old OS platforms with broken system headers.
+    #                                   enables subtle use of #include_next
     # --enable-gprofng=no:              don't need gprofng tool during bootstrap
     # --disable-werror:                 don't treat compiler warnings as errors
     # --enable-default-hash-style=gnu:  only generate faster gnu-style symbol hash table by default.
@@ -73,7 +84,6 @@ stdenv.mkDerivation {
     # We think we don't need this, since gcc-wrapper points built executables/libraries to libc etc in $sysroot
     #
     # Variation w.r.t. linuxfromscratch
-    #   --with-glibc-version=2.40   keep this, since we're about to build glibc
     #   --with-newlib               don't compile libc-dependent code (we have some other libc from sysroot)
     #   --with-sysroot              should not need this.   Not planning to chroot anywhere
     #   --without-headers           will need kernel headers compatible with target.  Don't look for them for now.
@@ -88,6 +98,13 @@ stdenv.mkDerivation {
     #   --with-boot-libs
     #   --with-boot-ldflags
 
+    set -x
+
+    export C_INCLUDE_PATH="$glibc/include"
+    #export CPLUS_INCLUDE_PATH="$libstdcxx/include/c++/$version:$libstdcxx/include/$version/$target_tuple:$glibc/include"
+    export CPLUS_INCLUDE_PATH="$glibc/include"
+
+    # CFLAGS: this is load-bearing. Otherwise may have failure in $src/libcody/buffer.c on #include_next <stdlib.h>
     export CFLAGS="-idirafter $glibc/include"
     # TODO: -O2
 
@@ -96,6 +113,17 @@ stdenv.mkDerivation {
     LDFLAGS="$LDFLAGS -Wl,-rpath,$mpc/lib -Wl,-rpath,$mpfr/lib -Wl,-rpath,$isl/lib -Wl,-rpath,$gmp/lib"
     LDFLAGS="$LDFLAGS -Wl,-rpath,$glibc/lib"
     export LDFLAGS
+
+    CXXFLAGS_FOR_TARGET="-B$glibc/lib"
+    export CXXFLAGS_FOR_TARGET
+
+    LDFLAGS_FOR_TARGET="-B$glibc/lib -Wl,-rpath,$out/lib -Wl,-rpath,$glibc/lib"
+    export LDFLAGS_FOR_TARGET
+
+    LIBRARY_PATH=$out/lib:$glibc/lib
+    export LIBRARY_PATH
+
+    set +x
 
     # The wrapper (nxfs-gcc) injects compiler- and linker- flags to pull in glibc.
     # This works for much of the gcc build,  however the additional flags are lost when the gcc
@@ -130,13 +158,16 @@ stdenv.mkDerivation {
     (cd $builddir && $shell $src2/configure \
                                    --prefix=$out \
                                    --disable-bootstrap \
+                                   --disable-fixincludes \
+                                   --disable-multilib \
+                                   --disable-nls \
                                    --with-native-system-header-dir=$glibc/include \
-                                   --enable-lto --disable-nls \
+                                   --with-gxx-include-dir=$out/include/c++/$version \
+                                   --enable-lto \
                                    --with-mpc=$mpc --with-mpfr=$mpfr --with-gmp=$gmp --with-isl=$isl \
                                    --enable-default-pie \
                                    --enable-default-ssp \
                                    --enable-shared \
-                                   --disable-multilib \
                                    --enable-threads \
                                    --enable-libatomic \
                                    --enable-libgomp \
@@ -145,8 +176,8 @@ stdenv.mkDerivation {
                                    --enable-libvtv \
                                    --enable-libstdcxx \
                                    --enable-languages=c,c++ \
-                                   --with-stage1-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib" \
-                                   --with-boot-ldflags="-B$glibc/lib -Wl,-rpath,$glibc/lib" \
+                                   --with-stage1-ldflags="-B$glibc/lib -Wl,-rpath,$out/lib -Wl,-rpath,$glibc/lib" \
+                                   --with-boot-ldflags="-B$glibc/lib -Wl,-rpath,$out/lib -Wl,-rpath,$glibc/lib" \
                                    CC=nxfs-gcc CXX=nxfs-g++ CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
@@ -232,11 +263,23 @@ stdenv.mkDerivation {
     patchelf_exec $execdir/lto-wrapper $rpath_b
     patchelf_exec $execdir/lto1 $rpath_c
 
-    patchelf_exec $execdir/install-tools/fixincl $rpath_a
+    # would need this iff --disable-fixincludes dropped
+    #patchelf_exec $execdir/install-tools/fixincl $rpath_a
 
     patchelf_exec $execdir/plugin/gengtype $rpath_b
 
-    # also nuke at best misleading .la files
+    ### also grapb specs and kitbash them for separate glibc location ###
+
+    specfile=$out/lib/gcc/$target_tuple/$version/specs
+    $out/bin/gcc -dumpspecs | sed -e "{
+      s|:\([^;}:]*\)/\(ld-linux-x86-64.so.2}\)|:$glibc/lib/\2|g
+      s|collect2|collect2 -L$glibc/lib -rpath $glibc/lib|
+    }" | sed -e "/^\*link:$/{
+        n
+        s|^|-L$glibc/lib |
+    }" > $specfile
+
+    # also nuke at-best-misleading .la files
     rm -f $libdir/gcc/$target_tuple/$version/plugin/*.la
     rm -f $libdir/*.la
     rm -f $out/lib64/*.la
@@ -249,6 +292,10 @@ stdenv.mkDerivation {
     rm $out/$target_tuple/lib/libc.so
     rm $out/$target_tuple/lib/libc.so.6
     rm $out/$target_tuple/lib/Scrt1.o
+
+    # also nuke build.env, since contains toolchain references
+    rm -f $out/build.env
+
   '';
 
   # note: will appear in path left-to-right

@@ -27,8 +27,6 @@ stdenv.mkDerivation {
                               };
 
   buildPhase = ''
-    #! /bin/bash
-
     # -e          : stop on first error
     # -u          : error if variable not defined
     # -o pipefail : report error code for last process in pipeline
@@ -71,9 +69,9 @@ stdenv.mkDerivation {
     sed -i -e "s:/bin/sh:$shell:" ./elf/tst-valgrind-smoke.sh
     sed -i -e "s:/bin/sh:$shell:" ./debug/xtrace.sh
 
-    find . -type f | xargs --replace=xx sed -i -e '1s:#! */bin/sh:#!'$shell':' xx
-    find . -type f | xargs --replace=xx sed -i -e '1s:#! */bin/bash:#!'$shell':' xx
-    find . -type f | xargs --replace=xx sed -i -e '1s:#! */usr/bin/python3:#!'$python_program':' xx
+    find . -type f | xargs sed -i -e '1s:#! */bin/sh:#!'$shell':'
+    find . -type f | xargs sed -i -e '1s:#! */bin/bash:#!'$shell':'
+    find . -type f | xargs sed -i -e '1s:#! */usr/bin/python3:#!'$python_program':'
 
     # patch: fix bad function signature on locfile_hash() in locfile-kw.h, and charmap_hash() in charmap-kw.h
     #

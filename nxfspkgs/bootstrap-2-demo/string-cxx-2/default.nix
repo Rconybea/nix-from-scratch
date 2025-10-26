@@ -5,7 +5,7 @@
 # see nxfspkgs/build-support/autotools/{default.nix, default-builder.sh, setup.sh}
 #
 stdenv.mkDerivation {
-  name = "hello-cxx-2";
+  name = "string-cxx-2";
   system = builtins.currentSystem;
 
   # to entirely replace the default build script,
@@ -20,6 +20,7 @@ stdenv.mkDerivation {
     # -B$libc :  glibc location missing from gcc build
     #
     g++ -v -o $out/bin/hello $src
+    #
     #g++ -o $out/bin/hello $src -lstdc++ -Wl,-rpath,${stdenv.cc}/lib -B${stdenv.cc.libc}/lib
 
     rm $out/build.env

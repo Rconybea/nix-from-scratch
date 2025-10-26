@@ -6,7 +6,10 @@ source ${setupScript}
 mkdir -pv ${out}
 mkdir -pv ${out}/nix-support
 
-# nxfs interpolation
-env > ${out}/build.env
+# MISGUIDED INTERPOLATION.
+# turns all build-time dependencies into run-time dependencies,
+# which defeats bootstrap
+#
+#env > ${out}/build.env
 
 genericBuild

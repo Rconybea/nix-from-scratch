@@ -148,14 +148,20 @@ stdenv.mkDerivation {
     #       We still need them explictly here
     #
     (cd $builddir \
-      && $shell $src2/configure --prefix=$out --disable-bootstrap \
+      && $shell $src2/configure --prefix=$out \
+                       --disable-fixincludes \
+                       --disable-bootstrap \
+                       --disable-multilib \
+                       --disable-nls \
                        --with-native-system-header-dir=$libc/include \
-                       --enable-lto --disable-nls --with-mpc=$mpc --with-mpfr=$mpfr \
+                       --enable-lto --with-mpc=$mpc --with-mpfr=$mpfr \
                        --with-gmp=$gmp --with-isl=$isl \
                        --enable-default-pie --enable-default-ssp \
-                       --enable-shared --disable-multilib --disable-threads \
+                       --enable-shared \
+                       --disable-threads \
                        --disable-libatomic --disable-libgomp --disable-libquadmath \
-                       --disable-libssp --disable-libvtv --disable-libstdcxx \
+                       --disable-libssp --disable-libvtv \
+                       --disable-libstdcxx \
                        --enable-languages=c,c++ \
                        --with-stage1-ldflags="-B$libc/lib -Wl,-rpath,$libc/lib" \
                        --with-boot-ldflags="-B$libc/lib -Wl,-rpath,$libc/lib" \
