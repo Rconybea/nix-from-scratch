@@ -30,7 +30,7 @@ jobs:
       - name: toplevel config
         run: |
           # replace PREFIX in mk/prefix.mk
-          ./scripts/bootstrap.sh --prefix='${{github.workspace}}/local' --nxfs-toolchain-prefix='${{github.workspace}}/nxfs-toolchain'
+          ./configure.sh --prefix='${{github.workspace}}/local' --nxfs-toolchain-prefix='${{github.workspace}}/nxfs-toolchain'
           cat mk/prefix.mk
           gcc --version
           g++ --version
@@ -56,7 +56,7 @@ jobs:
 
     - name: toplevel config
       run: |
-        ./scripts/bootstrap.sh --prefix='${{github.workspace}}/local'
+        ./configure.sh --prefix='${{github.workspace}}/local' --nxfs-toolchain-prefix='${{github.workspace}}/nxfs-toolchain'
         cat mk/prefix.mk
 
     - name: m4
