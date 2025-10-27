@@ -130,6 +130,7 @@ let
 
           builder = "${stdenv.shell}";
           args = [ "-e" stdenv.defaultBuilder ];
+          outputs = [ "out" ];
 
           # Pass through build inputs
           inherit

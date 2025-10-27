@@ -22,6 +22,7 @@ derivation {
   args = [ ./builder.sh ];
 
   src = ./src;
+  setup_hook = ./setup-hook.sh;
 
   target_tuple=nxfs-defs.target_tuple;
 }

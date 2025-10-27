@@ -44,5 +44,6 @@ stdenv.mkDerivation {
 
   shell = stdenv.shell;
 
+  # buildInputs: runtime dependencies
   buildInputs = [ file which ];
 }

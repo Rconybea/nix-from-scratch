@@ -11,6 +11,7 @@ builddir=$TMPDIR
 
 mkdir -p $builddir/bin
 mkdir -p $out/bin
+mkdir -p $out/nix-support
 
 prepare_wrapper() {
     name=$1
@@ -50,3 +51,8 @@ ln -s $binutils/bin/ranlib $out/bin
 ln -s $binutils/bin/readelf $out/bin
 ln -s $binutils/bin/size $out/bin
 ln -s $binutils/bin/strings $out/bin
+
+# setup hook cooperates with stdenv
+# see make-stdenv/setup.sh
+#
+cp $setup_hook $out/nix-support/setup-hook

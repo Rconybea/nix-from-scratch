@@ -25,6 +25,7 @@ stdenv.mkDerivation {
 
     mkdir -p $builddir/bin
     mkdir -p $out/bin
+    mkdir -p $out/nix-support
 
     prepare_wrapper() {
         name=$1
@@ -66,6 +67,8 @@ stdenv.mkDerivation {
     ln -s $bintools/bin/strings $out/bin
 
     # omit ld.bfd,  that's deliberately excluded
+
+    cp ${./setup-hook.sh} $out/nix-support/setup-hook
   '';
 
   buildInputs = [ ];

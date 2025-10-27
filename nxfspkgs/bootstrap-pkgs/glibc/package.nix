@@ -34,6 +34,12 @@
 } :
 
 let
+  # libc has a carveout (!?#) for libgcc_s.
+  # It prunes paths (presumeably for security reasons) when opening libgcc_s.so
+  # Apparently related to exception handling
+  #
+  libgcc = "${stdenv.cc.cc}";
+
   version = "2.40";
 in
 
@@ -101,7 +107,16 @@ stdenv.mkDerivation {
     # We need something that comes from the nix store so that basic locale queries
     # work from within isolated nix builds
     #
-    $shell $src2/configure --prefix=$out --enable-kernel=4.19 --with-headers=$linux_headers/include --disable-nscd libc_cv_complocaledir=$locale_archive/lib/locale libc_cv_slibdir=$out/lib CC=nxfs-gcc CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+    # --user-defined-trusted-dirs is advertised on interwebs,
+    # but doesn't seem to exist (at least for glibc 2.40)
+    #
+    $shell $src2/configure --prefix=$out \
+                           --enable-kernel=4.19 \
+                           --with-headers=$linux_headers/include \
+                           --disable-nscd \
+                           libc_cv_complocaledir=$locale_archive/lib/locale \
+                           libc_cv_slibdir=$out/lib \
+                           CC=nxfs-gcc CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 
     # looks like
     #   make Versions.v.i
@@ -139,7 +154,7 @@ stdenv.mkDerivation {
     #    Fix by writing snowflake version of system(), and splicing
     #    into nxfs-gawk-2.  See nxfs-system-2
 
-    make all SHELL=$CONFIG_SHELL
+    make all SHELL=$CONFIG_SHELL user-defined-trusted-dirs=${libgcc}/lib
 
     # Final cleanup -- nxfs-gcc will create an RPATH entry in
     #   {libc.so.6, ld-linux-x86-64.so.2}

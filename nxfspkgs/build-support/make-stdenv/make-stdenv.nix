@@ -81,12 +81,17 @@ let
       defaultSetup = ./setup.sh;
 
       # contents automatically append to nativeBuildInputs in all derivations
-      # created by stdenv-new.mkDerivation
+      # created by stdenv-new.mkDerivation.   These are *build-time* dependencies
       #
-      defaultNativeBuildInputs = [];
+      defaultNativeBuildInputs = [
+        # note: setup.sh supports just-a-bash-script dependencies,
+        #       see loop over recursive completion of package depenencies
+        #
+        ../setup-hooks/strip.sh
+      ];
 
       # contents automatically append to buildInputs in all derivations
-      # created by stdenv-new.mkDerivation
+      # created by stdenv-new.mkDerivation.   These are *run-time* dependencies
       #
       defaultBuildInputs = [];
     };

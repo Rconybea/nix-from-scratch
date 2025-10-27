@@ -6,12 +6,43 @@
 #   initialPath
 #   baseInputs
 #   buildInputs
+#   nativeBuildInputs
 #   propagatedBuildInputs
 #
+# make-stdenv.nix defines various defaultXxx variables.
+# this setup.sh file never references those.
+# They exist so that .nix files can refer to them.
+#
+# ../make-derivation/make-derivation.nix arranges default
+# derivation attrset with:
+#   nativeBuildInputs = nativeBuildInputs ++ stdenv.defaultNativeBuildInputs
+#   buildInputs = buildInputs ++ stdenv.defaultBuildInputs
+# That way individual packages are free to override
+
 
 set -e
 set -u
 set -o pipefail
+
+# xxxHooks. These are bash arrays;
+#
+# A package can append Packages can append to such arrays
+# to arrange for some bash code to run whenever package appears
+# as a direct build dependency.
+#
+# Hook function will be invoked with no arguments.
+#
+# Any configurable behavior controlled through "secret agreement"
+# global bash variables.
+#
+# For example the strip setup hook uses dontStrip, STRIP, RANLIB, etc.
+#
+
+# fixupOutputHooks: invoked once for each named top-level output directory
+# e.g. $out, $dev, ...
+#
+declare -a fixupOutputHooks
+
 
 echo initialPath=${initialPath:-UNSET}
 
@@ -91,25 +122,37 @@ findInputs() {
     fi
 }
 
-for i in ${propagatedBuildInputs} ${buildInputs} ${baseInputs}; do
+for i in ${propagatedBuildInputs} ${buildInputs} ${nativeBuildInputs} ${baseInputs}; do
     findInputs $i
 done
 
 echo "pkgs=${pkgs}"
 
 for i in $pkgs; do
-    addToEnv ${i}
+    if [[ -d ${i} ]]; then
+        # dependency is a directory (output of some derivation):
+        # - source its setup hook
+        # - add its bin directory to PATH
+        # - add appropriate paths to _PKG_CONFIG_PATH, _NIX_CFLAGS_COMPILE, _NIX_LDFLAGS
+        #   (perhaps others later)
 
-    if [[ -d ${i}/lib/pkgconfig ]]; then
-        eval export _PKG_CONFIG_PATH=${_PKG_CONFIG_PATH:-}${_PKG_CONFIG_PATH:+:}${i}/lib/pkgconfig
-    fi
+        addToEnv ${i}
 
-    if [[ -d ${i}/include ]]; then
-        eval export _NIX_CFLAGS_COMPILE=\"${_NIX_CFLAGS_COMPILE:-}${_NIX_CFLAGS_COMPILE:+ }-isystem ${i}/include\"
-    fi
+        if [[ -d ${i}/lib/pkgconfig ]]; then
+            eval export _PKG_CONFIG_PATH=${_PKG_CONFIG_PATH:-}${_PKG_CONFIG_PATH:+:}${i}/lib/pkgconfig
+        fi
 
-    if [[ -d ${i}/lib ]]; then
-        eval export _NIX_LDFLAGS=\"${_NIX_LDFLAGS:-}${_NIX_LDFLAGS:+ }-L${i}/lib -Wl,-rpath,${i}/lib\"
+        if [[ -d ${i}/include ]]; then
+            eval export _NIX_CFLAGS_COMPILE=\"${_NIX_CFLAGS_COMPILE:-}${_NIX_CFLAGS_COMPILE:+ }-isystem ${i}/include\"
+        fi
+
+        if [[ -d ${i}/lib ]]; then
+            eval export _NIX_LDFLAGS=\"${_NIX_LDFLAGS:-}${_NIX_LDFLAGS:+ }-L${i}/lib -Wl,-rpath,${i}/lib\"
+        fi
+    elif [[ -f ${i} ]]; then
+        # plain old text file (which had better be a bash script).
+        # execute it immediately
+        source ${i}
     fi
 
 done
@@ -192,10 +235,22 @@ installPhase() {
 }
 
 fixupPhase() {
+    # For each output (like $out, $dev, $doc, etc.)
+    for output in $outputs; do
+        prefix="${!output}"
+
+        # Run all registered fixup hooks
+        for hook in "${fixupOutputHooks[@]}"; do
+            $hook
+        done
+    done
+
+    # generate $out/nix-support/propagated-build-inputs
     if [[ -n "${propagatedBuildInputs}" ]]; then
         mkdir -p "${out}/nix-support"
         echo "${propagatedBuildInputs}" > "${out}/nix-support/propagated-build-inputs"
     fi
+
 }
 
 installCheckPhase() {

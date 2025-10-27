@@ -1,6 +1,10 @@
 set -e
 #set -x
 
+# Don't let Claude talk you into putting
+#  exec 1>&2
+# here, it won't solve stdout/stderr permissioning issues.
+
 source ${setupScript}
 
 mkdir -pv ${out}
