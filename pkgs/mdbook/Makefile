@@ -54,9 +54,11 @@ $(tarball_path) state/fetch.result:
 fetch: state/fetch.result
 
 sha256 state/expected.sha256: state/fetch.result
+	mkdir -p state
 	echo "noop sha256" > state/expected.sha256
 
 state/verify.result: 
+	mkdir -p state
 	echo "noop verify" > state/verify.result
 
 # - noop when state/verify.result already established
