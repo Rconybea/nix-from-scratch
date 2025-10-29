@@ -90,6 +90,9 @@ if [[ ! -d ${prefix} ]]; then
     2>&1 echo "$self_name: PREFIX: expected directory: [${prefix}]"
 fi
 
+mkdir -p state
+mkdir -p log
+
 rm -f state/config.result
 
 # 1. if ${cflags} is empty, omit CFLAGS=${cflags} entirely.
