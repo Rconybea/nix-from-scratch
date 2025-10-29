@@ -54,9 +54,18 @@ $ nix-channel --update nixpkgs                # fetches nixpkgs content
 
 ## Why nix-from-scratch?
 
-The purpose of this project is to provide a last-resort build-from-source
+The primary purpose of this project is to provide a last-resort build-from-source
 for the nix package manager.  Intended to make it easier to use
 nix when standard installation paths are not feasible.
+
+Second, to provide a platform that makes it feasible to package software
+using nix without engaging with the full intricacy of nixpkgs.
+For a newcomer, it's not always obvious which features of nixpkgs represent
+current best practice versus targets for improvement.
+
+Third, in nix-from-scratch we'll aim at an adequate (depending on context)
+alternative to nixpkgs.stdenv.  Will accept some major limitations
+(e.g. abandon cross-compilation) in return for end-to-end understanding.
 
 ## When do I need this?
 
@@ -178,25 +187,34 @@ bootstrap core depenencies.
 
 4. Once all its dependencies are installed,  we'll proceed to build `nix` itself.
 
-# Detailed Install Instructions (TL;Read Anyway)
+5. Successfully building `nix` gives us a nix-language interpreter with an empty nix store.
+To do something useful with it we need to put some packages in it.
+Complication for reproducibility is that we want nix-store packages
+to depend only on other nix-store packages; this requires a nix-specific bootstrap sequence.
 
-## nix install locations
+# Build and Install Instructions (TL;Read Anyway)
 
+## Act 1 - nixcpp
+
+### nix install locations
 
 We will use the following paths:
 
-1. `PREFIX=$HOME/ext/{bin,lib,etc,share}` (instead of `/usr`).  This is where we install nix dependencies,
-including `nix` binaries and libraries themselves
+1. `PREFIX=$HOME/ext/{bin,lib,etc,share}` (instead of `/usr`).
+   This is where we install nixcpp dependencies, prior to building nix itself.
+   Each dependency is in its own subdirectory of nix-from-scratch/pkgs.
 
 2. `NIX_PREFIX=$HOME/nixroot` (instead of `/`).
+   Nix binaries (`nix`, `nix-build`, ..) will be installed to `NIX_PREFIX/bin/`
+   Nix store directory will be `NIX_PREFIX/nix/store` (instead of `/nix/store`)
 
-3. store directory `$HOME/nixroot/nix/store` (instead of `/nix/store`)
+3. `NXFS_TOOLCHAIN_PREFIX=$HOME/nxfs-toolchain` (instead of `/usr`).
+   This is where we install a gcc toolchain {gcc + libc + binutils} that will kick off
+   nix store bootstrap.  Needs to be in its own location because toolchain build
+   relies on intermediate partially-functional installs to this location
 
-4. configuration directory `$HOME/nixroot/var` (instead of `/var`)
 
-5. system configuration directory `$HOME/nixroot/etc` (instead of `/etc`).
-
-## Prequisites
+### Prequisites
 
 We need at least the following available on host platform
 
@@ -210,11 +228,10 @@ On Ubuntu 22.04 can obtain these with:
 sudo apt-get install make
 sudo apt-get install texinfo
 sudo apt-get install gcc
-sudo apt-get install gcc-12  # needed for compiling nix.  gcc-13 won't do
 sudo apt-get install g++
 ```
 
-## (Meta)build Instructions
+### (Meta)build Instructions
 
 1. Download release
 
@@ -226,12 +243,28 @@ sudo apt-get install g++
 
 2. Choose nix install location
 
-Edit `nix-from-scratch-${version}/pkgs/nix/Makefile`, choose value for `PREFIX`, `NIX_PREFIX`.
-Also adjust `NIX_STORE_DIR`, `NIX_LOCALSTATE_DIR`, `NIX_SYSCONF_DIR` if desired.
+   ```
+   cd nix-from-scratch-${version}
+   PREFIX=$HOME/ext
+   NIX_PREFIX=$HOME/nixroot
+   NXFS_TOOLCHAIN_PREFIX=$HOME/nxfs-toolchain
+   MXFS_MAX_JOBS=1  # can increase up to about Memory/X for X somewhere in [4GB..8GB]
+   ```
 
-3. Choose dependency install location
+3. Configure
 
-Edit `nix-from-scratch-${version}/mk/prefix.mk`, choose value for `PREFIX`.
+   ```
+   cd nix-from-scratch-${version}
+   ./configure.sh --prefix=$PREFIX --nix-prefix=$NIX_PREFIX \
+                  --nxfs-toolchain-prefix=$NXFS_TOOLCHAIN_PREFIX \
+                  --nxfs-max-jobs=NXFS_MAX_JOBS
+   ```
+
+   More nix-specific configuration options are in `nix-from-scratch-${vesrion}/mk/prefix.mk`;
+   be aware that `nix-from-scratch/configure.sh` clobbers that file.
+
+#### PREFIX:
+
 This will be a permanent install location for supporting dependencies needed before we can build nix itself.
 We will also need these at this location to run nix once it's built.
 
@@ -239,27 +272,32 @@ If you can write to `/usr/local`, that might be a natural value for `PREFIX`.
 You could also use `/usr` (if you have write permission there), but in that case may conflict with
 host operating system's package manager.
 
-Can alternative choose a location for `PREFIX` inside the `NIX_PREFIX` directory.
+Alternatively, might prefer locating `PREFIX` inside the `NIX_PREFIX` directory, for example `NIX_PREFIX/ext`
 
-Optionally, edit `nix-from-scratch-${version}/mk/config.mk` to choose `ARCHIVE_DIR`
-This location will store downloaded source tarballs for nix and its dependencies.
-These will consume about 150MB.
+#### ARCHIVE_DIR
 
+Optionally, edit `nix-from-scratch-${version}/mk/config.mk` to choose `ARCHIVE_DIR`.
+This location will store downloaded source tarballs for toolchain, nix and their dependencies.
+These will consume about 1.2GB
 
-Summary:
+Contents can be discarded once nixcpp build is successful.
 
-  | location            | variable             | default                 | purpose                                        |
-  |---------------------|----------------------|-------------------------|------------------------------------------------|
-  | `pkgs/nix/Makefile` | `NIX_PREFIX`         | `$HOME/nixroot`         | non-system root directory for nix itself       |
-  | `pkgs/nix/Makefile` | `NIX_STORE_DIR`      | `$NIX_PREFIX/nix/store` | location for nix-built artifacts               |
-  | `pkgs/nix/Makefile` | `NIX_SYSCONF_DIR`    | `$NIX_PREFIX/etc`       | default user configuration files               |
-  | `pkgs/nix/Makefile` | `NIX_LOCALSTATE_DIR` | `$NIX_PREFIX/var`       | nix-generated logfiles                         |
-  | `mk/prefix.mk`      | `PREFIX`             | `$HOME/ext`             | non-system root directory for nix dependencies |
-  | `mk/config.mk`      | `ARCHIVE_DIR`        | `$srcdir/archive`       | downloaded tarballs                            |
+#### Summary:
+
+  | location       | variable             | default                 | purpose                                        |
+  |----------------|----------------------|-------------------------|------------------------------------------------|
+  | `configure.sh` | `PREFIX`             | `$HOME/ext`             | non-system root directory for nix dependencies |
+  | `configure.sh` | `NIX_PREFIX`         | `$HOME/nixroot`         | non-system root directory for nix itself       |
+  | `mk/prefix.mk` | `NIX_STORE_DIR`      | `$NIX_PREFIX/nix/store` | location for nix-built artifacts               |
+  | `mk/prefix.mk` | `NIX_SYSCONF_DIR`    | `$NIX_PREFIX/etc`       | default user configuration files               |
+  | `mk/prefix.mk` | `NIX_LOCALSTATE_DIR` | `$NIX_PREFIX/var`       | nix-generated logfiles                         |
+  | `mk/config.mk` | `ARCHIVE_DIR`        | `$srcdir/archive`       | downloaded tarballs                            |
+
+Versions and urls for individual support package (i.e. nix dependencies) are in `pkgs/foo/Makefile`
 
 4. Build and install supporting packages
 
-There are several dozen packages to build.  We will install each package under the same =PREFIX=.
+There are several dozen packages to build.  We will install each package under the same `PREFIX`.
 Packages depend on each other, so order is important;  later packages rely on successful build+install
 of earlier packages.
 
@@ -271,13 +309,30 @@ cd $srcdir
 make nix-deps    # recursively build+install all nix dependencies
 ```
 
+If you want to shepherd the build one package at a time,
+look at `nix-from-scratch/.github/workflows/main.yml` for bottom-up dependency order.
+Or see dependency order below.
+
 5. Build and install nix itself
 
 ```
 make pkgs/nix
 ```
 
-## Package Versions
+At this point we have nixcpp (installed to `NIX_PREFIX/bin/nix`)
+
+With `NIX_PREFIX/bin` and `PREFIX/bin` in `PATH`:
+
+```
+$ nix repl
+Nix 2.24.9
+Type :? for help.
+nix-repl>
+2 + 4
+6
+```
+
+### Package Versions
 
 To see package versions (available after successful unpack for each component):
 
@@ -297,6 +352,7 @@ boost-1.86.0
 brotli-1.1.0
 cmake-3.30.2
 curl-8.9.1
+dash-0.5.12
 editline-1.17.1
 expat-2.6.2
 flex-2.6.4
@@ -311,6 +367,7 @@ libsodium-1.0.20
 libssh2-1.11.0
 libtool-2.4.7
 libuv-v1.48.0
+llvm-19.1.7
 lowdown-1.1.0
 m4-1.4.19
 nix-2.24.9
@@ -320,12 +377,13 @@ patchelf-0.18.0
 pkgconf-2.3.0
 Python-3.12.6
 rapidcheck
+rustc-1.89.0
 sqlite-autoconf-3460100
 toml11-4.2.0
 zlib-1.3.1
 ```
 
-## (Meta)build Organization
+### (Meta)build Organization
 
 1. The build tracks build-lifecycle progress for each package *foo* in `$srcdir/pkgs/foo/state`.
 This allows it to pickup 'where it left off' if a problem occurs, without having to know installed
@@ -380,37 +438,50 @@ List of all packages, sorted so that depended-on packages appear before packages
 | autoconf         |
 | autoconf-archive |
 | automake         |
-| libtool          |
-| libcpuid         |
-| zlib             |
 | pkgconf          |
-| sqlite           |
-| openssl          |
-| curl-stage1      |
-| expat            |
-| libarchive       |
-| libuv            |
-| cmake            |
+| zlib             |
+| ncurses          |
 | patchelf         |
-| brotli           |
-| curl-stage2      |
-| nlohmann_json    |
-| jq               |
-| python           |
-| boost            |
-| editline         |
-| libsodium        |
-| gperf            |
-| libseccomp       |
-| boehm-gc         |
-| gtest            |
-| rapidcheck       |
-| libssh2          |
-| libgit2          |
-| toml11           |
+| readline         |
 | flex             |
 | bison            |
+| perl             |
+| openssl          |
+| zstd             |
+| curl-stage1      |
+| jq               |
+| bzip2            |
+| libarchive       |
+| cmake            |
+| libuv            |
+| expat            |
+| libcpuid         |
+| editline         |
+| sqlite           |
+| python           |
+| libsodium        |
+| libtool          |
+| libssh2          |
+| bzip2            |
+| pcre             |
+| libgit2          |
 | lowdown          |
+| brotli           |
+| gperf            |
+| libseccomp       |
+| boost            |
+| boehm-gc         |
+| curl-stage2      |
+| nlohmann_json    |
+| gtest            |
+| rapidcheck       |
+| toml11           |
+| unzip            |
+| binutils         |
+| llvm             |
+| rustc            |
+| mdbook           |
+| dash             |
 | nix              |
 
 5. Building packages -- dependencies first
@@ -431,53 +502,74 @@ nix-from-scratch-0.44.0
 +- Makefile              umbrella makefile; delegates to pkgs/foo/Makefile for each package
 +- README.md
 +- LICENSE
-+- archive               directory for source tarballs
++- archive               directory for source tarballs (but see ARCHIVE_DIR)
 |  +- foo-1.2.3.tar.gz
 |  +- bar-4.5.6.tar.gz
 |  ...
-+- mk                    helper makefiles/scripts to abstract common patterns
++- mk                    helper makefiles for {pkgs/, toolchain/} builds
++- scripts               helper scripts for {pkgs/, toolchain/} builds
 +- pkgs                  parent for package-specific directories
 |  +- foo
-|  |   +- Makefile       makefile for a single package foo
-|  |   +- src            unpacked source directory for package foo
-|  |   \- state          track build results by phase
+|  |  +- Makefile        nxfs makefile for a single package foo
+|  |  +- build           build directory for package foo
+|  |  +- src             unpacked source directory for package foo
+|  |  \- state           track build results by phase
 |  +- bar
-|  |   +- Makefile
-|  |   +- src
-|  |   \- state
+|  |  +- Makefile
+|  |  +- build
+|  |  +- src
+|  |  \- state
 |  .
 |  .
-\- nixfromscratchpkgs    'nixfromscratch packages collection'
+|  \- nix
+|     +- Makefile        nxfs makefile for nixcpp itself
+|     +- build
+|     +- src
+|     \- state
+|
++- toolchain             standalone gcc toolchain: binutils,glibc,gcc,linux-headers
+|  \- toolchain
+|     +- README
+|     +- Makefile        consolidated makefile. Similar to nix-from-scratch/pkgs/foo
+|     +- build           toolchain build directories
+|     |  +- binutils-1   stage1 binutils build dir
+|     |  +- binutils-2   stage2 binutils build dir
+|     |  +- gcc-1        stage1 gcc dir (uses host glibc; C only)
+|     |  +- gcc-2        stage2 gcc dir
+|     |  +- glibc-1      stage1 glibc
+|     |  +- glibc-2      stage2 glibc
+|     |  \- libstdc++    C++ std library runtime
+|     |
+|     +- src             unpacked toolchain source directories
+|     |  +- binutils/
+|     |  +- gcc/
+|     |  +- glibc/
+|     |  \- linux/
+|     |
+|     +- tools/          generated helper scripts, see toolchain/toolchain-configure.sh
+|     \- state           remember build progress
+|
+\- nxfspkgs              'nixfromscratch packages collection'
    +- default.nix        toplevel nixfromscratch nix expression
-   +- toolchain          umbrella directory
-   |  +- qux
-   |  |  \- default.nix  nix build for qux
-   |  +- frob
-   |  |  \- default.nix  nix build for frob
-   |  .
-   |  .
-   +- example
-   |  \- hello
-   |     \- default.nix
-   \- stdenv
-      \- default.nix
-
+   +- impure.nix         nix runtime config from user environment: ~/.config/nxfspkgs/overlays.nix etc.
+   +- nxfspkgs.nix       nix-from-scratch nix packages.
+   +- bootstrap/         stage-0 bootstrap (host-specific non-reproducible fixed-output derivations)
+   +- bootstrap-1/       stage-0 packages redirected to work from nix-build
+   +- bootstrap-2/       toolchain + stdenv built entirely from nix-build.  Contains bootstrap refs
+   +- bootstrap-3/       rebuild toolchain + stdenv, but with bootstrap refs scrubbed
+   +- bootstrap-pkgs/    shared nix expressions (bootstrap-2/ and bootstrap-3 can use these)
+   +- lib/               buildEnv, optionalAttrs, makeCallPackage
+   +- stdenv             (out of date?) stdenv attempt.  see bootstrap-2/stage2pkgs.nix stdenv-x4-2 instead
+   \- stdenv-to-nix      (out of date?) stdenv attempt.
 ```
 
-Can ignore everything under `nixfromscratchpkgs/` until we have a working nix build.
+Can ignore everything under `nxfspkgs/` until we have a working nix build.
+Can also ignore `toolchain/` prior to working nix build, unless want to use that toolchain to build nix
+and/or nix dependencies.
 
 `pkgs` contains one subdirectory for nix itself, plus one subdirectory for each package that nix depends on.
 The set of pacakges is sufficient to build nix on a stock ubuntu platform (e.g. 22.04/jammy).
 This assumes the base platform provides working (and sufficiently new) c and c++ compilers.
-
-Once we have nix built,  want to construct a nix stdenv.  Would be ideal to use nix minimal-bootstrap,
-but have run into trouble along the way, so trying a different approach:  build a native stdenv,
-i.e. nix builds for gcc, coreutils, binutils etc.
-
-Plan (not achieved yet) is to rehearse similar bootstrap process to the one we use with linuxfromscratch.
-We'll start by using a 'native stdenv' to build a toolchain that's accessible from nix store,
-but built using non-nix {gcc, binutils, coreutils, ..}.  Seems like easier lift than tackling
-the full bootstrap
 
 ## Troubleshooting
 

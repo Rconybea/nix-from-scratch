@@ -6,13 +6,20 @@ self_name=$(basename ${0})
 
 usage() {
     cat <<EOF
-$self_name: [--prefix=PREFIX] [--nxfs-toolchain-prefix=NXFS_TOOLCHAIN_PREFIX] [--nxfs-max-jobs=NXFS_MAX_JOBS]
+$self_name: [--prefix=PREFIX]                                \
+            [--nix-prefix=NIX_PREFIX]                        \
+            [--nxfs-toolchain-prefix=NXFS_TOOLCHAIN_PREFIX]  \
+            [--nxfs-max-jobs=NXFS_MAX_JOBS]
 
 PREFIX    install nixcpp dependencies (boost, bison, rustc, ..) to this directory
           [$HOME/ext]
 
+NIX_PREFIX
+          install path for nixcpp.  'nix' will be in NIX_PREFIX/bin/nix;
+          the nix store will be in NIX_PREFIX/nix/store.
+
 NXFS_TOOLCHAIN_PREFIX
-          install standaline {gcc, glibc} toolchain to this directory
+          install standalone {gcc, glibc} toolchain to this directory
           Distinct from PREFIX so it can be easily discarded.
           Desirable because install involves multiple steps, across which
           NXFS_TOOLCHAIN_PREFIX passes through unusable states.
@@ -30,6 +37,7 @@ EOF
 
 PREFIX=${HOME}/ext
 NXFS_TOOLCHAIN_PREFIX=${HOME}/nxfs-toolchain
+# NOTE: realpath here is load-bearing for nix
 NIX_PREFIX=$(realpath ${HOME}/nixroot)
 NXFS_HOST_TUPLE=x86_64-pc-linux-gnu
 NXFS_BUILD_TUPLE=x86_64-pc-linux-gnu
@@ -39,6 +47,9 @@ while [[ $# > 0 ]]; do
     case "$1" in
         --prefix=*)
             PREFIX="${1#*=}"
+            ;;
+        --nix-prefix=*)
+            NIX_PREFIX="${1#*=}"
             ;;
         --nxfs-toolchain-prefix=*)
             NXFS_TOOLCHAIN_PREFIX="${1#*=}"

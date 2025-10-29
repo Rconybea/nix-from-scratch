@@ -1,3 +1,5 @@
+Patterns for nixcpp deps (since there are a lot of these)
+
 no-build (binary install)                stage1-linux-headers, mdbook, mdbook-linkcheck
 configure_exec override                  boost (bootstrap.sh), nlohmann_json (cmake)
 extra configure args                     python

@@ -1,0 +1,23 @@
+build checklist.
+This provides bootstrap sequence in bottom-up order.
+
+1. To setup base OS (assuming debian-based) to be able to conduct build:
+   $ sudo apt-get install git make gcc texinfo g++ gawk bison
+
+2. edit nix-from-scratch/configure.sh if necessary.
+
+   $ cd nix-from-scratch
+   $ ./configure.sh --prefix=$HOME/nixroot \
+                    --nix-prefix=$HOME/nixroot \
+                    --nxfs-toolchain-prefix=$HOME/nxfs-toolchain \
+                    --nxfs-max-jobs=4
+
+   Caveat on nxfs-max-jobs: can run into trouble if memory is limited;
+   linker can use a lot more memory than individual compile steps.
+   Setting this to Memory/8GB should be safe.  Memory/2GB is not sufficient.
+
+   accept default, or replace values for
+     PREFIX      (install prefix for software built along the way to compiling nixcpp itself)
+     NIX_PREFIX  (keep the realpath transform, it's load-bearing for nix)
+
+3. build dependencies, from source code, in bottom-up order.

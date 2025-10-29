@@ -100,3 +100,17 @@
 
    EDITORIAL: would like a way to provide this from the nix-build-constructed chroot environment.
    Nix is already chrooting a bunch of directories,  would like to add a couple more.
+
+9. nixcpp build can import an external shell into chroot environment,
+   making it appear as /bin/sh. This only works if the imported shell is standalone
+   (i.e. statically linked).
+
+   I understand (at least as of 2025) that vanilla nix install gets this from busybox.
+   When building nix from source important to enable this feature (it's opt-in).
+
+   In nix-from-scratch we use dash, since that's what busybox uses anyway.
+
+10. nix may silently fallback to a non-sandboxed build.
+    Disable in ~/.config/nix/nix.conf:
+
+     sandbox-fallback = false

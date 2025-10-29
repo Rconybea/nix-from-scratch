@@ -1,0 +1,16 @@
+1. write up nix bootstrap sequence
+
+2. consolidate nixcpp-specific ingredients into their own subdir
+
+   nix-from-scratch
+   +- nixcpp
+      +- mk
+      +- scripts
+      +- pkgs
+         +- EXAMPLES
+
+3. configurable tarball archive (see nix-from-scratch/configure.sh)
+
+   default nix-from-scratch/archive
+
+4. promote ARCHIVE_DIR to toplevel ./configure script
