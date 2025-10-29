@@ -13,6 +13,7 @@
 # --configure-exec=EXEC -> EXEC that resides in host environment (e.g. cmake)
 state/config.result $(builddir): state/patch.result
 	mkdir -p $(builddir)
+	mkdir -p $(THIS_DIR)/log/config.log
 	($(TOP_DIR)/scripts/configure-autotools.sh \
        --prepend-to-path="$(prepend_to_path)" \
        --pre-configure-hook="$(pre_configure_hook)" \
