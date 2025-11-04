@@ -66,12 +66,15 @@ let
 
   # stdenv interface
   stagepkgs-2 = {
+    # {cc, bintools, shell, coreutils} clear of early-bootstrap refs
     cc        = stage2pkgs.gcc-wrapper-2;
-    bintools  = stage2pkgs.binutils-x0-wrapper-2;
+    bintools  = stage2pkgs.binutils-wrapper-2;
+    shell     = stage2pkgs.bash-from-boot-2;
+    coreutils = stage2pkgs.coreutils-from-boot-2;
+
+    # {patchelf .. diffutils} have deps extending back to imported toolchain
     patchelf  = stage2pkgs.patchelf-2;
     patch     = stage2pkgs.patch-2;
-    shell     = stage2pkgs.bash-2;
-    coreutils = stage2pkgs.coreutils-2;
     gzip      = stage2pkgs.gzip-2;
     gnumake   = stage2pkgs.gnumake-2;
     gawk      = stage2pkgs.gawk-2;
@@ -169,6 +172,7 @@ let
                                                               };
 in
 let
+  # NOTE: not using ncurses-3 at present
   # ncurses-3 :: derivation
   ncurses-3 = callPackage ../bootstrap-pkgs/ncurses/package.nix { stdenv = stdenv-2;
                                                                   stageid = "3";
@@ -214,7 +218,38 @@ let
                                                                    stageid = "3";
                                                                  };
 
-  stagepkgs-3-1 = stagepkgs-2 // { patch     = patch-3;
+  # pkgconf-3 :: derivation
+  pkgconf-3    = callPackage ../bootstrap-pkgs/pkgconf/package.nix { stdenv = stdenv-2;
+                                                                     stageid = "3"; };
+  # m4-3 :: derivation
+  m4-3         = callPackage ../bootstrap-pkgs/m4/package.nix { stdenv = stdenv-2;
+                                                                stageid = "3"; };
+  # file-3 :: derivation
+  file-3       = callPackage ../bootstrap-pkgs/file/package.nix { stdenv = stdenv-2;
+                                                                  stageid = "3"; };
+  # zlib-3 :: derivation
+  zlib-3       = callPackage ../bootstrap-pkgs/zlib/package.nix { stdenv = stdenv-2;
+                                                                  stageid = "3"; };
+  # patchelf-3 :: derivation
+  patchelf-3   = callPackage ../bootstrap-pkgs/patchelf/package.nix { stdenv = stdenv-2;
+                                                                      stageid = "3"; };
+  # gzip-3 :: derivation
+  gzip-3       = callPackage ../bootstrap-pkgs/gzip/package.nix { stdenv = stdenv-2;
+                                                                  stageid = "3"; };
+  # gperf-3 :: derivation
+  gperf-3      = callPackage ../bootstrap-pkgs/gperf/package.nix { stdenv = stdenv-2;
+                                                                   stageid = "3"; };
+in
+let
+  # stdenv interface
+  # no stagepkgs-3-1 members have any pre-bootstrap runtime deps.
+  #
+  # It follows that going forward, remaining packages have no runtime *or build-time*
+  # pre-bootstrap deps.
+  #
+  stagepkgs-3-1 = stagepkgs-2 // { patchelf  = patchelf-3;
+                                   patch     = patch-3;
+                                   gzip      = gzip-3;
                                    shell     = bash-3;
                                    coreutils = coreutils-3;
                                    gnumake   = gnumake-3;
@@ -229,27 +264,6 @@ let
   stdenv-3-1 = make-stdenv { name = "stdenv-3-1";
                              stagepkgs = stagepkgs-3-1; };
 
-  # pkgconf-3 :: derivation
-  pkgconf-3    = callPackage ../bootstrap-pkgs/pkgconf/package.nix { stdenv = stdenv-3-1;
-                                                                     stageid = "3"; };
-  # m4-3 :: derivation
-  m4-3         = callPackage ../bootstrap-pkgs/m4/package.nix { stdenv = stdenv-3-1;
-                                                                stageid = "3"; };
-  # file-3 :: derivation
-  file-3       = callPackage ../bootstrap-pkgs/file/package.nix { stdenv = stdenv-3-1;
-                                                                  stageid = "3"; };
-  # zlib-3 :: derivation
-  zlib-3       = callPackage ../bootstrap-pkgs/zlib/package.nix { stdenv = stdenv-3-1;
-                                                                  stageid = "3"; };
-  # patchelf-3 :: derivation
-  patchelf-3   = callPackage ../bootstrap-pkgs/patchelf/package.nix { stdenv = stdenv-3-1;
-                                                                      stageid = "3"; };
-  # gzip-3 :: derivation
-  gzip-3       = callPackage ../bootstrap-pkgs/gzip/package.nix { stdenv = stdenv-3-1;
-                                                                  stageid = "3"; };
-  # gperf-3 :: derivation
-  gperf-3      = callPackage ../bootstrap-pkgs/gperf/package.nix { stdenv = stdenv-3-1;
-                                                                   stageid = "3"; };
 in
 let
   # libxcrypt-3 :: derivation
@@ -267,6 +281,40 @@ let
                                                             stageid = "3"; };
 in
 let
+  # load-bearing for fetchurl
+  #
+  # openssl :: derivation
+  openssl-3 = callPackage
+    ../bootstrap-pkgs/openssl/package.nix { stdenv = stdenv-3-1;
+                                            perl = perl-3;
+                                            zlib = zlib-3;
+                                            stageid = "3";
+    };
+
+  # curl-3 :: derivation
+  curl-3 = callPackage
+    ../bootstrap-pkgs/curl/package.nix { stdenv = stdenv-3-1;
+                                         perl = perl-3;
+                                         openssl = openssl-3;
+                                         stageid = "3"; };
+
+  # cacert-3 :: derivation
+  cacert-3 = callPackage
+    ../bootstrap-pkgs/cacert/package.nix { stdenv = stdenv-3-1; };
+
+  # fetchurl-3 :: (url | urls,
+  #                hash | sha256 | sha512 | sha1 | md5,
+  #                name,
+  #                curlOpts | curlOptsList,
+  #                postFetch,
+  #                downloadToTemp) -> derivation
+  #
+  fetchurl-3 = callPackage
+    ../bootstrap-pkgs/fetchurl/package.nix { stdenv = stdenv-3-1;
+                                             curl = curl-3;
+                                             cacert = cacert-3;
+                                           };
+
   # binutils-3 :: derivation
   binutils-3 = callPackage ../bootstrap-pkgs/binutils/package.nix { stdenv = stdenv-3-1;
                                                                     perl = perl-3;
@@ -296,10 +344,10 @@ let
                                                             stageid = "3";
                                                           };
   # gmp-3 :: derivation
-  gmp-3 = callPackage ./bootstrap-pkgs/gmp/package.nix { stdenv = stdenv-3-1;
-                                                         m4 = m4-3;
-                                                         stageid = "3";
-                                                       };
+  gmp-3 = callPackage ../bootstrap-pkgs/gmp/package.nix { stdenv = stdenv-3-1;
+                                                          m4 = m4-3;
+                                                          stageid = "3";
+                                                        };
   # mpfr-3 :: derivation
   mpfr-3 = callPackage ../bootstrap-pkgs/mpfr/package.nix { stdenv = stdenv-3-1;
                                                             gmp = gmp-3;
@@ -310,9 +358,10 @@ let
                                                           mpfr = mpfr-3;
                                                           stageid = "3"; };
   # isl-3 :: derivation
-  isl-3 = callPackage ./nxfs-isl-3/package.nix { stdenv = stdenv-3-1;
-                                                 gmp = gmp-3;
-                                               };
+  isl-3 = callPackage ../bootstrap-pkgs/isl/package.nix { stdenv = stdenv-3-1;
+                                                          gmp = gmp-3;
+                                                          stageid = "3";
+                                                        };
 
 in
 let
@@ -344,7 +393,7 @@ let
   # nixify-glibc-source-3 :: (attrset -> derivation)
   #
   nixified-glibc-source-3 =
-    callPackage ../bootstrap-2/nixify-glibc-source/package.nix
+    callPackage ../bootstrap-pkgs/nixify-glibc-source/package.nix
       { stdenv = stdenv-3-1;
         python = python-3;
         coreutils = coreutils-3;
@@ -383,7 +432,9 @@ let
                                                                                         };
 in
 let
-  # gcc-x0-wrapper-3: wrapper for stage2 C compiler:
+  # gcc-x0-wrapper-3: new wrapper for stage2 C compiler,
+  # instead of gcc-wrapper-2:
+  #
   # - using stage3 bintools
   # - using stage3 libc
   #
@@ -391,13 +442,13 @@ let
   #        Should be same as stage2pkgs.gcc-x3-2 = stage2pkgs.gcc-wrapper-2.cc
   #
   # gcc-x0-wrapper-3 :: derivation
-  gcc-x0-wrapper-3 = callPackage ../bootstrap-pkgs/gcc-x0-wrapper/package.nix { stdenv = stdenv-3-1;
-                                                                                gcc-unwrapped = stage2pkgs.gcc-x3-2;
-                                                                                bintools = binutils-x0-wrapper-3;
-                                                                                libc = glibc-x1-3;
-                                                                                nxfs-defs = nxfs-defs;
-                                                                                stageid = "3";
-                                                                              };
+  gcc-x0-wrapper-3 = callPackage ../bootstrap-pkgs/gcc-vanilla-wrapper/package.nix { stdenv = stdenv-3-1;
+                                                                                     cc = stage2pkgs.gcc-wrapper-2.cc;
+                                                                                     #bintools = binutils-x0-wrapper-3;
+                                                                                     libc = glibc-x1-3;
+                                                                                     nxfs-defs = nxfs-defs;
+                                                                                     stageid = "x0-3";
+                                                                                   };
 
 
 in
@@ -413,33 +464,43 @@ let
       };
 
   # gcc-x1-3 :: derivation
-  gcc-x1-3 = callPackage ../nxfs-gcc-x1-3/package.nix
-     {
-      stdenv               = stdenv-3-1;
-      nixified-gcc-source  = nixified-gcc-source-3;
-      binutils-wrapper     = binutils-x0-wrapper-3;
-      mpc                  = mpc-3;
-      mpfr                 = mpfr-3;
-      gmp                  = gmp-3;
-      isl                  = isl-3;
-      bison                = bison-3;
-      flex                 = flex-3;
-      texinfo              = texinfo-3;
-      m4                   = m4-3;
-      glibc                = glibc-x1-3;
-      nxfs-defs            = nxfs-defs;
-    };
+  #
+  # note: bootstrap-pkgs/gcc-x3 builds gcc that fails on libstdcxx.
+  #       suspect this is because it enables threads, but get stuck due to gcc
+  #       config bug in tzdb.cc
+  #
+  gcc-x1-3 = callPackage
+    ../bootstrap-pkgs/gcc-x1/package.nix { stdenv               = stdenv-3-1;
+                                           nixified-gcc-source  = nixified-gcc-source-3;
+                                           #gcc-wrapper          = gcc-x0-wrapper-3;
+                                           binutils-wrapper     = binutils-x0-wrapper-3;
+                                           mpc                  = mpc-3;
+                                           mpfr                 = mpfr-3;
+                                           gmp                  = gmp-3;
+                                           isl                  = isl-3;
+                                           bison                = bison-3;
+                                           flex                 = flex-3;
+                                           texinfo              = texinfo-3;
+                                           m4                   = m4-3;
+                                           glibc                = glibc-x1-3;
+                                           nxfs-defs            = nxfs-defs;
+                                           stageid              = "3";
+
+                                         };
 
   # gcc-stage2-wrapper-3 :: derivation
   gcc-x1-wrapper-3 = callPackage
     ../bootstrap-pkgs/gcc-x1-wrapper/package.nix { stdenv = stdenv-3-1;
-                                                   gcc-unwrapped = gcc-x1-3;
-                                                   glibc = glibc-x1-3;
+                                                   cc = gcc-x1-3;
+                                                   libc = glibc-x1-3;
                                                    nxfs-defs = nxfs-defs;
                                                    stageid = "3";
                                                  };
 in
 let
+  # note: for some reason need to build with gcc that has threads disabled;
+  #       otherwise problem with tzdb.cc
+  #
   # libstdcxx-x2-3 :: derivation
   libstdcxx-x2-3 = callPackage
     ../bootstrap-pkgs/libstdcxx/package.nix { stdenv               = stdenv-3-1;
@@ -463,7 +524,9 @@ let
                                                  };
 in
 let
-
+  # gcc with sufficient features to compile itself.
+  # will use along with libstdcxx-x2-3 and glibc-x1-3
+  #
   # gcc-x3-3 :: derivation
   gcc-x3-3 = callPackage
     ../bootstrap-pkgs/gcc-x3/package.nix { stdenv              = stdenv-3-1;
@@ -478,6 +541,7 @@ let
                                            flex                = flex-3;
                                            texinfo             = texinfo-3;
                                            m4                  = m4-3;
+                                           libstdcxx           = libstdcxx-x2-3;  # not used here
                                            glibc               = glibc-x1-3;
                                            nxfs-defs           = nxfs-defs;
                                            stageid             = "3";
@@ -485,18 +549,60 @@ let
 in
 let
   # gcc-wrapper-3 :: derivation
-  gcc-wrapper-3 = callPackage ./nxfs-gcc-wrapper-3/package.nix { stdenv = stdenv-3-1;
-                                                                 bintools = binutils-x0-wrapper-3;
-                                                                 gcc-unwrapped = gcc-x3-3;
-                                                                 glibc = glibc-x1-3;
-                                                                 nxfs-defs = nxfs-defs;
-                                                                 };
+  gcc-wrapper-x3-3 = callPackage
+    ../bootstrap-pkgs/gcc-vanilla-wrapper/package.nix { stdenv = stdenv-3-1;
+                                                        cc = gcc-x3-3;
+                                                        libc = glibc-x1-3;
+                                                        #gcc-unwrapped = gcc-x3-3;
+                                                        #bintools = binutils-x0-wrapper-3;
+                                                        #glibc = glibc-x1-3;
+                                                        nxfs-defs = nxfs-defs;
+                                                        stageid = "x3-3";
+                                                      };
+
+  stagepkgs-x3-3 = stagepkgs-3-1 // { cc = gcc-wrapper-x3-3;
+                                      bintools = binutils-x0-wrapper-3; };
+  # to remove all doubt about bootstrap gcc provenance when we attempt gcc-x4-2
+  stdenv-x3-3 = make-stdenv { name = "stdenv-x3-3"; stagepkgs = stagepkgs-x3-3; };
+
+  # Full gcc build
+  #
+  # gcc-x3-2 compiler still contains bootstrap gcc references.
+  # baked in to libcc1plugin.so
+  # Next task is to rebuild gcc to scrub these references.
+  #
+  gcc-x4-3 = callPackage
+    ../bootstrap-pkgs/gcc-x3/package.nix { stdenv = stdenv-x3-3;
+                                           nixified-gcc-source = nixified-gcc-source-3;
+                                           gcc-wrapper = gcc-wrapper-x3-3;
+                                           binutils-wrapper = binutils-x0-wrapper-3;
+                                           mpc = mpc-3;
+                                           mpfr = mpfr-3;
+                                           gmp = gmp-3;
+                                           isl = isl-3;
+                                           bison = bison-3;
+                                           flex = flex-3;
+                                           texinfo = texinfo-3;
+                                           m4 = m4-3;
+                                           libstdcxx = libstdcxx-x2-3;  # not actually used here
+                                           glibc = glibc-x1-3;
+                                           nxfs-defs = nxfs-defs;
+                                           stageid = "x4-3";
+    };
+
+  gcc-wrapper-3 = callPackage
+    ../bootstrap-pkgs/gcc-vanilla-wrapper/package.nix { stdenv = stdenv-x3-3;
+                                                        cc = gcc-x4-3;
+                                                        libc = glibc-x1-3;
+                                                        nxfs-defs = nxfs-defs;
+                                                        stageid = "2";
+                                                      };
 in
 let
   stage3env = buildEnv {
     name = "stage3env";
     paths = [ gcc-wrapper-3
-              gcc-x3-3
+              gcc-x4-3
               binutils-x0-wrapper-3
               python-3
               texinfo-3
@@ -509,6 +615,8 @@ let
               automake-3
               autoconf-3
               binutils-3
+              curl-3
+              openssl-3
               perl-3
               libxcrypt-3
               patchelf-3
@@ -538,6 +646,7 @@ in
   {
     inherit stage3env;
     inherit gcc-wrapper-3;
+    inherit gcc-x4-3;
     inherit gcc-x3-3;
     inherit gcc-x2-wrapper-3;
     inherit libstdcxx-x2-3;
@@ -558,6 +667,12 @@ in
     inherit automake-3;
     inherit autoconf-3;
     inherit binutils-3;
+
+    #inherit fetchurl-3;
+    inherit cacert-3;
+    inherit curl-3;
+    inherit openssl-3;
+
     inherit perl-3;
     inherit libxcrypt-3;
     inherit patchelf-3;

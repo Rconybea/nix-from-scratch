@@ -556,8 +556,18 @@ nix-from-scratch-0.44.0
    +- bootstrap/         stage-0 bootstrap (host-specific non-reproducible fixed-output derivations)
    +- bootstrap-1/       stage-0 packages redirected to work from nix-build
    +- bootstrap-2/       toolchain + stdenv built entirely from nix-build.  Contains bootstrap refs
+   |  +- README          overview, with dependency tower
+   |  \- stage2pkgs.nix  stage-2 package set and build seequence
    +- bootstrap-3/       rebuild toolchain + stdenv, but with bootstrap refs scrubbed
    +- bootstrap-pkgs/    shared nix expressions (bootstrap-2/ and bootstrap-3 can use these)
+   +- build-support/
+   |  +- make-derivation/
+   |  |  \- make-derivation.nix implements stdenv.mkDerivation
+   |  +- make-stdenv/
+   |  |  +- default-builder.sh  default builder shell script, used by make-stdenv
+   |  |  \- setup.sh     setup script. targeted by stdenv.defaultSetup -> derivation.setupScript
+   |  \- setup-hooks/
+   |     \- strip.sh     nixpkgs strip.sh, backported for nix 2.24.9
    +- lib/               buildEnv, optionalAttrs, makeCallPackage
    +- stdenv             (out of date?) stdenv attempt.  see bootstrap-2/stage2pkgs.nix stdenv-x4-2 instead
    \- stdenv-to-nix      (out of date?) stdenv attempt.

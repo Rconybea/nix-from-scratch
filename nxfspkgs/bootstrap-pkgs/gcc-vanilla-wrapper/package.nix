@@ -10,12 +10,12 @@
   libc,
   # nxfs-defs :: derivation
   nxfs-defs,
-  # stageid :: derivation
+  # stageid :: derivation  -- e.g. x3-2
   stageid,
 } :
 
 stdenv.mkDerivation {
-  name               = "gcc-x2-wrapper-${stageid}";
+  name               = "gcc-wrapper-${stageid}";
   version            = cc.version;
   system             = builtins.currentSystem;
 
@@ -45,6 +45,7 @@ stdenv.mkDerivation {
     gxx_basename=g++
 
     mkdir -p $out/bin
+    mkdir -p $out/nix-support
 
     prepare_wrapper() {
         # e.g. nxfs-gcc
@@ -73,6 +74,8 @@ stdenv.mkDerivation {
     prepare_wrapper cpp $src/cpp-wrapper.sh
     prepare_wrapper gcc $src/gcc-wrapper.sh
     prepare_wrapper g++ $src/g++-wrapper.sh
+
+    cp ${./setup-hook.sh} $out/nix-support/setup-hook
     '';
 
   buildInputs = [ cc libc ];

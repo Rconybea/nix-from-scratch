@@ -61,6 +61,8 @@ nxfspkgs
 +- bootstrap-3-demo/       tests/demos for stage 3 results
 +- bootstrap-pkgs/         nix packages. used by {stage2, stage3}
 +- build-support
+   +- make-derivation/
+   +- make-stdenv/
    +- autotools
       +- default.nix       mkDerivation
 +- lib/                    nix packages. used by {bootstrap, post}
@@ -101,7 +103,7 @@ Bootstrap
 ----------------------------------------------------------------
 Build
 
-0. Satisfy prerequsites above
+0. Satisfy prerequsites above, then:
   $ cd nix-from-scratch/nxfspkgs
 
 1.
@@ -109,13 +111,17 @@ Build
 Or, see ./bootstrap/README to build+adopt packages individually
 
 2.
-  $ nix-build -A nxfs-bootstrap-1
+  $ nix-build '<nxfspkgs>' -A nxfs-bootstrap-1
 Or, see ./bootstrap-1/README to prepare packages individually
 
-3. WIP asof 4jan2025
+3.
+  $ nix-build '<nxfspkgs>' -A stage2pkgs.stage2env
+Or, see ./bootstrap-2/README to build packages individually
+
+4. visit ./bootstrap-3/stage3pkgs.nix
 
 ----------------------------------------------------------------
-Details
+Bootstrap Details
 
 1. stage0 (see nxfspkgs/bootstrap)
 
@@ -206,9 +212,6 @@ Details
 
     $ nix build -f nixpkgs/pkgs/stdenv/linux/make-bootstrap-tools.nix bootstrapFiles
 
-
-
-
 Look Ma!
 
 1.
@@ -228,3 +231,59 @@ Look Ma!
   Copyright (C) 2023 Free Software Foundation, Inc.
   This is free software; see the source for copying conditions.  There is NO
   warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+----------------------------------------------------------------
+Packaging Dataflow
+
+
+  make-stdenv  --->  stdenv --\
+                              |
+   /--input-------------------/
+   v
+  make-derivation  --create------> derivation --calls-->| default-builder.sh
+                                                        |
+                              |<-- setup.sh <--sources--|
+  dep1.setup-hook <--sources--|
+                              |
+                              |
+  dep2.setup-hook <--sources--|
+                              |
+
+
+  make-stdenv : [nxfspkgs/build-support/make-stdenv/make-stdenv.nix]                        - create stdenv from package set ('stagepkgs')
+
+  make-derivation : [nxfspkgs/build-support/make-derivation/make-derivation.nix]
+  - create mkDerivation function from (config, stdenv).
+
+  setup-hook : [$somepackage/nix-support/setup-hook], when present
+  - provide environent variables
+  - provide helper functions
+
+  default-builder.sh : [nxfspkgs/build-support/make-stdenv/default-builder.sh]
+  - source $pkg.setupScript
+  - call genericBuild
+  - override (entirely!) by setting $pkg.builder
+
+  setup.sh : [nxfspkgs/build-support/make-stdenv/setup.sh]
+  - computes recursive completion of build dependencies
+  - provides shell variables
+    PATH                 from [$somepackage/bin]
+    PKG_CONFIG_PATH      from [$somepackage/lib/pkgconfig]
+    NIX_CFLAGS_COMPILE   from [$somepackage/include]
+    NIX_LDFLAGS          from [$somepackage/lib]
+  - provides build scaffold
+    unpackPhase()
+    patchPhase()
+    configurePhase()
+    buildPhase()
+    checkPhase()
+    installPhase()
+    fixupPhase()
+    installCheckPhase()
+    distPhase()
+  - runs hook functions collected from
+    [$somepackage/nix-support/setup-hook]
+    for $somepackage in buildInputs
+
+  - binutils: env vars
+  - gcc: env

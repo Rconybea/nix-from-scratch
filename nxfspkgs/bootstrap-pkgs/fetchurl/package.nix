@@ -1,4 +1,11 @@
-{ nxfsenv-3, curl, cacert }:
+{
+  # stdenv :: derivation+attrset
+  stdenv,
+  # curl :: derivation
+  curl,
+
+  cacert
+}:
 
 args @
 {
@@ -29,7 +36,7 @@ args @
 }:
 
 let
-  bash = nxfsenv-3.bash;
+  #bash = nxfsenv-3.bash;
 
   # Determine URLs
   hasUrl = url != "";
@@ -74,15 +81,16 @@ let
   # Build curl options
   allCurlOpts = curlOpts + " " + (builtins.concatStringsSep " " curlOptsList);
 
-in nxfsenv-3.mkDerivation ({
+in stdenv.mkDerivation ({
   name = finalName;
 
-  builder = "${bash}/bin/bash";
+  #builder = "${stdenv.shell}";  # already matches default
   args = [ ./builder.sh ];
 
+  # runtime dependencies
   nativeBuildInputs = [ curl ];
-
   outputHashMode = "flat";
+
   inherit (hashArgs) outputHash outputHashAlgo;
 
   SSL_CERT_FILE = "${cacert}/etc/ssl/certs/ca-bundle.crt";
@@ -93,17 +101,32 @@ in nxfsenv-3.mkDerivation ({
 
   impureEnvVars = [
     # Allow proxy settings
-    "http_proxy" "https_proxy" "ftp_proxy" "all_proxy" "no_proxy"
+    "http_proxy"
+    "https_proxy"
+    "ftp_proxy"
+    "all_proxy"
+    "no_proxy"
   ] ++ impureEnvVars;
 
-  buildInputs = [ nxfsenv-3.bash curl ];
+  buildInputs = [ curl ];
 } // removeAttrs args [
   # Remove:
   # 1. fetchurl-specific arguments (url, curlOpts, etc.):
   #    mkDerivation doesn't have a use for these
   # 2. Arguments we already processed or explicitly set (name, meta, etc.)
   #
-  "url" "urls" "hash" "sha256" "sha512" "sha1" "md5"
-  "name" "curlOpts" "curlOptsList" "postFetch" "downloadToTemp"
-  "impureEnvVars" "preferLocalBuild"
+  "url"
+  "urls"
+  "hash"
+  "sha256"
+  "sha512"
+  "sha1"
+  "md5"
+  "name"
+  "curlOpts"
+  "curlOptsList"
+  "postFetch"
+  "downloadToTemp"
+  "impureEnvVars"
+  "preferLocalBuild"
 ])

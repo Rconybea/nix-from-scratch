@@ -41,6 +41,10 @@
   glibc-p1,
   # glibc-p2 :: derivation
   glibc-p2,
+  # binutils-p1 :: derivation
+  binutils-p1,
+  # binutils-p2 :: derivation
+  binutils-p2,
   # coreutils-p1 :: derivation
   coreutils-p1,
   # coreutils-p2 :: derivation
@@ -90,6 +94,7 @@ stdenv.mkDerivation {
     #
     mkdir -p $out/bash
     mkdir -p $out/coreutils
+    mkdir -p $out/binutils
     mkdir -p $out/glibcXXXXXXXX
     mkdir -p $out/gmp
     mkdir -p $out/isl
@@ -108,6 +113,10 @@ stdenv.mkDerivation {
     mkdir -p $TMPDIR/coreutils
     (cd ${coreutils-p1} && (tar cf - . | tar xf - -C $TMPDIR/coreutils))
     chmod -R +w $TMPDIR/coreutils
+
+    mkdir -p $TMPDIR/binutils
+    (cd ${binutils-p1} && (tar cf - . | tar xf - -C $TMPDIR/binutils))
+    chmod -R +w $TMPDIR/binutils
 
     mkdir -p $TMPDIR/glibc
     (cd ${glibc-p1} && (tar cf - . | tar xf - -C $TMPDIR/glibc))
@@ -157,6 +166,10 @@ stdenv.mkDerivation {
     coreutils_p1=$(basename ${coreutils-p1})
     coreutils_p2=$(basename ${coreutils-p2})
 
+    binutils_new=$(basename $out)/binutils
+    binutils_p1=$(basename ${binutils-p1})
+    binutils_p2=$(basename ${binutils-p2})
+
     glibc_new=$(basename $out)/glibcXXXXXXXX
     glibc_p1=$(basename ${glibc-p1})
     glibc_p2=$(basename ${glibc-p2})
@@ -200,11 +213,13 @@ stdenv.mkDerivation {
     # supplies stringlength(), padspaces()
     source ${./stringlength.sh}
 
-    echo "redirect throughout {bash,coreutils}:"
+    echo "redirect throughout {bash,coreutils,binutils,glibc,m4,file,..}:"
     echo " [$bash_p1]      to [$bash_new]      padding [$(padding $bash_p1 $bash_new)]"
     echo " [$bash_p2]      to [$bash_new]      padding [$(padding $bash_p2 $bash_new)]"
     echo " [$coreutils_p1] to [$coreutils_new] padding [$(padding $coreutils_p1 $coreutils_new)]"
     echo " [$coreutils_p2] to [$coreutils_new] padding [$(padding $coreutils_p2 $coreutils_new)]"
+    echo " [$binutils_p1]  to [$binutils_new]  padding [$(padding $binutils_p1 $binutils_new)]"
+    echo " [$binutils_p2]  to [$binutils_new]  padding [$(padding $binutils_p2 $binutils_new)]"
     echo " [$glibc_p1]     to [$glibc_new]     padding [$(padding $glibc_p1 $glibc_new)]"
     echo " [$glibc_p2]     to [$glibc_new]     padding [$(padding $glibc_p2 $glibc_new)]"
     echo " [$m4_p1]        to [$m4_new]        padding [$(padding $m4_p1 $m4_new)]"
@@ -240,18 +255,23 @@ stdenv.mkDerivation {
       fi
 
       if grep -l -a -F "$old" $file 2>/dev/null; then
-        #echo "update [$file]"
+        echo "[$(basename $file)] : [$old] -> [$new]"
         perl -pi -e "s|\Q$old\E|$new|g" $file
       fi
     }
 
     # find/replace across $TMPDIR/{bash,coreutils,..}
     find $TMPDIR -type f | while read -r file; do
+       echo "file: [$file]"
+
        replace_refs $file $bash_p1 $bash_new
        replace_refs $file $bash_p2 $bash_new
 
        replace_refs $file $coreutils_p1 $coreutils_new
        replace_refs $file $coreutils_p2 $coreutils_new
+
+       replace_refs $file $binutils_p1 $binutils_new
+       replace_refs $file $binutils_p2 $binutils_new
 
        replace_refs $file $glibc_p1 $glibc_new
        replace_refs $file $glibc_p2 $glibc_new
@@ -286,6 +306,7 @@ stdenv.mkDerivation {
 
     (cd $TMPDIR/bash && (tar cf - . | tar xf - -C $out/bash))
     (cd $TMPDIR/coreutils && (tar cf - . | tar xf - -C $out/coreutils))
+    (cd $TMPDIR/binutils && (tar cf - . | tar xf - -C $out/binutils))
     (cd $TMPDIR/glibc && (tar cf - . | tar xf - -C $out/glibcXXXXXXXX))
     (cd $TMPDIR/file && (tar cf - . | tar xf - -C $out/file))
     (cd $TMPDIR/m4 && (tar cf - . | tar xf - -C $out/m4))

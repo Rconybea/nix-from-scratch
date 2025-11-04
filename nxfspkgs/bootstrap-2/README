@@ -7,7 +7,22 @@ Recap:
 - stage-0 imported external bootstrap ingredients as fixed-output derivations
 - stage-1 redirected libraries and dynamic linker to refer to their respective nix store versions.
 
-In stage-2 we progressively recompile the bootstrap tools ingredients.
+In stage-2:
+- we progressively recompile the bootstrap tools ingredients, by end of stage obtain:
+  - native toolchain, compiled within nix store.
+  - toolchain (stage2pkgs.boot-x5-2) contains no runtime references to upstream packages.
+    They've all been redirected to come from boot-x5-2 itself.
+    Two important consequences:
+    1. boot-x5-2 is a candidate fixpoint. It's plausible to expect that copies of boot-x5-2,
+       built on different hosts, nevertheless have the same store hash
+       (given also have the same NIX_STORE location
+    2. since we don't need any of boot-x5-2's build-time dependencies to use it,
+       can discard those packages from the nix store once boot-x5-2 has been successfully built.
+
+To verify standalone behavior of boot-x5-2:
+
+$ nix-store --query --tree $(nix-build -A stage2pkgs.boot-x5-2)
+
 At the end of stage-2 we have a native toolchain compiled within the nix store;
 with caveat that we haven't yet used that toolchain to entirely rebuild itself,
 so some toolchain components (for example binutils, glibc) were prepared using all or part of the
@@ -20,12 +35,46 @@ Dependencies somewhat overspecified for the sake of simplicity.
 (For example nxfs-zlib-2 needs nxfs-sed-2, but not nxfs-gawk-2)
 
  +----------------------------------------------------------------------------------------------------+
- | -A gcc-wrapper-2                           boottsrap-pkgs/gcc-x3-wrapper                           |
- | -A gcc-x5-wrapper-2                                                                                |
+ | -A boot-x5-2                               bootstrap-pkgs/redirect                                 |
+ +====================================================================================================+
+ | -A mpc-x6-2                                bootstrap-pkgs/mpc                                      |
  +----------------------------------------------------------------------------------------------------+
- | -A gcc-x5-2                                bootstrap-pkgs/gcc-fixpoint                             |
+ | -A mpfr-x6-2                               bootstrap-pkgs/mpfr                                     |
+ +----------------------------------------------------------------------------------------------------+
+ | -A isl-x6-2                                bootstrap-pkgs/isl                                      |
+ +----------------------------------------------------------------------------------------------------+
+ | -A gmp-x6-2                                bootstrap-pkgs/gmp                                      |
+ +----------------------------------------------------------------------------------------------------+
+ | -A flex-x6-2                               bootstrap-pkgs/flex                                     |
+ +----------------------------------------------------------------------------------------------------+
+ | -A m4-x6-2                                 bootstrap-pkgs/m4                                       |
+ +----------------------------------------------------------------------------------------------------+
+ | -A file-x6-2                               bootstrap-pkgs/file                                     |
+ +----------------------------------------------------------------------------------------------------+
+ | -A glibc-x6-2                              bootstrap-pkgs/glibc                                    |
+ +----------------------------------------------------------------------------------------------------+
+
+                                     stagepkgs-x6-2, stdenv-x6-2
+
+ +----------------------------------------------------------------------------------------------------+
+ | -A bash-x5-2                               bootstrap-pkgs/bash                                     |
+ +----------------------------------------------------------------------------------------------------+
+
+                                     stagepkgs-x5-2, stdenv-x5-2
+
+ +----------------------------------------------------------------------------------------------------+
+ | -A coreutils-x4-2                          bootstrap-pkgs/coreutils                                |
+ +----------------------------------------------------------------------------------------------------+
+
+                                     stagepkgs-x4-2, stdenv-x4-2
+
+ +----------------------------------------------------------------------------------------------------+
+ | -A gcc-x4-wrapper-2                        bootstrap-pkgs/gcc-x3-wrapper                           |
  +----------------------------------------------------------------------------------------------------+
  | -A gcc-x4-2                                bootstrap-pkgs/gcc-x3                                   |
+ +----------------------------------------------------------------------------------------------------+
+
+                                     stagepkgs-x3-2, stdenv-x3-2
  +----------------------------------------------------------------------------------------------------+
  | -A gcc-x3-wrapper-2                        bootstrap-pkgs/gcc-x3-wrapper                           |
  +----------------------------------------------------------------------------------------------------+
@@ -38,9 +87,9 @@ Dependencies somewhat overspecified for the sake of simplicity.
  | -A gcc-x1-wrapper-2                        bootstrap-pkgs/gcc-x1-wrapper                           |
  +----------------------------------------------------------------------------------------------------+
  | -A gcc-x1-2                                bootstrap-pkgs/gcc-x1                                   |
- +----------------------------------------------------+-----------------------------------------------+
- | -A binutils-x0-wrapper-2  binutils-x0-wrapper/     | -A gcc-x0-wrapper-2    gcc-x0-wrapper/        |
- +----------------------------------------------------+-----------------------------------------------+
+ +--------------------------------------------------+-------------------------------------------------+
+ | -A stage2pkgs.binutils-x0-wrapper-2              | -A gcc-x0-wrapper-2    gcc-x0-wrapper/          |
+ +--------------------------------------------------+-------------------------------------------------+
  | -A stage2pkgs.glibc-2                      bootstrap-pkgs/glibc                                    |
  +-----------------+--------------------------------+---------------+---------------+-----------------+
  | -A stage2pkgs   | -A stage2pkgs.texinfo-2        | -A stage2pkgs | -A stage2pkgs | -A stage2pkgs   |
@@ -63,6 +112,9 @@ Dependencies somewhat overspecified for the sake of simplicity.
  +------------------------------------------+                       |               |                 |
  | -A stage2pkgs.pkgconf-2  pkgconf/        |         file/         |     zlib/     |                 |
  +------------------------------------------+-----------------------+---------------+-----------------+
+
+                                     stagepkgs-2-2, stdenv-2-2
+ +----------------------------------------------------------------------------------------------------+
  | -A stage2pkgs.patch-2                      bootstrap-pkgs/patch                                    |
  +----------------------------------------------------------------------------------------------------+
  | -A stage2pkgs.coreutils-2                  bootstrap-pkgs/coreutils                                |

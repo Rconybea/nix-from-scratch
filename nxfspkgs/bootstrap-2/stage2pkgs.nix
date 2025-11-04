@@ -543,7 +543,7 @@ let
                                            flex                = flex-2;
                                            texinfo             = texinfo-2;
                                            m4                  = m4-2;
-                                           libstdcxx           = libstdcxx-x2-2;
+                                           libstdcxx           = libstdcxx-x2-2;  # not used here
                                            glibc               = glibc-2;
                                            nxfs-defs           = nxfs-defs;
                                            # paths from this derivation wind up embedded in $out/lib64/libcc1.so;
@@ -552,27 +552,19 @@ let
                                            stageid             = "x3-2";
                                          };
 
-  gcc-x3-wrapper-2 = callPackage
-    ../bootstrap-pkgs/gcc-x3-wrapper/package.nix { stdenv = stdenv-2-2;
-                                                   cc = gcc-x3-2;
-                                                   # libstdcxx,
-                                                   libc = glibc-2;
-                                                   nxfs-defs = nxfs-defs;
-                                                   stageid = "2";
-                                                 };
+  gcc-wrapper-x3-2 = callPackage
+    ../bootstrap-pkgs/gcc-vanilla-wrapper/package.nix { stdenv = stdenv-2-2;
+                                                        cc = gcc-x3-2;
+                                                        # libstdcxx,
+                                                        libc = glibc-2;
+                                                        nxfs-defs = nxfs-defs;
+                                                        stageid = "x3-2";
+                                                      };
 
-  stagepkgs-x3-2 = stagepkgs-2-2 // { cc = gcc-x3-wrapper-2; bintools = binutils-x0-wrapper-2; };
+  stagepkgs-x3-2 = stagepkgs-2-2 // { cc = gcc-wrapper-x3-2;
+                                      bintools = binutils-x0-wrapper-2; };
   # to remove all doubt about bootstrap gcc provenance when we attempt gcc-x4-2
   stdenv-x3-2 = make-stdenv { name = "stdenv-x3-2"; stagepkgs = stagepkgs-x3-2; };
-
-  # ----------------------------------------------------------------
-  # stage 2a starts here.
-  #
-  # TODO: gcc-x3-wrapper setup hook
-  #
-  # gcc-x5-2: clean bootstrapped gcc (no gcc bootstrap refs)
-  #           but still refers to bootstrap via glibc
-  # ----------------------------------------------------------------
 
   # Full gcc build
   #
@@ -583,7 +575,7 @@ let
   gcc-x4-2 = callPackage
     ../bootstrap-pkgs/gcc-x3/package.nix { stdenv = stdenv-x3-2;
                                            nixified-gcc-source = nixified-gcc-source-2;
-                                           gcc-wrapper = gcc-x3-wrapper-2;
+                                           gcc-wrapper = gcc-wrapper-x3-2;
                                            binutils-wrapper = binutils-x0-wrapper-2;
                                            mpc = mpc-2;
                                            mpfr = mpfr-2;
@@ -599,31 +591,46 @@ let
                                            stageid = "x4-2";
     };
 
-  gcc-x4-wrapper-2 = callPackage
-    ../bootstrap-pkgs/gcc-x3-wrapper/package.nix { stdenv = stdenv-x3-2;
-                                                   cc = gcc-x4-2;
-                                                   libc = glibc-2;
-                                                   nxfs-defs = nxfs-defs;
-                                                   stageid = "2"; };
+  gcc-wrapper-x4-2 = callPackage
+    ../bootstrap-pkgs/gcc-vanilla-wrapper/package.nix { stdenv = stdenv-x3-2;
+                                                        cc = gcc-x4-2;
+                                                        libc = glibc-2;
+                                                        nxfs-defs = nxfs-defs;
+                                                        stageid = "x4-2"; };
 
-  stagepkgs-x4-2 = stagepkgs-x3-2 // { cc = gcc-x4-wrapper-2; bintools = binutils-x0-wrapper-2; };
+  stagepkgs-x4-2 = stagepkgs-x3-2 // { cc = gcc-wrapper-x4-2; bintools = binutils-x0-wrapper-2; };
   stdenv-x4-2 = make-stdenv { name = "stdenv-x4-2"; stagepkgs = stagepkgs-x4-2; };
 
   # ----------------------------------------------------------------
   # stage 2a: rebuild coreutils->bash->glibc using gcc-x4-2
 
-  coreutils-x4-2 = callPackage ../bootstrap-pkgs/coreutils/package.nix { stdenv = stdenv-x4-2;
-                                                                         stageid = "2"; };
+  coreutils-x4-2 = callPackage
+    ../bootstrap-pkgs/coreutils/package.nix { stdenv = stdenv-x4-2;
+                                              stageid = "2"; };
 
   stagepkgs-x5-2 = stagepkgs-x4-2 // { coreutils = coreutils-x4-2; };
   stdenv-x5-2 = make-stdenv { name = "stdenv-x5-2"; stagepkgs = stagepkgs-x5-2; };
 
-  bash-x5-2 = callPackage ../bootstrap-pkgs/bash/package.nix { stdenv = stdenv-x5-2;
-                                                               stageid = "2"; };
+  bash-x5-2 = callPackage
+    ../bootstrap-pkgs/bash/package.nix { stdenv = stdenv-x5-2;
+                                         stageid = "2"; };
 
   stagepkgs-x6-2 = stagepkgs-x5-2 // { shell = bash-x5-2; };
   stdenv-x6-2 = make-stdenv { name = "stdenv-x6-2"; stagepkgs = stagepkgs-x6-2; };
 
+  # Rebuilding binutils using gcc-x4-2.
+  # Will be adopting this binutils (after redirection) into boot-x7-2 below
+  #
+  binutils-x6-2 = callPackage
+    ../bootstrap-pkgs/binutils/package.nix { stdenv = stdenv-x6-2;
+                                             perl = perl-2;
+                                             stageid = "2"; };
+
+  # We're building the same libc version as libc-2,
+  # except we're using gcc-x4-2 to build instead of stage1 gcc.
+  # Rely on resulting glibc's being binary compatible.
+  # In boot-x7-2 we'll redirect executables to point to this glibc.
+  #
   glibc-x6-2 = callPackage
     ../bootstrap-pkgs/glibc/package.nix { stdenv = stdenv-x6-2;
                                           python = python-2;
@@ -698,7 +705,7 @@ let
   # next step is to extract boot-x5-2 components as individual packages
   # remaining stdenv ingredients {gnumake, gnused, gnugrep, ..}
   #
-  boot-x5-2 = callPackage
+  boot-x7-2 = callPackage
     ../bootstrap-pkgs/redirect/package.nix { stdenv = stdenv-x6-2;
                                              gcc-p1 = gcc-x4-2;
                                              gcc-p2 = gcc-x3-2;
@@ -720,6 +727,8 @@ let
                                              file-p2 = file-2;
                                              glibc-p1 = glibc-x6-2;
                                              glibc-p2 = glibc-2;
+                                             binutils-p1 = binutils-x6-2;
+                                             binutils-p2 = binutils-2;
                                              coreutils-p1 = coreutils-x4-2;
                                              coreutils-p2 = coreutils-2;
                                              bash-p1 = bash-x5-2;
@@ -727,83 +736,134 @@ let
                                              perl = perl-2;
                                              stageid = "2";
                                            };
+in
+let
+  bash-from-boot-2 = callPackage
+    ./select-from-boot/package.nix { stdenv = stdenv-x6-2;
+                                     boot = boot-x7-2;
+                                     boot-subdir = "bash";
+                                     stageid = "2";
+                                   };
+
+  coreutils-from-boot-2 = callPackage
+    ./select-from-boot/package.nix { stdenv = stdenv-x6-2;
+                                     boot = boot-x7-2;
+                                     boot-subdir = "coreutils";
+                                     stageid = "2";
+                                   };
+
+  binutils-from-boot-2 = callPackage
+    ./select-from-boot/package.nix { stdenv = stdenv-x6-2;
+                                     boot = boot-x7-2;
+                                     boot-subdir = "binutils";
+                                     stageid = "2";
+                                   };
+
+  glibc-from-boot-2 = callPackage
+    ./select-from-boot/package.nix { stdenv = stdenv-x6-2;
+                                     boot = boot-x7-2;
+                                     boot-subdir = "glibc";
+                                     stageid = "2";
+                                   };
+
+  gcc-from-boot-2 = callPackage
+    ./select-from-boot/package.nix { stdenv = stdenv-x6-2;
+                                     boot = boot-x7-2;
+                                     boot-subdir = "gcc";
+                                     stageid = "2";
+                                   };
+
+  gcc-wrapper-2 = callPackage
+    ../bootstrap-pkgs/gcc-vanilla-wrapper/package.nix { stdenv = stdenv-x4-2;
+                                                        cc = gcc-from-boot-2;
+                                                        libc = glibc-from-boot-2;
+                                                        nxfs-defs = nxfs-defs;
+                                                        stageid = "2";
+                                                      };
+
+  binutils-wrapper-2 = callPackage
+    ../bootstrap-pkgs/binutils-x0-wrapper/package.nix { stdenv = stdenv-x4-2;
+                                                        bintools = binutils-from-boot-2;
+                                                        libc = glibc-from-boot-2;
+                                                        stageid = "2";
+                                                      };
 
   hello-x5-2 = callPackage
     ../bootstrap-2-demo/hello-cxx-2 { stdenv = stdenv-x4-2; };
+
   string-x5-2 = callPackage
     ../bootstrap-2-demo/string-cxx-2 { stdenv = stdenv-x4-2; };
-in
-let
-  # gcc-wrapper-2 :: derivation
-#  gcc-wrapper-2 = callPackage ./nxfs-gcc-wrapper-2/package.nix { nxfsenv = nxfsenv-2-100;
-#                                                                 bintools = binutils-x0-wrapper-2;
-#                                                                 glibc = glibc-2;
-  #                                                               };
-  gcc-wrapper-2 = gcc-x4-wrapper-2;
+
 in
 let
   stage2env = buildEnv { name = "stage2env";
-                         paths = [ boot-x5-2
-                                   gcc-wrapper-2
-                                   glibc-x6-2
-                                   #gcc-x5-2
-                                   gcc-x4-2
-                                   #gcc-x3-wrapper-2
-                                   #gcc-x3-2
-                                   binutils-x0-wrapper-2
-                                   python-2
-                                   mpc-2
-                                   mpfr-2
-                                   gmp-2
-                                   texinfo-2
-                                   bison-2
-                                   flex-2
-                                   automake-2
-                                   autoconf-2
-                                   binutils-2
-                                   perl-2
-                                   m4-2
-                                   pkgconf-2
-                                   file-x6-2
-                                   gzip-2
-                                   patch-2
-                                   gperf-2
-                                   patchelf-2
-                                   zlib-2
-                                   coreutils-2
-                                   gnumake-2
-                                   gawk-2
-                                   bash-2
-                                   ncurses-2
-                                   gnutar-2
-                                   gnugrep-2
-                                   gnused-2
-                                   findutils-2
-                                   diffutils-2
-                                   which-2
-                                 ];
+                         paths = [
+                           gcc-wrapper-2
+                           binutils-wrapper-2
+                           glibc-from-boot-2
+                           gcc-from-boot-2
+                           coreutils-from-boot-2
+                           python-2
+                           mpc-2
+                           mpfr-2
+                           gmp-2
+                           texinfo-2
+                           bison-2
+                           flex-2
+                           automake-2
+                           autoconf-2
+                           #binutils-2
+                           perl-2
+                           m4-2
+                           pkgconf-2
+                           file-x6-2
+                           gzip-2
+                           patch-2
+                           gperf-2
+                           patchelf-2
+                           zlib-2
+                           gnumake-2
+                           gawk-2
+                           bash-2
+                           ncurses-2
+                           gnutar-2
+                           gnugrep-2
+                           gnused-2
+                           findutils-2
+                           diffutils-2
+                           which-2
+                         ];
                          coreutils = coreutils-2;
                        };
 in
 {
   # listed in top-down topological order
+  # can access attribute foo here with
+  #   $ nix-build '<nxfspkgs>' -A stage2pkgs.foo
 
   inherit stage2env;
+
+  inherit binutils-wrapper-2;
   inherit gcc-wrapper-2;
 
   inherit string-x5-2;
   inherit hello-x5-2;
 
+  inherit gcc-from-boot-2;
+  inherit glibc-from-boot-2;
+  inherit binutils-from-boot-2;
+  inherit coreutils-from-boot-2;
+  inherit bash-from-boot-2;
+  inherit boot-x7-2;
   inherit nixified-gcc-source-x6-2;
   inherit file-x6-2;
   inherit glibc-x6-2;
-  inherit boot-x5-2;
-  #inherit gcc-x5-2;
+  inherit binutils-x6-2;
   inherit bash-x5-2;
   inherit coreutils-x4-2;
-  inherit gcc-x4-wrapper-2;
+  inherit gcc-wrapper-x4-2;
   inherit gcc-x4-2;
-  inherit gcc-x3-wrapper-2;
+  inherit gcc-wrapper-x3-2;
   inherit gcc-x3-2;
   inherit nixified-gcc-source-2;
   inherit gcc-x2-wrapper-2;

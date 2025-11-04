@@ -1,19 +1,19 @@
 {
-  # nxfs-env-3 :: derivation-set
-  nxfsenv-3,
+  # stdenv :: attrset+derivation
+  stdenv,
 } :
 
 let
   version = "roly-1";
 in
 
-nxfsenv-3.mkDerivation {
+stdenv.mkDerivation {
   name = "nxfs-cacert-3";
 
   # Bootstrap from builtins.fetchurl
   src = builtins.fetchurl {
     url = "https://curl.se/ca/cacert.pem";
-    sha256 = "0x8rpf36ny11jacszs18grq809v5f3fyp8sc88hl2jlhmynfd47j";
+    sha256 = "1vwxww2rzpf4vcmbyvzqwd1zis4njw1b5lkq81mil59y7pfhpi4a";
   };
 
   buildPhase = ''
