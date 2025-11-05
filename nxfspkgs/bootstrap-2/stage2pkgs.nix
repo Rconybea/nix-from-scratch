@@ -351,11 +351,54 @@ let
   #       in stage2 we don't need it
   #
   # perl-2 :: derivation
-  perl-2     = callPackage ../bootstrap-pkgs/perl/package.nix { stdenv = stdenv-2-2;
-                                                                pkgconf = pkgconf-2;
-                                                                with-xcrypt = false;
-                                                                locale-archive = locale-archive-1;
-                                                                stageid = "2"; };
+  perl-2     = callPackage
+    ../bootstrap-pkgs/perl/package.nix { stdenv = stdenv-2-2;
+                                         pkgconf = pkgconf-2;
+                                         with-xcrypt = false;
+                                         locale-archive = locale-archive-1;
+                                         stageid = "2"; };
+in
+let
+  openssl-2 = callPackage
+    ../bootstrap-pkgs/openssl/package.nix { stdenv = stdenv-2-2;
+                                            perl = perl-2;
+                                            zlib = zlib-2;
+                                            stageid = "2"; };
+  # curl-3 :: derivation
+  curl-2 = callPackage
+    ../bootstrap-pkgs/curl/package.nix { stdenv = stdenv-2-2;
+                                         perl = perl-2;
+                                         openssl = openssl-2;
+                                         stageid = "2"; };
+  # TODO: promote this as far upstream as we can go.
+  #
+  # Ultimately: get nix fetchurl working in bootstrap-2 (or maybe bootstrap-1)
+  #
+  # cacert-3 :: derivation
+  cacert-2 = callPackage
+    ../bootstrap-pkgs/cacert/package.nix { stdenv = stdenv-2-2; };
+
+  # fetchurl-3 :: (url | urls,
+  #                hash | sha256 | sha512 | sha1 | md5,
+  #                name,
+  #                curlOpts | curlOptsList,
+  #                postFetch,
+  #                downloadToTemp) -> derivation
+  #
+  fetchurl-2 = callPackage
+    ../bootstrap-pkgs/fetchurl/package.nix { stdenv = stdenv-2-2;
+                                             curl = curl-2;
+                                             cacert = cacert-2;
+                                           };
+
+  # will be the tarball itself.
+  # test-fetch-3 :: derivation
+  test-fetch-2 = fetchurl-2 {
+    name = "test-fetch-2-zlib-v1.3.1.tar.gz";
+    url = "https://github.com/madler/zlib/archive/v1.3.1.tar.gz";
+    sha256 = "sha256-F+iIY/NgBnKrSRgvIXKBtvxNPHYr3jYZNeQ2qVIU0Fw=";
+  };
+
 in
 let
   # binutils-2 :: derivation
@@ -817,6 +860,10 @@ let
                            automake-2
                            autoconf-2
                            #binutils-2
+                           test-fetch-2
+                           cacert-2
+                           curl-2
+                           openssl-2
                            perl-2
                            m4-2
                            pkgconf-2
@@ -890,6 +937,10 @@ in
   inherit automake-2;
   inherit autoconf-2;
   inherit binutils-2;
+  inherit test-fetch-2;
+  inherit cacert-2;
+  inherit curl-2;
+  inherit openssl-2;
   inherit perl-2;
 #  inherit libxcrypt-2;
   inherit m4-2;
