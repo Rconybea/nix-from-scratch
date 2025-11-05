@@ -129,43 +129,43 @@ let
   #       If we want to follow the nixpkgs strategy here, need a makeNxfsenv,
   #       since we're progressively changing what would appear in stdenv.initialPath
   #
-  nxfsenv-1 =
-    let
-      # missing (relative to nixpgks):
-      #   bzip2
-      #   xz    (need this if we want to use tar xzf ?)
-      #   patch
-
-      coreutils = import ../bootstrap-1/nxfs-coreutils-1/default.nix;
-      gnumake   = import ../bootstrap-1/nxfs-gnumake-1/default.nix;
-      gzip      = import ../bootstrap-1/nxfs-gzip-1/default.nix;
-      gawk      = import ../bootstrap-1/nxfs-gawk-1/default.nix;
-      gnutar    = import ../bootstrap-1/nxfs-tar-1/default.nix;
-      gnugrep   = import ../bootstrap-1/nxfs-grep-1/default.nix;
-      gnused    = import ../bootstrap-1/nxfs-sed-1/default.nix;
-      findutils = import ../bootstrap-1/nxfs-findutils-1/default.nix;
-      diffutils = import ../bootstrap-1/nxfs-diffutils-1/default.nix;
-      toolchain = import ../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
-      shell     = bash-1;
-    in
-      {
-        # TODO: eventually remove for consistency with nixpkgs style
-        inherit toolchain;
-        # TODO: eventually remove these for consistency with nixpkgs style
-        inherit coreutils shell gnumake gzip gawk gnugrep gnutar gnused findutils diffutils;
-
-        # mkDerivation :: attrs -> derivation
-        mkDerivation = nxfs-autotools nxfsenv-1;
-
-        # these automtically populate PATH :-> corresponding executables
-        # are implicitly available to all nix derivations using this nxfsenv.
-        #
-        # initialPath :: [ derivation ]
-        #
-        initialPath = [ coreutils shell gnumake gzip gawk gnugrep gnused gnutar findutils diffutils toolchain ];
-
-        inherit nxfs-defs;
-      };
+#  nxfsenv-1 =
+#    let
+#      # missing (relative to nixpgks):
+#      #   bzip2
+#      #   xz    (need this if we want to use tar xzf ?)
+#      #   patch
+#
+#      coreutils = import ../bootstrap-1/nxfs-coreutils-1/default.nix;
+#      gnumake   = import ../bootstrap-1/nxfs-gnumake-1/default.nix;
+#      gzip      = import ../bootstrap-1/nxfs-gzip-1/default.nix;
+#      gawk      = import ../bootstrap-1/nxfs-gawk-1/default.nix;
+#      gnutar    = import ../bootstrap-1/nxfs-tar-1/default.nix;
+#      gnugrep   = import ../bootstrap-1/nxfs-grep-1/default.nix;
+#      gnused    = import ../bootstrap-1/nxfs-sed-1/default.nix;
+#      findutils = import ../bootstrap-1/nxfs-findutils-1/default.nix;
+#      diffutils = import ../bootstrap-1/nxfs-diffutils-1/default.nix;
+#      toolchain = import ../bootstrap-1/nxfs-toolchain-wrapper-1/default.nix;
+#      shell     = bash-1;
+#    in
+#      {
+#        # TODO: eventually remove for consistency with nixpkgs style
+#        inherit toolchain;
+#        # TODO: eventually remove these for consistency with nixpkgs style
+#        inherit coreutils shell gnumake gzip gawk gnugrep gnutar gnused findutils diffutils;
+#
+#        # mkDerivation :: attrs -> derivation
+#        mkDerivation = nxfs-autotools nxfsenv-1;
+#
+#        # these automtically populate PATH :-> corresponding executables
+#        # are implicitly available to all nix derivations using this nxfsenv.
+#        #
+#        # initialPath :: [ derivation ]
+#        #
+#        initialPath = [ coreutils shell gnumake gzip gawk gnugrep gnused gnutar findutils diffutils toolchain ];
+#
+#        inherit nxfs-defs;
+#      };
 
   # in nixpkgs/lib/customisation.nix, similar function is lib.callPackageWith
   #
@@ -329,11 +329,15 @@ let
   # gzip-2 :: derivation
   gzip-2     = callPackage ../bootstrap-pkgs/gzip/package.nix { stdenv = stdenv-2-2;
                                                                 stageid = "2"; };
+  # xz-2 :: derivation
+  xz-2       = callPackage ../bootstrap-pkgs/xz/package.nix { stdenv = stdenv-2-2;
+                                                              stageid = "2"; };
+
   # gperf-2 :: derivation
   gperf-2    = callPackage ../bootstrap-pkgs/gperf/package.nix { stdenv = stdenv-2-2;
                                                                  stageid = "2"; };
 
-  # note: stage2pkgs.nxfs-perl-1 doesn't actually exist
+  # note: stage1pkgs.nxfs-perl-1 doesn't actually exist
   #       + harder to provide than we might expect.
   #       If we decide we want to revisit, probably build stage0/stage1 without libcrypt
 #
@@ -817,6 +821,7 @@ let
                            m4-2
                            pkgconf-2
                            file-x6-2
+                           xz-2
                            gzip-2
                            patch-2
                            gperf-2
@@ -890,6 +895,7 @@ in
   inherit m4-2;
   inherit pkgconf-2;
   inherit file-2;
+  inherit xz-2;
   inherit gzip-2;
   inherit patch-2;
   inherit gperf-2;

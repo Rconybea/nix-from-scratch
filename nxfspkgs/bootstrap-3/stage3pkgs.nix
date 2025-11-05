@@ -291,6 +291,12 @@ let
                                             stageid = "3";
     };
 
+  # xz-3 :: derivation
+  xz-3 = callPackage
+    ../bootstrap-pkgs/xz/package.nix { stdenv = stdenv-3-1;
+                                       stageid = "3";
+                                     };
+
   # curl-3 :: derivation
   curl-3 = callPackage
     ../bootstrap-pkgs/curl/package.nix { stdenv = stdenv-3-1;
@@ -298,6 +304,10 @@ let
                                          openssl = openssl-3;
                                          stageid = "3"; };
 
+  # TODO: promote this as far upstream as we can go.
+  #
+  # Ultimately: get nix fetchurl working in bootstrap-2 (or maybe bootstrap-1)
+  #
   # cacert-3 :: derivation
   cacert-3 = callPackage
     ../bootstrap-pkgs/cacert/package.nix { stdenv = stdenv-3-1; };
@@ -314,6 +324,14 @@ let
                                              curl = curl-3;
                                              cacert = cacert-3;
                                            };
+
+  # will be the tarball itself.
+  # test-fetch-3 :: derivation
+  test-fetch-3 = fetchurl-3 {
+    name = "test-fetch-3-zlib-v1.3.1.tar.gz";
+    url = "https://github.com/madler/zlib/archive/v1.3.1.tar.gz";
+    sha256 = "sha256-F+iIY/NgBnKrSRgvIXKBtvxNPHYr3jYZNeQ2qVIU0Fw=";
+  };
 
   # binutils-3 :: derivation
   binutils-3 = callPackage ../bootstrap-pkgs/binutils/package.nix { stdenv = stdenv-3-1;
@@ -616,6 +634,7 @@ let
               autoconf-3
               binutils-3
               curl-3
+              xz-3
               openssl-3
               perl-3
               libxcrypt-3
@@ -643,6 +662,7 @@ let
       coreutils = coreutils-3;
     };
 in
+  # members this attrset accessible from toplevel as stage3pkgs.gcc-wrapper-3 etc.
   {
     inherit stage3env;
     inherit gcc-wrapper-3;
@@ -669,8 +689,10 @@ in
     inherit binutils-3;
 
     #inherit fetchurl-3;
+    inherit test-fetch-3;
     inherit cacert-3;
     inherit curl-3;
+    inherit xz-3;
     inherit openssl-3;
 
     inherit perl-3;

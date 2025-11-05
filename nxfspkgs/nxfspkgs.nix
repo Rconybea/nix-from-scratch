@@ -61,35 +61,35 @@ let
   envpkgs = {
     # would like to drop this.
     # need autotools/default.nix to take nxfsenv instead of pkgs
-    nxfsenv = nxfsenv-2;
+#    nxfsenv = nxfsenv-2;
   };
 
   # allPkgs :: attrset
   allPkgs = nxfspkgs // envpkgs;
 
   # bootstrap stdenv for stage-2
-  nxfsenv-2 = {
-    # coreutils,gnused,bash :: derivation
-    gcc_wrapper  = stage2pkgs.gcc-wrapper-2;
-    glibc        = stage2pkgs.glibc-2;
-    perl         = stage2pkgs.perl-2;
-    patch        = stage2pkgs.patch-2;
-    findutils    = stage2pkgs.findutils-2;
-    binutils     = stage2pkgs.binutils-2;
-    coreutils    = stage2pkgs.coreutils-2;
-    gawk         = stage2pkgs.gawk-2;
-    gnumake      = stage2pkgs.gnumake-2;
-    gnutar       = stage2pkgs.gnutar-2;
-    gnugrep      = stage2pkgs.gnugrep-2;
-    gnused       = stage2pkgs.gnused-2;
-    # want this to be shell
-    bash         = stage2pkgs.bash-2;
-    shell        = stage2pkgs.bash-2;
-    # mkDerivation :: attrs -> derivation
-    mkDerivation = nxfs-autotools nxfsenv-2;
-
-    #  expand with stuff from bootstrap-3/default.nix.nxfsenv { .. }
-  };
+#  nxfsenv-2 = {
+#    # coreutils,gnused,bash :: derivation
+#    gcc_wrapper  = stage2pkgs.gcc-wrapper-2;
+#    glibc        = stage2pkgs.glibc-2;
+#    perl         = stage2pkgs.perl-2;
+#    patch        = stage2pkgs.patch-2;
+#    findutils    = stage2pkgs.findutils-2;
+#    binutils     = stage2pkgs.binutils-2;
+#    coreutils    = stage2pkgs.coreutils-2;
+#    gawk         = stage2pkgs.gawk-2;
+#    gnumake      = stage2pkgs.gnumake-2;
+#    gnutar       = stage2pkgs.gnutar-2;
+#    gnugrep      = stage2pkgs.gnugrep-2;
+#    gnused       = stage2pkgs.gnused-2;
+#    # want this to be shell
+#    bash         = stage2pkgs.bash-2;
+#    shell        = stage2pkgs.bash-2;
+#    # mkDerivation :: attrs -> derivation
+#    mkDerivation = nxfs-autotools nxfsenv-2;
+#
+#    #  expand with stuff from bootstrap-3/default.nix.nxfsenv { .. }
+#  };
 
 in
 let
@@ -100,8 +100,9 @@ let
   inherit (stage3pkgs)
     which-3 diffutils-3 findutils-3 gnused-3 gnugrep-3 bzip2-3 gnutar-3
     bash-3 popen-3 gawk-3 gnumake-3 coreutils-3 pkgconf-3 m4-3 file-3
-    zlib-3 gzip-3 patch-3 gperf-3 patchelf-3 libxcrypt-3 perl-3 binutils-3
-    autoconf-3 automake-3 flex-3 bison-3 gmp-3 mpfr-3 mpc-3 texinfo-3
+    zlib-3 gzip-3 patch-3 gperf-3 patchelf-3 libxcrypt-3 perl-3
+    openssl-3 xz-3 curl-3 cacert-3 fetchurl-3 test-fetch-3
+    binutils-3 autoconf-3 automake-3 flex-3 bison-3 gmp-3 mpfr-3 mpc-3 texinfo-3
     python-3 lc-all-sort-3 glibc-x1-3 gcc-x0-wrapper-3 binutils-x0-wrapper-3
     gcc-x1-3 gcc-x1-wrapper-3 libstdcxx-x2-3 gcc-x2-wrapper-3 gcc-x3-3
     gcc-wrapper-3;
@@ -170,55 +171,20 @@ let
   nxfsenv-3-99  = nxfsenv-3-98  // { libstdcxx = libstdcxx-x2-3; };
   nxfsenv-3-99a = nxfsenv-3-99  // { gcc = gcc-x2-wrapper-3; };
   nxfsenv-3-100 = nxfsenv-3-99  // { gcc-unwrapped = gcc-x3-3; };
+  nxfsenv-3-101 = nxfsenv-3-100 // { gcc = gcc-wrapper-3; };
 in
 let
-  # nxfsenv-3-101 :: attrset
-  nxfsenv-3-101 = nxfsenv-3-100 // { gcc = gcc-wrapper-3; };
-
   # mkDerivation-3 :: attrs -> derivation
   mkDerivation-3 = (nxfs-autotools nxfsenv-3-101);
 in
 let
   nxfsenv-3-102 = nxfsenv-3-101 // { mkDerivation = mkDerivation-3; };
-
-  openssl-3 = callPackage ./bootstrap-3/nxfs-openssl-3
-    { nxfsenv-3 = nxfsenv-3-102; };
-in
-let
   nxfsenv-3-103 = nxfsenv-3-102 // { openssl = openssl-3; };
-
-  xz-3 = callPackage ./bootstrap-3/nxfs-xz-3
-    { nxfsenv-3 = nxfsenv-3-103; };
-
-  curl-3 = callPackage ./bootstrap-3/nxfs-curl-3
-    { nxfsenv-3 = nxfsenv-3-103; };
-in
-let
   nxfsenv-3-103a = nxfsenv-3-102 // { xz = xz-3; curl = curl-3; };
-
-  # TODO: promote this as far upstream as we can go.
-  #
-  # Ultimately: get nix fetchurl working in bootstrap-2 (or maybe bootstrap-1)
-  #
-  cacert-3 = callPackage ./bootstrap-3/nxfs-cacert-3 { nxfsenv-3 = nxfsenv-3-103a; };
-in
-let
   nxfsenv-3-104 = nxfsenv-3-103 // { bzip2 = bzip2-3;
                                      xz = xz-3;
                                      curl = curl-3;
                                      cacert = cacert-3; };
-
-  # want a usable derivation using curl, that also has SSL certificates
-  fetchurl-3 = (import ./bootstrap-3/nxfs-fetchurl-3) { nxfsenv-3 = nxfsenv-3-104;
-                                                        curl = curl-3;
-                                                        cacert = cacert-3;
-                                                      };
-  # will be the tarball itself.
-  test-fetch-3 = fetchurl-3 {
-    name = "test-fetch-3-zlib-v1.3.1.tar.gz";
-    url = "https://github.com/madler/zlib/archive/v1.3.1.tar.gz";
-    sha256 = "sha256-F+iIY/NgBnKrSRgvIXKBtvxNPHYr3jYZNeQ2qVIU0Fw=";
-  };
 in
 let
   nixpkgspath = <nixpkgs>;

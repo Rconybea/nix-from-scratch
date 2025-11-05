@@ -1,6 +1,8 @@
 {
-  # nxfsenv-3 :: derivation-set
-  nxfsenv-3,
+  # stdenv :: derivation+attrset
+  stdenv,
+  # stageid :: string
+  stageid,
 } :
 
 let
@@ -8,8 +10,8 @@ let
 
 in
 
-nxfsenv-3.mkDerivation {
-  name         = "nxfs-xz-3";
+stdenv.mkDerivation {
+  name         = "nxfs-xz-${stageid}";
 
   src          = builtins.fetchTarball { name = "xz-${version}-source";
                                          url = "https://github.com/tukaani-project/xz/releases/download/v${version}/xz-${version}.tar.gz";
@@ -26,7 +28,7 @@ nxfsenv-3.mkDerivation {
 
     chmod -R +w $src2
 
-    bash_program=$bash/bin/bash
+    bash_program=${stdenv.shell}
 
     # $src/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$bash_program"
@@ -39,17 +41,19 @@ nxfsenv-3.mkDerivation {
 
   '';
 
-  buildInputs = [
-    nxfsenv-3.gcc
-    nxfsenv-3.binutils
-    nxfsenv-3.gnumake
-    nxfsenv-3.gawk
-    nxfsenv-3.gnutar
-    nxfsenv-3.gnugrep
-    nxfsenv-3.gnused
-    nxfsenv-3.findutils
-    nxfsenv-3.diffutils
-    nxfsenv-3.coreutils
-    nxfsenv-3.bash
-  ];
+  buildInputs = [];
+
+#  buildInputs = [
+#    nxfsenv-3.gcc
+#    nxfsenv-3.binutils
+#    nxfsenv-3.gnumake
+#    nxfsenv-3.gawk
+#    nxfsenv-3.gnutar
+#    nxfsenv-3.gnugrep
+#    nxfsenv-3.gnused
+#    nxfsenv-3.findutils
+#    nxfsenv-3.diffutils
+#    nxfsenv-3.coreutils
+#    nxfsenv-3.bash
+#  ];
 }
