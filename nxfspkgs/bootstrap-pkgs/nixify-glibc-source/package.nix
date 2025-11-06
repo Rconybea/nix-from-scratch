@@ -1,6 +1,13 @@
 {
   # stdenv :: derivation+attrset
   stdenv,
+  # fetchurl :: {url|urls,
+  #              hash|sha256|sha512|sha1|md5,
+  #              name,
+  #              curlOpts|curlOptsList,
+  #              postFetch, downloadToTemp,
+  #              impureEnvVars, meta, passthru, preferLocalBuild} -> derivation
+  fetchurl,
   # python :: derivation
   python,
   # coreutils :: derivation
@@ -21,10 +28,11 @@ stdenv.mkDerivation {
   name = "nixify-glibc-source-${stageid}";
   version = version;
 
-  src = builtins.fetchTarball { name = "glibc-${version}-source";
-                                url = "https://ftpmirror.gnu.org/gnu/glibc/glibc-${version}.tar.xz";
-                                sha256 = "0ncvsz2r8py3z0v52fqniz5lq5jy30h0m0xx41ah19nl1rznflkh";
-                              };
+  src = fetchurl { name = "glibc-${version}-source.tar.xz";
+                   url = "https://ftpmirror.gnu.org/gnu/glibc/glibc-${version}.tar.xz";
+                   hash = "sha256-GaiQF16SY9dI9ieZPeb0sa+c0h4D8IDkv7Oh+sECBaI=";
+                   #sha256 = "0ncvsz2r8py3z0v52fqniz5lq5jy30h0m0xx41ah19nl1rznflkh";
+                 };
 
   buildPhase = ''
     # -e          : stop on first error
@@ -38,7 +46,7 @@ stdenv.mkDerivation {
     python_program=$(which python3);
     sort_program=$(which sort);
 
-    (cd $src && (tar cf - . | tar xf - -C $out))
+    tar cf - . | tar xf - -C $out
     chmod -R +w $out
 
     cd $out

@@ -1,6 +1,8 @@
 {
   # stdenv :: attrset+derivation
   stdenv,
+  # stageid :: string
+  stageid,
 } :
 
 let
@@ -8,13 +10,15 @@ let
 in
 
 stdenv.mkDerivation {
-  name = "nxfs-cacert-3";
+  name = "nxfs-cacert-${stageid}";
 
   # Bootstrap from builtins.fetchurl
   src = builtins.fetchurl {
     url = "https://curl.se/ca/cacert.pem";
     sha256 = "1vwxww2rzpf4vcmbyvzqwd1zis4njw1b5lkq81mil59y7pfhpi4a";
   };
+
+  unpackPhase = ":";
 
   buildPhase = ''
     mkdir -p $out/etc/ssl/certs

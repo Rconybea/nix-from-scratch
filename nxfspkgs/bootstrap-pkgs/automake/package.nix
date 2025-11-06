@@ -1,6 +1,13 @@
 {
   # stdenv :: attrset+derivation
   stdenv,
+  # fetchurl :: {url|urls,
+  #              hash|sha256|sha512|sha1|md5,
+  #              name,
+  #              curlOpts|curlOptsList,
+  #              postFetch, downloadToTemp,
+  #              impureEnvVars, meta, passthru, preferLocalBuild} -> derivation
+  fetchurl,
   # autocon :: derivation
   autoconf,
   # perl :: derivation
@@ -16,45 +23,42 @@ in
 stdenv.mkDerivation {
   name         = "nxfs-automake-${stageid}";
 
-  src          = builtins.fetchTarball { name = "automake-${version}-source";
-                                         url = "https://ftpmirror.gnu.org/gnu/automake/automake-${version}.tar.xz";
-                                         sha256 = "0pac10hgw6r4kbafdbxg7gpb503fq9a9a31r5hvdh95nd2pcngv0"; };
-
-# NOTE: build problems with 1.17
-#
-#  src          = builtins.fetchTarball { name = "automake-1.17-source";
-#                                         url = "https://ftpmirror.gnu.org/gnu/automake/automake-1.17.tar.xz";
-#                                         sha256 = "1nwgz937zikw5avzhvvzf57i917pq0q05s73wqr28abwqxa3bll8"; };
+  src          = fetchurl { name = "automake-${version}-source.tar.xz";
+                            url = "https://ftpmirror.gnu.org/gnu/automake/automake-${version}.tar.xz";
+                            hash = "sha256-8B1YzW2dd/vcqetLvV6tGYgij9tz1veiAfX41rEYtGk=";
+                            #sha256 = "0pac10hgw6r4kbafdbxg7gpb503fq9a9a31r5hvdh95nd2pcngv0";
+                          };
 
   buildPhase = ''
     set -e
 
-    src2=$TMPDIR/src2
+    sourceDir=$(pwd)
+    #src2=$TMPDIR/src2
     builddir=$TMPDIR/build
 
-    mkdir -p $src2
+    #mkdir -p $src2
     mkdir -p $builddir
 
-    # 1. copy source tree to temporary directory,
-    #
-    (cd $src && (tar cf - . | tar xf - -C $src2))
+    ## 1. copy source tree to temporary directory,
+    ##
+    #(cd $src && (tar cf - . | tar xf - -C $src2))
 
-    # 2. since we're building in source tree,
-    #    will need to be able to write there
-    #
-    chmod -R +w $src2
+    ## 2. since we're building in source tree,
+    ##    will need to be able to write there
+    ##
+    #chmod -R +w $src2
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$shell"
+    export CONFIG_SHELL="${stdenv.shell}"
 
     cd $builddir
 
     CCFLAGS=
     LDFLAGS="-Wl,-enable-new-dtags"
 
-    (cd $builddir && $shell $src2/configure --prefix=$out CC=nxfs-gcc CXX=nxfs-g++ LDFLAGS="$LDFLAGS")
+    (cd $builddir && $shell $sourceDir/configure --prefix=$out CC=nxfs-gcc CXX=nxfs-g++ LDFLAGS="$LDFLAGS")
 
-    (cd $builddir && sed -i -e 's:#! */bin/sh:#! '$shell':' ./pre-inst-env)
+    (cd $builddir && sed -i -e 's:#! */bin/sh:#! '$CONFIG_SHELL':' ./pre-inst-env)
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
@@ -63,7 +67,6 @@ stdenv.mkDerivation {
 
   buildInputs = [
                   perl
- #                 nxfsenv.m4
                 ];
 
   propagatedBuildInputs = [ autoconf ];

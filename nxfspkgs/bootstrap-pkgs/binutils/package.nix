@@ -1,6 +1,13 @@
 {
   # stdenv :: attrset+derivation
   stdenv,
+  # fetchurl :: {url|urls,
+  #              hash|sha256|sha512|sha1|md5,
+  #              name,
+  #              curlOpts|curlOptsList,
+  #              postFetch, downloadToTemp,
+  #              impureEnvVars, meta, passthru, preferLocalBuild} -> derivation
+  fetchurl,
   # perl :: derivation
   perl,
   # stageid :: string
@@ -15,30 +22,38 @@ stdenv.mkDerivation {
   name         = "nxfs-binutils-${stageid}";
   version      = version;
 
-  src          = builtins.fetchTarball { name = "binutils-${version}-source";
-                                         url = "https://sourceware.org/pub/binutils/releases/binutils-${version}.tar.xz";
-                                         sha256 = "1z0lq9ia19rw1qk09i3im495s5zll7xivdslabydxl9zlp3wy570"; };
+  src          = fetchurl { name = "binutils-${version}-source.tar.xz";
+                            url = "https://sourceware.org/pub/binutils/releases/binutils-${version}.tar.xz";
+                            hash = "sha256-E/dCAqPExREYt5ejnqQgDT9s++Ik2m0dlbuThIATLf0=";
+                            #sha256 = "1z0lq9ia19rw1qk09i3im495s5zll7xivdslabydxl9zlp3wy570";
+                          };
+
+#  src          = builtins.fetchTarball { name = "binutils-${version}-source";
+#                                         url = "https://sourceware.org/pub/binutils/releases/binutils-${version}.tar.xz";
+#                                         sha256 = "1z0lq9ia19rw1qk09i3im495s5zll7xivdslabydxl9zlp3wy570"; };
 
   buildPhase = ''
     set -e
 
-    src2=$TMPDIR/src2
+    sourceDir=$(pwd)
+
+    #src2=$TMPDIR/src2
     #builddir=$src2
     builddir=$TMPDIR/build
 
-    mkdir -p $src2
+    #mkdir -p $src2
     mkdir -p $builddir
 
-    # 1. copy source tree to temporary directory,
-    #
-    (cd $src && (tar cf - . | tar xf - -C $src2))
+    ## 1. copy source tree to temporary directory,
+    ##
+    #(cd $src && (tar cf - . | tar xf - -C $src2))
 
-    # 2. since we're modifying source tree,
-    #    will need to be able to write there
-    #
-    chmod -R +w $src2
+    ## 2. since we're modifying source tree,
+    ##    will need to be able to write there
+    ##
+    #chmod -R +w $src2
 
-    sed -i -e "s:/bin/sh:$shell:" $src2/mkinstalldirs
+    sed -i -e "s:/bin/sh:$shell:" ./mkinstalldirs
 
     # $src/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$shell"
@@ -51,7 +66,7 @@ stdenv.mkDerivation {
     #
     # removing -Dcpp=nxfs-gcc (why did we need this)
     #
-    (cd $builddir && $shell $src2/configure --prefix=$out)
+    (cd $builddir && $shell $sourceDir/configure --prefix=$out)
 
     (cd $builddir && make SHELL=$CONFIG_SHELL MAKEINFO=true)
 

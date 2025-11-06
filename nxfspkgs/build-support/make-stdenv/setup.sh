@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # Primitive version of nixpkgs setup.sh
+# See nixpkgs/pkgs/stdenv/generic/setup.sh
 #
 # Incoming variables (from ./default.nix, for example)
 #   initialPath
@@ -41,10 +42,153 @@ set -o pipefail
 # fixupOutputHooks: invoked once for each named top-level output directory
 # e.g. $out, $dev, ...
 #
-declare -a fixupOutputHooks
-
+declare -a fixupOutputHooks postUnpackHooks unpackCmdHooks
 
 echo initialPath=${initialPath:-UNSET}
+
+# Identical to nixLog, but additionally prefixed by the logLevel.
+# NOTE: This function is only every meant to be called from the nix*Log family of functions.
+_nixLogWithLevel() {
+  # Return a value explicitly instead of the implicit return of the last command (result of the test).
+  # NOTE: By requiring NIX_LOG_FD be set, we avoid dumping logging inside of nix-shell.
+  [[ -z ${NIX_LOG_FD-} || ${NIX_DEBUG:-0} -lt ${1:?} ]] && return 0
+
+  local logLevel
+  case "${1:?}" in
+  0) logLevel=ERROR ;;
+  1) logLevel=WARN ;;
+  2) logLevel=NOTICE ;;
+  3) logLevel=INFO ;;
+  4) logLevel=TALKATIVE ;;
+  5) logLevel=CHATTY ;;
+  6) logLevel=DEBUG ;;
+  7) logLevel=VOMIT ;;
+  *)
+    echo "_nixLogWithLevel: called with invalid log level: ${1:?}" >&"$NIX_LOG_FD"
+    return 1
+    ;;
+  esac
+
+  # Use the function name of the caller, unless it is _callImplicitHook, in which case use the name of the hook.
+  # NOTE: Our index into FUNCNAME is 2, not 1, because we are only ever to be called from the nix*Log family of
+  # functions, never directly.
+  local callerName="${FUNCNAME[2]}"
+  if [[ $callerName == "_callImplicitHook" ]]; then
+    callerName="${hookName:?}"
+  fi
+
+  # Use the function name of the caller's caller, since we should only every be invoked by nix*Log functions.
+  printf "%s: %s: %s\n" "$logLevel" "$callerName" "${2:?}" >&"$NIX_LOG_FD"
+}
+
+# All provided arguments are joined with a space then directed to $NIX_LOG_FD, if it's set.
+# Corresponds to `Verbosity::lvlTalkative` in the Nix source.
+nixTalkativeLog() {
+  _nixLogWithLevel 4 "$*"
+}
+
+# Log a hook, to be run before the hook is actually called.
+# logging for "implicit" hooks -- the ones specified directly
+# in derivation's arguments -- is done in _callImplicitHook instead.
+_logHook() {
+    # Fast path in case nixTalkativeLog is no-op.
+    if [[ -z ${NIX_LOG_FD-} ]]; then
+        return
+    fi
+
+    local hookKind="$1"
+    local hookExpr="$2"
+    shift 2
+
+    if declare -F "$hookExpr" > /dev/null 2>&1; then
+        nixTalkativeLog "calling '$hookKind' function hook '$hookExpr'" "$@"
+    elif type -p "$hookExpr" > /dev/null; then
+        nixTalkativeLog "sourcing '$hookKind' script hook '$hookExpr'"
+    elif [[ "$hookExpr" != "_callImplicitHook"* ]]; then
+        # Here we have a string hook to eval.
+        # Join lines onto one with literal \n characters unless NIX_DEBUG >= 5.
+        local exprToOutput
+        if [[ ${NIX_DEBUG:-0} -ge 5 ]]; then
+            exprToOutput="$hookExpr"
+        else
+            # We have `r'\n'.join([line.lstrip() for lines in text.split('\n')])` at home.
+            local hookExprLine
+            while IFS= read -r hookExprLine; do
+                # These lines often have indentation,
+                # so let's remove leading whitespace.
+                hookExprLine="${hookExprLine#"${hookExprLine%%[![:space:]]*}"}"
+                # If this line wasn't entirely whitespace,
+                # then add it to our output
+                if [[ -n "$hookExprLine" ]]; then
+                    exprToOutput+="$hookExprLine\\n "
+                fi
+            done <<< "$hookExpr"
+
+            # And then remove the final, unnecessary, \n
+            exprToOutput="${exprToOutput%%\\n }"
+        fi
+        nixTalkativeLog "evaling '$hookKind' string hook '$exprToOutput'"
+    fi
+}
+
+# Run all hooks with the specified name, until one succeeds (returns a
+# zero exit code). If none succeed, return a non-zero exit code.
+runOneHook() {
+    local hookName="$1"
+    shift
+    local hooksSlice="${hookName%Hook}Hooks[@]"
+
+    local hook ret=1
+    # Hack around old bash like above
+    for hook in "_callImplicitHook 1 $hookName" ${!hooksSlice+"${!hooksSlice}"}; do
+        _logHook "$hookName" "$hook" "$@"
+        if _eval "$hook" "$@"; then
+            ret=0
+            break
+        fi
+    done
+
+    return "$ret"
+}
+
+
+# Run the named hook, either by calling the function with that name or
+# by evaluating the variable with that name. This allows convenient
+# setting of hooks both from Nix expressions (as attributes /
+# environment variables) and from shell scripts (as functions). If you
+# want to allow multiple hooks, use runHook instead.
+_callImplicitHook() {
+    local def="$1"
+    local hookName="$2"
+    if declare -F "$hookName" > /dev/null; then
+        nixTalkativeLog "calling implicit '$hookName' function hook"
+        "$hookName"
+    elif type -p "$hookName" > /dev/null; then
+        nixTalkativeLog "sourcing implicit '$hookName' script hook"
+        source "$hookName"
+    elif [ -n "${!hookName:-}" ]; then
+        nixTalkativeLog "evaling implicit '$hookName' string hook"
+        eval "${!hookName}"
+    else
+        return "$def"
+    fi
+    # `_eval` expects hook to need nounset disable and leave it
+    # disabled anyways, so Ok to to delegate. The alternative of a
+    # return trap is no good because it would affect nested returns.
+}
+
+
+# A function wrapper around ‘eval’ that ensures that ‘return’ inside
+# hooks exits the hook, not the caller. Also will only pass args if
+# command can take them
+_eval() {
+    if declare -F "$1" > /dev/null 2>&1; then
+        "$@" # including args
+    else
+        eval "$1"
+    fi
+}
+
 
 # 1. append $1/bin to _PATH (at the end)
 # 2. source setup hook $1/nix-support/setup-hook
@@ -210,8 +354,152 @@ showPhaseFooter() {
     printf "[%s] completed in [%02d:%02d:%02d]\n" ${phase} ${H} ${M} ${S}
 }
 
+# Utility function: echo the base name of the given path, with the
+# prefix `HASH-' removed, if present.
+stripHash() {
+    local strippedName casematchOpt=0
+    # On separate line for `set -e`
+    strippedName="$(basename -- "$1")"
+    shopt -q nocasematch && casematchOpt=1
+    shopt -u nocasematch
+    if [[ "$strippedName" =~ ^[a-z0-9]{32}- ]]; then
+        echo "${strippedName:33}"
+    else
+        echo "$strippedName"
+    fi
+    if (( casematchOpt )); then shopt -s nocasematch; fi
+}
+
+
+unpackCmdHooks+=(_defaultUnpack)
+_defaultUnpack() {
+    local fn="$1"
+    local destination
+
+    if [ -d "$fn" ]; then
+
+        destination="$(stripHash "$fn")"
+
+        if [ -e "$destination" ]; then
+            echo "Cannot copy $fn to $destination: destination already exists!"
+            echo "Did you specify two \"srcs\" with the same \"name\"?"
+            return 1
+        fi
+
+        # We can't preserve hardlinks because they may have been
+        # introduced by store optimization, which might break things
+        # in the build.
+        cp -r --preserve=mode,timestamps --reflink=auto -- "$fn" "$destination"
+
+    else
+
+        case "$fn" in
+            *.tar.xz | *.tar.lzma | *.txz)
+                # Don't rely on tar knowing about .xz.
+                # Additionally, we have multiple different xz binaries with different feature sets in different
+                # stages. The XZ_OPT env var is only used by the full "XZ utils" implementation, which supports
+                # the --threads (-T) flag. This allows us to enable multithreaded decompression exclusively on
+                # that implementation, without the use of complex bash conditionals and checks.
+                # Since tar does not control the decompression, we need to
+                # disregard the error code from the xz invocation. Otherwise,
+                # it can happen that tar exits earlier, causing xz to fail
+                # from a SIGPIPE.
+                (XZ_OPT="--threads=$NIX_BUILD_CORES" xz -d < "$fn"; true) | tar xf - --mode=+w --warning=no-timestamp
+                ;;
+            *.tar | *.tar.* | *.tgz | *.tbz2 | *.tbz)
+                # GNU tar can automatically select the decompression method
+                # (info "(tar) gzip").
+                tar xf "$fn" --mode=+w --warning=no-timestamp
+                ;;
+            *)
+                return 1
+                ;;
+        esac
+
+    fi
+}
+
+
+unpackFile() {
+    curSrc="$1"
+    echo "unpacking source archive $curSrc"
+    if ! runOneHook unpackCmd "$curSrc"; then
+        echo "do not know how to unpack source archive $curSrc"
+        exit 1
+    fi
+}
+
 unpackPhase() {
-    :
+    # runHook preUnpack
+
+    if [ -z "${srcs:-}" ]; then
+        if [ -z "${src:-}" ]; then
+            # shellcheck disable=SC2016
+            echo 'expect variable $src or $srcs to point to the source'
+            exit 1
+        fi
+        srcs=${src}
+    fi
+
+    local -a srcsArray
+    #concatTo srcsArray srcs
+    srcsArray+=( $srcs )  # crippled impl. only works if one element.
+
+    # To determine the source directory created by unpacking the
+    # source archives, we record the contents of the current
+    # directory, then look below which directory got added.  Yeah,
+    # it's rather hacky.
+    local dirsBefore=""
+    for i in *; do
+        if [ -d "$i" ]; then
+            dirsBefore="$dirsBefore $i "
+        fi
+    done
+
+    for i in "${srcsArray[@]}"; do
+        unpackFile "$i"
+    done
+
+    # Find the source directory.
+
+    # set to empty if unset
+    : "${sourceRoot=}"
+
+    if [ -n "${setSourceRoot:-}" ]; then
+        runOneHook setSourceRoot
+    elif [ -z "$sourceRoot" ]; then
+        for i in *; do
+            if [ -d "$i" ]; then
+                case $dirsBefore in
+                    *\ $i\ *)
+                        ;;
+                    *)
+                        if [ -n "$sourceRoot" ]; then
+                            echo "unpacker produced multiple directories"
+                            exit 1
+                        fi
+                        sourceRoot="$i"
+                        ;;
+                esac
+            fi
+        done
+    fi
+
+    if [ -z "$sourceRoot" ]; then
+        echo "unpacker appears to have produced no directories"
+        exit 1
+    fi
+
+    echo "source root is $sourceRoot"
+
+    # By default, add write permission to the sources.  This is often
+    # necessary when sources have been copied from other store
+    # locations.
+    if [ "${dontMakeSourcesWritable:-0}" != 1 ]; then
+        chmod -R u+w -- "$sourceRoot"
+    fi
+
+    # runHook postUnpack
 }
 
 patchPhase() {

@@ -54,7 +54,7 @@ stdenv.mkDerivation {
 
   src          = nixified-gcc-source;
 
-  outputs      = [ "out" "source" ];
+  outputs      = [ "out" ];
 
   target_tuple = nxfs-defs.target_tuple;
 
@@ -69,16 +69,14 @@ stdenv.mkDerivation {
     echo "prev_unwrapped_gcc=$prev_unwrapped_gcc"
     echo "glibc=$libc"
 
-    src2=$src
     builddir=$TMPDIR/build
 
     mkdir -p $builddir
 
     mkdir -p $out
     mkdir -p $out/$target_tuple/lib
-    mkdir $source
 
-    # $src2/configure honors CONFIG_SHELL
+    # $src/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$shell"
 
     # --disable-nls:                    no internationalization.  don't need during bootstrap
@@ -148,7 +146,7 @@ stdenv.mkDerivation {
     #       We still need them explictly here
     #
     (cd $builddir \
-      && $shell $src2/configure --prefix=$out \
+      && $shell $src/configure --prefix=$out \
                        --disable-fixincludes \
                        --disable-bootstrap \
                        --disable-multilib \
@@ -216,7 +214,7 @@ stdenv.mkDerivation {
     rm $out/$target_tuple/lib/libc.so
     rm $out/$target_tuple/lib/libc.so.6
 
-    (cd $src2 && (tar cf - . | tar xf - -C $source))
+    #(cd $src && (tar cf - . | tar xf - -C $source))
   '';
 
   buildInputs = [

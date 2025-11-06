@@ -69,6 +69,8 @@ stdenv.mkDerivation {
   version = "${stageid}";
   system = builtins.currentSystem;
 
+  unpackPhase = ":";
+
   buildPhase = ''
     # must be the same length:
     #   nxfs-bash-2

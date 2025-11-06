@@ -18,6 +18,8 @@ stdenv.mkDerivation {
 
   src          = ./which.sh;
 
+  unpackPhase = ":";
+
   buildPhase = ''
     set -e
 

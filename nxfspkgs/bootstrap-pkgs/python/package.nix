@@ -1,6 +1,13 @@
 {
   # stdenv :: attrset+derivation
   stdenv,
+  # fetchurl :: {url|urls,
+  #              hash|sha256|sha512|sha1|md5,
+  #              name,
+  #              curlOpts|curlOptsList,
+  #              postFetch, downloadToTemp,
+  #              impureEnvVars, meta, passthru, preferLocalBuild} -> derivation
+  fetchurl,
   # popen :: derivation
   popen,
   # zlib :: derivation
@@ -21,35 +28,41 @@ stdenv.mkDerivation {
 
   inherit popen zlib;
 
-  src          = builtins.fetchTarball { name = "python-${version}-source";
-                                         url = "https://www.python.org/ftp/python/${version}/Python-${version}.tar.xz";
-                                         sha256 = "0ggdm1l4dhr3qn0rwzjha5r15m3mfyl0hj8j89xip7jx10mip952"; };
+  src          = fetchurl { name = "python-${version}-source.tar.xz";
+                            url = "https://www.python.org/ftp/python/${version}/Python-${version}.tar.xz";
+                            hash = "sha256-GZllgpjPL7g33/7Y/zwDPvDJjvIM9zxdX2a+1auJaXw=";
+                            #sha256 = "0ggdm1l4dhr3qn0rwzjha5r15m3mfyl0hj8j89xip7jx10mip952";
+                          };
 
   buildPhase = ''
     echo "popen=$popen"
     echo "zlib=$zlib"
 
+    echo "NIX_CFLAGS_COMPILE=$NIX_CFLAGS_COMPILE"
+    echo "NIX_LDFLAGS=$NIX_LDFLAGS"
+
     set -e
 
-    src2=$TMPDIR/src2
+    sourceDir=$(pwd)
+    #src2=$TMPDIR/src2
     builddir=$TMPDIR/build
 
-    mkdir -p $src2
+    #mkdir -p $src2
     mkdir -p $builddir
 
-    # 1. copy source tree to temporary directory,
+    ## 1. copy source tree to temporary directory,
+    ##
+    #(cd $src && (tar cf - . | tar xf - -C $src2))
     #
-    (cd $src && (tar cf - . | tar xf - -C $src2))
-
-    chmod -R +w $src2
+    #chmod -R +w $src2
 
     # ----------------------------------------------------------------
     # replace /bin/sh with nix-store bash when invoking subprocesses
     # ----------------------------------------------------------------
 
-    pushd $src2/Lib
+    pushd $sourceDir/Lib
 
-    sed -i -e "s:'/bin/sh':'"$shell"':" subprocess.py
+    sed -i -e "s:'/bin/sh':'"${stdenv.shell}"':" subprocess.py
 
     popd
 
@@ -58,7 +71,7 @@ stdenv.mkDerivation {
     # nxfs_system uses nix-store bash instead of /bin/sh
     # ----------------------------------------------------------------
 
-    pushd $src2/Modules
+    pushd $sourceDir/Modules
 
     dest_c=posixmodule.c
 
@@ -78,11 +91,11 @@ stdenv.mkDerivation {
 
     popd
 
-    # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$shell"
+    # $sourceDir/configure honors CONFIG_SHELL
+    export CONFIG_SHELL="${stdenv.shell}"
 
-    CFLAGS="-I$zlib/include"
-    LDFLAGS="-Wl,-rpath=$out/lib -L$zlib/lib -Wl,-rpath=$zlib/lib"
+    CFLAGS="$NIX_CFLAGS_COMPILE" #-I$zlib/include
+    LDFLAGS="-Wl,-rpath=$out/lib $NIX_LDFLAGS"
 
     # 1.
     # we shouldn't need special compiler/linker instructions,
@@ -114,7 +127,7 @@ stdenv.mkDerivation {
     #   _tkinter
     #   readline
     #
-    (cd $builddir && $shell $src2/configure --prefix=$out --enable-shared --enable-optimizations CC="nxfs-gcc" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
+    (cd $builddir && $shell $sourceDir/configure --prefix=$out --enable-shared --enable-optimizations CC="nxfs-gcc" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
     (cd $builddir && make install SHELL=$CONFIG_SHELL)

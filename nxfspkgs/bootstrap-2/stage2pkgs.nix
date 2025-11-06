@@ -57,10 +57,12 @@ let
   # default builder requires pkgs.bash
   #
   # nxfs-autotools :: pkgs -> attrs -> derivation
+  #
   nxfs-autotools = import ../build-support/autotools;
 
   # possibly temporary? depends on whether it makes sense to push the stage2pkgs.nix patterns
   # down to stage1.  if so, may be able to retire this.  otherwise definitely keep.
+  #
   bootstrap-1 = import ./bootstrap-1;
 in
 
@@ -85,6 +87,7 @@ let
     shell     = stage1pkgs.nxfs-bash-1;
     coreutils = stage1pkgs.nxfs-coreutils-1;
     gzip      = stage1pkgs.nxfs-gzip-1;
+    xz        = stage1pkgs.nxfs-xz-1;
     gnumake   = stage1pkgs.nxfs-gnumake-1;
     gawk      = stage1pkgs.nxfs-gawk-1;
     gnutar    = stage1pkgs.nxfs-tar-1;
@@ -376,7 +379,9 @@ let
   #
   # cacert-3 :: derivation
   cacert-2 = callPackage
-    ../bootstrap-pkgs/cacert/package.nix { stdenv = stdenv-2-2; };
+    ../bootstrap-pkgs/cacert/package.nix { stdenv = stdenv-2-2;
+                                           stageid = "2";
+                                         };
 
   # fetchurl-3 :: (url | urls,
   #                hash | sha256 | sha512 | sha1 | md5,
@@ -403,10 +408,12 @@ in
 let
   # binutils-2 :: derivation
   binutils-2 = callPackage ../bootstrap-pkgs/binutils/package.nix { stdenv = stdenv-2-2;
+                                                                    fetchurl = fetchurl-2;
                                                                     perl = perl-2;
                                                                     stageid = "2"; };
   # autoconf-2 :: derivation
   autoconf-2 = callPackage ../bootstrap-pkgs/autoconf/package.nix { stdenv = stdenv-2-2;
+                                                                    fetchurl = fetchurl-2;
                                                                     perl = perl-2;
                                                                     m4 = m4-2;
                                                                     stageid = "2"; };
@@ -414,6 +421,7 @@ in
 let
   # automake-2 :: derivation
   automake-2 = callPackage ../bootstrap-pkgs/automake/package.nix { stdenv = stdenv-2-2;
+                                                                    fetchurl = fetchurl-2;
                                                                     autoconf = autoconf-2;
                                                                     perl = perl-2;
                                                                     stageid = "2"; };
@@ -421,42 +429,53 @@ in
 let
   # flex-2 :: derivation
   flex-2 = callPackage ../bootstrap-pkgs/flex/package.nix { stdenv = stdenv-2-2;
+                                                            fetchurl = fetchurl-2;
                                                             m4 = m4-2;
                                                             stageid = "2"; };
   # gmp-2 :: derivation
   gmp-2 = callPackage ../bootstrap-pkgs/gmp/package.nix { stdenv = stdenv-2-2;
+                                                          fetchurl = fetchurl-2;
                                                           m4 = m4-2;
                                                           stageid = "2";
                                                         };
 in
 let
   # bison-2 :: derivation
-  bison-2 = callPackage ../bootstrap-pkgs/bison/package.nix { stdenv = stdenv-2-2;
-                                                              perl = perl-2;
-                                                              flex = flex-2;
-                                                              m4 = m4-2;
-                                                              stageid = "2"; };
+  bison-2 = callPackage
+    ../bootstrap-pkgs/bison/package.nix { stdenv = stdenv-2-2;
+                                          fetchurl = fetchurl-2;
+                                          perl = perl-2;
+                                          flex = flex-2;
+                                          m4 = m4-2;
+                                          stageid = "2"; };
 in
 let
+  # TODO: texinfo: maybe want to attach locale ?
+
   # texinfo-2 :: derivation
-  texinfo-2 = callPackage ../bootstrap-pkgs/texinfo/package.nix { stdenv = stdenv-2-2;
-                                                                  perl = perl-2;
-                                                                  stageid = "2";
-                                                                };
+  texinfo-2 = callPackage
+    ../bootstrap-pkgs/texinfo/package.nix { stdenv = stdenv-2-2;
+                                            fetchurl = fetchurl-2;
+                                            perl = perl-2;
+                                            stageid = "2";
+                                          };
 in
 let
   # mpr-2 :: derivation
   mpfr-2 = callPackage ../bootstrap-pkgs/mpfr/package.nix { stdenv = stdenv-2-2;
+                                                            fetchurl = fetchurl-2;
                                                             gmp = gmp-2;
                                                             stageid = "2"; };
   # isl-2 :: derivation
   isl-2 = callPackage ../bootstrap-pkgs/isl/package.nix { stdenv = stdenv-2-2;
+                                                          fetchurl = fetchurl-2;
                                                           gmp = gmp-2;
                                                           stageid = "2"; };
 in
 let
   # mpc-2 :: derivation
   mpc-2  = callPackage ../bootstrap-pkgs/mpc/package.nix { stdenv = stdenv-2-2;
+                                                           fetchurl = fetchurl-2;
                                                            mpfr = mpfr-2;
                                                            gmp = gmp-2;
                                                            stageid = "2"; };
@@ -465,6 +484,7 @@ let
   # python-2 :: derivation
   python-2 = callPackage
     ../bootstrap-pkgs/python/package.nix { stdenv = stdenv-2-2;
+                                           fetchurl = fetchurl-2;
                                            popen = popen-2;
                                            zlib = zlib-2;
                                            stageid = "2"; };
@@ -473,6 +493,7 @@ let
   nixified-glibc-source-2 = callPackage
     ../bootstrap-pkgs/nixify-glibc-source/package.nix
     { stdenv = stdenv-2-2;
+      fetchurl = fetchurl-2;
       python = python-2;
       coreutils = coreutils-2;
       which = which-2;
@@ -498,57 +519,62 @@ let
                                           lc-all-sort = lc-all-sort-2;
                                           locale-archive = locale-archive-1;
                                           linux-headers = linux-headers-2;
-                                          stageid = "2";
+                                          stageid = "x1-2";
                                         };
 in
 let
-  binutils-x0-wrapper-2 = callPackage ../bootstrap-pkgs/binutils-x0-wrapper/package.nix { stdenv = stdenv-2-2;
-                                                                                          bintools = binutils-2;
-                                                                                          libc = glibc-2;
-                                                                                          stageid = "2";
-                                                                                        };
+  binutils-x0-wrapper-2 = callPackage
+    ../bootstrap-pkgs/binutils-x0-wrapper/package.nix { stdenv = stdenv-2-2;
+                                                        bintools = binutils-2;
+                                                        libc = glibc-2;
+                                                        stageid = "2";
+                                                      };
 
   # gcc-x0-wrapper-2 :: derivation
-  gcc-x0-wrapper-2 = callPackage ../bootstrap-pkgs/gcc-x0-wrapper/package.nix { stdenv = stdenv-2-2;
-                                                                                cc = stage1pkgs.nxfs-toolchain-1;
-                                                                                libc = glibc-2;
-                                                                                nxfs-defs = nxfs-defs;
-                                                                                stageid = "2";
-                                                                              };
+  gcc-x0-wrapper-2 = callPackage
+    ../bootstrap-pkgs/gcc-x0-wrapper/package.nix { stdenv = stdenv-2-2;
+                                                   cc = stage1pkgs.nxfs-toolchain-1;
+                                                   libc = glibc-2;
+                                                   nxfs-defs = nxfs-defs;
+                                                   stageid = "2";
+                                                 };
 in
 let
 
   # nixified-gcc-source-2 :: derivation
   nixified-gcc-source-2 = callPackage
     ../bootstrap-pkgs/nixify-gcc-source/package.nix { stdenv = stdenv-2-2;
+                                                      fetchurl = fetchurl-2;
                                                       file = file-2;
                                                       which = which-2;
                                                       stageid = "2"; };
 
   # this version
-  gcc-x1-2 = callPackage ../bootstrap-pkgs/gcc-x1/package.nix { stdenv = stdenv-2-2;
-                                                                nixified-gcc-source = nixified-gcc-source-2;
-                                                                binutils-wrapper = binutils-x0-wrapper-2;
-                                                                mpc = mpc-2;
-                                                                mpfr = mpfr-2;
-                                                                gmp = gmp-2;
-                                                                isl = isl-2;
-                                                                bison = bison-2;
-                                                                flex = flex-2;
-                                                                texinfo = texinfo-2;
-                                                                m4 = m4-2;
-                                                                glibc = glibc-2;
-                                                                nxfs-defs = nxfs-defs;
-                                                                stageid = "2"; };
+  gcc-x1-2 = callPackage
+    ../bootstrap-pkgs/gcc-x1/package.nix { stdenv = stdenv-2-2;
+                                           nixified-gcc-source = nixified-gcc-source-2;
+                                           binutils-wrapper = binutils-x0-wrapper-2;
+                                           mpc = mpc-2;
+                                           mpfr = mpfr-2;
+                                           gmp = gmp-2;
+                                           isl = isl-2;
+                                           bison = bison-2;
+                                           flex = flex-2;
+                                           texinfo = texinfo-2;
+                                           m4 = m4-2;
+                                           glibc = glibc-2;
+                                           nxfs-defs = nxfs-defs;
+                                           stageid = "2"; };
 in
 let
   # gcc-x1-wrapper-2 :: derivation
-  gcc-x1-wrapper-2 = callPackage ../bootstrap-pkgs/gcc-x1-wrapper/package.nix { stdenv = stdenv-2-2;
-                                                                                cc = gcc-x1-2;
-                                                                                libc = glibc-2;
-                                                                                nxfs-defs = nxfs-defs;
-                                                                                stageid = "2";
-                                                                              };
+  gcc-x1-wrapper-2 = callPackage
+    ../bootstrap-pkgs/gcc-x1-wrapper/package.nix { stdenv = stdenv-2-2;
+                                                   cc = gcc-x1-2;
+                                                   libc = glibc-2;
+                                                   nxfs-defs = nxfs-defs;
+                                                   stageid = "2";
+                                                 };
 in
 let
   # libstdcxx-x2-2 :: derivation
@@ -670,6 +696,7 @@ let
   #
   binutils-x6-2 = callPackage
     ../bootstrap-pkgs/binutils/package.nix { stdenv = stdenv-x6-2;
+                                             fetchurl = fetchurl-2;
                                              perl = perl-2;
                                              stageid = "2"; };
 
@@ -688,7 +715,7 @@ let
                                           lc-all-sort = lc-all-sort-2;
                                           locale-archive = locale-archive-1;
                                           linux-headers = linux-headers-2;
-                                          stageid = "2";  # to keep same size of name for now
+                                          stageid = "x6-2";  # to keep same size of name for now
                                         };
 
   file-x6-2 = callPackage
@@ -697,6 +724,7 @@ let
 
   nixified-gcc-source-x6-2 = callPackage
     ../bootstrap-pkgs/nixify-gcc-source/package.nix { stdenv = stdenv-x6-2;
+                                                      fetchurl = fetchurl-2;
                                                       file = file-x6-2;
                                                       which = which-2;
                                                       stageid = "2"; };
@@ -707,26 +735,31 @@ let
 
   flex-x6-2 = callPackage
     ../bootstrap-pkgs/flex/package.nix { stdenv = stdenv-x6-2;
+                                         fetchurl = fetchurl-2;
                                          m4 = m4-x6-2;
                                          stageid = "2"; };
 
   gmp-x6-2 = callPackage
     ../bootstrap-pkgs/gmp/package.nix { stdenv = stdenv-x6-2;
+                                        fetchurl = fetchurl-2;
                                         m4 = m4-x6-2;
                                         stageid = "2"; };
 
   isl-x6-2 = callPackage
     ../bootstrap-pkgs/isl/package.nix { stdenv = stdenv-x6-2;
+                                        fetchurl = fetchurl-2;
                                         gmp = gmp-x6-2;
                                         stageid = "2"; };
 
   mpfr-x6-2 = callPackage
     ../bootstrap-pkgs/mpfr/package.nix { stdenv = stdenv-x6-2;
+                                         fetchurl = fetchurl-2;
                                          gmp = gmp-x6-2;
                                          stageid = "2"; };
 
   mpc-x6-2 = callPackage
     ../bootstrap-pkgs/mpc/package.nix { stdenv = stdenv-x6-2;
+                                        fetchurl = fetchurl-2;
                                         mpfr = mpfr-x6-2;
                                         gmp = gmp-x6-2;
                                         stageid = "2"; };
@@ -898,6 +931,7 @@ in
   inherit binutils-wrapper-2;
   inherit gcc-wrapper-2;
 
+
   inherit string-x5-2;
   inherit hello-x5-2;
 
@@ -908,6 +942,12 @@ in
   inherit bash-from-boot-2;
   inherit boot-x7-2;
   inherit nixified-gcc-source-x6-2;
+  inherit mpc-x6-2;
+  inherit mpfr-x6-2;
+  inherit isl-x6-2;
+  inherit gmp-x6-2;
+  inherit flex-x6-2;
+  inherit m4-x6-2;
   inherit file-x6-2;
   inherit glibc-x6-2;
   inherit binutils-x6-2;

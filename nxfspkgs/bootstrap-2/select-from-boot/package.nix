@@ -12,6 +12,8 @@
 stdenv.mkDerivation {
   name = "${boot-subdir}-boot-${stageid}";
 
+  unpackPhase = ":";
+
   # just want to symlink to ${boot}/${boot-subdir}/{bin, lib, ..}
   buildPhase = ''
 

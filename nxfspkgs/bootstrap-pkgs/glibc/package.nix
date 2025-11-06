@@ -46,7 +46,7 @@ in
 stdenv.mkDerivation {
   version        = version;
   pname          = "nxfs-glibc";  # nixpkgs requires this
-  name           = "nxfs-glibc-x1-${version}-${stageid}";
+  name           = "nxfs-glibc-${version}-${stageid}";
 
   system         = builtins.currentSystem;
 
@@ -57,7 +57,7 @@ stdenv.mkDerivation {
 
   src            = nixified-glibc-source;
 
-  outputs      = [ "out" "source" ];
+  outputs      = [ "out" ];
 
   buildPhase = ''
     # See also
@@ -69,14 +69,14 @@ stdenv.mkDerivation {
     #export PATH=$PATH:$toolchain/x86_64-pc-linux-gnu/bin
 
     mkdir -p $out
-    mkdir -p $source
+    #mkdir -p $source
 
     rm -f $out/build.env
 
-    src2=$TMPDIR/src2
+    #src2=$TMPDIR/src2
     builddir=$TMPDIR/build
 
-    mkdir -p $src2
+    #mkdir -p $src2
     mkdir -p $builddir
 
     python_program=$(which python3)
@@ -91,9 +91,9 @@ stdenv.mkDerivation {
     mkdir -p $out/include/scsi
     cp -r $linux_headers/include/* $out/include/
 
-    # 1. copy source tree to temporary directory
-    #
-    (cd $src && (tar cf - . | tar xf - -C $src2))
+    ## 1. copy source tree to temporary directory
+    ##
+    #(cd $src && (tar cf - . | tar xf - -C $src2))
 
     export CONFIG_SHELL="$shell"
 
@@ -110,20 +110,20 @@ stdenv.mkDerivation {
     # --user-defined-trusted-dirs is advertised on interwebs,
     # but doesn't seem to exist (at least for glibc 2.40)
     #
-    $shell $src2/configure --prefix=$out \
-                           --enable-kernel=4.19 \
-                           --with-headers=$linux_headers/include \
-                           --disable-nscd \
-                           libc_cv_complocaledir=$locale_archive/lib/locale \
-                           libc_cv_slibdir=$out/lib \
-                           CC=nxfs-gcc CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+    $shell $src/configure --prefix=$out \
+                          --enable-kernel=4.19 \
+                          --with-headers=$linux_headers/include \
+                          --disable-nscd \
+                          libc_cv_complocaledir=$locale_archive/lib/locale \
+                          libc_cv_slibdir=$out/lib \
+                          CC=nxfs-gcc CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 
-    # looks like
-    #   make Versions.v.i
-    # fails in nix-build because of stray reference to /bin/sh
-    # we understand that the configure step does write/modify files in $src2
-    #
-    (cd $src2 && (grep -n -R '/bin/sh' . | grep -v nix/store))
+    ## looks like
+    ##   make Versions.v.i
+    ## fails in nix-build because of stray reference to /bin/sh
+    ## we understand that the configure step does write/modify files in $src2
+    ##
+    #(cd $src2 && (grep -n -R '/bin/sh' . | grep -v nix/store))
 
     # The compiler (nxfs-gcc, from ../nxfs-gcc-wrapper-2), that we passed to configure,
     # automatically makes two link-time changes when it builds a library/executable
@@ -140,9 +140,6 @@ stdenv.mkDerivation {
     export NXFS_SYSROOT_DIR=$out
 
     export SHELL=$CONFIG_SHELL
-
-    #(cd $builddir && make help SHELL=$CONFIG_SHELL)
-    #/usr/bin/strace -f -e trace=openat make all SHELL=$CONFIG_SHELL
 
     # Some things that can make build fail in chrooted build:
     # 1. gnumake $(shell ...) invoking /bin/sh
@@ -169,7 +166,7 @@ stdenv.mkDerivation {
 
     patchelf --remove-rpath $out/lib/libc.so.6
 
-    (cd $src2 && (tar cf - . | tar xf - -C $source))
+    #(cd $src2 && (tar cf - . | tar xf - -C $source))
   '';
 
   buildInputs = [

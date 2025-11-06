@@ -13,6 +13,8 @@ stdenv.mkDerivation {
   #   builder = bash_program;
   #   args = [ ./builder.sh ];
 
+  unpackPhase = ":";
+
   buildPhase = ''
     #gxx=nxfs-g++
     mkdir -p $out/bin
@@ -22,8 +24,6 @@ stdenv.mkDerivation {
     g++ -v -o $out/bin/hello $src
     #
     #g++ -o $out/bin/hello $src -lstdc++ -Wl,-rpath,${stdenv.cc}/lib -B${stdenv.cc.libc}/lib
-
-    rm $out/build.env
   '';
 
   src = ./main.cpp;

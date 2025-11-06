@@ -36,16 +36,13 @@ stdenv.mkDerivation {
 
     prev_unwrapped_gcc=${gcc-wrapper.cc}
 
-    #echo "PATH=$PATH"
-
     builddir=$TMPDIR/build
 
     mkdir -p $builddir
-
     mkdir -p $out
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$shell"
+    export CONFIG_SHELL="${stdenv.shell}"
 
     # --disable-nls:                    no internationalization.  don't need during bootstrap
     # --enable-gprofng=no:              don't need gprofng tool during bootstrap
@@ -88,7 +85,8 @@ stdenv.mkDerivation {
     #
     #
     # this builds:
-    (cd $builddir && $shell $src/libstdc++-v3/configure \
+    (cd $builddir \
+      && $CONFIG_SHELL $src/libstdc++-v3/configure \
                             --prefix=$out \
                             --with-gxx-include-dir=$out/$target_tuple/include/c++/$version \
                             --disable-fixincludes \

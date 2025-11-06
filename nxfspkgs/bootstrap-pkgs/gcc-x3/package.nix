@@ -55,7 +55,7 @@ stdenv.mkDerivation {
 
     echo PATH=$PATH
 
-    src2=$src
+    #src2=$src
     builddir=$TMPDIR/build
 
     mkdir -p $builddir
@@ -70,7 +70,7 @@ stdenv.mkDerivation {
 
     bash_program=$shell
 
-    # $src2/configure honors CONFIG_SHELL
+    # $src/configure honors CONFIG_SHELL
     export CONFIG_SHELL="$bash_program"
 
     # --disable-nls:                    no internationalization.  don't need during bootstrap
@@ -155,7 +155,7 @@ stdenv.mkDerivation {
     #          -Wl,--rpath=$NXFS_SYSROOT_DIR/lib -Wl,--dynamic-linker=$NXFS_SYSROOT_DIR/lib/ld-linux-x86-64.so.2
     #       We still need them explictly here
     #
-    (cd $builddir && $shell $src2/configure \
+    (cd $builddir && $shell $src/configure \
                                    --prefix=$out \
                                    --disable-bootstrap \
                                    --disable-fixincludes \

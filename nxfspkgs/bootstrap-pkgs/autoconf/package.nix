@@ -1,6 +1,13 @@
 {
   # stdenv :: attrset+derivation
   stdenv,
+  # fetchurl :: {url|urls,
+  #              hash|sha256|sha512|sha1|md5,
+  #              name,
+  #              curlOpts|curlOptsList,
+  #              postFetch, downloadToTemp,
+  #              impureEnvVars, meta, passthru, preferLocalBuild} -> derivation
+  fetchurl,
   # perl :: derivation
   perl,
   # m4 :: derivation
@@ -16,29 +23,27 @@ in
 stdenv.mkDerivation {
   name         = "nxfs-autoconf-${stageid}";
 
-  src          = builtins.fetchTarball { name = "autoconf-${version}-source";
-                                         url = "https://ftpmirror.gnu.org/gnu/autoconf/autoconf-${version}.tar.xz";
-                                         sha256 = "1r3922ja9g5ziinpqxgfcc51jhrxvjqnrmc5054jgskylflxc1fp"; };
+  src          = fetchurl { name = "autoconf-${version}-source.tar.xz";
+                            url = "https://ftpmirror.gnu.org/gnu/autoconf/autoconf-${version}.tar.xz";
+                            hash = "sha256-uohcExlXjWyU1G6bDc60AUyq/iSQ5Deg28o/JwoiP1o="; };
 
   buildPhase = ''
     set -e
 
-    src2=$TMPDIR/src2
-    builddir=$src2
+    sourceDir=$(pwd)
+    builddir=$sourceDir
 
-    mkdir -p $src2
+    ## 1. copy source tree to temporary directory,
+    ##
+    #(cd $src && (tar cf - . | tar xf - -C $src2))
 
-    # 1. copy source tree to temporary directory,
-    #
-    (cd $src && (tar cf - . | tar xf - -C $src2))
-
-    # 2. since we're building in source tree,
-    #    will need to be able to write there
-    #
-    chmod -R +w $src2
+    ## 2. since we're building in source tree,
+    ##    will need to be able to write there
+    ##
+    #chmod -R +w $src2
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$shell"
+    export CONFIG_SHELL="${stdenv.shell}"
 
     cd $builddir
 
@@ -50,7 +55,7 @@ stdenv.mkDerivation {
     #
     # removing -Dcpp=nxfs-gcc (why did we need this)
     #
-    (cd $builddir && $shell $src2/configure --prefix=$out)
+    (cd $builddir && $shell $sourceDir/configure --prefix=$out)
 
     make SHELL=$CONFIG_SHELL
 

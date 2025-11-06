@@ -1,6 +1,13 @@
 {
   # stdenv :: derivation+attrset
   stdenv,
+  # fetchurl :: {url|urls,
+  #              hash|sha256|sha512|sha1|md5,
+  #              name,
+  #              curlOpts|curlOptsList,
+  #              postFetch, downloadToTemp,
+  #              impureEnvVars, meta, passthru, preferLocalBuild} -> derivation
+  fetchurl,
   # file :: derivation
   file,
   # which :: derivation
@@ -17,19 +24,20 @@ stdenv.mkDerivation {
   name = "nixify-gcc-source-${stageid}";
   version = version;
 
-  src = builtins.fetchTarball { name = "gcc-${version}-source";
-                                url = "https://ftpmirror.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz";
-                                sha256 = "1bdp6l9732316ylpzxnamwpn08kpk91h7cmr3h1rgm3wnkfgxzh9";
-                              };
+  src = fetchurl { name = "gcc-${version}-source.tar.xz";
+                   url = "https://ftpmirror.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz";
+                   hash = "sha256-p7Obxpy/niWCbFpgqyZHcAH3wI2FzsBLwOKcq+1vPMk=";
+                   sha256 = "1bdp6l9732316ylpzxnamwpn08kpk91h7cmr3h1rgm3wnkfgxzh9";
+                 };
 
   buildPhase = ''
     file_program=$(which file)
 
-    (cd $src && (tar cf - . | tar xf - -C $out))
+    (tar cf - . | tar xf - -C $out)
     chmod -R +w $out
 
     (cd $out && sed -i -e '/m64=/s:lib64:lib:' ./gcc/config/i386/t-linux64)
-    (cd $out && sed -i -e "1s:#!/bin/sh:#!$shell:" move-if-change)
+    (cd $out && sed -i -e "1s:#!/bin/sh:#!${stdenv.shell}:" move-if-change)
     (cd $out && sed -i -e "s:/usr/bin/file:$file_program:" ./libstdc++-v3/configure)
     (cd $out && sed -i -e "s:/usr/bin/file:$file_program:" ./libcc1/configure)
     (cd $out && sed -i -e "s:/usr/bin/file:$file_program:" ./gcc/configure)
@@ -39,8 +47,12 @@ stdenv.mkDerivation {
     #  - don't try to expand .l files (will trigger doc rebuild)
     #  - replace shebangs: {/bin/sh, /usr/bin/env sh, /usr/bin/env bash} -> $shell
     #
-    (cd $out && find . -type f | grep -v '*.l$' | xargs sed -i -e "1s:#! /bin/sh:#! $shell:" -e "1s:#!/usr/bin/env sh:#! $shell:" -e "#1:#!/usr/bin/env bash:#! $shell:")
-'';
+    (cd $out && find . -type f \
+      | grep -v '*.l$' \
+      | xargs sed -i -e "1s:#! /bin/sh:#! ${stdenv.shell}:" \
+                     -e "1s:#!/usr/bin/env sh:#! ${stdenv.shell}:" \
+                     -e "#1:#!/usr/bin/env bash:#! ${stdenv.shell}:")
+  '';
 
   shell = stdenv.shell;
 

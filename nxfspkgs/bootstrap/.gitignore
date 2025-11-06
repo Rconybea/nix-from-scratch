@@ -3,6 +3,7 @@ nxfs-vars.sh
 # created by nix-build
 */result
 # created by */stage0/Makefile
+*/stage0/build
 */stage0/log
 */stage0/src
 */stage0/state

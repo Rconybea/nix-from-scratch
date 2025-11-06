@@ -76,6 +76,7 @@ let
     patchelf  = stage2pkgs.patchelf-2;
     patch     = stage2pkgs.patch-2;
     gzip      = stage2pkgs.gzip-2;
+    xz        = stage2pkgs.xz-2;
     gnumake   = stage2pkgs.gnumake-2;
     gawk      = stage2pkgs.gawk-2;
     gnutar    = stage2pkgs.gnutar-2;
@@ -204,41 +205,59 @@ let
 in
 let
   # gnumake-3   :: derivation
-  gnumake-3 = callPackage ../bootstrap-pkgs/gnumake/package.nix { stdenv = stdenv-2;
-                                                                  stageid = "3"; };
+  gnumake-3 = callPackage
+    ../bootstrap-pkgs/gnumake/package.nix { stdenv = stdenv-2;
+                                            stageid = "3"; };
 in
 let
   # coreutils-3 :: derivation
-  coreutils-3 = callPackage ../bootstrap-pkgs/coreutils/package.nix { stdenv = stdenv-2;
-                                                                      stageid = "3"; };
+  coreutils-3 = callPackage
+    ../bootstrap-pkgs/coreutils/package.nix { stdenv = stdenv-2;
+                                              stageid = "3"; };
 in
 let
   # patch-3 :: derivation
-  patch-3      = callPackage ../bootstrap-pkgs/patch/package.nix { stdenv = stdenv-2;
-                                                                   stageid = "3";
-                                                                 };
+  patch-3      = callPackage
+    ../bootstrap-pkgs/patch/package.nix { stdenv = stdenv-2;
+                                          stageid = "3";
+                                        };
 
   # pkgconf-3 :: derivation
-  pkgconf-3    = callPackage ../bootstrap-pkgs/pkgconf/package.nix { stdenv = stdenv-2;
-                                                                     stageid = "3"; };
+  pkgconf-3    = callPackage
+    ../bootstrap-pkgs/pkgconf/package.nix { stdenv = stdenv-2;
+                                            stageid = "3"; };
+
   # m4-3 :: derivation
-  m4-3         = callPackage ../bootstrap-pkgs/m4/package.nix { stdenv = stdenv-2;
-                                                                stageid = "3"; };
+  m4-3         = callPackage
+    ../bootstrap-pkgs/m4/package.nix { stdenv = stdenv-2;
+                                       stageid = "3"; };
+
   # file-3 :: derivation
-  file-3       = callPackage ../bootstrap-pkgs/file/package.nix { stdenv = stdenv-2;
-                                                                  stageid = "3"; };
+  file-3       = callPackage
+    ../bootstrap-pkgs/file/package.nix { stdenv = stdenv-2;
+                                         stageid = "3"; };
   # zlib-3 :: derivation
-  zlib-3       = callPackage ../bootstrap-pkgs/zlib/package.nix { stdenv = stdenv-2;
-                                                                  stageid = "3"; };
+  zlib-3       = callPackage
+    ../bootstrap-pkgs/zlib/package.nix { stdenv = stdenv-2;
+                                         stageid = "3"; };
   # patchelf-3 :: derivation
-  patchelf-3   = callPackage ../bootstrap-pkgs/patchelf/package.nix { stdenv = stdenv-2;
-                                                                      stageid = "3"; };
+  patchelf-3   = callPackage
+    ../bootstrap-pkgs/patchelf/package.nix { stdenv = stdenv-2;
+                                             stageid = "3"; };
   # gzip-3 :: derivation
-  gzip-3       = callPackage ../bootstrap-pkgs/gzip/package.nix { stdenv = stdenv-2;
-                                                                  stageid = "3"; };
+  gzip-3       = callPackage
+    ../bootstrap-pkgs/gzip/package.nix { stdenv = stdenv-2;
+                                         stageid = "3"; };
+  # xz-3 :: derivation
+  xz-3 = callPackage
+    ../bootstrap-pkgs/xz/package.nix { stdenv = stdenv-2;
+                                       stageid = "3";
+                                     };
+
   # gperf-3 :: derivation
-  gperf-3      = callPackage ../bootstrap-pkgs/gperf/package.nix { stdenv = stdenv-2;
-                                                                   stageid = "3"; };
+  gperf-3      = callPackage
+    ../bootstrap-pkgs/gperf/package.nix { stdenv = stdenv-2;
+                                          stageid = "3"; };
 in
 let
   # stdenv interface
@@ -250,6 +269,7 @@ let
   stagepkgs-3-1 = stagepkgs-2 // { patchelf  = patchelf-3;
                                    patch     = patch-3;
                                    gzip      = gzip-3;
+                                   xz        = xz-3;
                                    shell     = bash-3;
                                    coreutils = coreutils-3;
                                    gnumake   = gnumake-3;
@@ -291,12 +311,6 @@ let
                                             stageid = "3";
     };
 
-  # xz-3 :: derivation
-  xz-3 = callPackage
-    ../bootstrap-pkgs/xz/package.nix { stdenv = stdenv-3-1;
-                                       stageid = "3";
-                                     };
-
   # curl-3 :: derivation
   curl-3 = callPackage
     ../bootstrap-pkgs/curl/package.nix { stdenv = stdenv-3-1;
@@ -310,7 +324,9 @@ let
   #
   # cacert-3 :: derivation
   cacert-3 = callPackage
-    ../bootstrap-pkgs/cacert/package.nix { stdenv = stdenv-3-1; };
+    ../bootstrap-pkgs/cacert/package.nix { stdenv = stdenv-3-1;
+                                           stageid = "3";
+                                         };
 
   # fetchurl-3 :: (url | urls,
   #                hash | sha256 | sha512 | sha1 | md5,
@@ -335,12 +351,14 @@ let
 
   # binutils-3 :: derivation
   binutils-3 = callPackage ../bootstrap-pkgs/binutils/package.nix { stdenv = stdenv-3-1;
+                                                                    fetchurl = fetchurl-3;
                                                                     perl = perl-3;
                                                                     stageid = "3";
                                                                   };
 
   # autoconf-3 :: derivation
   autoconf-3 = callPackage ../bootstrap-pkgs/autoconf/package.nix { stdenv = stdenv-3-1;
+                                                                    fetchurl = fetchurl-3;
                                                                     perl = perl-3;
                                                                     m4 = m4-3;
                                                                     stageid = "3";
@@ -350,6 +368,7 @@ in
 let
   # autoconf-3 :: derivation
   automake-3 = callPackage ../bootstrap-pkgs/automake/package.nix { stdenv = stdenv-3-1;
+                                                                    fetchurl = fetchurl-3;
                                                                     autoconf = autoconf-3;
                                                                     perl = perl-3;
                                                                     stageid = "3";
@@ -358,25 +377,30 @@ in
 let
   # flex-3 :: derivation
   flex-3 = callPackage ../bootstrap-pkgs/flex/package.nix { stdenv = stdenv-3-1;
+                                                            fetchurl = fetchurl-3;
                                                             m4 = m4-3;
                                                             stageid = "3";
                                                           };
   # gmp-3 :: derivation
   gmp-3 = callPackage ../bootstrap-pkgs/gmp/package.nix { stdenv = stdenv-3-1;
+                                                          fetchurl = fetchurl-3;
                                                           m4 = m4-3;
                                                           stageid = "3";
                                                         };
   # mpfr-3 :: derivation
   mpfr-3 = callPackage ../bootstrap-pkgs/mpfr/package.nix { stdenv = stdenv-3-1;
+                                                            fetchurl = fetchurl-3;
                                                             gmp = gmp-3;
                                                             stageid = "3"; };
   # mpc-3 :: derivation
   mpc-3 = callPackage ../bootstrap-pkgs/mpc/package.nix { stdenv = stdenv-3-1;
+                                                          fetchurl = fetchurl-3;
                                                           gmp = gmp-3;
                                                           mpfr = mpfr-3;
                                                           stageid = "3"; };
   # isl-3 :: derivation
   isl-3 = callPackage ../bootstrap-pkgs/isl/package.nix { stdenv = stdenv-3-1;
+                                                          fetchurl = fetchurl-3;
                                                           gmp = gmp-3;
                                                           stageid = "3";
                                                         };
@@ -385,6 +409,7 @@ in
 let
   # bison-3 :: derivation
   bison-3 = callPackage ../bootstrap-pkgs/bison/package.nix { stdenv = stdenv-3-1;
+                                                              fetchurl = fetchurl-3;
                                                               perl = perl-3;
                                                               flex = flex-3;
                                                               m4 = m4-3;
@@ -394,6 +419,7 @@ in
 let
   # texinfo-3 :: derivation
   texinfo-3 = callPackage ../bootstrap-pkgs/texinfo/package.nix { stdenv = stdenv-3-1;
+                                                                  fetchurl = fetchurl-3;
                                                                   perl = perl-3;
                                                                   stageid = "3";
                                                                 };
@@ -401,6 +427,7 @@ in
 let
   # python-3 :: derivation
   python-3 = callPackage ../bootstrap-pkgs/python/package.nix { stdenv = stdenv-3-1;
+                                                                fetchurl = fetchurl-3;
                                                                 popen = popen-3;
                                                                 zlib = zlib-3;
                                                                 stageid = "3"; };
@@ -413,6 +440,7 @@ let
   nixified-glibc-source-3 =
     callPackage ../bootstrap-pkgs/nixify-glibc-source/package.nix
       { stdenv = stdenv-3-1;
+        fetchurl = fetchurl-3;
         python = python-3;
         coreutils = coreutils-3;
         which = which-3;
@@ -476,6 +504,7 @@ let
     callPackage ../bootstrap-pkgs/nixify-gcc-source/package.nix
       {
         stdenv    = stdenv-3-1;
+        fetchurl  = fetchurl-3;
         file      = file-3;
         which     = which-3;
         stageid = "3";

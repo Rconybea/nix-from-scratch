@@ -8,6 +8,8 @@ stdenv.mkDerivation {
   name = "hello-cxx-2";
   system = builtins.currentSystem;
 
+  unpackPhase = ":";
+
   # to entirely replace the default build script,
   # uncomment 2 line below + provide local builder.sh
   #   builder = bash_program;
@@ -22,7 +24,6 @@ stdenv.mkDerivation {
     g++ -v -o $out/bin/hello $src
     #g++ -o $out/bin/hello $src -lstdc++ -Wl,-rpath,${stdenv.cc}/lib -B${stdenv.cc.libc}/lib
 
-    rm $out/build.env
   '';
 
   src = ./main.cpp;

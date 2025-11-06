@@ -1,6 +1,13 @@
 {
   # stdenv :: attrset+derivation
   stdenv,
+  # fetchurl :: {url|urls,
+  #              hash|sha256|sha512|sha1|md5,
+  #              name,
+  #              curlOpts|curlOptsList,
+  #              postFetch, downloadToTemp,
+  #              impureEnvVars, meta, passthru, preferLocalBuild} -> derivation
+  fetchurl,
   # gmp :: derivation
   gmp,
   # stageid :: string
@@ -16,34 +23,39 @@ stdenv.mkDerivation {
 
   gmp          = gmp;
 
-  src          = builtins.fetchTarball { name = "mpfr-${version}-source";
-                                         url = "https://ftpmirror.gnu.org/gnu/mpfr/mpfr-${version}.tar.xz";
-                                         sha256 = "1irpgc9aqyhgkwqk7cvib1dgr5v5hf4m0vaaknssyfpkjmab9ydq"; };
+  src          = fetchurl { name = "mpfr-${version}-source.tar.xz";
+                            url = "https://ftpmirror.gnu.org/gnu/mpfr/mpfr-${version}.tar.xz";
+                            hash = "sha256-J3gHNTpnJpeJlpRa8T5Sgp46vXqaW3+yeTiU4Y8fy7I=";
+                            #sha256 = "1irpgc9aqyhgkwqk7cvib1dgr5v5hf4m0vaaknssyfpkjmab9ydq";
+                          };
 
   buildPhase = ''
     set -e
 
-    src2=$TMPDIR/src2
+    sourceDir=$(pwd)
+    #src2=$TMPDIR/src2
     builddir=$TMPDIR/build
 
-    mkdir -p $src2
+    #mkdir -p $src2
     mkdir -p $builddir
 
-    # 1. copy source tree to temporary directory,
+    ## 1. copy source tree to temporary directory,
+    ##
+    #(cd $src && (tar cf - . | tar xf - -C $src2))
     #
-    (cd $src && (tar cf - . | tar xf - -C $src2))
+    ## 2. substitute nix-store path-to-bash for /bin/sh.
+    ##
+    ##
+    #chmod -R +w $src2
 
-    # 2. substitute nix-store path-to-bash for /bin/sh.
-    #
-    #
-    chmod -R +w $src2
-    sed -i "1s:#!.*/bin/sh:#!$shell:" $src2/tools/get_patches.sh
-    chmod -R -w $src2
+    sed -i "1s:#!.*/bin/sh:#!${stdenv.shell}:" $sourceDir/tools/get_patches.sh
+
+    #chmod -R -w $src2
 
     # $src/configure honors CONFIG_SHELL
-    export CONFIG_SHELL="$shell"
+    export CONFIG_SHELL="${stdenv.shell}"
 
-    (cd $builddir && $shell $src2/configure --prefix=$out --with-gmp=$gmp CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
+    (cd $builddir && $CONFIG_SHELL $sourceDir/configure --prefix=$out --with-gmp=$gmp CC=nxfs-gcc CFLAGS= LDFLAGS="-Wl,-enable-new-dtags")
 
     (cd $builddir && make SHELL=$CONFIG_SHELL)
 
