@@ -10,6 +10,7 @@ let
   nxfs-gawk-1            = import ./nxfs-gawk-1;
   nxfs-grep-1            = import ./nxfs-grep-1;
   nxfs-gzip-1            = import ./nxfs-gzip-1;
+  nxfs-xz-1              = import ./nxfs-xz-1;
   nxfs-perl-1            = import ./nxfs-perl-1;
   nxfs-toolchain-1       = import ./nxfs-toolchain-1;
   nxfs-tar-1             = import ./nxfs-tar-1;
@@ -55,6 +56,7 @@ derivation {
   nxfs-gawk-1            = nxfs-gawk-1;
   nxfs-grep-1            = nxfs-grep-1;
   nxfs-gzip-1            = nxfs-gzip-1;
+  nxfs-xz-1              = nxfs-xz-1;
   nxfs-toolchain-1       = nxfs-toolchain-1;
   nxfs-libxcrypt-1       = nxfs-libxcrypt-1;
   nxfs-tar-1             = nxfs-tar-1;
