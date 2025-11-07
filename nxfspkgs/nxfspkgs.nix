@@ -89,7 +89,7 @@ let
 in
 let
   nixpkgspath = <nixpkgs>;
-  nixpkgs = import nixpkgspath {};
+  nixpkgs = import nixpkgspath {  };
 in
 let
   # <nixpkgs>.lib
@@ -325,14 +325,14 @@ let
       #defaults = {};
     in
       {
-        config = config // { allowAliases = true;
-                             allowUnsupportedSystem = false;
-                             allowBroken = false;
-                             checkMeta = false;
-                             configurePlatformsByDefault = true;
-                             enableParallelBuildingByDefault = false;
-                             strictDepsByDefault = false;
-                           };
+#        config = config // { allowAliases = true;
+#                             allowUnsupportedSystem = false;
+#                             allowBroken = false;
+#                             checkMeta = false;
+#                             configurePlatformsByDefault = true;
+#                             enableParallelBuildingByDefault = false;
+#                             strictDepsByDefault = false;
+#                           };
 
         # --------------------------------
         # stdenv: this assignment isn't immediate effective.  Triggers bootstrap asserts:
@@ -340,39 +340,12 @@ let
         #stdenv = stdenv2nix-minimal;
         # --------------------------------
 
+        # nixpkgs doesn't care about this
+        stage3pkgs = stage3pkgs;
+
+        # why did we think we needed this?  It works for many packages,
+        # but not zstd
         fetchurl = stdenv2nix-minimal.fetchurlBoot;
-
-        #
-        # Also does not work: complains that patchelf isn't built by bootstrapFiles compiler.
-        # check is in nixpkgs/pkgs/stdenv/linux/defualt.nix:
-        #   isBuiltByBootstrapFilesCompiler
-        #    = pkgs: isFromNixpkgs pkg && isFromBootstrapFiles pkg.stdenv.cc.cc
-        #patchelf = super.patchelf.override { stdenv = stdenv2nix-minimal; };
-        #
-        # On second thought, assertions come from nixpkgs/pkgs/stdenv/linux/default.nix.
-        # Our minimal stdenv only depends on nixpkgs/pkgs/stdenv/generic/default.nix,
-        # so presumably interference from linux/default.nix is coming from somewhere else.
-
-        #bzip2 = super.bzip2.override { stdenv = stdenv2nix-minimal; };
-
-        makeSetupHook =
-          (callPackage ./build-support/trivial-builders-0.nix
-            {
-              stdenv = stdenv2nix-minimal;
-              stdenvNoCC = stdenv2nix-no-cc;
-              lib = self.lib; })
-            .makeSetupHook;
-
-        dieHook = super.dieHook;
-
-        ncurses = (super.ncurses.overrideAttrs (old: { passthru.binlore = null; })).override {
-          mouseSupport = false; # 1. would be nice; 2. relies on pkgs/servers/gpm; 3. gpm needs a bunch of deps
-          gpm = null;
-          binlore = null; # some sort of dependency analyzer thing; only affects passthru.binlore. Too many deps
-
-          # for tests
-          testers = false;
-        };
 
       };  # end of overlay
 
@@ -389,6 +362,15 @@ let
   # beginning of bootstrap
   #
   nxfs2nix = import nixpkgspath {
+    config = { allowAliases = true;
+               allowUnsupportedSystem = false;
+               allowBroken = false;
+               checkMeta = false;
+               configurePlatformsByDefault = true;
+               enableParallelBuildingByDefault = false;
+               strictDepsByDefault = false;
+             };
+
     # evaluates!
     #   -> nixpkgs.stdenv is stdenv2nix-minimal.
     #   -> nixpkgs.stdenvNoCC is stdenv2nix-minimal with .cc=null
@@ -410,7 +392,8 @@ let
                      in
                        [ stage0 ];
 
-    overlays = [ overlay ]; };
+    overlays = [ overlay ];
+  };
 in
 let
 
@@ -421,16 +404,9 @@ let
   # file-nixpkgs2: no good, attempts nixpkgs bootstrap
   file-nixpkgs2 = nixpkgs.file;
 
-  which-nixpkgs2 = nixpkgs.which;  # working
   pkg-config-unwrapped-nixpkgs2 = nixpkgs.pkg-config-unwrapped;  # working
-  pkg-config-nixpkgs2 = nixpkgs.pkg-config;
 
   updateAutotoolsGnuConfigScriptsHook-nixpkgs2 = nixpkgs.updateAutotoolsGnuConfigScriptsHook;
-
-  ncurses-nixpkgs2 = nixpkgs.ncurses;
-
-  # gzip-nixpkgs: not good, needs bash
-  gzip-nixpkgs2 = nixpkgs.gzip; # needs bash
 
   coreutils-nixpkgs2 = nixpkgs.coreutils;
 
@@ -491,104 +467,18 @@ let
 
 in
 let
-  # builds!
-  xz-nixpkgs = (callPackage (nixpkgspath + "/pkgs/tools/compression/xz")
-    {
-      stdenv = stdenv2nix-minimal;
-      fetchurl = stdenv2nix-minimal.fetchurlBoot;
-      lib = nixpkgs.lib;
-      zlib = zlib-nixpkgs;
-      isMinimalBuild = true;
-
-      writeScript = nixpkgs.lib.writeScript;
-
-      # for tests..
-      testers = false;
-    });
-
-  # builds!
-  gettext-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/gettext")
-    {
-      stdenv = stdenv2nix-minimal;
-      fetchurl = stdenv2nix-minimal.fetchurlBoot;
-      lib = nixpkgs.lib;
-      bash = bash-3;
-      updateAutotoolsGnuConfigScriptsHook = nixpkgs.updateAutotoolsGnuConfigScriptsHook;
-      # TODO: overlay on nixpkgs shouldn't need this
-      libiconv = stdenv2nix-minimal.cc.libc;
-    });
-
-  # builds!
-  help2man-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/tools/misc/help2man")
-    {
-      stdenv = stdenv2nix-minimal;
-      fetchurl = stdenv2nix-minimal.fetchurlBoot;
-      lib = nixpkgs.lib;
-      perlPackages = nixpkgs.perlPackages;
-      gettext = nixpkgs.gettext; #nixpkgs-nixpkgs;
-      libintl = null;  # get this functionality from glibc anyways
-
-    }).overrideAttrs(old: {
-      postConfigure = ''
-      patchShebangs build-aux/mkinstalldirs
-      patchShebangs build-aux/find-vpath
-      '';
-    });
-
-  # builds!
-  pkg-config-nixpkgs = (callPackage (nixpkgspath + "/pkgs/build-support/pkg-config-wrapper")
-    {
-      stdenvNoCC = stdenv2nix-no-cc;
-      pkg-config = pkg-config-unwrapped-nixpkgs;
-      lib = nixpkgs.lib;
-      buildPackages = stdenv2nix-minimal.buildPackages;
-    });
-
-  # builds!
-  ncurses-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/ncurses")
-    {
-      stdenv = stdenv2nix-minimal;
-      fetchurl = stdenv2nix-minimal.fetchurlBoot;
-      lib = nixpkgs.lib;
-      pkg-config = pkg-config-nixpkgs;  # or pkg-config-nixpkgs2;
-      buildPackages = stdenv2nix-minimal.buildPackages;
-      updateAutotoolsGnuConfigScriptsHook = nixpkgs.updateAutotoolsGnuConfigScriptsHook;
-      ncurses = null;  # would be used if cross compiling
-      mouseSupport = false; # 1. would be nice; 2. relies on pkgs/servers/gpm; 3. gpm needs a bunch of deps
-      gpm = null;
-      binlore = null; # some sort of dependency analyzer thing; only affects passthru.binlore. Too many deps
-
-      # for tests
-      testers = false;
-    }).overrideAttrs(old: { passthru.binlore = null; });
-
-
-
-  # NOT QUITE.  Needs runtimeShell =
-  #
-  gzip-nixpkgs = (callPackage (nixpkgspath + "/pkgs/tools/compression/gzip")
-    {
-      stdenv = stdenv2nix-minimal;
-      fetchurl = stdenv2nix-minimal.fetchurlBoot;
-      lib = nixpkgs.lib;
-      updateAutotoolsGnuConfigScriptsHook = nixpkgs.updateAutotoolsGnuConfigScriptsHook;
-      xz = xz-nixpkgs;
-    });
-
-in
-let
-  cmake-minimal-nixpkgs = (callPackage (nixpkgspath + "/pkgs/by-name/cm/cmake/package.nix")
-    {
-      stdenv = stdenv2nix-minimal;
-      fetchurl = stdenv2nix-minimal.fetchurlBoot;
-      lib = nixpkgs.lib;
-      zlib = zlib-nixpkgs;
-      isMinimalBuild = true;
-
-      testers = false;
-      minizip = false;
-      writeScript = nixpkgs.lib.writeScript;
-    });
+#  cmake-minimal-nixpkgs = (callPackage (nixpkgspath + "/pkgs/by-name/cm/cmake/package.nix")
+#    {
+#      stdenv = stdenv2nix-minimal;
+#      fetchurl = stdenv2nix-minimal.fetchurlBoot;
+#      lib = nixpkgs.lib;
+#      zlib = zlib-nixpkgs;
+#      isMinimalBuild = true;
+#
+#      testers = false;
+#      minizip = false;
+#      writeScript = nixpkgs.lib.writeScript;
+#    });
 in
 let
   # runCommandWith needs lib.optionalAttrs, but nothing else from lib
@@ -628,6 +518,7 @@ let
     #  $ nxfs-build -A nxfs2nix.xz
     #  $ nxfs-build -A nxfs2nix.bison
     #  $ nxfs-build -A nxfs2nix.texinfo
+    #  $ nxfs-build -A nxfs2nix.gzip
     #
     nxfs2nix                                    = nxfs2nix;
 
@@ -735,28 +626,15 @@ let
     gnu-config-nixpkgs                          = gnu-config-nixpkgs;
     gnu-config-nixpkgs2                         = gnu-config-nixpkgs2;
     updateAutotoolsGnuConfigScriptsHook-nixpkgs = updateAutotoolsGnuConfigScriptsHook-nixpkgs;
-    xz-nixpkgs                                  = xz-nixpkgs;
-    help2man-nixpkgs                            = help2man-nixpkgs;
+    #xz-nixpkgs                                  = xz-nixpkgs;
     pkg-config-unwrapped-nixpkgs2               = pkg-config-unwrapped-nixpkgs2;
     pkg-config-unwrapped-nixpkgs                = pkg-config-unwrapped-nixpkgs;
-    pkg-config-nixpkgs2                         = pkg-config-nixpkgs2;
-    pkg-config-nixpkgs                          = pkg-config-nixpkgs;
-    gettext-nixpkgs2                            = nixpkgs.gettext;
-    gettext-nixpkgs                             = gettext-nixpkgs;
-    ncurses-nixpkgs2                            = ncurses-nixpkgs2;
-    ncurses-nixpkgs                             = ncurses-nixpkgs;
-    perl536-nixpkgs2                            = nixpkgs.perl536;
-    #perl538-interpreter-nixpkgs                 = perl538-interpreter-nixpkgs;
-    perl538-nixpkgs2                            = nixpkgs.perl538;
 
     patchelf-nxfs2nix                            = patchelf-nxfs2nix;
     #  bzip2-nixpkgs2                             = bzip2-nixpkgs2;
     file-nixpkgs2                               = file-nixpkgs2;
-    which-nixpkgs2                              = which-nixpkgs2;
-    gzip-nixpkgs2                               = gzip-nixpkgs2;
-    gzip-nixpkgs                                = gzip-nixpkgs;
     #  coreutils-nixpkgs2                         = coreutils-nixpkgs2;
-    cmake-minimal-nixpkgs                       = cmake-minimal-nixpkgs;
+    #cmake-minimal-nixpkgs                       = cmake-minimal-nixpkgs;
   };
 in
 pkgs
