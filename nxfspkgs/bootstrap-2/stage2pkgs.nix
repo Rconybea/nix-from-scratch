@@ -935,6 +935,8 @@ in
   inherit string-x5-2;
   inherit hello-x5-2;
 
+  stdenv = stdenv-x4-2;
+
   inherit gcc-from-boot-2;
   inherit glibc-from-boot-2;
   inherit binutils-from-boot-2;

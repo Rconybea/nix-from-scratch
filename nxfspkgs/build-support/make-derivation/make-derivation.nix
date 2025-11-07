@@ -126,6 +126,9 @@ let
         ({
           name = name';
           inherit pname version;
+
+          inherit stdenv;
+
           inherit (stdenv) system shell defaultSetup baseInputs initialPath;
 
           builder = "${stdenv.shell}";

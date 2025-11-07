@@ -34,6 +34,22 @@ let
   stdenv-derivation = derivation {
     inherit name;
     system = builtins.currentSystem;
+
+    # minimal builder
+    builder = "${shellpkg}/bin/sh";
+
+    args = [ "-e"
+             (builtins.toFile "builder.sh"
+               ''
+                 mkdir -p $out
+                 cp ${./setup.sh} $out/setup
+                 cp ${./default-builder.sh} $out/default-builder
+
+                 # Make them available at well-known paths
+                 ln -s ${./setup.sh} $out/setup.sh
+               '') ];
+
+    PATH = "${coreutils}/bin";
   };
 
   stdenv-new =
@@ -41,7 +57,7 @@ let
     {
       system = stdenv-derivation.system;
 
-      shell = "${stagepkgs.shell}/bin/sh";
+      shell = "${shellpkg}/bin/sh";
 
       inherit cc;
 

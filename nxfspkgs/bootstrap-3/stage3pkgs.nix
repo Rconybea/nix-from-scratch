@@ -693,6 +693,8 @@ let
 in
   # members this attrset accessible from toplevel as stage3pkgs.gcc-wrapper-3 etc.
   {
+    stdenv = stdenv-x3-3;  # final stage3 stdenv
+
     inherit stage3env;
     inherit gcc-wrapper-3;
     inherit gcc-x4-3;
