@@ -444,6 +444,7 @@ let
   #   needs readline, texinfo, bison
   bash-nixpkgs = (callPackage (nixpkgspath + "/pkgs/shells/bash/5.nix")
     {
+      fetchurl = stdenv2nix-minimal.fetchurlBoot;
     });
 
   overlay = self: super:
@@ -960,155 +961,192 @@ let
       writeScript = nixpkgs.lib.writeScript;
     });
 in
-{
-  inherit lib;
+let
+  # runCommandWith needs lib.optionalAttrs, but nothing else from lib
+  #
+  runCommandWith = import ./build-support/run-command-with/run-command-with.nix
+    {
+      inherit lib;
+      stdenv = stage3pkgs.stdenv;
+    };
+  lib' = lib;
+in
+let
+  lib = lib' // { inherit runCommandWith; };
 
-  stage1pkgs                                  = stage1pkgs;
-  stage2pkgs                                  = stage2pkgs;
-  stage3pkgs                                  = stage3pkgs;
+  runCommand = import ./build-support/run-command/run-command.nix
+    {
+      inherit lib;
+      stdenv = stage3pkgs.stdenv;
+    };
+in
+let
+  pkgs = {
+    # lib :: { makeCallPackage, optionalAttrs, runCommandWith }
+    inherit lib;
 
-  nxfs-autotools                              = nxfs-autotools;
+    # nixpkgs has similar infinite regress here,
+    # and nix-shell relies on it.
+    #
+    inherit pkgs;
 
-  nixpkgs                                     = nixpkgs;
-  which-3                                     = which-3;
-  diffutils-3                                 = diffutils-3;
-  findutils-3                                 = findutils-3;
-  gnused-3                                    = gnused-3;
-  gnugrep-3                                   = gnugrep-3;
-  gnutar-3                                    = gnutar-3;
-  bash-3                                      = bash-3;
-  popen-3                                     = popen-3;
-  gawk-3                                      = gawk-3;
-  gnumake-3                                   = gnumake-3;
-  coreutils-3                                 = coreutils-3;
-  pkgconf-3                                   = pkgconf-3;
-  m4-3                                        = m4-3;
-  file-3                                      = file-3;
-  zlib-3                                      = zlib-3;
-  patchelf-3                                  = patchelf-3;
-  gperf-3                                     = gperf-3;
-  patch-3                                     = patch-3;
-  gzip-3                                      = gzip-3;
-  libxcrypt-3                                 = libxcrypt-3;
-  perl-3                                      = perl-3;
-  binutils-3                                  = binutils-3;
-  autoconf-3                                  = autoconf-3;
-  automake-3                                  = automake-3;
-  flex-3                                      = flex-3;
-  gmp-3                                       = gmp-3;
-  bison-3                                     = bison-3;
-  texinfo-3                                   = texinfo-3;
-  mpfr-3                                      = mpfr-3;
-  mpc-3                                       = mpc-3;
-  python-3                                    = python-3;
-  glibc-x1-3                                  = glibc-x1-3;
-  gcc-x0-wrapper-3                            = gcc-x0-wrapper-3;
-  binutils-x0-wrapper-3                       = binutils-x0-wrapper-3;
-  gcc-x1-3                                    = gcc-x1-3;
-  gcc-x1-wrapper-3                            = gcc-x1-wrapper-3;
-  libstdcxx-x2-3                              = libstdcxx-x2-3;
-  gcc-x2-wrapper-3                            = gcc-x2-wrapper-3;
-  gcc-x3-3                                    = gcc-x3-3;
-  gcc-wrapper-3                               = gcc-wrapper-3;
-  bzip2-3                                     = bzip2-3;
-  xz-3                                        = xz-3;
-  openssl-3                                   = openssl-3;
-  curl-3                                      = curl-3;
-  cacert-3                                    = cacert-3;
-  test-fetch-3                                = test-fetch-3;
+    nixpkgs                                     = nixpkgs;
+    stage1pkgs                                  = stage1pkgs;
+    stage2pkgs                                  = stage2pkgs;
+    stage3pkgs                                  = stage3pkgs;
 
-  nxfs-bash-0                                 = import ./bootstrap/nxfs-bash-0;
-  nxfs-coreutils-0                            = import ./bootstrap/nxfs-coreutils-0;
-  nxfs-gnumake-0                              = import ./bootstrap/nxfs-gnumake-0;
+    # load-bearing for nxfs-shell
+    #
+    # runCommand :: name -> env -> buildcommand -> derivation
+    inherit runCommand;
 
-  nxfs-toolchain-0                            = import ./bootstrap/nxfs-toolchain-0;
-  nxfs-sysroot-0                              = import ./bootstrap/nxfs-sysroot-0;
+    # load-bearing for nxfs-shell
+    bashInteractive                             = stage3pkgs.bash-3;
 
-  # pills-example-1..nxfs-bootstrap-1 :: derivation
-  pills-example-1                             = import ./nix-pills/example1;
+    # deprecated
+    nxfs-autotools                              = nxfs-autotools;
 
-  nxfs-bootstrap-1                            = import ./bootstrap-1;
-  nxfs-bootstrap-1-demo                       = import ./bootstrap-1-demo;
+    which-3                                     = which-3;
+    diffutils-3                                 = diffutils-3;
+    findutils-3                                 = findutils-3;
+    gnused-3                                    = gnused-3;
+    gnugrep-3                                   = gnugrep-3;
+    gnutar-3                                    = gnutar-3;
+    bash-3                                      = bash-3;
+    popen-3                                     = popen-3;
+    gawk-3                                      = gawk-3;
+    gnumake-3                                   = gnumake-3;
+    coreutils-3                                 = coreutils-3;
+    pkgconf-3                                   = pkgconf-3;
+    m4-3                                        = m4-3;
+    file-3                                      = file-3;
+    zlib-3                                      = zlib-3;
+    patchelf-3                                  = patchelf-3;
+    gperf-3                                     = gperf-3;
+    patch-3                                     = patch-3;
+    gzip-3                                      = gzip-3;
+    libxcrypt-3                                 = libxcrypt-3;
+    perl-3                                      = perl-3;
+    binutils-3                                  = binutils-3;
+    autoconf-3                                  = autoconf-3;
+    automake-3                                  = automake-3;
+    flex-3                                      = flex-3;
+    gmp-3                                       = gmp-3;
+    bison-3                                     = bison-3;
+    texinfo-3                                   = texinfo-3;
+    mpfr-3                                      = mpfr-3;
+    mpc-3                                       = mpc-3;
+    python-3                                    = python-3;
+    glibc-x1-3                                  = glibc-x1-3;
+    gcc-x0-wrapper-3                            = gcc-x0-wrapper-3;
+    binutils-x0-wrapper-3                       = binutils-x0-wrapper-3;
+    gcc-x1-3                                    = gcc-x1-3;
+    gcc-x1-wrapper-3                            = gcc-x1-wrapper-3;
+    libstdcxx-x2-3                              = libstdcxx-x2-3;
+    gcc-x2-wrapper-3                            = gcc-x2-wrapper-3;
+    gcc-x3-3                                    = gcc-x3-3;
+    gcc-wrapper-3                               = gcc-wrapper-3;
+    bzip2-3                                     = bzip2-3;
+    xz-3                                        = xz-3;
+    openssl-3                                   = openssl-3;
+    curl-3                                      = curl-3;
+    cacert-3                                    = cacert-3;
+    test-fetch-3                                = test-fetch-3;
 
-  nxfs-bash-1                                 = import ./bootstrap-1/nxfs-bash-1;
-  nxfs-toolchain-1                            = import ./bootstrap-1/nxfs-toolchain-1;
-  nxfs-sysroot-1                              = import ./bootstrap-1/nxfs-sysroot-1;
+    nxfs-bash-0                                 = import ./bootstrap/nxfs-bash-0;
+    nxfs-coreutils-0                            = import ./bootstrap/nxfs-coreutils-0;
+    nxfs-gnumake-0                              = import ./bootstrap/nxfs-gnumake-0;
 
-  # nxfs-bootstrap-2-demo :: attrset
+    nxfs-toolchain-0                            = import ./bootstrap/nxfs-toolchain-0;
+    nxfs-sysroot-0                              = import ./bootstrap/nxfs-sysroot-0;
 
-  # nxfs-gcc-2 :: derivation    gcc, wrapped
-  nxfs-bootstrap-2                            = import ./bootstrap-2;
+    # pills-example-1..nxfs-bootstrap-1 :: derivation
+    pills-example-1                             = import ./nix-pills/example1;
 
-  nxfs-gcc-wrapper-2                          = import ./bootstrap-2/nxfs-gcc-wrapper-2;
-  nxfs-gcc-stage2-2                           = import ./bootstrap-2/nxfs-gcc-stage2-2;
-  nxfs-glibc-stage1-2                         = import ./bootstrap-2/nxfs-glibc-stage1-2;
-  nxfs-bash-2                                 = import ./bootstrap-2/nxfs-bash-2;
-  nxfs-binutils-2                             = import ./bootstrap-2/nxfs-binutils-2;
-  nxfs-coreutils-2                            = import ./bootstrap-2/nxfs-coreutils-2;
-  nxfs-bootstrap-2-demo                       = import ./bootstrap-2-demo;
+    nxfs-bootstrap-1                            = import ./bootstrap-1;
+    nxfs-bootstrap-1-demo                       = import ./bootstrap-1-demo;
 
-  nxfs-defs                                   = import ./bootstrap-1/nxfs-defs.nix;
+    nxfs-bash-1                                 = import ./bootstrap-1/nxfs-bash-1;
+    nxfs-toolchain-1                            = import ./bootstrap-1/nxfs-toolchain-1;
+    nxfs-sysroot-1                              = import ./bootstrap-1/nxfs-sysroot-1;
 
-  # ================================================================
-  # bridge to nixpkgs
-  # ----------------------------------------------------------------
+    # nxfs-bootstrap-2-demo :: attrset
 
-  mkDerivation-3                              = mkDerivation-3;
+    # nxfs-gcc-2 :: derivation    gcc, wrapped
+    nxfs-bootstrap-2                            = import ./bootstrap-2;
 
-  stdenv-stages                               = stdenv-stages;
-  stdenv-nxfs                                 = stdenv-nxfs;
-  stdenv2nix-no-cc                            = stdenv2nix-no-cc;
-  stdenv2nix-minimal                          = stdenv2nix-minimal;
+    nxfs-gcc-wrapper-2                          = import ./bootstrap-2/nxfs-gcc-wrapper-2;
+    nxfs-gcc-stage2-2                           = import ./bootstrap-2/nxfs-gcc-stage2-2;
+    nxfs-glibc-stage1-2                         = import ./bootstrap-2/nxfs-glibc-stage1-2;
+    nxfs-bash-2                                 = import ./bootstrap-2/nxfs-bash-2;
+    nxfs-binutils-2                             = import ./bootstrap-2/nxfs-binutils-2;
+    nxfs-coreutils-2                            = import ./bootstrap-2/nxfs-coreutils-2;
+    nxfs-bootstrap-2-demo                       = import ./bootstrap-2-demo;
 
-  bintools-wrapper-nixpkgs                    = bintools-wrapper-nixpkgs;
-  gcc-wrapper-nixpkgs                         = gcc-wrapper-nixpkgs;
+    nxfs-defs                                   = import ./bootstrap-1/nxfs-defs.nix;
 
-  # fetchurl-nixpkgs :: { url :: string, urls :: list[string], ... } -> ... store-path?
-  fetchurl-nixpkgs                            = fetchurl-nixpkgs;
+    # ================================================================
+    # bridge to nixpkgs
+    # ----------------------------------------------------------------
 
-  # ================================================================
-  # trying this the hard way...
-  # adopting nixpkgs packages one at a time.
-  # ----------------------------------------------------------------
+    mkDerivation-3                              = mkDerivation-3;
 
-  dieHook-nixpkgs2                            = nixpkgs.dieHook;
+    stdenv-stages                               = stdenv-stages;
+    stdenv-nxfs                                 = stdenv-nxfs;
+    stdenv2nix-no-cc                            = stdenv2nix-no-cc;
+    stdenv2nix-minimal                          = stdenv2nix-minimal;
 
-  gnu-config-nixpkgs                          = gnu-config-nixpkgs;
-  gnu-config-nixpkgs2                         = gnu-config-nixpkgs2;
-  updateAutotoolsGnuConfigScriptsHook-nixpkgs = updateAutotoolsGnuConfigScriptsHook-nixpkgs;
-  zlib-nixpkgs2                               = zlib-nixpkgs2;
-  zlib-nixpkgs                                = zlib-nixpkgs;
-  xz-nixpkgs2                                 = xz-nixpkgs2;
-  xz-nixpkgs                                  = xz-nixpkgs;
-  gnum4-nixpkgs2                              = nixpkgs.gnum4;
-  help2man-nixpkgs                            = help2man-nixpkgs;
-  pkg-config-unwrapped-nixpkgs2               = pkg-config-unwrapped-nixpkgs2;
-  pkg-config-unwrapped-nixpkgs                = pkg-config-unwrapped-nixpkgs;
-  pkg-config-nixpkgs2                         = pkg-config-nixpkgs2;
-  pkg-config-nixpkgs                          = pkg-config-nixpkgs;
-  gettext-nixpkgs2                            = nixpkgs.gettext;
-  gettext-nixpkgs                             = gettext-nixpkgs;
-  ncurses-nixpkgs2                            = ncurses-nixpkgs2;
-  ncurses-nixpkgs                             = ncurses-nixpkgs;
-  perl536-nixpkgs2                            = nixpkgs.perl536;
-  perl538-interpreter-nixpkgs                 = perl538-interpreter-nixpkgs;
-  perl538-nixpkgs2                            = nixpkgs.perl538;
-  perl-nixpkgs2                               = nixpkgs.perl;
-  libxcrypt-nixpkgs2                          = nixpkgs.libxcrypt;
+    bintools-wrapper-nixpkgs                    = bintools-wrapper-nixpkgs;
+    gcc-wrapper-nixpkgs                         = gcc-wrapper-nixpkgs;
 
-  patchelf-nixpkgs2                           = patchelf-nixpkgs2;
-  patchelf-nixpkgs                            = patchelf-nixpkgs;
-#  bzip2-nixpkgs2                             = bzip2-nixpkgs2;
-  file-nixpkgs2                               = file-nixpkgs2;
-  which-nixpkgs2                              = which-nixpkgs2;
-  gzip-nixpkgs2                               = gzip-nixpkgs2;
-  gzip-nixpkgs                                = gzip-nixpkgs;
-#  texinfo-nixpkgs2                           = texinfo-nixpkgs2;
-  texinfo-nixpkgs                             = texinfo-nixpkgs;
-  bash-nixpkgs2                               = bash-nixpkgs2;
-#  coreutils-nixpkgs2                         = coreutils-nixpkgs2;
-#  perl-nixpkgs                               = perl-nixpkgs;
-  bison-nixpkgs                               = bison-nixpkgs;
-  bash-nixpkgs                                = bash-nixpkgs;
-  cmake-minimal-nixpkgs                       = cmake-minimal-nixpkgs;
-}
+    # fetchurl-nixpkgs :: { url :: string, urls :: list[string], ... } -> ... store-path?
+    fetchurl-nixpkgs                            = fetchurl-nixpkgs;
+
+    # ================================================================
+    # trying this the hard way...
+    # adopting nixpkgs packages one at a time.
+    # ----------------------------------------------------------------
+
+    dieHook-nixpkgs2                            = nixpkgs.dieHook;
+
+    gnu-config-nixpkgs                          = gnu-config-nixpkgs;
+    gnu-config-nixpkgs2                         = gnu-config-nixpkgs2;
+    updateAutotoolsGnuConfigScriptsHook-nixpkgs = updateAutotoolsGnuConfigScriptsHook-nixpkgs;
+    zlib-nixpkgs2                               = zlib-nixpkgs2;
+    zlib-nixpkgs                                = zlib-nixpkgs;
+    xz-nixpkgs2                                 = xz-nixpkgs2;
+    xz-nixpkgs                                  = xz-nixpkgs;
+    gnum4-nixpkgs2                              = nixpkgs.gnum4;
+    help2man-nixpkgs                            = help2man-nixpkgs;
+    pkg-config-unwrapped-nixpkgs2               = pkg-config-unwrapped-nixpkgs2;
+    pkg-config-unwrapped-nixpkgs                = pkg-config-unwrapped-nixpkgs;
+    pkg-config-nixpkgs2                         = pkg-config-nixpkgs2;
+    pkg-config-nixpkgs                          = pkg-config-nixpkgs;
+    gettext-nixpkgs2                            = nixpkgs.gettext;
+    gettext-nixpkgs                             = gettext-nixpkgs;
+    ncurses-nixpkgs2                            = ncurses-nixpkgs2;
+    ncurses-nixpkgs                             = ncurses-nixpkgs;
+    perl536-nixpkgs2                            = nixpkgs.perl536;
+    perl538-interpreter-nixpkgs                 = perl538-interpreter-nixpkgs;
+    perl538-nixpkgs2                            = nixpkgs.perl538;
+    perl-nixpkgs2                               = nixpkgs.perl;
+    libxcrypt-nixpkgs2                          = nixpkgs.libxcrypt;
+
+    patchelf-nixpkgs2                           = patchelf-nixpkgs2;
+    patchelf-nixpkgs                            = patchelf-nixpkgs;
+    #  bzip2-nixpkgs2                             = bzip2-nixpkgs2;
+    file-nixpkgs2                               = file-nixpkgs2;
+    which-nixpkgs2                              = which-nixpkgs2;
+    gzip-nixpkgs2                               = gzip-nixpkgs2;
+    gzip-nixpkgs                                = gzip-nixpkgs;
+    #  texinfo-nixpkgs2                           = texinfo-nixpkgs2;
+    texinfo-nixpkgs                             = texinfo-nixpkgs;
+    bash-nixpkgs2                               = bash-nixpkgs2;
+    #  coreutils-nixpkgs2                         = coreutils-nixpkgs2;
+    #  perl-nixpkgs                               = perl-nixpkgs;
+    bison-nixpkgs                               = bison-nixpkgs;
+    bash-nixpkgs                                = bash-nixpkgs;
+    cmake-minimal-nixpkgs                       = cmake-minimal-nixpkgs;
+  };
+in
+pkgs
