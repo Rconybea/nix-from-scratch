@@ -67,33 +67,6 @@ let
   # allPkgs :: attrset
   allPkgs = nxfspkgs // envpkgs;
 
-  # bootstrap stdenv for stage-2
-#  nxfsenv-2 = {
-#    # coreutils,gnused,bash :: derivation
-#    gcc_wrapper  = stage2pkgs.gcc-wrapper-2;
-#    glibc        = stage2pkgs.glibc-2;
-#    perl         = stage2pkgs.perl-2;
-#    patch        = stage2pkgs.patch-2;
-#    findutils    = stage2pkgs.findutils-2;
-#    binutils     = stage2pkgs.binutils-2;
-#    coreutils    = stage2pkgs.coreutils-2;
-#    gawk         = stage2pkgs.gawk-2;
-#    gnumake      = stage2pkgs.gnumake-2;
-#    gnutar       = stage2pkgs.gnutar-2;
-#    gnugrep      = stage2pkgs.gnugrep-2;
-#    gnused       = stage2pkgs.gnused-2;
-#    # want this to be shell
-#    bash         = stage2pkgs.bash-2;
-#    shell        = stage2pkgs.bash-2;
-#    # mkDerivation :: attrs -> derivation
-#    mkDerivation = nxfs-autotools nxfsenv-2;
-#
-#    #  expand with stuff from bootstrap-3/default.nix.nxfsenv { .. }
-#  };
-
-in
-let
-  popen-template = bootstrap-2.nxfs-popen-template-2;
 in
 let
   # which-3, diffutils-3 :: derivation
@@ -113,78 +86,6 @@ let
   #
   callPackage = lib.makeCallPackage allPkgs;
   #
-  nxfsenv-3-10 = { gcc-wrapper    = gcc-wrapper-3;
-                   gcc-x3         = gcc-x3-3;
-                   gcc-x2-wrapper = gcc-x2-wrapper-3;
-                   libstdcxx-x2   = libstdcxx-x2-3;
-                   gcc-x1-wrapper = gcc-x1-wrapper-3;
-                   gcc-x1         = gcc-x1-3;
-                   binutils-x0-wrapper = binutils-x0-wrapper-3;
-                   gcc-x0-wrapper = gcc-x0-wrapper-3;
-                   glibc-x1       = glibc-x1-3;
-                   lc-all-sort    = lc-all-sort-3;
-                   python         = python-3;
-                   mpc            = mpc-3;
-                   mpfr           = mpfr-3;
-                   gmp            = gmp-3;
-                   bison          = bison-3;
-                   flex           = flex-3;
-                   automake       = automake-3;
-                   autoconf       = autoconf-3;
-                   binutils       = binutils-3;
-                   perl           = perl-3;
-                   patchelf       = patchelf-3;
-                   gperf          = gperf-3;
-                   patch          = patch-3;
-                   gzip           = gzip-3;
-                   zlib           = zlib-3;
-                   file           = file-3;
-                   m4             = m4-3;
-                   libxcrypt      = libxcrypt-3;
-                   pkgconf        = pkgconf-3;
-                   coreutils      = coreutils-3;
-                   gnumake        = gnumake-3;
-                   gawk           = gawk-3;
-                   shell          = bash-3; bash = bash-3;
-                   gnutar         = gnutar-3;
-                   bzip2          = bzip2-3;
-                   gnugrep        = gnugrep-3;
-                   gnused         = gnused-3;
-                   diffutils      = diffutils-3;
-                   findutils      = findutils-3;
-                   nxfs-defs      = nxfs-defs;
-                 };
-
-  nxfsenv-3-a12 = nxfsenv-3-10;
-  nxfsenv-3-b13 = nxfsenv-3-10;
-  nxfsenv-3-b14 = nxfsenv-3-10;
-  nxfsenv-3-c13 = nxfsenv-3-10;
-  nxfsenv-3-c14 = nxfsenv-3-10;
-  nxfsenv-3-d13 = nxfsenv-3-10;
-  nxfsenv-3-b15 = nxfsenv-3-10;
-  nxfsenv-3-16  = nxfsenv-3-10;
-  nxfsenv-3-95  = nxfsenv-3-10;
-  nxfsenv-3-95a = nxfsenv-3-10;
-  nxfsenv-3-96  = nxfsenv-3-95a // { gcc = gcc-x0-wrapper-3; };
-  nxfsenv-3-97  = nxfsenv-3-96  // { gcc-stage1 = gcc-x1-3; };
-  nxfsenv-3-98  = nxfsenv-3-97;
-  nxfsenv-3-99  = nxfsenv-3-98  // { libstdcxx = libstdcxx-x2-3; };
-  nxfsenv-3-99a = nxfsenv-3-99  // { gcc = gcc-x2-wrapper-3; };
-  nxfsenv-3-100 = nxfsenv-3-99  // { gcc-unwrapped = gcc-x3-3; };
-  nxfsenv-3-101 = nxfsenv-3-100 // { gcc = gcc-wrapper-3; };
-in
-let
-  # mkDerivation-3 :: attrs -> derivation
-  mkDerivation-3 = (nxfs-autotools nxfsenv-3-101);
-in
-let
-  nxfsenv-3-102 = nxfsenv-3-101 // { mkDerivation = mkDerivation-3; };
-  nxfsenv-3-103 = nxfsenv-3-102 // { openssl = openssl-3; };
-  nxfsenv-3-103a = nxfsenv-3-102 // { xz = xz-3; curl = curl-3; };
-  nxfsenv-3-104 = nxfsenv-3-103 // { bzip2 = bzip2-3;
-                                     xz = xz-3;
-                                     curl = curl-3;
-                                     cacert = cacert-3; };
 in
 let
   nixpkgspath = <nixpkgs>;
@@ -195,27 +96,6 @@ let
   lib-nixpkgs = nixpkgs.lib;
 in
 let
-  # a nxfs-only "stdenv" (not using this for anything..)
-  stdenv-nxfs = callPackage ./stdenv { gcc          = gcc-wrapper-3;
-                                       glibc        = glibc-x1-3;
-                                       xz           = xz-3;
-                                       patchelf     = patchelf-3;
-                                       patch        = patch-3;
-                                       file         = file-3;
-                                       gnumake      = gnumake-3;
-                                       gzip         = gzip-3;
-                                       gnutar       = gnutar-3;
-                                       bzip2        = bzip2-3;
-                                       gawk         = gawk-3;
-                                       gnugrep      = gnugrep-3;
-                                       gnused       = gnused-3;
-                                       coreutils    = coreutils-3;
-                                       findutils    = findutils-3;
-                                       diffutils    = diffutils-3;
-                                       bash         = bash-3;
-                                       which        = which-3;
-                                       mkDerivation = mkDerivation-3; };
-
   # stdenv2nix-no-cc :: attrs -> derivation
   stdenv2nix-no-cc = callPackage ./stdenv-to-nix
     { inherit nixpkgspath; }
@@ -273,9 +153,9 @@ let
   # works!
   # btw, similar invocation of bintools-wrapper in [nixpkgs/pkgs/stdenv/linux/default.nix]
   #
-  bintools-wrapper-nixpkgs = callPackage (nixpkgspath + "/pkgs/build-support/bintools-wrapper")
-    { name                   = "nxfs-bintools-wrapper";
-      lib                    = lib-nixpkgs;
+  bintools-wrapper-nxfs2nix = callPackage (nixpkgspath + "/pkgs/build-support/bintools-wrapper")
+    { name                   = "bintools-wrapper-nxfs2nix";
+      lib                    = nixpkgs.lib;
       stdenvNoCC             = stdenv2nix-no-cc;  # will use stdenvNoCC.mkDerivation
       runtimeShell           = bash-3;
       bintools               = binutils-3;
@@ -291,16 +171,16 @@ let
   # works! at least in the sense that builds derivation and can invokve gcc
   # similar invocation of gcc-wrapper in [nixpkgs/pkgs/build-support/cc-wrapper]
   #
-  # gcc-wrapper-nixpkgs :: derivation
-  gcc-wrapper-nixpkgs = callPackage (nixpkgspath + "/pkgs/build-support/cc-wrapper")
+  # gcc-wrapper-nxfs2nix :: derivation
+  gcc-wrapper-nxfs2nix = callPackage (nixpkgspath + "/pkgs/build-support/cc-wrapper")
     {
-      name                   = "nxfs-gcc-wrapper";
-      lib                    = lib-nixpkgs;
+      name                   = "gcc-wrapper-nxfs2nix";
+      lib                    = nixpkgs.lib;
       stdenvNoCC             = stdenv2nix-no-cc;
       runtimeShell           = bash-3;
       cc                     = gcc-x3-3;
       libc                   = glibc-x1-3;
-      bintools               = bintools-wrapper-nixpkgs;
+      bintools               = bintools-wrapper-nxfs2nix;
       coreutils              = coreutils-3;
       zlib                   = false; # looks like not needed for gcc
       nativeTools            = false;
@@ -352,8 +232,8 @@ let
       #
       nxfs-bootstrap-pkgs = {
         system    = nxfs-defs.system;
-        gcc       = gcc-wrapper-nixpkgs;
-        binutils  = bintools-wrapper-nixpkgs;
+        gcc       = gcc-wrapper-nxfs2nix;
+        binutils  = bintools-wrapper-nxfs2nix;
         patchelf  = patchelf-3;
         patch     = patch-3;
         xz        = xz-3;
@@ -421,30 +301,15 @@ let
   # debug tools
   #   $ nix repl
   #   > :l <nxfspkgs>
-  #   > builtins.attrNames patchelf-nixpkgs
-  #   > patchelf-nixpkgs.stdenv.cc --> nxfs-gcc-wrapper-14.2.0.drv
-  #   > patchelf-nixpkgs.stdenv.cc.cc --> nxfs-gcc-x3-3.drv
+  #   > builtins.attrNames patchelf-nxfs2nix
+  #   > patchelf-nxfs2nix.stdenv.cc --> nxfs-gcc-wrapper-14.2.0.drv
+  #   > patchelf-nxfs2nix.stdenv.cc.cc --> nxfs-gcc-x3-3.drv
   #
-  patchelf-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/tools/misc/patchelf")
+  patchelf-nxfs2nix = (callPackage (nixpkgspath + "/pkgs/development/tools/misc/patchelf")
     {
       stdenv   = stdenv2nix-minimal;
       fetchurl = stdenv2nix-minimal.fetchurlBoot;
       lib      = nixpkgs.lib;
-    });
-
-  # NOT YET
-  #   needs ncurses, termcap (but won't use), fetchpatch, fetchurl, lib, stdenv
-  #
-  readline82-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/libraries/readline/8.2.nix")
-    {
-
-    });
-
-  # NOT YET
-  #   needs readline, texinfo, bison
-  bash-nixpkgs = (callPackage (nixpkgspath + "/pkgs/shells/bash/5.nix")
-    {
-      fetchurl = stdenv2nix-minimal.fetchurlBoot;
     });
 
   overlay = self: super:
@@ -477,21 +342,6 @@ let
 
         fetchurl = stdenv2nix-minimal.fetchurlBoot;
 
-        # builds! - with stdenvStages, don't even need override
-        #gnu-config = super.gnu-config.override { stdenv = stdenv2nix-minimal; };
-
-        # builds! - with stdenvStages, don't even need override
-        #zlib = super.zlib.override { stdenv = stdenv2nix-minimal; };
-
-        # builds! - with stdenvStages, don't need override
-        # xz has carve-out to prevent CONFIG_SHELL pointing to bash in bootstrapTools
-        # In this context that leaves CONFIG_SHELL pointing to /bin/sh, which wedges build
-        #xz = (super.xz.overrideAttrs (old: { preConfigure=""; })); # .override { stdenv = stdenv2nix-minimal; };
-
-        # Does not work: presumably nixpkgs patchelf derivation gets injected somewhere.
-        # (1) checks patchelf.stdenv.cc.cc satisfies 'isBuiltByBootstrapFilesCompiler'
-        # (2) checks .... satisfies 'isBuiltByNixpkgsCompiler'
-        #patchelf = patchelf-nixpkgs;
         #
         # Also does not work: complains that patchelf isn't built by bootstrapFiles compiler.
         # check is in nixpkgs/pkgs/stdenv/linux/defualt.nix:
@@ -515,25 +365,6 @@ let
 
         dieHook = super.dieHook;
 
-        # builds! -- with stdenvStages, don't need override
-        # file = super.file.override { stdenv = stdenv2nix-minimal; };
-        # builds!  -- with stdenvStages, don't need override
-        # which = super.which.override { stdenv = stdenv2nix-minimal; };
-        # builds!
-        #pkg-config-unwrapped = super.pkg-config-unwrapped.override {
-        #  stdenv = stdenv2nix-minimal;
-        #  libiconv = stdenv2nix-minimal.cc.libc; };
-
-        # builds! -- with stdenvStages, don't need override
-        # pkg-config = super.pkg-config.override { stdenvNoCC = stdenv2nix-no-cc; };
-
-        # builds!
-#        gettext = super.gettext.override {
-##          stdenv = stdenv2nix-minimal;
-##          fetchurl = stdenv2nix-minimal.fetchurlBoot;
-#          bash = bash-3;
-#        };
-
         ncurses = (super.ncurses.overrideAttrs (old: { passthru.binlore = null; })).override {
           mouseSupport = false; # 1. would be nice; 2. relies on pkgs/servers/gpm; 3. gpm needs a bunch of deps
           gpm = null;
@@ -542,127 +373,6 @@ let
           # for tests
           testers = false;
         };
-
-        # builds!
-#        perl536 = (super.perl536.overrideAttrs (old: {})).override {
-#          fetchFromGitHub = null;
-#          makeWrapper = null;
-#          enableCrypt = false;
-#        };
-
-        # builds!
-#        perl538 = (super.perl538.overrideAttrs (old: {})).override {
-#          fetchFromGitHub = null;
-#          makeWrapper = null;
-#          #      enableCrypt = false;
-#        };
-
-#        perl = self.perl538;
-
-        # perl536, perl538, perl:
-        #   This gets us working perl interpreter,
-        #   but perlPackages still depends on before-override perl
-#        perlPackages = super.lib.recurseIntoAttrs self.perl538.pkgs;
-
-        # builds!
-#        libxcrypt = (super.libxcrypt.overrideAttrs (old:
-#          {
-#            # No idea why libxcrypt builds without this in nixpkgs
-#            postConfigure = ''
-#              patchShebangs build-aux/scripts/move-if-change
-#            '';
-#          })); #.override { stdenv = stdenv2nix-minimal; fetchurl = stdenv2nix-minimal.fetchurlBoot; };
-
-        #gnum4 = super.gnum4.override { stdenv = stdenv2nix-minimal; };
-        #m4 = self.gnum4;
-
-#        help2man = (super.help2man.overrideAttrs (old:
-#          {
-#            # no idea why we need this (given help2man works in nixpkgs)
-#            postConfigure = ''
-#            patchShebangs build-aux/mkinstalldirs
-#            patchShebangs build-aux/find-vpath
-#            '';
-#          }));
-
-#        bison = (super.bison.overrideAttrs (old:
-#          {
-#            # no idea why we need this (given help2man works in nixpkgs)
-#            postConfigure = ''
-#            patchShebangs build-aux/move-if-change
-#            '';
-#          }));
-
-        # builds! -- don't need anything
-        #bash = super.bash.override { stdenv = stdenv2nix-minimal; };
-
-#        gzip = (super.gzip.overrideAttrs (old:
-#          {
-#            # omit SHELL=/bin/sh
-#            makeFlags = [
-#              "GREP=grep"
-#              "ZLESS_MAN=zless.1"
-#              "ZLESS_PROG=zless"
-#            ];
-#
-#            postConfigure = ''
-#            patchShebangs build-aux/compile
-#            '';
-#          }));
-
-        # builds!
-        #texinfo = super.texinfo.override { stdenv = stdenv2nix-minimal; };
-
-        # builds!
-        #autoconf
-
-        # builds!
-#        automake = (super.automake.overrideAttrs (old:
-#          {
-#            postConfigure = ''
-#            patchShebangs pre-inst-env
-#            '';
-#          }));
-
-        # builds!
-        # libtool = super.libtool;
-
-        # builds!
-        # autoreconfHook = super.autoreconfHook;
-
-        # builds!
-#        gawk = (super.gawk.overrideAttrs (old:
-#          {
-#            postConfigure = ''
-#            patchShebangs build-aux/install-sh
-#            '';
-#          }));
-
-        # builds!
-#        gmp = (super.gmp.overrideAttrs (old:
-#          {
-#            postConfigure = ''
-#            patchShebangs mpn/m4-ccas
-#            '';
-#          }));
-
-        # attr builds!
-        # acl builds!
-
-        # coreutils builds!
-        #coreutils = (super.coreutils.overrideAttrs (old:
-        #  {
-        #    # two tests fail {test-freadptr.sh, test-freadseek.sh} because of shebang stuff
-        #    doCheck = false;
-        #
-        #    # see pkgs/build-support/setup-hooks/patch-shebangs.sh
-        #    postConfigure = ''
-        #    patchShebangs gnulib-tests/*.sh
-        #    patchShebangs gnulib-tests/uniwidth/*.sh
-        #    '';
-        #  }));
-
-        # jq TBD
 
       };  # end of overlay
 
@@ -675,7 +385,10 @@ let
   #         -> nixpkgs/pkgs/toplevel/aliases.nix
   #      -> nixpkgs/pkgs/stdenv/booter.nix     (assembles stdenv)
 
-  nixpkgs = import nixpkgspath {
+  # This is nixpkgs collection, but with overlay  that uses nxfs tools at
+  # beginning of bootstrap
+  #
+  nxfs2nix = import nixpkgspath {
     # evaluates!
     #   -> nixpkgs.stdenv is stdenv2nix-minimal.
     #   -> nixpkgs.stdenvNoCC is stdenv2nix-minimal with .cc=null
@@ -702,12 +415,6 @@ in
 let
 
   gnu-config-nixpkgs2 = nixpkgs.gnu-config;
-  # this will try to build, but still winds up requiring nixpkgs bootstrap
-  #zlib-nixpkgs2 = nixpkgs.zlib.override { stdenv = stdenv2nix-minimal; };
-  zlib-nixpkgs2 = nixpkgs.zlib;
-  xz-nixpkgs2 = nixpkgs.xz;   # nixpgks/pkgs/tools/compression/xz
-
-  patchelf-nixpkgs2 = nixpkgs.patchelf; # nixpkgs/pkgs/development/tools/misc/patchelf
 
 #  bzip2-nixpkgs2 = nixpkgs.bzip2;
 
@@ -724,8 +431,6 @@ let
 
   # gzip-nixpkgs: not good, needs bash
   gzip-nixpkgs2 = nixpkgs.gzip; # needs bash
-#  texinfo-nixpkgs2 = nixpkgs.texinfo;
-  bash-nixpkgs2 = nixpkgs.bash;
 
   coreutils-nixpkgs2 = nixpkgs.coreutils;
 
@@ -872,82 +577,6 @@ let
 
 in
 let
-  # builds!
-  #
-  # nixpkgs
-  #
-  # CAVEATS:
-  # 1. does not support perl packages !!
-  # 2. does not support libxcrypt
-  # 3. broken for cross-compiling (no doubt in good company..)
-  # 4. uses bootstrap coreutils
-  #
-  perl538-interpreter-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/interpreters/perl/interpreter.nix")
-    {
-      stdenv           = stdenv2nix-minimal;
-      fetchurl         = stdenv2nix-minimal.fetchurlBoot;
-      fetchFromGitHub  = null;  # only used when cross compiling, we can omit
-      lib              = nixpkgs.lib;
-      buildPackages    = stdenv2nix-minimal.buildPackages;
-
-      # these seem to be used only for inscrutable-to-me passthru stuff
-      pkgsBuildBuild   = nixpkgs;
-      pkgsBuildHost    = nixpkgs;
-      pkgsBuildTarget  = nixpkgs;
-      pkgsHostHost     = nixpkgs;
-      pkgsTargetTarget = nixpkgs;
-
-      # passthruFn (in perl/default.nix) provides perlPackagesFun that does callPackage
-      # targeting nixpkgs/pkgs/top-level/perl-packages.nix
-      # try a stub version here.
-      passthruFun      = attrs : { };
-
-      # makeWrapper appears to be needed only if cross-compiling
-      makeWrapper      = null;
-
-      enableCrypt      = false;
-
-      config           = stdenv2nix-config;
-      coreutils        = coreutils-3;
-      zlib             = zlib-nixpkgs2;
-
-      # copied from developer/interpreters/perl/default.nix;
-      self             = perl538-interpreter-nixpkgs;
-      version          = "5.38.2";
-      sha256           = "sha256-oKMVNEUet7g8fWWUpJdUOlTUiLyQygD140diV39AZV4=";
-    }).overrideAttrs(old: { });
-
-in
-let
-#  perl-nixpkgs = perl-interpreter-nixpkgs.perl538;
-  bison-nixpkgs = (callPackage (nixpkgspath + "/pkgs/development/tools/parsing/bison")
-    {
-      stdenv = stdenv2nix-minimal;
-      fetchurl = stdenv2nix-minimal.fetchurlBoot;
-      lib = nixpkgs.lib;
-      m4 = nixpkgs.m4;
-      perl = nixpkgs.perl;
-      help2man = nixpkgs.help2man;
-    }).overrideAttrs(
-      old: {
-        postConfigure = ''
-        patchShebangs build-aux/move-if-change
-        '';
-      });
-
-  bash-nixpkgs-0 = (callPackage (nixpkgspath + "/pkgs/shells/bash/5.nix")
-    {
-      fetchurl = stdenv2nix-minimal.fetchurlBoot;
-      bison = nixpkgs.bison;
-      texinfo = null;
-    });
-
-  texinfo-nixpkgs = (nixpkgs.callPackages (nixpkgspath + "/pkgs/development/tools/misc/texinfo/packages.nix")
-    {
-      fetchurl = stdenv2nix-minimal.fetchurlBoot;
-      lib = nixpkgs.lib;
-    });
-
   cmake-minimal-nixpkgs = (callPackage (nixpkgspath + "/pkgs/by-name/cm/cmake/package.nix")
     {
       stdenv = stdenv2nix-minimal;
@@ -986,17 +615,27 @@ let
     inherit lib;
 
     # nixpkgs has similar infinite regress here,
-    # and nix-shell relies on it.
+    # and nix-shell relies on .pkgs
     #
     inherit pkgs;
 
-    nixpkgs                                     = nixpkgs;
+    # nxfs2nix: contents of <nixpkgs>, but with overlay substituting nxfs toolchain
+    # Things that work (6nov2025)
+    #  $ nxfs-build -A nxfs2nix.patchelf
+    #  $ nxfs-build -A nxfs2nix.pkgconf
+    #  $ nxfs-build -A nxfs2nix.gnum4
+    #  $ nxfs-build -A nxfs2nix.perl
+    #  $ nxfs-build -A nxfs2nix.xz
+    #  $ nxfs-build -A nxfs2nix.bison
+    #  $ nxfs-build -A nxfs2nix.texinfo
+    #
+    nxfs2nix                                    = nxfs2nix;
+
     stage1pkgs                                  = stage1pkgs;
     stage2pkgs                                  = stage2pkgs;
     stage3pkgs                                  = stage3pkgs;
 
-    # load-bearing for nxfs-shell
-    #
+    # load-bearing for nxfs-shell.
     # runCommand :: name -> env -> buildcommand -> derivation
     inherit runCommand;
 
@@ -1070,34 +709,18 @@ let
     nxfs-toolchain-1                            = import ./bootstrap-1/nxfs-toolchain-1;
     nxfs-sysroot-1                              = import ./bootstrap-1/nxfs-sysroot-1;
 
-    # nxfs-bootstrap-2-demo :: attrset
-
-    # nxfs-gcc-2 :: derivation    gcc, wrapped
-    nxfs-bootstrap-2                            = import ./bootstrap-2;
-
-    nxfs-gcc-wrapper-2                          = import ./bootstrap-2/nxfs-gcc-wrapper-2;
-    nxfs-gcc-stage2-2                           = import ./bootstrap-2/nxfs-gcc-stage2-2;
-    nxfs-glibc-stage1-2                         = import ./bootstrap-2/nxfs-glibc-stage1-2;
-    nxfs-bash-2                                 = import ./bootstrap-2/nxfs-bash-2;
-    nxfs-binutils-2                             = import ./bootstrap-2/nxfs-binutils-2;
-    nxfs-coreutils-2                            = import ./bootstrap-2/nxfs-coreutils-2;
-    nxfs-bootstrap-2-demo                       = import ./bootstrap-2-demo;
-
     nxfs-defs                                   = import ./bootstrap-1/nxfs-defs.nix;
 
     # ================================================================
     # bridge to nixpkgs
     # ----------------------------------------------------------------
 
-    mkDerivation-3                              = mkDerivation-3;
-
     stdenv-stages                               = stdenv-stages;
-    stdenv-nxfs                                 = stdenv-nxfs;
     stdenv2nix-no-cc                            = stdenv2nix-no-cc;
     stdenv2nix-minimal                          = stdenv2nix-minimal;
 
-    bintools-wrapper-nixpkgs                    = bintools-wrapper-nixpkgs;
-    gcc-wrapper-nixpkgs                         = gcc-wrapper-nixpkgs;
+    bintools-wrapper-nxfs2nix                    = bintools-wrapper-nxfs2nix;
+    gcc-wrapper-nxfs2nix                         = gcc-wrapper-nxfs2nix;
 
     # fetchurl-nixpkgs :: { url :: string, urls :: list[string], ... } -> ... store-path?
     fetchurl-nixpkgs                            = fetchurl-nixpkgs;
@@ -1112,11 +735,7 @@ let
     gnu-config-nixpkgs                          = gnu-config-nixpkgs;
     gnu-config-nixpkgs2                         = gnu-config-nixpkgs2;
     updateAutotoolsGnuConfigScriptsHook-nixpkgs = updateAutotoolsGnuConfigScriptsHook-nixpkgs;
-    zlib-nixpkgs2                               = zlib-nixpkgs2;
-    zlib-nixpkgs                                = zlib-nixpkgs;
-    xz-nixpkgs2                                 = xz-nixpkgs2;
     xz-nixpkgs                                  = xz-nixpkgs;
-    gnum4-nixpkgs2                              = nixpkgs.gnum4;
     help2man-nixpkgs                            = help2man-nixpkgs;
     pkg-config-unwrapped-nixpkgs2               = pkg-config-unwrapped-nixpkgs2;
     pkg-config-unwrapped-nixpkgs                = pkg-config-unwrapped-nixpkgs;
@@ -1127,25 +746,16 @@ let
     ncurses-nixpkgs2                            = ncurses-nixpkgs2;
     ncurses-nixpkgs                             = ncurses-nixpkgs;
     perl536-nixpkgs2                            = nixpkgs.perl536;
-    perl538-interpreter-nixpkgs                 = perl538-interpreter-nixpkgs;
+    #perl538-interpreter-nixpkgs                 = perl538-interpreter-nixpkgs;
     perl538-nixpkgs2                            = nixpkgs.perl538;
-    perl-nixpkgs2                               = nixpkgs.perl;
-    libxcrypt-nixpkgs2                          = nixpkgs.libxcrypt;
 
-    patchelf-nixpkgs2                           = patchelf-nixpkgs2;
-    patchelf-nixpkgs                            = patchelf-nixpkgs;
+    patchelf-nxfs2nix                            = patchelf-nxfs2nix;
     #  bzip2-nixpkgs2                             = bzip2-nixpkgs2;
     file-nixpkgs2                               = file-nixpkgs2;
     which-nixpkgs2                              = which-nixpkgs2;
     gzip-nixpkgs2                               = gzip-nixpkgs2;
     gzip-nixpkgs                                = gzip-nixpkgs;
-    #  texinfo-nixpkgs2                           = texinfo-nixpkgs2;
-    texinfo-nixpkgs                             = texinfo-nixpkgs;
-    bash-nixpkgs2                               = bash-nixpkgs2;
     #  coreutils-nixpkgs2                         = coreutils-nixpkgs2;
-    #  perl-nixpkgs                               = perl-nixpkgs;
-    bison-nixpkgs                               = bison-nixpkgs;
-    bash-nixpkgs                                = bash-nixpkgs;
     cmake-minimal-nixpkgs                       = cmake-minimal-nixpkgs;
   };
 in

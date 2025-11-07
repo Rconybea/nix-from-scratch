@@ -52,7 +52,9 @@ let
   makeGenericStdenv = import (nixpkgspath + "/pkgs/stdenv/generic/default.nix");
   #makeGenericStdenv = import ./generic.nix; # trying local
 
-  # argsStdenv holds the stdenv ingredients that nixpkgs's makeGenericStdenv expects from us
+  # argsStdenv holds the stdenv ingredients that nixpkgs's makeGenericStdenv
+  # expects from us
+  #
   argsStdenv = {
     inherit config;
 

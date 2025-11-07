@@ -205,12 +205,16 @@ Bootstrap Details
    We expect this to arrive at a fixpoint -- that is, that if we build the toolchain
    again, we'll wind up with the same results.
 
-5. assembly (see nxfspkgs/bootstrap-tools)
+5. nxfspkgs (nxfs package collection)
 
-   In this stage we prepare a merged FHS-like package with final binaries+libraries;
-   we intend using this as a substitute for bootstrap
+   Examples:
+   $ nxfs-build -A stage2pkgs.bash-2
+   $ nxfs-build -A stage3pkgs.bash-3
 
-    $ nix build -f nixpkgs/pkgs/stdenv/linux/make-bootstrap-tools.nix bootstrapFiles
+   $ nxfs-build -A nxfs2nix.patchelf
+   $ nxfs-build -A nxfs2nix.pkgconf
+   $ nxfs-build -A nxfs2nix.gnum4
+   $ nxfs-build -A nxfs2nix.libxcrypt
 
 Look Ma!
 
