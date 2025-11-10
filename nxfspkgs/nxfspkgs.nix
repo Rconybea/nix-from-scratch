@@ -153,6 +153,8 @@ let
   # works!
   # btw, similar invocation of bintools-wrapper in [nixpkgs/pkgs/stdenv/linux/default.nix]
   #
+  # editor bait: binutils-wrapper
+  #
   bintools-wrapper-nxfs2nix = callPackage (nixpkgspath + "/pkgs/build-support/bintools-wrapper")
     { name                   = "bintools-wrapper-nxfs2nix";
       lib                    = nixpkgs.lib;
@@ -225,6 +227,8 @@ let
       # collects final bootstrap packages (built here) that
       # we want to use to drive a nixpkgs-compatible stdenv.
       #
+      # gcc, binutils are special here.
+      #
       # ----------------------------------------------------------------
       # WARNING: to be used in stdenv, attrs added below must also add to
       #          stdenv-to-nix argsStdenv.initialPath
@@ -255,8 +259,6 @@ in
 let
   # not sure this has any effect -- failed experiment?
   stdenv2nix-config = stdenv2nix-config-0 // { replaceStdenv = stdenv2nix-minimal; };
-in
-let
   # try getting stdenv bootstrap stages so we can inspect derivations from nix repl.
   # Just using this for inspection, not otherwise useful.
   #
@@ -311,7 +313,23 @@ let
       fetchurl = stdenv2nix-minimal.fetchurlBoot;
       lib      = nixpkgs.lib;
     });
+in
+let
+  ################################################################
+  # Try building up curl deps..
+  # Look at nixpkgs/pkgs/top-level/all-packages.nix as
 
+  testers-nxfs2nix = callPackage (nixpkgspath + "/pkgs/build-support/testers") { };
+
+  curl-nxfs2nix = callPackage (nixpkgspath + "/pkgs/tools/networking/curl")
+    {
+      stdenv = stdenv2nix-minimal;
+      fetchurl = stdenv2nix-minimal.fetchurlBoot;
+      lib = nixpkgs.lib;
+    };
+
+in
+let
   overlay = self: super:
     # RULES:
     #  - overlay should not be recursive (so can compose with other overlays).  Use 'self'
@@ -325,15 +343,6 @@ let
       #defaults = {};
     in
       {
-#        config = config // { allowAliases = true;
-#                             allowUnsupportedSystem = false;
-#                             allowBroken = false;
-#                             checkMeta = false;
-#                             configurePlatformsByDefault = true;
-#                             enableParallelBuildingByDefault = false;
-#                             strictDepsByDefault = false;
-#                           };
-
         # --------------------------------
         # stdenv: this assignment isn't immediate effective.  Triggers bootstrap asserts:
         # (1) isFromBootstrapFiles (prevStage).binutils.bintools
@@ -343,11 +352,51 @@ let
         # nixpkgs doesn't care about this
         stage3pkgs = stage3pkgs;
 
+        # glibc, glibcLocales: otherwise nixpkgs will look too closely at our
+        # bespoke stdenv (+ get infinite regress)
+        glibc = self.stdenv.cc.libc;
+        glibcLocales = self.stdenv.cc.libc.locales;
+
         # why did we think we needed this?  It works for many packages,
         # but not zstd
-        fetchurl = stdenv2nix-minimal.fetchurlBoot;
+        #
+        #fetchurl = stdenv2nix-minimal.fetchurlBoot;
+        fetchurl = super.fetchurl.override {
+          curl = curl-3;
+          cacert = cacert-3;
+        };
 
-      };  # end of overlay
+        fetchpatch = super.fetchpatch.override {
+          # skipping version from __splicedPackages
+          patchutils = self.patchutils_0_3_3 or self.patchutils;
+        };
+
+        expect = super.expect.overrideAttrs (old: {
+          NIX_CFLAGS_COMPILE = (old.NIX_CFLAGS_COMPILE or "")
+                               + " -Wno-error=incompatible-pointer-types";
+        });
+
+        # tests fail in sandbox; complains about running out of PTYs
+        libffi = super.libffi.overrideAttrs (old: {
+          doCheck = false;
+        });
+
+#        # our nixcpp 2.24.9 has abug involving sandbox stdout,
+#        # affects subprocesses that dup stdout.
+#        # on 2nd loop -- looks like this was apparmor interference
+#        # from ubuntu 24.04. boo!
+#
+#        pcre2 = super.pcre2.overrideAttrs (old: {
+#          preConfigure = ''
+#            ${old.preConfigure or ""}
+#            # workaround for nixcpp 2.24.89 sandbox bug
+#            # nuke heredoc cat to stdout (knowing that we're silencing
+#            # heredoc-based error output too)
+#            #
+#            sed -i 's/^cat <<EOF$/: <<EOF/' configure
+#          '';
+#        });
+      };
 
   # nixpkgs anatomy
   #   nixpkgs/default.nix
@@ -398,8 +447,6 @@ in
 let
 
   gnu-config-nixpkgs2 = nixpkgs.gnu-config;
-
-#  bzip2-nixpkgs2 = nixpkgs.bzip2;
 
   # file-nixpkgs2: no good, attempts nixpkgs bootstrap
   file-nixpkgs2 = nixpkgs.file;
@@ -519,12 +566,20 @@ let
     #  $ nxfs-build -A nxfs2nix.bison
     #  $ nxfs-build -A nxfs2nix.texinfo
     #  $ nxfs-build -A nxfs2nix.gzip
+    #  $ nxfs-build -A nxfs2nix.gnugrep
     #
     nxfs2nix                                    = nxfs2nix;
 
     stage1pkgs                                  = stage1pkgs;
     stage2pkgs                                  = stage2pkgs;
     stage3pkgs                                  = stage3pkgs;
+
+    ################################################################
+
+    curl-nxfs2nix                               = curl-nxfs2nix;
+
+    ################################################################
+    # nix-shell support
 
     # load-bearing for nxfs-shell.
     # runCommand :: name -> env -> buildcommand -> derivation
@@ -533,9 +588,14 @@ let
     # load-bearing for nxfs-shell
     bashInteractive                             = stage3pkgs.bash-3;
 
+    ################################################################
+
     # deprecated
     nxfs-autotools                              = nxfs-autotools;
 
+    ################################################################
+
+    # these all accessible via stage3pkgs.which-3 etc.
     which-3                                     = which-3;
     diffutils-3                                 = diffutils-3;
     findutils-3                                 = findutils-3;

@@ -1,4 +1,5 @@
-Patterns for nixcpp deps (since there are a lot of these)
+Patterns for nixcpp deps (since there are a lot of these).
+The cover only builds in nix-from-scratch/pkgs, on the way to nixcpp build in nix-from-scratch/pkgs/nix/
 
 no-build (binary install)                stage1-linux-headers, mdbook, mdbook-linkcheck
 configure_exec override                  boost (bootstrap.sh), nlohmann_json (cmake)

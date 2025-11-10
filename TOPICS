@@ -1,0 +1,37 @@
+Things to write about.
+Will probably converge towards nix pills.
+
+Also think of this as cookbook/howto
+
+- standalone shell (dash)
+- isolated toolchain (paried glibc + gcc, without touching /usr/lib)
+- nixcpp deps + final build.
+- impure toplevel stuff. cacerts, .config/nix/nix.conf, NIX_PATH, overlays
+- runtime vs buildtime references
+- bootstrap: importing binaries as fixed-output derivations.
+- bootstrap: invoking imported binaries (linux loader, RUNPATH, patchelf)
+- bootstrap: shebangs. /bin/sh, CONFIG_SHELL
+- bootstrap: popen, locales.
+- bootstrap: isolated toolchain, redux: now from within sandboxed build.
+- bootstrap: progressively scrubbing external references
+- fetchurl vs builtins.fetchTarball
+- make-stdenv, make-derivation. ability to override; supplying dependencies, hooks.
+- runCommand, optionalAttrs, nix-shell support.  Also nxfs-shell
+- nix-support/setup-hook, seutp.sh, unpackPhase/buildPhase etc,
+  buildInputs[] vs initialPath[]
+- problems with /dev/pts on ubuntu.
+  - check status:
+     $ cat /proc/sys/kernel/unprivileged_userns_clone
+     $ cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+
+  - 1. or 2.
+  1. building with sandbox disabled -- sketchy!
+  2. drop ubuntu-specific userns restrictions.
+    $ sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+    $ echo "kernel.apparmor_restrict_unprivileged_userns = 0" | sudo tee /etc/sysctl.d/99-nix-userns.conf
+
+Once we have viable stdenv:
+- buildEnv
+- nix-shell
+
+- stdenv-to-nix

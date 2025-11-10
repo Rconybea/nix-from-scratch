@@ -50,6 +50,11 @@ stdenv.mkDerivation {
 
   system         = builtins.currentSystem;
 
+  # in nixpkgs, want stdenv.cc.libc.locales to exist
+  # (at least according to claude.ai)
+  #
+  locales        = locale-archive;
+
   locale_archive = locale-archive;
   linux_headers  = linux-headers;
 

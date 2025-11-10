@@ -14,3 +14,6 @@
    default nix-from-scratch/archive
 
 4. promote ARCHIVE_DIR to toplevel ./configure script
+
+5. in top-level ./configure, generate makefile breadcrumbs
+   for stage0 bootstrap.

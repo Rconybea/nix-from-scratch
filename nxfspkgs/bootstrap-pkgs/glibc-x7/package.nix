@@ -16,6 +16,8 @@ stdenv.mkDerivation {
   version = glibc.version;
   system = builtins.currentSystem;
 
+  locales = prev-glibc.locales;
+
   buildPhase = ''
     rm -f $out/build.env
 

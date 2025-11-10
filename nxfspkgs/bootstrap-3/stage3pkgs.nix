@@ -644,11 +644,15 @@ let
                                                         nxfs-defs = nxfs-defs;
                                                         stageid = "2";
                                                       };
+  pty-test-3 = callPackage
+    ../bootstrap-3-demo/pty-test/package.nix { stdenv = stdenv-x3-3;
+                                               python = python-3; };
 in
 let
   stage3env = buildEnv {
     name = "stage3env";
-    paths = [ gcc-wrapper-3
+    paths = [ pty-test-3
+              gcc-wrapper-3
               gcc-x4-3
               binutils-x0-wrapper-3
               python-3
@@ -696,6 +700,7 @@ in
     stdenv = stdenv-x3-3;  # final stage3 stdenv
 
     inherit stage3env;
+    inherit pty-test-3;
     inherit gcc-wrapper-3;
     inherit gcc-x4-3;
     inherit gcc-x3-3;

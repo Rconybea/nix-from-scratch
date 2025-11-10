@@ -114,3 +114,14 @@
     Disable in ~/.config/nix/nix.conf:
 
      sandbox-fallback = false
+
+11. problems with /dev/pts permissions on ubuntu 24.04
+
+    Looks like driven by apparmor
+
+     sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+     echo "kernel.apparmor_restrict_unprivileged_userns = 0" | sudo tee /etc/sysctl.d/99-nix-userns.conf
+
+12. nixpkgs.stdenv is special.
+    Overlaying a nixpkgs attribute that's used in stdenv (bash, pcre, gnugrep, ..)
+    doesn't necessarily alter stdenv itself.
